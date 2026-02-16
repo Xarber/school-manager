@@ -8,6 +8,7 @@ type UserGrade ={
     grade: number;
 }
 type UserGradesProps = {
+    title?: string;
     items: UserGrade[];
     expand?: () => void;
 }
@@ -20,7 +21,7 @@ export default function UserGrades(props: UserGradesProps) {
         <View style={commonStyle.dashboardSection}>
             <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center", marginBottom: 10}}>
                 <View>
-                    <Text style={commonStyle.dashboardSectionTitle}>Grades</Text>
+                    <Text style={commonStyle.dashboardSectionTitle}>{props.title ?? "Grades"}</Text>
                     {props.expand && <Text style={{...commonStyle.text, fontSize: 14, color: theme.primary}}>See All</Text>}
                 </View>
                 {props.expand && (

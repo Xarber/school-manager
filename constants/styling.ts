@@ -14,6 +14,11 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
     },
+    card: {
+        backgroundColor: theme.card,
+        padding: 15,
+        borderRadius: 10,
+    },
 
     /* Dashboard Component */
     dashboardSection: {

@@ -9,11 +9,17 @@ export default function HomeScreen() {
     const theme = useTheme();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
+    const today = new Date().toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
 
     return (
         <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
             <BlurView style={HomeScreenStyle.dashboardSectionHeader}>
-                <Text style={HomeScreenStyle.welcomeText}>Welcome back, user!</Text>
+                <Text style={HomeScreenStyle.welcomeText}>{today}</Text>
             </BlurView>
             <View style={HomeScreenStyle.dashboard}>
                 <UserGrades items={[

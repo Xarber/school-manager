@@ -4,6 +4,7 @@ import { useTheme } from "@/constants/useThemes";
 import ActionMenu from "@/components/actionMenu";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
+import GradeGrid from "@/components/gradeGrid";
 
 export default function RegistryTab() {
     const theme = useTheme();
@@ -17,6 +18,11 @@ export default function RegistryTab() {
                 <Text style={HomeScreenStyle.welcomeText}>Registry</Text>
             </BlurView>
             <View style={HomeScreenStyle.dashboard}>
+                <GradeGrid title="Your Grades" maxValue={10.1} items={[
+                    { title: "Mathematics", grade: 5 },
+                    { title: "Science", grade: 10 },
+                    { title: "History", grade: 7 },
+                ]} />
                 <ActionMenu title="Your Class" items={[
                     { title: "Homework", onPress: () => console.log("Homework pressed") },
                     { title: "Comunications", onPress: () => console.log("Comunications pressed") },
