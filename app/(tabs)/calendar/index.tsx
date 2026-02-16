@@ -36,9 +36,10 @@ export default function CalendarScreen() {
                     theme={{
                         backgroundColor: theme.background,
                         calendarBackground: theme.background,
-                        selectedDayTextColor: '#fff',
+                        selectedDayTextColor: theme.text,
                         dayTextColor: theme.text,
-                        textDisabledColor: '#d9e1e8',
+                        textDisabledColor: theme.disabled,
+                        monthTextColor: theme.text,
                     }}
                 />
             </View>

@@ -12,6 +12,7 @@ type DashboardItem = {
     description?: string;
     icon?: ImageSourcePropType;
     badge?: DashboardItemBadge;
+    onPress?: () => void;
 }
 type DashboardItemProps = {
     title: string;
@@ -36,7 +37,7 @@ export default function DashboardItem(props: DashboardItemProps) {
             </Pressable>
             <View style={commonStyle.dashboardSectionContainer}>
                 {props.items.map((item, index) => (
-                    <View key={index} style={commonStyle.dashboardSectionItem}>
+                    <Pressable onPress={item.onPress} key={index} style={commonStyle.dashboardSectionItem}>
                         {item.icon && <Image style={commonStyle.dashboardSectionItemIcon} source={item.icon} />}
                         <View style={commonStyle.dashboardSectionItemContent}>
                             <View style={commonStyle.dashboardSectionItemTextContainer}>
@@ -45,7 +46,7 @@ export default function DashboardItem(props: DashboardItemProps) {
                             </View>
                             {item.badge && <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemBadge, backgroundColor: item.badge.color}}>{item.badge.text}</Text>}
                         </View>
-                    </View>
+                    </Pressable>
                 ))}
             </View>
         </View>
