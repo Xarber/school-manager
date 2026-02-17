@@ -8,3 +8,4 @@
 - Orario scolastico in day-vew
 - Integrazione con X-Auth per classi multiple e gestione autonoma
 - App Store
+- Integrazione con siri/gemini (domani cosa c'è?) ecc
