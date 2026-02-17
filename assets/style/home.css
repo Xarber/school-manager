@@ -1,0 +1,26 @@
+header {
+    text-align: center;
+    border-bottom: 10px solid var(--highlight-theme-color);
+    padding: 20px;
+    border-radius: 10px;
+}
+header.fullscreen {
+    width: calc(100vw - 80px);
+    height: calc(100vh - 70px);
+    position: relative;
+}
+header > div {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+header > div > img.appicon {
+    width: 30%;
+    max-width: 200px;
+    border-radius: 30px;
+    aspect-ratio: 1/1;
+
+    display: block;
+    margin: auto;
+}

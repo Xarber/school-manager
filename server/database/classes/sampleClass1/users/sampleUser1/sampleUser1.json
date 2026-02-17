@@ -1,0 +1,16 @@
+{
+    "class": "sampleClass1",
+    "version": "1.0.0",
+    "indexedAt": "01-01-1976T00:00:00.000Z",
+    "data": {
+        "name": "sampleUser1",
+        "surname": "SampleSurname",
+        "email": "sampleuser1@example.com",
+        "role": "student",
+        "enrolledSubjects": [
+            "Mathematics",
+            "Science",
+            "History"
+        ]
+    }
+}

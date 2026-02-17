@@ -1,0 +1,17 @@
+{
+    "subject": "sampleSubject1",
+    "class": "sampleClass1",
+    "version": "1.0.0",
+    "indexedAt": "01-01-1976T00:00:00.000Z",
+    "data": {
+        "name": "Sample Subject 1",
+        "description": "This is a sample subject for demonstration purposes.",
+        "teacher": "John Doe",
+        "credits": 3,
+        "totalHours": 45,
+        "weeklyHours": 3,
+        "gradesType": "Numeric",
+        "evaluationType": "Exams and Assignments",
+        "resourcesFolder": "classes/<class>/files/<subject>/"
+    }
+}

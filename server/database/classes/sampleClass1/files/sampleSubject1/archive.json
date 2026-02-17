@@ -1,0 +1,35 @@
+{
+    "subject": "sampleSubject1",
+    "class": "sampleClass1",
+    "version": "1.0.0",
+    "indexedAt": "01-01-1976T00:00:00.000Z",
+    "data": {
+        "01-01-1976": {
+            "contents": [
+                {
+                    "path": "classes/<class>/files/<subject>/01-01-1976/file1.txt",
+                    "type": "text/plain",
+                    "size": 1234,
+                    "uploadedAt": "01-01-1976T00:00:00.000Z",
+                    "archivedAt": "01-01-1976T00:00:00.000Z"
+                },
+                {
+                    "path": "classes/<class>/files/<subject>/01-01-1976/file2.pdf",
+                    "type": "application/pdf",
+                    "size": 5678,
+                    "uploadedAt": "01-01-1976T00:00:00.000Z",
+                    "archivedAt": "01-01-1976T00:00:00.000Z"
+                },
+                {
+                    "path": "classes/<class>/files/<subject>/01-01-1976/file3.png",
+                    "type": "image/png",
+                    "size": 91011,
+                    "uploadedAt": "01-01-1976T00:00:00.000Z",
+                    "archivedAt": "01-01-1976T00:00:00.000Z"
+                }
+            ],
+            "createdAt": "01-01-1976T00:00:00.000Z",
+            "archivedAt": "01-01-1976T00:00:00.000Z"
+        }
+    }
+}

@@ -1,0 +1,10 @@
+- Mettere ricerca AI locale per trovare risultati ad una domanda tramite i dati in tutta l'app
+- Mettere integrazione automatizzata con classeviva tramite credenziali di un admin (importa compiti e comunicazioni)
+  OPPURE
+  Importare anche i voti mettendo le proprie credenziali
+  (custom client RE)
+- Calcolo medie dei voti e voto necessario per raggiungere una media
+- Filtra per materie
+- Orario scolastico in day-vew
+- Integrazione con X-Auth per classi multiple e gestione autonoma
+- App Store
