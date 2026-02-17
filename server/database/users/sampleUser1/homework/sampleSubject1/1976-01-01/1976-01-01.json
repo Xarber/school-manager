@@ -1,0 +1,11 @@
+{
+  "date": "1976-01-01",
+  "contents": [
+    {
+      "type": "exercise",
+      "completed": false,
+      "dueTime": 86399,
+      "warnings": []
+    }
+  ]
+}

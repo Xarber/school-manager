@@ -1,0 +1,53 @@
+{
+    "class": "sampleClass1",
+    "version": "1.0.0",
+    "indexedAt": "01-01-1976T00:00:00.000Z",
+    "data": {
+        "sampleSubject1": {
+            "archive": {
+                "01-01-1976": {
+                    "path": "classes/<class>/oral-exams/<subject>/01-01-1976/01-01-1976.json",
+                    "contents": {
+                        "date": "1976-01-01",
+                        "time": 36000,
+                        "durationMinutes": 120,
+                        "location": "Room 101",
+                        "teacher": "Dr. John Doe",
+                        "type": "<written>",
+                        "addedAt": "01-01-1976T00:00:00.000Z",
+
+                        "topics": [
+                            "Topic A",
+                            "Topic B",
+                            "Topic C"
+                        ],
+                        "examFolder": "classes/<class>/files/<subject>/<folderName>",
+
+                        "instructions": "Bring your student ID and a calculator. There will be long text answers, multiple-choice questions, and practical problems.",
+                        "gradingCriteria": {
+                            "oralPresentation": 50,
+                            "questionAnswer": 30,
+                            "overallUnderstanding": 20
+                        },
+
+                        "warnings": [
+                            "Late arrivals will not be allowed.",
+                            "No electronic devices permitted during the exam."
+                        ],
+                        "urgentWarnings": [
+                            "In case of emergency, follow the evacuation procedures."
+                        ],
+
+                        "path": "classes/<class>/oral-exams/<subject>/01-01-1976/01-01-1976.json",
+                        "createdAt": "01-01-1976T00:00:00.000Z",
+                        "archivedAt": "01-01-1976T00:00:00.000Z"
+                    },
+                    "createdAt": "01-01-1976T00:00:00.000Z",
+                    "archivedAt": "01-01-1976T00:00:00.000Z"
+                }
+            },
+            "createdAt": "01-01-1976T00:00:00.000Z",
+            "archivedAt": "01-01-1976T00:00:00.000Z"
+        }
+    }
+}
