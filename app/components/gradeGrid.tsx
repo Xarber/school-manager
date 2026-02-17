@@ -54,8 +54,8 @@ export default function GradeGrid(props: GradeGridProps) {
                                 activeStrokeWidth={5}
                                 inActiveStrokeWidth={7}
 
-                                activeStrokeColor={colorMap[colorIndex] ?? "gray"}
-                                progressValueColor="white"
+                                activeStrokeColor={colorMap[colorIndex] ?? theme.action}
+                                progressValueColor={theme.text}
 
                                 progressValueFontSize={13}
                             />

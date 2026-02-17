@@ -23,6 +23,15 @@ export default function CalendarScreen() {
         });
     };
 
+    let calendarTheme = {
+        backgroundColor: theme.background,
+        calendarBackground: theme.background,
+        selectedDayTextColor: theme.text,
+        dayTextColor: theme.text,
+        textDisabledColor: theme.disabled,
+        monthTextColor: theme.text,
+    };
+
     return (
         <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
             <BlurView style={HomeScreenStyle.dashboardSectionHeader}>
@@ -30,17 +39,11 @@ export default function CalendarScreen() {
             </BlurView>
             <View style={{ flex: 1, backgroundColor: theme.background }}>
                 <Calendar
+                    key={theme.type} // Force re-render on theme change
                     markedDates={markedDates}
                     onDayPress={(day) => setSelectedDate(day.dateString)}
                     hideExtraDays={true}
-                    theme={{
-                        backgroundColor: theme.background,
-                        calendarBackground: theme.background,
-                        selectedDayTextColor: theme.text,
-                        dayTextColor: theme.text,
-                        textDisabledColor: theme.disabled,
-                        monthTextColor: theme.text,
-                    }}
+                    theme={calendarTheme}
                 />
             </View>
             <View style={HomeScreenStyle.dashboard}>

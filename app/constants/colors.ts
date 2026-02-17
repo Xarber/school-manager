@@ -1,6 +1,7 @@
 /* Check user color scheme */
 export const colors = {
   light: {
+    type: "light",
     background: "#fff",
     text: "#000",
     card: "rgba(0, 0, 0, 0.05)",
@@ -11,6 +12,7 @@ export const colors = {
     disabled: "rgba(0, 0, 0, 0.3)",
   },
   dark: {
+    type: "dark",
     background: "#000",
     text: "#fff",
     card: "rgba(255, 255, 255, 0.05)",
