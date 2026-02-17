@@ -30,6 +30,9 @@ export default function TabLayout() {
         <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color, size }) => (
               <Feather name="user" size={size} color={color} />
             ), }} />
+        <Tabs.Screen name="ai" options={{ title: "AI", href: null, tabBarIcon: ({ color, size }) => (
+              <Feather name="cpu" size={size} color={color} />
+            ), }} />
       </Tabs>
     </SafeAreaView>
   );
