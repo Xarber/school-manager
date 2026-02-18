@@ -3,19 +3,24 @@ import { useTheme } from "@/constants/useThemes"
 import createStyling from "@/constants/styling";
 import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 
-type UserGrade ={
-    course: string;
-    grade: number;
+type UserGrade = {
+    title: string;
+    grade: string | number;
 }
 type UserGradesProps = {
     title?: string;
     items: UserGrade[];
+    maxItems?: number;
+    noItemsText?: string;
     expand?: () => void;
 }
 
 export default function UserGrades(props: UserGradesProps) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const renderedCount = props.items.filter((item, index) => 
+        props.maxItems === undefined || index < props.maxItems
+    ).length;
 
     return (
         <View style={commonStyle.dashboardSection}>
@@ -29,12 +34,18 @@ export default function UserGrades(props: UserGradesProps) {
                 )}
             </Pressable>
             <View style={commonStyle.userGrades}>
-                {props.items.map((item, index) => (
-                    <View key={index} style={commonStyle.dashboardSectionItem}>
-                        <Text style={commonStyle.text}>{item.course}</Text>
-                        <Text style={commonStyle.text}>{item.grade}</Text>
-                    </View>
-                ))}
+                <Text style={renderedCount === 0 ? commonStyle.text : { display: "none" }}>{props.noItemsText ?? "Nothing to see here..."}</Text>
+                {props.items.map((item, index) => {
+                    if (props.maxItems === undefined || index < props.maxItems) {
+                        return (
+                            <View key={index} style={commonStyle.dashboardSectionItem}>
+                                <Text style={commonStyle.text}>{item.title}</Text>
+                                <Text style={commonStyle.text}>{item.grade}</Text>
+                            </View>
+                        );
+                    }
+                    return null;
+                })}
             </View>
         </View>
     )

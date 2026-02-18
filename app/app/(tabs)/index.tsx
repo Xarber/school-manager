@@ -4,13 +4,16 @@ import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
 import UserGrades from "@/components/gradesComponent";
+import { useHomescreenPageData } from "@/data/dataload";
 import { useRouter } from "expo-router";
+import { KEYS } from "@/data/datamanager";
 
 export default function HomeScreen() {
     const theme = useTheme();
     const router = useRouter();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
+    const homescreenPageData = useHomescreenPageData();
     const today = new Date().toLocaleDateString("en-GB", {
         weekday: "long",
         day: "2-digit",
@@ -24,33 +27,23 @@ export default function HomeScreen() {
                 <Text style={HomeScreenStyle.welcomeText}>{today}</Text>
             </BlurView>
             <View style={HomeScreenStyle.dashboard}>
-                <UserGrades items={[
-                    { course: "Average", grade: 95 },
-                    { course: "Science", grade: 42 },
-                    { course: "History", grade: 37 },
-                ]} expand={() => {
-                    router.push("/registry/grades");
+                <UserGrades items={homescreenPageData.grades} maxItems={3} expand={() => {
+                    router.push("/registry");
+                    setTimeout(()=>router.push("/registry/grades"), 36);
                 }}/>
-                <DashboardItem title="Tomorrow" items={[
-                    {
-                        title: "Storia",
-                        description: "Prof. Verdi\nPrima ora",
-                    },
-                    {
-                        title: "Italiano",
-                        description: "Prof. Rossi\nSeconda ora",
-                        badge: { text: "compito", color: "rgba(255, 0, 0, 0.8)" },
-                    },
-                    {
-                        title: "Storia",
-                        description: "Prof. Verdi\nPrima ora",
-                    },
-                ]}/>
-                <DashboardItem title="Upcoming Exams" items={[
-                    { title: "Italiano", description: "12 Gennaio\nProf Rossi", badge: { text: "orale", color: "rgba(235, 220, 54, 0.8)" }, icon: require("@/assets/images/icon.png") },
-                    { title: "Matematica", description: "5 Dicembre\nProf Bianchi", badge: { text: "scritto", color: "rgba(0, 174, 255, 0.8)" }, icon: require("@/assets/images/icon.png") },
-                ]} expand={() => {
-                    router.push("/registry/exams");
+                <DashboardItem title="Tomorrow" items={
+                    (homescreenPageData.tomorrowSchedule ?? []).map((lesson) => {
+                        const subjectKey = `${KEYS.subjectData}:${homescreenPageData.userdata.data.settings.activeClassId}:${lesson.subjectid}`;
+                        const subject = homescreenPageData.subjects.data[subjectKey];
+                        return {
+                            title: subject.name,
+                            description: `Teacher: ${lesson.teacher}\nTime: ${lesson.duration}`,
+                        }
+                    })
+                }/>
+                <DashboardItem title="Upcoming Exams" items={homescreenPageData.exams} maxItems={2} expand={() => {
+                    router.push("/registry");
+                    setTimeout(()=>router.push("/registry/exams"), 36);
                 }}/>
             </View>
         </ScrollView>

@@ -6,7 +6,6 @@ const defaultUserInfo = {
     name: '' as string,
     surname: '' as string,
     email: '' as string,
-    birthday: '' as string,
     role: 'student' as 'student' | 'teacher',
 }
 type UserInfo = typeof defaultUserInfo;
@@ -15,6 +14,7 @@ const defaultUserSettings = {
     theme: 'system' as 'light' | 'dark' | 'system',
     notifications: false as boolean,
     language: 'en' as string,
+    activeClassId: '' as string,
     calendarSync: {
         enabled: false as boolean,
         homework: false as boolean,
@@ -26,7 +26,8 @@ const defaultUserSettings = {
 type UserSettings = typeof defaultUserSettings;
 
 const defaultUserData = {
-    name: "John Doe" as string,
+    name: "" as string,
+    birthday: "" as string,
     userInfo: defaultUserInfo as UserInfo,
     settings: defaultUserSettings as UserSettings,
     classes: [] as {classid: string}[],
@@ -76,6 +77,7 @@ const defaultGradeData = {
     classid: '' as string,
     subjectid: '' as string,
     homeworkid: undefined as string | undefined,
+    gradeid: '' as string,
     addedAt: '' as string,
 }
 type GradeData = typeof defaultGradeData;
@@ -100,7 +102,7 @@ const defaultHomeworkData = {
     description: '' as string,
     points: 0 as number | undefined,
     material: [] as {materialid: string}[],
-    dueDate: '' as string | undefined,
+    dueDate: '' as string,
     addedAt: '' as string,
 }
 type HomeworkData = typeof defaultHomeworkData;
@@ -171,6 +173,44 @@ export default function useAsyncData<T>(key: string, defaultValue: T) {
     return { data, loading, error, load, save };
 };
 
+export function useAllAsyncData<T>(key: string, defaultValue: T) {
+    const [data, setData] = useState<{ [key: string]: T }>({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const loadAll = async () => {
+        try {
+            setLoading(true);
+            const allStored = await AsyncStorage.getAllKeys();
+            const stored: { [key: string]: T } = {};
+            allStored.filter((k) => k.startsWith(key)).forEach(async (k) => {
+                const data = await AsyncStorage.getItem(k);
+                stored[k] = data ? (JSON.parse(data) as T) : defaultValue;
+            })
+            setData(stored);
+        } catch (err) {
+            setError('Load failed');
+        }
+    }
+
+    const saveAll = async (data: [{ key: string, value: T }]) => {
+        for (var e of data) {
+            try {
+                await AsyncStorage.setItem(e.key, JSON.stringify(e.value));
+            } catch (err) {
+                setError('Save failed for key: ' + e.key);
+            }
+        }
+        await loadAll();
+    };
+
+    useEffect(() => {
+        loadAll();
+    }, [key]);
+
+    return { data, loading, error, load: loadAll, save: saveAll };
+};
+
 export const KEYS = {
     userSettings: '@app:userSettings',
     userData: '@app:userData',
@@ -178,16 +218,13 @@ export const KEYS = {
     classData: '@app:classData',                                     // `@app:classData:${classid}`
     subjectData: '@app:subjectData',                                 // `@app:subjectData:${classid}:${subjectid}`
 
-    gradeData: '@app:gradeData',                                     // `@app:gradeData:${classid}:${subjectid}:${homeworkid}`
-    idlessGradeData: '@app:idlessGradeData',                         // `@app:idlessGradeData:${classid}:${subjectid}`
+    gradeData: '@app:gradeData',                                     // `@app:gradeData:${classid}:${subjectid}:${homeworkid|0}:${gradeid}`
     homeworkData: '@app:homeworkData',                               // `@app:homeworkData:${classid}:${subjectid}:${homeworkid}`,
 
     lessonData: '@app:lessonData',                                   // `@app:lessonData:${classid}:${subjectid}:${lessonid}`
-    materialData: '@app:materialData',                               // `@app:materialData:${classid}:${subjectid}:${materialid}`
-    subjectlessMaterialData: '@app:subjectlessMaterialData',         // `@app:subjectlessMaterialData:${classid}:${materialid}`
+    materialData: '@app:materialData',                               // `@app:materialData:${classid}:${subjectid|0}:${materialid}`
 
-    comunicationData: '@app:comunicationData',                       // `@app:comunicationData:${classid}:${subjectid}:${comunicationid}`
-    subjectlessComunicationData: '@app:subjectlessComunicationData', // `@app:subjectlessComunicationData:${classid}:${comunicationid}`
+    comunicationData: '@app:comunicationData',                       // `@app:comunicationData:${classid}:${subjectid|0}:${comunicationid}`
 } as const;
 export type { UserSettings, UserData, ClassData, UserInfo, SubjectData, GradeData, HomeworkData, LessonData, ComunicationData, ScheduleHour, MaterialData };
 export const defaultData = {

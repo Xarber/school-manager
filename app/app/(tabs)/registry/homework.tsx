@@ -1,14 +1,98 @@
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
+import DashboardItem from '@/components/dashboardItem';
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { HomeworkData, UserData } from '@/data/datamanager';
+import { useHomeworkPageData } from '@/data/dataload';
+import useAsyncData, {useAllAsyncData} from '@/data/datamanager';
 
-export default function ProfileData() {
+function renderHomework(homework: HomeworkData[]) {
+    const dateIndex: { [date: string]: HomeworkData[] } = {};
+    const allDates: string[] = [];
+
+    for (let i = 0; i < homework.length; i++) {
+        const date = new Date(homework[i].dueDate).toLocaleDateString("en-GB", {
+            weekday: "long",
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+        if (!dateIndex[date]) {
+            dateIndex[date] = [];
+        }
+        dateIndex[date].push(homework[i]);
+        if (!allDates.includes(date)) allDates.push(date);
+    }
+    allDates.sort();
+
+    return allDates.length > 0 ? (
+        <View>
+            {
+                allDates.map((date) => {
+                    return (
+                        <DashboardItem
+                            title={date}
+                            items={dateIndex[date]}
+                        />
+                    );
+                })
+            }
+        </View>
+    ) : null;
+}
+
+function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const datePoolLength = 5;
+    const datePool = [];
+    for (let i = 0; i < datePoolLength; i++) {
+        let date = new Date();
+        date.setDate(new Date().getDate() + i);
+        datePool.push(date.toLocaleDateString("en-GB", {
+            weekday: "long",
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        }));
+    }
+
+    const homeworkPageData = useHomeworkPageData();
+    const homework = Object.values(homeworkPageData.homework.data) as HomeworkData[];
+    const userData = homeworkPageData.userdata.data;
+
+    console.log(homeworkPageData);
+    const filteredItems = homework.filter((item) => {
+        if (mode === "all") return true;
+        // Filter user's completedhomework {classid, subjectid, homeworkid}, and check if the homework item has those same properties
+        if (mode === "completed") {
+            const completedhomework = userData.completedhomework.filter((completedhomework) => {
+                return completedhomework.classid === item.classid && completedhomework.subjectid === item.subjectid && completedhomework.homeworkid === item.homeworkid;
+            });
+            if (completedhomework.length > 0) return true;
+        }
+        if (new Date(item.dueDate).getTime() < new Date().getTime()) {
+            if (mode === "missed") return true;
+        }
+        return false;
+    })
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={commonStyle.text}>This is the homework screen.</Text>
-        </View>
+        <ScrollView style={commonStyle.dashboardSection}>
+            {renderHomework(filteredItems)}
+        </ScrollView>
     );
+}
+
+const Tab = createMaterialTopTabNavigator();
+
+export default function HomeworkTab() {
+    return (
+        <Tab.Navigator>
+            <Tab.Screen name="All" component={()=>HomeworkComponent("all")} />
+            <Tab.Screen name="Completed" component={()=>HomeworkComponent("completed")} />
+            <Tab.Screen name="Missed" component={()=>HomeworkComponent("missed")} />
+        </Tab.Navigator>
+    )
 }

@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 
-export default function ProfileData() {
+export default function GradesTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
 
