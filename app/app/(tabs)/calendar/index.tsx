@@ -7,13 +7,21 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 
+import { useCalendarPageData } from '@/data/dataload';
+
 export default function CalendarScreen() {
     const theme = useTheme();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
 
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0]; // e.g., '2026-02-19'
+
     const [markedDates, setMarkedDates] = useState({});
-    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedDate, setSelectedDate] = useState(tomorrowStr);
+
+    const calendarPageData = useCalendarPageData();
 
     const loadMarkedDates = () => {
         // Load your events from storage/API
@@ -26,7 +34,8 @@ export default function CalendarScreen() {
     let calendarTheme = {
         backgroundColor: theme.background,
         calendarBackground: theme.background,
-        selectedDayTextColor: theme.text,
+        selectedDayTextColor: theme.primary,
+        todayTextColor: theme.text,
         dayTextColor: theme.text,
         textDisabledColor: theme.disabled,
         monthTextColor: theme.text,
@@ -41,13 +50,28 @@ export default function CalendarScreen() {
                 <Calendar
                     key={theme.type} // Force re-render on theme change
                     markedDates={markedDates}
+                    current={selectedDate}
                     onDayPress={(day) => setSelectedDate(day.dateString)}
                     hideExtraDays={true}
                     theme={calendarTheme}
                 />
             </View>
             <View style={HomeScreenStyle.dashboard}>
-                <DashboardItem title="Tomorrow" items={[]} />
+                <DashboardItem title={new Date(selectedDate).toLocaleDateString("en-GB", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" })} items={[
+                    {
+                        title: "Absent",
+                        description: "Description 1",
+                        onPress: () => {
+                            console.log("Event 1 selected");
+                        },
+                    },
+                ]} />
+                <DashboardItem title="Homework" items={Object.values(calendarPageData.homework.data)}
+                />
+                <DashboardItem title="Lessons" items={Object.values(calendarPageData.lessons.data)}
+                />
+                <DashboardItem title="Exams" items={Object.values(calendarPageData.exams)}
+                />
             </View>
         </ScrollView>
     );

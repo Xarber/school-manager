@@ -6,6 +6,7 @@ import DashboardItem from "@/components/dashboardItem";
 import createStyling from "@/constants/styling";
 import LoginComponent from "@/components/login";
 import { router } from "expo-router";
+import { useProfilePageData } from "@/data/dataload";
 
 
 export default function ProfileTab() {
@@ -13,16 +14,18 @@ export default function ProfileTab() {
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
     const isUserLoggedIn = true; // Replace with actual authentication logic
+
+    const profilePageData = useProfilePageData();
     
     return (
         <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
             <BlurView style={HomeScreenStyle.dashboardSectionHeader}>
-                <Text style={HomeScreenStyle.welcomeText}>{isUserLoggedIn ? "Hello, user!" : "Profile"}</Text>
+                <Text style={HomeScreenStyle.welcomeText}>{isUserLoggedIn ? `Hello, ${profilePageData.userdata.userInfo.name}!` : "Profile"}</Text>
             </BlurView>
             <View style={HomeScreenStyle.dashboard}>
                 <DashboardItem title="Your Profile" items={(()=>{
                     let items = [
-                        { title: "Name", description: "John Doe", onPress: () => {
+                        { title: "Name", description: profilePageData.userdata.name, onPress: () => {
                             router.push("/profile/profiledata");
                         }},
                         { title: "Settings", description: "Manage your account settings", onPress: () => {
@@ -41,17 +44,15 @@ export default function ProfileTab() {
                     return items;
                 })()} />
                 {isUserLoggedIn ? (
-                    <DashboardItem title="Your Classes" items={[
-                        { title: "3P", description: "Managed by John Doe", badge: { text: "active", color: "rgba(0, 255, 0, 0.8)" }, onPress: () => {
-                            router.push("/profile/class/3P");
-                        }},
-                        { title: "C++ Course", description: "Managed by Jane Smith", onPress: () => {
-                            router.push("/profile/class/C++");
-                        }},
-                        { title: "Music", description: "Managed by John Doe", onPress: () => {
-                            router.push("/profile/class/Music");
-                        }},
-                    ]} />
+                    <DashboardItem title="Your Classes" items={Object.values(profilePageData.classes.data).map((e)=>{
+                        return {
+                            title: e.name,
+                            description: `Teachers: ${e.teachers.filter(e=>e.name).join(", ")}\n${e.notes}`,
+                            onPress: () => {
+                                router.push(`/profile/class/${e.classid}`);
+                            }
+                        };
+                    })} />
                 ) : null}
             </View>
         </ScrollView>

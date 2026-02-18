@@ -9,7 +9,8 @@ export default function RegistryLayout() {
             <Stack.Screen name="resources" options={{ headerShown: true, title: "Resources" }} />
             <Stack.Screen name="schedule" options={{ headerShown: true, title: "Schedule" }} />
             <Stack.Screen name="homework" options={{ headerShown: true, title: "Homework" }} />
-            <Stack.Screen name="comunications" options={{ headerShown: true, title: "Comunications" }} />
+            <Stack.Screen name="comunications/index" options={{ headerShown: true, title: "Comunications" }} />
+            <Stack.Screen name="comunications/[id]" options={{ presentation: "modal", headerShown: true, title: "Comunications" }} />
             <Stack.Screen name="attendance" options={{ headerShown: true, title: "Attendance" }} />
         </Stack>
     );
