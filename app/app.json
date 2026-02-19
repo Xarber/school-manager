@@ -24,7 +24,8 @@
         "monochromeImage": "./assets/images/appicon/SchoolManager-universal-monochrome-1024x1024@1x.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.xarber.schoolmanager"
     },
     "web": {
       "output": "static",
