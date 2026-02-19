@@ -6,6 +6,7 @@ import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
 import GradeGrid from "@/components/gradeGrid";
 import { useRouter } from "expo-router";
+import { useRegistryPageData } from "@/data/dataload";
 
 export default function RegistryTab() {
     const theme = useTheme();
@@ -13,6 +14,9 @@ export default function RegistryTab() {
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const RegistryStyle = createStyling.createRegistryStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
+
+    const registryPageData = useRegistryPageData();
+    registryPageData;
     
     return (
         <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
@@ -20,11 +24,7 @@ export default function RegistryTab() {
                 <Text style={HomeScreenStyle.welcomeText}>Registry</Text>
             </BlurView>
             <View style={HomeScreenStyle.dashboard}>
-                <GradeGrid title="Your Grades" maxValue={10.1} items={[
-                    { title: "Mathematics", grade: 5 },
-                    { title: "Science", grade: 10 },
-                    { title: "History", grade: 7 },
-                ]} />
+                <GradeGrid title="Your Grades" maxValue={10.1} items={registryPageData.grades} />
                 <ActionMenu title="Your Class" items={[
                     { title: "Homework", onPress: () => {
                         router.push("/registry/homework");

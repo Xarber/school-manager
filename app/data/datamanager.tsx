@@ -1,6 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 
+const defaultDebugData = {
+    firstLaunch: false as boolean,
+    firstLaunchDate: "" as string,
+    lastLaunchDate: "" as string
+}
+type DebugData = typeof defaultDebugData;
+
 const defaultUserInfo = {
     userid: '' as string,
     name: '' as string,
@@ -212,6 +219,7 @@ export function useAllAsyncData<T>(key: string, defaultValue: T) {
 };
 
 export const KEYS = {
+    debugData: '@app:debugData',
     userSettings: '@app:userSettings',
     userData: '@app:userData',
 
@@ -226,7 +234,7 @@ export const KEYS = {
 
     comunicationData: '@app:comunicationData',                       // `@app:comunicationData:${classid}:${subjectid|0}:${comunicationid}`
 } as const;
-export type { UserSettings, UserData, ClassData, UserInfo, SubjectData, GradeData, HomeworkData, LessonData, ComunicationData, ScheduleHour, MaterialData };
+export type { UserSettings, UserData, ClassData, UserInfo, SubjectData, GradeData, HomeworkData, LessonData, ComunicationData, ScheduleHour, MaterialData, DebugData };
 export const defaultData = {
     userSettings: defaultUserSettings,
     userData: defaultUserData,
@@ -239,4 +247,5 @@ export const defaultData = {
     comunicationData: defaultComunicationData,
     materialData: defaultMaterialData,
     scheduleHour: defaultScheduleHour,
+    debugData: defaultDebugData
 }
