@@ -19,6 +19,15 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         padding: 15,
         borderRadius: 10,
     },
+    wideButton: {
+        backgroundColor: theme.primary,
+        padding: 15,
+        borderRadius: 10,
+        marginTop: 5,
+        marginBottom: 5,
+        width: "100%",
+        alignItems: "center"
+    },
 
     /* Dashboard Component */
     dashboardSection: {
@@ -185,6 +194,79 @@ const createRegistryStyles = (theme: Theme) => StyleSheet.create({
     },
 });
 
+const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: theme.background,
+        padding: 20,
+        display: "flex",
+        gap: 10
+    },
+    topView: {
+        maxHeight: "45%",
+    },
+    topViewImage: {
+        width: "80%",
+        height: "100%",
+        margin: "auto",
+        resizeMode: "contain"
+    },
+    bottomView: {
+        flex: 1,
+        display: "flex",
+        gap: 10
+    },
+    bottomViewHeader: {
+        
+    },
+    bottomViewHeaderTitle: {
+        color: theme.text,
+        fontSize: 24,
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    bottomViewBody: {
+        flex: 1,
+        display: "flex",
+        gap: 10
+    },
+    bottomViewBodyText: {
+        color: theme.text,
+        fontSize: 18,
+        textAlign: "center"
+    },
+    actions: {
+        width: "100%",
+        minHeight: 60,
+        display: "flex",
+        gap: 10
+    },
+    actionsButton: {
+        width: "100%",
+        height: 60,
+        backgroundColor: theme.primary,
+        borderRadius: 15,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    actionsButtonText: {
+        color: theme.text,
+        fontSize: 18,
+        fontWeight: "bold"
+    },
+    bottomViewBodyInput: {
+        width: "100%",
+        height: 50,
+        backgroundColor: theme.card,
+        borderRadius: 15,
+        color: theme.text,
+        textAlign: "center",
+        paddingLeft: 15,
+        paddingRight: 15
+    }
+});
+
 export default {
     createCommonStyles,
     createHomeScreenStyles,
@@ -192,4 +274,5 @@ export default {
     createUserProfileStyles,
     createCalendarStyles,
     createRegistryStyles,
+    createWelcomescreenStyles
 }
