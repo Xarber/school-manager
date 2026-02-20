@@ -9,6 +9,9 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
     text: {
         color: theme.text,
     },
+    buttonText: {
+        color: "white",
+    },
     headerText: {
         color: theme.text,
         fontSize: 24,
@@ -239,7 +242,7 @@ const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
         width: "100%",
         minHeight: 60,
         display: "flex",
-        gap: 10
+        gap: 10,
     },
     actionsButton: {
         width: "100%",
@@ -251,7 +254,7 @@ const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
         alignItems: "center"
     },
     actionsButtonText: {
-        color: theme.text,
+        color: "white", //theme.text,
         fontSize: 18,
         fontWeight: "bold"
     },
@@ -264,7 +267,31 @@ const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
         textAlign: "center",
         paddingLeft: 15,
         paddingRight: 15
-    }
+    },
+    bottomViewBodyForm: {
+        paddingTop: 30,
+        display: "flex",
+        gap: 20
+    },
+    bottomViewBodyFormField: {
+        display: "flex",
+        gap: 10
+    },
+    bottomViewBodyFormFieldText: {
+        color: theme.text,
+        fontSize: 18,
+        textAlign: "left"
+    },
+    bottomViewBodyFormFieldInput: {
+        width: "100%",
+        height: 50,
+        backgroundColor: theme.card,
+        borderRadius: 15,
+        color: theme.text,
+        textAlign: "left",
+        paddingLeft: 15,
+        paddingRight: 15
+    },
 });
 
 export default {

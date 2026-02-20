@@ -15,3 +15,7 @@ node_modules
 
 package-lock.json
 yarn.lock
+
+server/node_modules
+server/package-lock.json
+server/.env

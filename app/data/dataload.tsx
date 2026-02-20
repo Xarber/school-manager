@@ -90,13 +90,3 @@ export function useRegistryPageData() {
         grades: userData.data.grades,
     }
 }
-
-export function useProfilePageData() {
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
-    const allUserClasses = useAllAsyncData(`${KEYS.classData}`, defaultData.classData);
-    
-    return {
-        userdata: userData.data,
-        classes: allUserClasses
-    };
-}

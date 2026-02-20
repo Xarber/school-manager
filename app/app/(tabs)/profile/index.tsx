@@ -1,21 +1,39 @@
 import { Text, View, ScrollView } from "react-native";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
 import DashboardItem from "@/components/dashboardItem";
 import createStyling from "@/constants/styling";
 import LoginComponent from "@/components/login";
 import { router } from "expo-router";
-import { useProfilePageData } from "@/data/dataload";
+import useAsyncData, { useAllAsyncData, KEYS, defaultData } from "@/data/datamanager";
 
 
 export default function ProfileTab() {
     const theme = useTheme();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
-    const isUserLoggedIn = true; // Replace with actual authentication logic
 
-    const profilePageData = useProfilePageData();
+    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
+    const allUserClasses = useAllAsyncData(`${KEYS.classData}`, defaultData.classData);
+    
+    let profilePageData = {
+        userdata: userData.data,
+        classes: allUserClasses,
+        accountdata: accountData
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            accountData.load();
+            userData.load();
+            allUserClasses.load();
+        }, [])
+    );
+
+    const isUserLoggedIn = profilePageData.accountdata.data.active;
     
     return (
         <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
@@ -34,11 +52,11 @@ export default function ProfileTab() {
                     ];
                     if (!isUserLoggedIn) {
                         items.push({ title: "Login", description: "Log in to your account", onPress: () => {
-                            router.push("/profile/login");
+                            router.push("/welcome/account/login");
                         }});
                     } else {
                         items.push({ title: "Logout", description: "Log out of your account", onPress: () => {
-                            router.push("/profile/logout");
+                            router.push("/welcome/account/logout");
                         }});
                     }
                     return items;

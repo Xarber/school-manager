@@ -5,7 +5,8 @@ import { defaultData } from "@/data/datamanager";
 
 export default function welcomeScreen() {
     let appDebugData = useAsyncData(KEYS.debugData, defaultData.debugData);
-    appDebugData.data.firstLaunch = true; // Temporarily hide setup screen
+    appDebugData.save({...appDebugData.data, lastLaunchDate: new Date().toString(), launchCount: appDebugData.data.launchCount + 1});
+    // appDebugData.data.firstLaunch = true; // Temporarily hide setup screen
     if (appDebugData.data.firstLaunch === true) return <Redirect href="/(tabs)" />;
 
     return (
