@@ -16,6 +16,7 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: { backgroundColor: theme.background },
+          tabBarHideOnKeyboard: true
         }}
       >
         <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color, size }) => (

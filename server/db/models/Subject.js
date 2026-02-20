@@ -1,0 +1,18 @@
+const { Schema, model, models } = require("mongoose");
+const { WeekScheduleSchema } = require("./ScheduleHour");
+
+const SubjectSchema = new Schema({
+    classid: {type: String, required: true},
+    subjectid: {type: String, required: true, unique: true},
+    name: {type: String, required: true},
+    teacher: {type: String, required: true},
+    schedule: {type: WeekScheduleSchema, required: true},
+    maxgrade: {type: Number, required: true},
+    gradeType: {type: String, required: true, enum: ['letter', 'percentage', 'points'], default: 'percentage'},
+    homework: [{type: Schema.Types.ObjectId, ref: 'Homework'}],
+    lessons: [{type: Schema.Types.ObjectId, ref: 'Lesson'}],
+});
+
+const Subject = models.Subject || model('Subject', SubjectSchema);
+
+module.exports = { Subject };

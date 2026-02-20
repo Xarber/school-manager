@@ -4,9 +4,22 @@ import { useEffect, useState } from 'react';
 const defaultDebugData = {
     firstLaunch: false as boolean,
     firstLaunchDate: "" as string,
-    lastLaunchDate: "" as string
+    lastLaunchDate: "" as string,
+    launchCount: 0 as number
 }
 type DebugData = typeof defaultDebugData;
+
+const defaultAccountData = {
+    username: "" as string,
+    token: "" as string,
+    refreshToken: "" as string,
+    idToken: "" as string,
+    expiresAt: 0 as number,
+    pushToken: null as string | null,
+    locked: false as boolean,
+    active: false as boolean
+};
+type AccountData = typeof defaultAccountData;
 
 const defaultUserInfo = {
     userid: '' as string,
@@ -79,8 +92,9 @@ type SubjectData = typeof defaultSubjectData;
 
 const defaultGradeData = {
     title: '' as string,
-    type: '' as 'oral' | 'written' | 'homework' | 'project' | 'other',
-    grade: 0 as number | string,
+    type: 'other' as 'oral' | 'written' | 'homework' | 'project' | 'other',
+    grade: 0 as number,
+    gradeTitle: undefined as string | undefined,
     classid: '' as string,
     subjectid: '' as string,
     homeworkid: undefined as string | undefined,
@@ -220,6 +234,7 @@ export function useAllAsyncData<T>(key: string, defaultValue: T) {
 
 export const KEYS = {
     debugData: '@app:debugData',
+    accountData: '@app:accountData',
     userSettings: '@app:userSettings',
     userData: '@app:userData',
 
@@ -234,7 +249,7 @@ export const KEYS = {
 
     comunicationData: '@app:comunicationData',                       // `@app:comunicationData:${classid}:${subjectid|0}:${comunicationid}`
 } as const;
-export type { UserSettings, UserData, ClassData, UserInfo, SubjectData, GradeData, HomeworkData, LessonData, ComunicationData, ScheduleHour, MaterialData, DebugData };
+export type { UserSettings, UserData, ClassData, UserInfo, SubjectData, GradeData, HomeworkData, LessonData, ComunicationData, ScheduleHour, MaterialData, DebugData, AccountData };
 export const defaultData = {
     userSettings: defaultUserSettings,
     userData: defaultUserData,
@@ -247,5 +262,6 @@ export const defaultData = {
     comunicationData: defaultComunicationData,
     materialData: defaultMaterialData,
     scheduleHour: defaultScheduleHour,
-    debugData: defaultDebugData
+    debugData: defaultDebugData,
+    accountData: defaultAccountData
 }
