@@ -6,7 +6,7 @@ const MaterialSchema = new Schema({
     subjectid: {type: String, required: false},
     title: {type: String, required: true},
     description: {type: String, required: true},
-    type: {type: String, required: true, enum: ['file', 'link'], default: 'file'},
+    type: {type: String, required: false, enum: ['file', 'link'], default: 'file'},
     url: {type: String, required: true},
     addedAt: {type: String, required: true},
 });

@@ -11,8 +11,8 @@ const LessonSchema = new Schema({
     teacher: {type: Schema.Types.ObjectId, ref: 'User'},
     room: {type: String, required: false},
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
-    scheduled: {type: Boolean, required: true, default: false},
-    isExam: {type: Boolean, required: true, default: false},
+    scheduled: {type: Boolean, required: false, default: false},
+    isExam: {type: Boolean, required: false, default: false},
     addedAt: {type: String, required: true},
 });
 

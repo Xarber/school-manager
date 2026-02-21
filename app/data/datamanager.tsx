@@ -249,6 +249,31 @@ export const KEYS = {
 
     comunicationData: '@app:comunicationData',                       // `@app:comunicationData:${classid}:${subjectid|0}:${comunicationid}`
 } as const;
+
+export const DBKEYS = {
+    db: 'http://192.168.1.176:3000',
+    dbUpdate: '/update',
+
+    authenticate: '/api/auth/send',
+    authenticateOtp: '/api/auth/verify',
+
+    debugData: '/api/debug',
+    accountData: '/api/auth/me',
+    userSettings: '/api/users',
+    userData: '/api/users',
+
+    classData: '/api/classes',                                       // `@app:classData:${classid}`
+    subjectData: '/api/classes/subjects',                            // `@app:subjectData:${classid}:${subjectid}`
+
+    gradeData: '/api/classes/grades',                                // `@app:gradeData:${classid}:${subjectid}:${homeworkid|0}:${gradeid}`
+    homeworkData: '/api/classes/homework',                           // `@app:homeworkData:${classid}:${subjectid}:${homeworkid}`,
+
+    lessonData: '/api/classes/lessons',                              // `@app:lessonData:${classid}:${subjectid}:${lessonid}`
+    materialData: '/api/classes/materials',                          // `@app:materialData:${classid}:${subjectid|0}:${materialid}`
+
+    comunicationData: '/api/classes/comunications',                  // `@app:comunicationData:${classid}:${subjectid|0}:${comunicationid}`
+} as const;
+
 export type { UserSettings, UserData, ClassData, UserInfo, SubjectData, GradeData, HomeworkData, LessonData, ComunicationData, ScheduleHour, MaterialData, DebugData, AccountData };
 export const defaultData = {
     userSettings: defaultUserSettings,

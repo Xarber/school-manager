@@ -3,7 +3,7 @@ const { Schema, model, models } = require("mongoose");
 const GradeSchema = new Schema({
     gradeid: {type: String, required: true, unique: true},
     title: {type: String, required: true},
-    type: {type: String, required: true, enum: ['oral', 'written', 'homework', 'project', 'other'], default: 'other'},
+    type: {type: String, required: false, enum: ['oral', 'written', 'homework', 'project', 'other'], default: 'other'},
     grade: {type: Number, required: true},
     gradeTitle: {type: String, required: false},
     classid: {type: String, required: true},

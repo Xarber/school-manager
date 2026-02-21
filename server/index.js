@@ -18,10 +18,10 @@ mongoose.connect(process.env.MONGODB_URI);
 
 const app = express();
 app.use(express.json());
-app.use(auth);
-
-app.use('/api/users', userRoutes);  // Mount routes
 app.use('/api/auth', authRoutes);
+
+app.use(auth);
+app.use('/api/users', userRoutes);  // Mount routes
 /*
 app.use('/api/debug', debugRoutes);
 

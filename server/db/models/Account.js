@@ -8,8 +8,8 @@ const AccountSchema = new Schema({
     idToken: {type: String, required: true},
     expiresAt: {type: Number, required: true},
     pushToken: {type: String, required: false},
-    locked: {type: Boolean, required: true, default: false},
-    active: {type: Boolean, required: true, default: true},
+    locked: {type: Boolean, required: false, default: false},
+    active: {type: Boolean, required: false, default: true},
 });
 
 const Account = models.Account || model('Account', AccountSchema);

@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
-import useAsyncData, { KEYS, defaultData } from "@/data/datamanager";
+import useAsyncData, { DBKEYS, KEYS, defaultData } from "@/data/datamanager";
 import { KeyboardShift } from "@/components/keyboardShift";
 
 export function validateEmail(email: string) {
@@ -22,6 +22,86 @@ export function validateEmail(email: string) {
       .match(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       );
+}
+
+async function sendOtp(email: string, setotpsent: Function) {
+
+    const status = await fetch(DBKEYS.db + DBKEYS.authenticate, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+    })
+    .then(response => {
+        return response.json()
+    });
+
+    if (status.success) {
+        setotpsent(true);
+    } else {
+        Alert.alert("Failed to send OTP code", status.message);
+    }
+}
+
+async function verifyOtp(email: string, otpcode: string, reset: Function) {
+
+    const status = await fetch(DBKEYS.db + DBKEYS.authenticateOtp, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, code: otpcode })
+    })
+    .then(response => {
+        return response.json()
+    });
+
+    if (status.success) {
+        return status;
+    } else {
+        switch (status.error) {
+            case "Invalid or expired code":
+                Alert.alert("Invalid OTP code");
+                reset();
+                break;
+            case "Login failed":
+                Alert.alert("Error", "Unknown error. Please try again later.");
+                break;
+            default:
+                Alert.alert("Failed to verify OTP code", (status.message || status.error));
+                break;
+        }
+    }
+}
+
+async function updateUser(name: string, surname: string, token: string) {
+    const status = await fetch(DBKEYS.db + DBKEYS.accountData + DBKEYS.dbUpdate, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ name, surname })
+    })
+    .then(response => {
+        return response.json()
+    });
+    return status;
+}
+
+async function getUserData(token: string) {
+    const status = await fetch(DBKEYS.db + DBKEYS.accountData, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        return response.json()
+    });
+    return status;
 }
 
 function loginPage() {
@@ -34,6 +114,13 @@ function loginPage() {
     const [email, setEmail] = useState("");
     const [otpcode, setOtpcode] = useState("");
     const [otpsent, setOtpsent] = useState(false);
+
+    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
+
+    const reset = () => {
+        setOtpsent(false);
+        setOtpcode("");
+    }
 
     return (
         <SafeAreaView
@@ -55,11 +142,7 @@ function loginPage() {
                         <View style={welcomeStyles.bottomViewBodyForm}>
                             <View style={welcomeStyles.bottomViewBodyFormField}>
                                 <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Email Address</Text>
-                                <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{
-                                    setOtpsent(false);
-                                    setOtpcode("");
-                                    setEmail(text);
-                                }} placeholder="Email" />
+                                <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{reset(); setEmail(text);}} placeholder="Email" />
                             </View>
                             <View style={!otpsent ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
                                 <Text style={welcomeStyles.bottomViewBodyFormFieldText}>OTP Code</Text>
@@ -72,13 +155,19 @@ function loginPage() {
                     <View style={welcomeStyles.actions}>
                         <TouchableOpacity disabled={!validateEmail(email)} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                             if (!otpsent) {
-                                setOtpsent(true);
+                                sendOtp(email, setOtpsent);
                             } else {
-                                let isNewUser = true;
-                                //todo: Validation logic
-                                //todo: End validation logic
-                                if (isNewUser) router.replace("/welcome/account/signup");
-                                else router.replace("/welcome/account/loggedin");
+                                verifyOtp(email, otpcode, reset).then(status => {
+                                    if (!status.success) return;
+                                    accountData.save({
+                                        ...accountData.data,
+                                        username: email,
+                                        token: status.token
+                                    }).then(() => {
+                                        if (status.isNewUser) router.replace("/welcome/account/signup");
+                                        else router.replace("/welcome/account/loggedin");
+                                    });
+                                });
                             }
                         }}>
                             <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
@@ -101,6 +190,7 @@ function signupPage() {
     const [surname, setSurname] = useState("");
 
     const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
 
     return (
         <SafeAreaView
@@ -145,8 +235,11 @@ function signupPage() {
                                 {
                                     text: "Yes",
                                     onPress: () => {
-                                        userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}});
-                                        router.replace("/welcome/account/loggedin");
+                                        updateUser(name, surname, accountData.data.token).then(status => {
+                                            if (!status.success) return;
+                                            userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}});
+                                            router.replace("/welcome/account/loggedin");
+                                        });
                                     }
                                 },
                             ]);
@@ -171,7 +264,12 @@ function loggedinPage() {
     const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
     const userData = useAsyncData(KEYS.userData, defaultData.userData);
 
-    //todo: Download user data from server
+    getUserData(accountData.data.token).then(r=>{
+        if (!r.success) return;
+        userData.save({...userData.data, name: `${r.user.name} ${r.user.surname}`, userInfo: {...userData.data.userInfo, name: r.user.name, surname: r.surname}}).then(()=>{
+            userData.load();
+        });
+    });
 
     return (
         <SafeAreaView
