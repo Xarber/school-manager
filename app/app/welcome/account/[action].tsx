@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
-import useAsyncData, { DBKEYS, KEYS, defaultData } from "@/data/datamanager";
+import useAsyncData, { DBKEYS, KEYS, defaultData, useDBdata } from "@/data/datamanager";
 import { KeyboardShift } from "@/components/keyboardShift";
 
 export function validateEmail(email: string) {
@@ -73,35 +73,6 @@ async function verifyOtp(email: string, otpcode: string, reset: Function) {
                 break;
         }
     }
-}
-
-async function updateUser(name: string, surname: string, token: string) {
-    const status = await fetch(DBKEYS.db + DBKEYS.accountData + DBKEYS.dbUpdate, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify({ name, surname })
-    })
-    .then(response => {
-        return response.json()
-    });
-    return status;
-}
-
-async function getUserData(token: string) {
-    const status = await fetch(DBKEYS.db + DBKEYS.accountData, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token
-        }
-    })
-    .then(response => {
-        return response.json()
-    });
-    return status;
 }
 
 function loginPage() {
@@ -190,7 +161,8 @@ function signupPage() {
     const [surname, setSurname] = useState("");
 
     const userData = useAsyncData(KEYS.userData, defaultData.userData);
-    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
+
+    const dbUserData = useDBdata(DBKEYS.accountData);
 
     return (
         <SafeAreaView
@@ -235,8 +207,7 @@ function signupPage() {
                                 {
                                     text: "Yes",
                                     onPress: () => {
-                                        updateUser(name, surname, accountData.data.token).then(status => {
-                                            if (!status.success) return;
+                                        dbUserData.save({name, surname}).then(() => {
                                             userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}});
                                             router.replace("/welcome/account/loggedin");
                                         });
@@ -264,12 +235,13 @@ function loggedinPage() {
     const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
     const userData = useAsyncData(KEYS.userData, defaultData.userData);
 
-    getUserData(accountData.data.token).then(r=>{
-        if (!r.success) return;
-        userData.save({...userData.data, name: `${r.user.name} ${r.user.surname}`, userInfo: {...userData.data.userInfo, name: r.user.name, surname: r.surname}}).then(()=>{
+    const dbUserData = useDBdata(DBKEYS.accountData);
+
+    if (!dbUserData.loading && !dbUserData.error) {
+        userData.save({...userData.data, name: `${dbUserData.data.name} ${dbUserData.data.surname}`, userInfo: {...userData.data.userInfo, name: dbUserData.data.name, surname: dbUserData.data.surname}}).then(()=>{
             userData.load();
         });
-    });
+    }
 
     return (
         <SafeAreaView

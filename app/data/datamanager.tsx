@@ -232,6 +232,66 @@ export function useAllAsyncData<T>(key: string, defaultValue: T) {
     return { data, loading, error, load: loadAll, save: saveAll };
 };
 
+export function useDBdata(key: string) {
+    const [data, setData]: any = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const load = async () => {
+        const userToken = JSON.parse((await AsyncStorage.getItem(KEYS.accountData)) ?? "").token;
+        if (!userToken) return setError("Save failed: Not logged in");
+        try {
+            setLoading(true);
+            const stored = await fetch(DBKEYS.db + key, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + userToken
+                }
+            })
+            .then(response => {
+                if (response.ok) return response.json();
+                else throw new Error(response.statusText);
+            });
+            console.log(stored);
+            setData(stored.data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Load failed');
+            setData({});
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const save = async (newValue: Object) => {
+        const userToken = JSON.parse((await AsyncStorage.getItem(KEYS.accountData)) ?? "").token;
+        if (!userToken) return setError("Save failed: Not logged in");
+        try {
+            const updated = await fetch(DBKEYS.db + key + DBKEYS.dbUpdate, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + userToken
+                },
+                body: JSON.stringify(newValue)
+            })
+            .then(response => {
+                if (response.ok) return response.json();
+                else throw new Error(response.statusText);
+            });
+            setData(updated.data);
+        } catch (err) {
+            setError('Save failed');
+        }
+    };
+
+    useEffect(() => {
+        load();
+    }, [key]);
+
+    return { data, loading, error, load, save };
+};
+
 export const KEYS = {
     debugData: '@app:debugData',
     accountData: '@app:accountData',
