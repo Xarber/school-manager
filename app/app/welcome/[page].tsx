@@ -278,7 +278,11 @@ function completePage() {
     const image = require("@/assets/images/welcome.png");
 
     const appDebugData = useAsyncData(KEYS.debugData, defaultData.debugData);
-    appDebugData.save({...appDebugData.data, firstLaunch: true, firstLaunchDate: new Date().toString()});
+    if (appDebugData.loading === false && appDebugData.data.firstLaunch === false) {
+        appDebugData.save({...appDebugData.data, firstLaunch: true, firstLaunchDate: new Date().toString()}).then(() => {
+            appDebugData.load();
+        });
+    }
 
     return (
         <SafeAreaView
