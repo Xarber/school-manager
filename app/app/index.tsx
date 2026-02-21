@@ -1,15 +1,29 @@
 import { Redirect } from "expo-router";
+import { View } from "react-native";
 import useAsyncData from "@/data/datamanager";
 import { KEYS } from "@/data/datamanager";
 import { defaultData } from "@/data/datamanager";
+import { useEffect } from "react";
 
 export default function welcomeScreen() {
     let appDebugData = useAsyncData(KEYS.debugData, defaultData.debugData);
-    appDebugData.save({...appDebugData.data, lastLaunchDate: new Date().toString(), launchCount: appDebugData.data.launchCount + 1});
+    if (appDebugData.loading === false) appDebugData.save({...appDebugData.data, lastLaunchDate: new Date().toString(), launchCount: appDebugData.data.launchCount + 1}).then(() => {
+        appDebugData.load();
+    });
+    
     // appDebugData.data.firstLaunch = true; // Temporarily hide setup screen
-    if (appDebugData.data.firstLaunch === true) return <Redirect href="/(tabs)" />;
 
     return (
-        <Redirect href="/welcome/start" />
+        <View>
+            {
+                appDebugData.data.firstLaunch === false &&
+                appDebugData.loading === false &&
+                <Redirect href="/welcome/start" />
+            }
+            {
+                appDebugData.data.firstLaunch === true &&
+                <Redirect href="/welcome/(tabs)" />
+            }
+        </View>
     );
 }
