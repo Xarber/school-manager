@@ -135,7 +135,7 @@ router.post('/me', authenticateToken, async (req, res) => {
   try {
     const user = await UserInfo.findOne({ userid: req.user.userid }).lean();
     if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json({ success: true, user });
+    res.json({ success: true, data: user });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -153,7 +153,7 @@ router.post('/me/update', authenticateToken, async (req, res) => {
       { returnDocument: 'after' }
     ).lean();
     
-    res.json({ success: true, user: updatedUser });
+    res.json({ success: true, data: updatedUser });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
