@@ -13,37 +13,21 @@ const transporter = nodemailer.createTransport({
   host: 'smtp.mail.me.com',
   port: 587,
   secure: false,
+
   auth: {
     user: process.env.ICLOUD_NODEMAILER_USER,
     pass: process.env.ICLOUD_NODEMAILER_PWD
-  }
+  },
+  requireTLS: true
 });
 
 // Middleware to validate JWT token and attach req.user
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-  if (!token) return res.status(401).json({ error: 'Access token required' });
-
-  // Replace with your JWT verify logic (jwt.verify)
-  // For example: const jwt = require('jsonwebtoken'); const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  // Assume token contains { userid: 'user123' }
-  // For demo, mock decode (replace with real)
-  let decoded;
-  try {
-    // Mock: in real, jwt.verify(token, secret)
-    decoded = { userid: 'demo-userid-from-token' }; // Extract from actual token
-  } catch (err) {
-    return res.status(403).json({ error: 'Invalid token' });
-  }
-  req.user = decoded;
-  next();
-};
+const authenticateToken = require('../middleware/auth');
 
 const router = express.Router();
 
 // POST /api/auth/send - Send verification code
-router.post('/send', authenticateToken, async (req, res) => {
+router.post('/send', async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email required' });
@@ -81,16 +65,14 @@ router.post('/verify', async (req, res) => {
     const verification = await Verification.findOne({ email, code }).lean();
     if (!verification) return res.status(400).json({ error: 'Invalid or expired code' });
 
-    const { userid } = verification;
-
     // Check if user exists
     let isNewUser = false;
     let userInfo = await UserInfo.findOne({ email });
-    let userData = await UserData.findOne({ userid });
+    let userData = (userInfo && await UserData.findOne({ userid: userInfo.userid })) || null;
 
-    if (!userInfo || !userData) {
+    if (!userInfo) {
       // Create new user
-      const newUserid = userid || idGenerate(); // Ensure valid ID
+      const newUserid = idGenerate(); // Ensure valid ID
       isNewUser = true;
 
       userInfo = new UserInfo({
@@ -140,18 +122,40 @@ router.post('/verify', async (req, res) => {
     res.json({
       success: true,
       token,
-      isNewUser,
-      user: {
-        userid: userData.userid,
-        email: userInfo.email,
-        name: userInfo.name,
-        surname: userInfo.surname,
-        role: userInfo.role
-      }
+      isNewUser
     });
   } catch (error) {
     console.error('Verify error:', error);
     res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+router.post('/me', authenticateToken, async (req, res) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const user = await UserInfo.findOne({ userid: req.user.userid }).lean();
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/me/update', authenticateToken, async (req, res) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const user = await UserInfo.findOne({ userid: req.user.userid }).lean();
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const updatedUser = await UserInfo.findOneAndUpdate(
+      { userid: req.user.userid },
+      { $set: {...req.body, userid: req.user.userid} }, // Block updating userid
+      { returnDocument: 'after' }
+    ).lean();
+    
+    res.json({ success: true, user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

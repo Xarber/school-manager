@@ -8,7 +8,7 @@ const SubjectSchema = new Schema({
     teacher: {type: String, required: true},
     schedule: {type: WeekScheduleSchema, required: true},
     maxgrade: {type: Number, required: true},
-    gradeType: {type: String, required: true, enum: ['letter', 'percentage', 'points'], default: 'percentage'},
+    gradeType: {type: String, required: false, enum: ['letter', 'percentage', 'points'], default: 'percentage'},
     homework: [{type: Schema.Types.ObjectId, ref: 'Homework'}],
     lessons: [{type: Schema.Types.ObjectId, ref: 'Lesson'}],
 });

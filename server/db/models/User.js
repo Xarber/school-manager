@@ -1,4 +1,5 @@
 const { Schema, model, models } = require("mongoose");
+const { flattenDiagnosticMessageText } = require("typescript");
 
 const UserInfoSchema = new Schema({
     userid: {type: String, required: true, unique: true},
@@ -9,23 +10,23 @@ const UserInfoSchema = new Schema({
 });
 
 const UserSettingsSchema = new Schema({
-    theme: {type: String, required: true, enum: ['light', 'dark', 'system'], default: 'system'},
-    notifications: {type: Boolean, required: true, default: false},
-    language: {type: String, required: true, default: 'en'},
-    activeClassId: {type: String, required: true, default: ''},
+    theme: {type: String, required: false, enum: ['light', 'dark', 'system'], default: 'system'},
+    notifications: {type: Boolean, required: false, default: false},
+    language: {type: String, required: false, default: 'en'},
+    activeClassId: {type: String, required: false, default: ''},
     calendarSync: {
-        enabled: {type: Boolean, required: true, default: false},
-        homework: {type: Boolean, required: true, default: false},
-        schedule: {type: Boolean, required: true, default: false},
-        comunications: {type: Boolean, required: true, default: false},
-        exams: {type: Boolean, required: true, default: false},
+        enabled: {type: Boolean, required: false, default: false},
+        homework: {type: Boolean, required: false, default: false},
+        schedule: {type: Boolean, required: false, default: false},
+        comunications: {type: Boolean, required: false, default: false},
+        exams: {type: Boolean, required: false, default: false},
     },
 });
 
 const UserDataSchema = new Schema({
     userid: {type: String, required: true, unique: true},
-    name: {type: String, required: true},
-    birthday: {type: String, required: true, default: ""},
+    name: {type: String, required: false, default: ""},
+    birthday: {type: String, required: false, default: ""},
     userInfo: {type: Schema.Types.ObjectId, ref: 'User'},
     settings: {type: UserSettingsSchema, required: true},
     classes: [{type: Schema.Types.ObjectId, ref: 'Class'}],
