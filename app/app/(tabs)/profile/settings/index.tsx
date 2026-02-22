@@ -1,8 +1,9 @@
-import { View, Text } from "react-native";
+import { View, Text, Alert } from "react-native";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SettingsTab() {
     const theme = useTheme();
@@ -27,7 +28,7 @@ export default function SettingsTab() {
             ]} noItemsText="Settings" />
             <DashboardItem title="Data" items={[
                 { title: "Clear Data", onPress: () => {
-                    router.push("/profile/settings/cleardata");
+                    AsyncStorage.clear().then(()=>Alert.alert("Cleared"));
                 } },
             ]} noItemsText="Data" />
         </View>

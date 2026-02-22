@@ -5,7 +5,8 @@ import {
     Image,
     TextInput,
     ScrollView,
-    Alert
+    Alert,
+    ActivityIndicator
 } from "react-native";
 import { useState } from "react";
 import { useRouter, useLocalSearchParams, router, Redirect } from "expo-router";
@@ -24,7 +25,8 @@ export function validateEmail(email: string) {
       );
 }
 
-async function sendOtp(email: string, setotpsent: Function) {
+async function sendOtp(email: string, setotpsent: Function, setloading: Function) {
+    setloading(true);
 
     const status = await fetch(DBKEYS.db + DBKEYS.authenticate, {
         method: 'POST',
@@ -38,8 +40,10 @@ async function sendOtp(email: string, setotpsent: Function) {
     });
 
     if (status.success) {
+        setloading(false);
         setotpsent(true);
     } else {
+        setloading(false);
         Alert.alert("Failed to send OTP code", status.message);
     }
 }
@@ -87,9 +91,11 @@ function loginPage() {
     const [otpsent, setOtpsent] = useState(false);
 
     const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
+    const [loading, setLoading] = useState(false);
 
     const reset = () => {
         setOtpsent(false);
+        setLoading(false);
         setOtpcode("");
     }
 
@@ -124,11 +130,13 @@ function loginPage() {
                 </View>
                 <KeyboardShift extraPadding={120}>
                     <View style={welcomeStyles.actions}>
-                        <TouchableOpacity disabled={!validateEmail(email)} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
+                        <TouchableOpacity disabled={!validateEmail(email) || loading} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                             if (!otpsent) {
-                                sendOtp(email, setOtpsent);
+                                sendOtp(email, setOtpsent, setLoading);
                             } else {
+                                setLoading(true);
                                 verifyOtp(email, otpcode, reset).then(status => {
+                                    setLoading(false);
                                     if (!status.success) return;
                                     accountData.save({
                                         ...accountData.data,
@@ -141,7 +149,11 @@ function loginPage() {
                                 });
                             }
                         }}>
-                            <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                            {loading ? (
+                                <ActivityIndicator size="small" />
+                            ) : (
+                                <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                            )}
                         </TouchableOpacity>
                     </View>
                 </KeyboardShift>
@@ -159,6 +171,7 @@ function signupPage() {
 
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const userData = useAsyncData(KEYS.userData, defaultData.userData);
 
@@ -195,7 +208,7 @@ function signupPage() {
                 </View>
                 <KeyboardShift extraPadding={120}>
                     <View style={welcomeStyles.actions}>
-                        <TouchableOpacity disabled={!name || !surname} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
+                        <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                             Alert.alert("Is this correct?", `${name} ${surname}`, [
                                 {
                                     text: "No",
@@ -207,7 +220,9 @@ function signupPage() {
                                 {
                                     text: "Yes",
                                     onPress: () => {
+                                        setLoading(true);
                                         dbUserData.save({name, surname}).then(() => {
+                                            setLoading(false);
                                             userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}});
                                             router.replace("/welcome/account/loggedin");
                                         });
@@ -215,7 +230,11 @@ function signupPage() {
                                 },
                             ]);
                         }}>
-                            <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                            {loading ? (
+                                <ActivityIndicator size="small" />
+                            ) : (
+                                <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                            )}
                         </TouchableOpacity>
                     </View>
                 </KeyboardShift>
