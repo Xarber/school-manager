@@ -6,7 +6,7 @@
       "url": "https://u.expo.dev/41089c6c-2549-4047-827c-f4b5133ebbcf"
     },
     "runtimeVersion": {
-      "policy": "1.0.0"
+      "policy": "appVersion"
     },
     "version": "1.0.0",
     "orientation": "portrait",

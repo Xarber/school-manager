@@ -1,12 +1,14 @@
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 export async function registerForPushNotificationsAsync() {
-    if (!Device.isDevice) {
+    if (!Device.isDevice || Platform.OS === "web") {
         console.log('Must use physical device for push notifications');
         return null;
     }
+
+    const Notifications = await import("expo-notifications");
   
     // Get existing permission
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
