@@ -6,18 +6,31 @@
   "build": {
     "development": {
       "developmentClient": true,
+      "channel": "development",
       "distribution": "internal"
     },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {
-      "distribution": "store"
-    },
-    "simulator": {
+    "devSimulator": {
+      "developmentClient": true,
+      "channel": "development",
+      "distribution": "internal",
       "ios": {
         "simulator": true
       }
+    },
+    "simulator": {
+      "distribution": "internal",
+      "channel": "alpha",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "beta"
+    },
+    "production": {
+      "distribution": "store",
+      "channel": "release"
     }
   },
   "submit": {

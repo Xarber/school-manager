@@ -2,6 +2,12 @@
   "expo": {
     "name": "School Manager",
     "slug": "school-manager",
+    "updates": {
+      "url": "https://u.expo.dev/41089c6c-2549-4047-827c-f4b5133ebbcf"
+    },
+    "runtimeVersion": {
+      "policy": "1.0.0"
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/appicon/SchoolManager-universal-monochrome-1024x1024@1x.png",
