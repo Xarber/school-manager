@@ -292,6 +292,73 @@ export function useDBdata(key: string) {
     return { data, loading, error, load, save };
 };
 
+export function useAppDataSync(dbkey: string, key: string, defaultValue: any) {
+    const [data, setData]: any = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const load = async () => {
+        const userToken = JSON.parse((await AsyncStorage.getItem(KEYS.accountData)) ?? "").token;
+        try {
+            setLoading(true);
+            const localstored = await AsyncStorage.getItem(key);
+            if (!!userToken) {
+                const stored = await fetch(DBKEYS.db + dbkey, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userToken
+                    }
+                })
+                .then(response => {
+                    if (response.ok) return response.json();
+                    else throw new Error(response.statusText);
+                });
+                await AsyncStorage.setItem(key, JSON.stringify(stored.data));
+                setData(stored.data);
+            } else {
+                setData(localstored ? (JSON.parse(localstored) as any) : defaultValue);
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Load failed');
+            setData({});
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const save = async (newValue: Object) => {
+        const userToken = JSON.parse((await AsyncStorage.getItem(KEYS.accountData)) ?? "").token;
+        try {
+            let updated = { data: newValue };
+            if (!!userToken) {
+                updated = await fetch(DBKEYS.db + dbkey + DBKEYS.dbUpdate, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + userToken
+                    },
+                    body: JSON.stringify(newValue)
+                })
+                .then(response => {
+                    if (response.ok) return response.json();
+                    else throw new Error(response.statusText);
+                });
+            }
+            await AsyncStorage.setItem(key, JSON.stringify(updated.data));
+            setData(updated.data);
+        } catch (err) {
+            setError('Save failed');
+        }
+    };
+
+    useEffect(() => {
+        load();
+    }, [key]);
+
+    return { data, loading, error, load, save };
+}
+
 export const KEYS = {
     debugData: '@app:debugData',
     accountData: '@app:accountData',
