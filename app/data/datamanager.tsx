@@ -378,8 +378,11 @@ export const KEYS = {
 } as const;
 
 export const DBKEYS = {
-    db: 'http://192.168.1.176:3000',
+    db: 'http://100.94.102.4:3000',
     dbUpdate: '/update',
+    dbCreate: '/add',
+    dbDelete: '/delete',
+    dbGet: '/get',
 
     authenticate: '/api/auth/send',
     authenticateOtp: '/api/auth/verify',
