@@ -6,7 +6,7 @@ const UserInfoSchema = new Schema({
     name: {type: String, required: true},
     surname: {type: String, required: true},
     email: {type: String, required: true, unique: true},
-    role: {type: String, required: true, enum: ['student', 'teacher'], default: 'student'},
+    role: {type: String, required: false, enum: ['student', 'teacher'], default: 'student'},
 });
 
 const UserSettingsSchema = new Schema({
@@ -25,7 +25,7 @@ const UserSettingsSchema = new Schema({
 
 const UserDataSchema = new Schema({
     userid: {type: String, required: true, unique: true},
-    name: {type: String, required: false, default: ""},
+    name: {type: String, required: false, default: "User"},
     birthday: {type: String, required: false, default: ""},
     userInfo: {type: Schema.Types.ObjectId, ref: 'User'},
     settings: {type: UserSettingsSchema, required: true},

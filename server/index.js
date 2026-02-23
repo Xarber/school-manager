@@ -1,5 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
+const paths = require('./db/routes/paths.json');
+
 const auth = require("./db/middleware/auth");
 
 const userRoutes = require('./db/routes/users');
@@ -34,6 +37,6 @@ app.use('/api/classes/materials', materialsRoutes);
 app.use('/api/classes/subjects', subjectsRoutes);
 */
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+app.listen(paths.dbPort, () => {
+    console.log(`Server is running on port ${paths.dbPort}.`);
 });
