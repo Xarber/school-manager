@@ -7,6 +7,7 @@ const { UserInfo, UserData } = require('../models/User'); // Adjust path
 const dotenv = require("dotenv");
 const { uuidGenerate, idGenerate } = require('../idgenerator');
 const { Verification } = require('../models/Verification');
+const paths = require('./paths.json');
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -27,12 +28,12 @@ const authenticateToken = require('../middleware/auth');
 const router = express.Router();
 
 // POST /api/auth/send - Send verification code
-router.post('/send', async (req, res) => {
+router.post(paths.authenticate, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email required' });
 
-    const code = crypto.randomBytes(3).toString('hex').toUpperCase(); // 6-char hex code
+    const code = crypto.randomInt(100000, 999999).toString(); // 6-digit code
 
     // Delete old code if exists
     await Verification.deleteOne({ email });
@@ -45,7 +46,7 @@ router.post('/send', async (req, res) => {
       from: `"School Manager" <${process.env.ICLOUD_NODEMAILER_SENDFROM}>`,
       to: email,
       subject: 'Your Verification Code',
-      text: `Your verification code is: ${code}. It expires in 5 minutes.`
+      text: `Your verification code is: ${code}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -57,7 +58,7 @@ router.post('/send', async (req, res) => {
 });
 
 // POST /api/auth/verify - Check/verify code
-router.post('/verify', async (req, res) => {
+router.post(paths.authenticateOtp, async (req, res) => {
   try {
     const { code, email } = req.body;
     if (!code || !email) return res.status(400).json({ error: 'Code and email required' });
@@ -72,36 +73,21 @@ router.post('/verify', async (req, res) => {
 
     if (!userInfo) {
       // Create new user
-      const newUserid = idGenerate(); // Ensure valid ID
+      const newUserid = `user_${idGenerate()}`; // Ensure valid ID
       isNewUser = true;
 
       userInfo = new UserInfo({
         userid: newUserid,
         name: 'New', // Default; update later via profile
         surname: 'User',
-        email,
-        role: 'student'
+        email
       });
       await userInfo.save();
 
       userData = new UserData({
         userid: newUserid,
-        name: 'New User',
-        birthday: '',
         userInfo: userInfo._id,
-        settings: {
-          theme: 'system',
-          notifications: false,
-          language: 'en',
-          activeClassId: '',
-          calendarSync: {
-            enabled: false,
-            homework: false,
-            schedule: false,
-            comunications: false,
-            exams: false
-          }
-        },
+        settings: {},
         classes: [],
         grades: [],
         completedhomework: []
@@ -130,7 +116,7 @@ router.post('/verify', async (req, res) => {
   }
 });
 
-router.post('/me', authenticateToken, async (req, res) => {
+router.post(paths.dbGetMe, authenticateToken, async (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const user = await UserInfo.findOne({ userid: req.user.userid }).lean();
@@ -141,7 +127,7 @@ router.post('/me', authenticateToken, async (req, res) => {
   }
 });
 
-router.post('/me/update', authenticateToken, async (req, res) => {
+router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const user = await UserInfo.findOne({ userid: req.user.userid }).lean();

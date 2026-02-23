@@ -1,0 +1,11 @@
+{
+    "dbPort": 3000,
+    "dbUpdate": "/update",
+    "dbCreate": "/add",
+    "dbDelete": "/delete",
+    "dbGet": "/get",
+    "dbMe": "/me",
+
+    "authenticate": "/send",
+    "authenticateOtp": "/verify"
+}

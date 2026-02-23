@@ -3,9 +3,10 @@ const auth = require('../middleware/auth');
 const User = require('../models/User');
 const Class = require('../models/Class');
 const router = express.Router();
+const paths = require('./paths.json');
 
 // Load user data + classes (protected)
-router.get('/me', auth, async (req, res) => {
+router.get(paths.dbMe, auth, async (req, res) => {
   try {
     // req.user.userid from token—validated!
     const user = await User.findOne({ userid: req.user.userid })
