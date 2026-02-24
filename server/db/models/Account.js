@@ -7,7 +7,7 @@ const AccountSchema = new Schema({
     refreshToken: {type: String, required: true},
     idToken: {type: String, required: true},
     expiresAt: {type: Number, required: true},
-    pushToken: {type: String, required: false},
+    pushToken: [{type: String, required: false}],
     locked: {type: Boolean, required: false, default: false},
     active: {type: Boolean, required: false, default: true},
 });

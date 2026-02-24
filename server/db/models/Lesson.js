@@ -8,7 +8,7 @@ const LessonSchema = new Schema({
     description: {type: String, required: true},
     date: {type: String, required: true},
     time: {type: String, required: true},
-    teacher: {type: Schema.Types.ObjectId, ref: 'User'},
+    teacher: {type: Schema.Types.ObjectId, ref: 'UserInfo'},
     room: {type: String, required: false},
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
     scheduled: {type: Boolean, required: false, default: false},

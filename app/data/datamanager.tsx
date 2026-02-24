@@ -242,7 +242,7 @@ export function useDBdata(key: string) {
         if (!userToken) return setError("Save failed: Not logged in");
         try {
             setLoading(true);
-            const stored = await fetch(DBKEYS.db + key, {
+            const stored = await fetch(DBKEYS.db + key + DBKEYS.dbGet, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -253,7 +253,6 @@ export function useDBdata(key: string) {
                 if (response.ok) return response.json();
                 else throw new Error(response.statusText);
             });
-            console.log(stored);
             setData(stored.data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Load failed');
@@ -378,7 +377,7 @@ export const KEYS = {
 } as const;
 
 export const DBKEYS = {
-    db: 'http://schoolmanager-api.xcenter.it',
+    db: "http://192.168.1.176:3000", // 'https://schoolmanager-api.xcenter.it',
     dbUpdate: '/update',
     dbCreate: '/add',
     dbDelete: '/delete',

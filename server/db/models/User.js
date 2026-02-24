@@ -27,7 +27,7 @@ const UserDataSchema = new Schema({
     userid: {type: String, required: true, unique: true},
     name: {type: String, required: false, default: "User"},
     birthday: {type: String, required: false, default: ""},
-    userInfo: {type: Schema.Types.ObjectId, ref: 'User'},
+    userInfo: {type: Schema.Types.ObjectId, ref: 'UserInfo'},
     settings: {type: UserSettingsSchema, required: true},
     classes: [{type: Schema.Types.ObjectId, ref: 'Class'}],
     grades: [{type: Schema.Types.ObjectId, ref: 'Grade'}],
