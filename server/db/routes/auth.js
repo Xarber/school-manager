@@ -13,9 +13,9 @@ dotenv.config();
 
 let transporter;
 
-if (email_send_mode === 'resend') {
+if (process.env.EMAIL_SEND_MODE === 'resend') {
   transporter = new resend.Resend(process.env.RESEND_API_KEY);
-} else if (email_send_mode === 'nodemailer') {
+} else if (process.env.EMAIL_SEND_MODE === 'nodemailer') {
   transporter = nodemailer.createTransport({
     host: 'smtp.mail.me.com',
     port: 587,
