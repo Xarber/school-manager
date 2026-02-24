@@ -57,8 +57,8 @@ router.post(paths.authenticate, async (req, res) => {
       html: `<p>Your verification code is: <strong>${code}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p>`
     };
 
-    if (email_send_mode === 'resend') await transporter.emails.send(mailOptions);
-    if (email_send_mode === 'nodemailer') await transporter.sendMail(mailOptions);
+    if (process.env.EMAIL_SEND_MODE === 'resend') await transporter.emails.send(mailOptions);
+    if (process.env.EMAIL_SEND_MODE === 'nodemailer') await transporter.sendMail(mailOptions);
     
     res.json({ success: true, message: 'Verification code sent' });
   } catch (error) {
