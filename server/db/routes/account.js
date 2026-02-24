@@ -12,10 +12,8 @@ router.post(paths.dbGet, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     if (!user) return res.status(401).json({ error: 'User authentication required' });
 
-    const userData = await UserData.findOne({ userid: user.userid }).lean();
+    const userData = await UserData.findOne({ userid: user.userid }).populate('userInfo').lean();
     if (!userData) return res.status(404).json({ error: 'User data not found' });
-
-    userData.populate('userInfo');
 
     res.json({ success: true, data: userData });
   } catch (error) {

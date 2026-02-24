@@ -221,7 +221,7 @@ function signupPage() {
                                     text: "Yes",
                                     onPress: () => {
                                         setLoading(true);
-                                        dbUserData.save({name, surname}).then(() => {
+                                        dbUserData.save({name: `${name} ${surname}`, userInfo: {name, surname}}).then(() => {
                                             setLoading(false);
                                             userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}});
                                             router.replace("/welcome/account/loggedin");
@@ -257,7 +257,7 @@ function loggedinPage() {
     const dbUserData = useDBdata(DBKEYS.accountData);
 
     if (!dbUserData.loading && !dbUserData.error) {
-        userData.save({...userData.data, name: `${dbUserData.data.name} ${dbUserData.data.surname}`, userInfo: {...userData.data.userInfo, name: dbUserData.data.name, surname: dbUserData.data.surname}}).then(()=>{
+        userData.save({...userData.data, name: `${dbUserData.data.name}`, userInfo: {...userData.data.userInfo, name: dbUserData.data.userInfo.name, surname: dbUserData.data.userInfo.surname}}).then(()=>{
             userData.load();
         });
     }
