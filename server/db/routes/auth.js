@@ -1,5 +1,6 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+const resend = require("resend");
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken'); // npm i jsonwebtoken
@@ -10,17 +11,23 @@ const { Verification } = require('../models/Verification');
 const paths = require('./paths.json');
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.mail.me.com',
-  port: 587,
-  secure: false,
+let transporter;
 
-  auth: {
-    user: process.env.ICLOUD_NODEMAILER_USER,
-    pass: process.env.ICLOUD_NODEMAILER_PWD
-  },
-  requireTLS: true
-});
+if (email_send_mode === 'resend') {
+  transporter = new resend.Resend(process.env.RESEND_API_KEY);
+} else if (email_send_mode === 'nodemailer') {
+  transporter = nodemailer.createTransport({
+    host: 'smtp.mail.me.com',
+    port: 587,
+    secure: false,
+
+    auth: {
+      user: process.env.ICLOUD_NODEMAILER_USER,
+      pass: process.env.ICLOUD_NODEMAILER_PWD
+    },
+    requireTLS: true
+  });
+}
 
 // Middleware to validate JWT token and attach req.user
 const authenticateToken = require('../middleware/auth');
@@ -47,9 +54,12 @@ router.post(paths.authenticate, async (req, res) => {
       to: email,
       subject: 'Your Verification Code',
       text: `Your verification code is: ${code}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.`,
+      html: `<p>Your verification code is: <strong>${code}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p>`
     };
 
-    await transporter.sendMail(mailOptions);
+    if (email_send_mode === 'resend') await transporter.emails.send(mailOptions);
+    if (email_send_mode === 'nodemailer') await transporter.sendMail(mailOptions);
+    
     res.json({ success: true, message: 'Verification code sent' });
   } catch (error) {
     console.error('Send error:', error);
@@ -116,7 +126,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
   }
 });
 
-router.post(paths.dbGetMe, authenticateToken, async (req, res) => {
+router.post(paths.dbMe, authenticateToken, async (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const user = await UserInfo.findOne({ userid: req.user.userid }).lean();
@@ -133,13 +143,15 @@ router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => 
     const user = await UserInfo.findOne({ userid: req.user.userid }).lean();
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    const updatedUser = await UserInfo.findOneAndUpdate(
+    const { name, surname, email } = req.body;
+    
+
+    await UserInfo.updateOne(
       { userid: req.user.userid },
       { $set: {...req.body, userid: req.user.userid} }, // Block updating userid
-      { returnDocument: 'after' }
     ).lean();
     
-    res.json({ success: true, data: updatedUser });
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
