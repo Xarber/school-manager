@@ -6,6 +6,7 @@ const paths = require('./db/routes/paths.json');
 const auth = require("./db/middleware/auth");
 
 const userRoutes = require('./db/routes/users');
+const accountRoutes = require('./db/routes/account');
 const debugRoutes = require('./db/routes/debug');
 const authRoutes = require('./db/routes/auth');
 
@@ -24,7 +25,9 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 
 app.use(auth);
+app.use('/api/account', accountRoutes);  // todo: Delete account
 app.use('/api/users', userRoutes);  // Mount routes
+
 /*
 app.use('/api/debug', debugRoutes);
 

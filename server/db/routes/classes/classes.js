@@ -58,7 +58,7 @@ router.post(paths.dbCreate, async (req, res) => {
     });
     await newClass.save();
 
-    res.json({ success: true, classid: newClass.classid });
+    res.json({ success: true, data: newClass.classid });
   } catch (error) {
     console.error('Create class error:', error);
     res.status(500).json({ error: 'Failed to create class' });
@@ -72,7 +72,7 @@ router.post(paths.dbDelete, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID required' });  
 
-    const userData = await UserData.findOne({ userid: user._id });
+    const userData = await UserData.findOne({ userid: user.userid });
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete classes' });
 
@@ -92,14 +92,24 @@ router.post(paths.dbDelete, async (req, res) => {
 
 router.post(paths.dbUpdate, async (req, res) => {
   try {
-    const { classid, name, subject, teacherid } = req.body;
+    const user = req.user; // Assuming user is set by authentication middleware
+    const { classid, name, schedule, notes } = req.body;
+    if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
+
+    const userData = await UserData.findOne({ userid: user.userid });
+    if (!userData) return res.status(404).json({ error: 'User data not found' });
+    if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update classes' });
+
+    const classInfo = await Class.findOne({ classid });
+    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+    if (!classInfo.teachers.includes(user._id)) return res.status(403).json({ error: 'Only teachers can update classes' });
 
     // Update class (replace with actual Class model)
     const updateData = {};
     if (name) updateData.name = name;
-    if (subject) updateData.subject = subject;
-    if (teacherid) updateData.teacherid = teacherid;
+    if (schedule) updateData.schedule = schedule;
+    if (notes) updateData.notes = notes;
 
     await Class.updateOne({ classid }, { $set: updateData });
 
