@@ -1,5 +1,4 @@
 const express = require('express');
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const { Homework } = require("../../models/Homework");
 const { Subject } = require("../../models/Subject");
@@ -7,7 +6,6 @@ const { Class } = require("../../models/Class");
 const { UserInfo, UserData } = require('../../models/User');
 const paths = require('../paths.json');
 const { idGenerate } = require('../../idgenerator');
-dotenv.config();
 
 const router = express.Router();
 
@@ -47,6 +45,14 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create homework' });
 
+    const classInfo = await Class.findOne({ classid });
+    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+    if (!classInfo.teachers.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can create homework' });
+
+    const subjectInfo = await Subject.findOne({ subjectid, classid });
+    if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
+    if (!subjectInfo.teacher.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can create homework' });
+
     const { title, description, dueDate, points } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
 
@@ -61,6 +67,14 @@ router.post(paths.dbCreate, async (req, res) => {
         addedAt: new Date().toISOString(),
     });
     await newHomework.save();
+
+    //add homework to class
+    classInfo.homework.push(newHomework._id);
+    await classInfo.save();
+
+    //add homework to subject
+    subjectInfo.homework.push(newHomework._id);
+    await subjectInfo.save();
 
     res.json({ success: true, data: newHomework.homeworkid });
   } catch (error) {
@@ -83,7 +97,24 @@ router.post(paths.dbDelete, async (req, res) => {
     const homework = await Homework.findOne({ homeworkid });
     if (!homework) return res.status(404).json({ error: 'Homework not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete homework' });
+
+    const classInfo = await Class.findOne({ classid: homework.classid });
+    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+    if (!classInfo.teachers.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can delete homework' });
+
+    const subjectInfo = await Subject.findOne({ subjectid: homework.subjectid, classid: homework.classid });
+    if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
+    if (!subjectInfo.teacher.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can delete homework' });
+
+    // Remove homework from class
+    classInfo.homework = classInfo.homework.filter(hwId => hwId.toString() !== homework._id.toString());
+    await classInfo.save();
+
+    // Remove homework from subject
+    subjectInfo.homework = subjectInfo.homework.filter(hwId => hwId.toString() !== homework._id.toString());
+    await subjectInfo.save();
     
+    // Delete homework
     await Homework.deleteOne({ homeworkid });
 
     res.json({ success: true });

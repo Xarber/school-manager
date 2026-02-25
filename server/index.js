@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const paths = require('./db/routes/paths.json');
 
 const auth = require("./db/middleware/auth");
+const debugTest = require("./db/middleware/test");
 
 const userRoutes = require('./db/routes/users');
 const accountRoutes = require('./db/routes/account');
@@ -22,13 +23,14 @@ mongoose.connect(process.env.MONGODB_URI);
 
 const app = express();
 app.use(express.json());
+app.use(debugTest);  // Debug middleware for metrics and testing
 app.use('/api/auth', authRoutes);
 
 app.use(auth);
+
 app.use('/api/account', accountRoutes);  // todo: Delete account
 app.use('/api/users', userRoutes);  // Mount routes
 
-/*
 app.use('/api/debug', debugRoutes);
 
 app.use('/api/classes', classesRoutes);
@@ -38,7 +40,6 @@ app.use('/api/classes/homework', homeworkRoutes);
 app.use('/api/classes/lessons', lessonsRoutes);
 app.use('/api/classes/materials', materialsRoutes);
 app.use('/api/classes/subjects', subjectsRoutes);
-*/
 
 app.listen(paths.dbPort, () => {
     console.log(`Server is running on port ${paths.dbPort}.`);

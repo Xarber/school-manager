@@ -1,11 +1,9 @@
 const express = require('express');
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const { Lesson } = require("../../models/Lesson");
 const { UserInfo, UserData } = require('../../models/User');
 const paths = require('../paths.json');
 const { idGenerate } = require('../../idgenerator');
-dotenv.config();
 
 const router = express.Router();
 
@@ -45,6 +43,10 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create lessons' });
 
+    const subjectInfo = await Subject.findOne({ subjectid, classid });
+    if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
+    if (!subjectInfo.teacher.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers of this subject can create lessons' });
+
     const { title, description, date, time, room, isExam } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
 
@@ -63,6 +65,10 @@ router.post(paths.dbCreate, async (req, res) => {
         addedAt: new Date().toISOString(),
     });
     await newLesson.save();
+
+    //add lesson to subject
+    subjectInfo.lessons.push(newLesson._id);
+    await subjectInfo.save();
 
     res.json({ success: true, data: newLesson.lessonid });
   } catch (error) {
@@ -85,6 +91,14 @@ router.post(paths.dbDelete, async (req, res) => {
     const lesson = await Lesson.findOne({ lessonid });
     if (!lesson) return res.status(404).json({ error: 'Lesson not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete lessons' });
+
+    const subjectInfo = await Subject.findOne({ subjectid: lesson.subjectid, classid: lesson.classid });    
+    if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
+    if (!subjectInfo.teacher.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers of this subject can delete lessons' });
+    
+    //remove lesson from subject
+    subjectInfo.lessons = subjectInfo.lessons.filter(l => l.toString() !== lesson._id.toString());
+    await subjectInfo.save();
 
     await Lesson.deleteOne({ lessonid });
 

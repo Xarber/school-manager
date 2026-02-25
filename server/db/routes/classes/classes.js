@@ -1,11 +1,9 @@
 const express = require('express');
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const { UserInfo, UserData } = require('../../models/User');
 const { Class } = require('../../models/Class');
 const paths = require('../paths.json');
 const { idGenerate } = require('../../idgenerator');
-dotenv.config();
 
 const router = express.Router();
 
