@@ -9,5 +9,7 @@
 - Integrazione con X-Auth per classi multiple e gestione autonoma
 - App Store
 - Integrazione con siri/gemini (domani cosa c'è?) ecc
-- Controllo QR per verifica di appartenenza ad una scuola (OTP email istituzionale)
+- Controllo QR per verifica di appartenenza ad una scuola (OTP email istituzionale), il QR deve essere valido per 1 minuto e generato JIT.
+- Possibilmente aggiungere nuovo tipo di dati (istituto/scuola), per eventi come settimana dello studente ecc
 - Todo: change all userData.role to class.teachers.contains for security
+- Idea di documenti e modulistica e altre funzioni come un vero registro elettronico.

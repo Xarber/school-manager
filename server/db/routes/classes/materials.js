@@ -1,5 +1,4 @@
 const express = require('express');
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const { Material } = require("../../models/Material");
 const { Subject } = require("../../models/Subject");
@@ -7,7 +6,6 @@ const { Class } = require("../../models/Class");
 const { UserInfo, UserData } = require('../../models/User');
 const paths = require('../paths.json');
 const { idGenerate } = require('../../idgenerator');
-dotenv.config();
 
 const router = express.Router();
 
@@ -45,6 +43,17 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create materials' });
 
+    const classInfo = await Class.findOne({ classid });
+    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+    if (!classInfo.teachers.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can create materials' });
+
+    let subjectInfo = null;
+    if (subjectid) {
+      subjectInfo = await Subject.findOne({ subjectid, classid });
+      if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
+      if (!subjectInfo.teacher.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers of this subject can create materials' });
+    }
+
     const { title, description, type, url } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
     if (!description) return res.status(400).json({ error: 'Description is required' });
@@ -61,6 +70,14 @@ router.post(paths.dbCreate, async (req, res) => {
         addedAt: new Date().toISOString(),
     });
     await newMaterial.save();
+
+    if (subjectInfo) {
+      subjectInfo.materials.push(newMaterial._id);
+      await subjectInfo.save();
+    }
+
+    classInfo.materials.push(newMaterial._id);
+    await classInfo.save();
 
     res.json({ success: true, data: newMaterial.materialid });
   } catch (error) {
@@ -80,6 +97,25 @@ router.post(paths.dbDelete, async (req, res) => {
     const userInfo = await UserInfo.findOne({ userid: user.userid });
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete materials' });
+
+    const classInfo = await Class.findOne({ materials: materialid });
+    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+    if (!classInfo.teachers.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can delete materials' });
+
+    const subjectInfo = await Subject.findOne({ materials: materialid });
+    if (subjectInfo && !subjectInfo.teacher.includes(userInfo._id)) {
+      return res.status(403).json({ error: 'Only teachers of this subject can delete materials' });
+    }
+
+    //remove material from class
+    classInfo.materials = classInfo.materials.filter(m => m.toString() !== materialid);
+    await classInfo.save();
+    
+    //remove material from subject if exists
+    if (subjectInfo) {
+      subjectInfo.materials = subjectInfo.materials.filter(m => m.toString() !== materialid);
+      await subjectInfo.save();
+    }
 
     await Material.deleteOne({ materialid });
 
