@@ -9,3 +9,5 @@
 - Integrazione con X-Auth per classi multiple e gestione autonoma
 - App Store
 - Integrazione con siri/gemini (domani cosa c'è?) ecc
+- Controllo QR per verifica di appartenenza ad una scuola (OTP email istituzionale)
+- Todo: change all userData.role to class.teachers.contains for security

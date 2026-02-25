@@ -377,7 +377,7 @@ export const KEYS = {
 } as const;
 
 export const DBKEYS = {
-    db: "http://192.168.1.176:3000", // 'https://schoolmanager-api.xcenter.it',
+    db: 'https://schoolmanager-api.xcenter.it', // "http://192.168.1.176:3000", // ,
     dbUpdate: '/update',
     dbCreate: '/add',
     dbDelete: '/delete',
