@@ -19,7 +19,9 @@ const lessonsRoutes = require('./db/routes/classes/lessons');
 const materialsRoutes = require('./db/routes/classes/materials');
 const subjectsRoutes = require('./db/routes/classes/subjects');
 
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI).catch(err => {
+    console.error('MongoDB connection error:', err);
+});
 
 const app = express();
 app.use(express.json());
@@ -40,6 +42,11 @@ app.use('/api/classes/homework', homeworkRoutes);
 app.use('/api/classes/lessons', lessonsRoutes);
 app.use('/api/classes/materials', materialsRoutes);
 app.use('/api/classes/subjects', subjectsRoutes);
+
+// Invalid URL
+app.use((req, res) => {
+    res.status(404).json({ error: 'Invalid API endpoint' });
+});
 
 app.listen(paths.dbPort, () => {
     console.log(`Server is running on port ${paths.dbPort}.`);
