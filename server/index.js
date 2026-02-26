@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const paths = require('./db/routes/paths.json');
+const paths = require('./db/routes/paths.js');
 
 const auth = require("./db/middleware/auth");
 const debugTest = require("./db/middleware/test");

@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require("mongoose");
 const { Lesson } = require("../../models/Lesson");
 const { UserInfo, UserData } = require('../../models/User');
-const paths = require('../paths.json');
+const paths = require('../paths.js');
 const { idGenerate } = require('../../idgenerator');
 
 const router = express.Router();

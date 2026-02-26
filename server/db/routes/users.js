@@ -3,7 +3,7 @@ const auth = require('../middleware/auth');
 const User = require('../models/User');
 const Class = require('../models/Class');
 const router = express.Router();
-const paths = require('./paths.json');
+const paths = require('./paths.js');
 
 // Load user data + classes (protected)
 router.get(paths.dbMe, auth, async (req, res) => {
