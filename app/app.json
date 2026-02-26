@@ -27,7 +27,7 @@
         "backgroundColor": "#7088fa",
         "foregroundImage": "./assets/images/appicon/SchoolManager-android-foreground-1024x1024@1x.png",
         "backgroundImage": "./assets/images/appicon/SchoolManager-android-background-1024x1024@1x.png",
-        "monochromeImage": "./assets/images/appicon/SchoolManager-universal-monochrome-1024x1024@1x.png"
+        "monochromeImage": "./assets/images/appicon/SchoolManager-android-foreground-1024x1024@1x.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
