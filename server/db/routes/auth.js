@@ -5,11 +5,9 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken'); // npm i jsonwebtoken
 const { UserInfo, UserData } = require('../models/User'); // Adjust path
-const dotenv = require("dotenv");
 const { uuidGenerate, idGenerate } = require('../idgenerator');
 const { Verification } = require('../models/Verification');
-const paths = require('./paths.json');
-dotenv.config();
+const paths = require('./paths.js');
 
 let transporter;
 
