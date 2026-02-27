@@ -8,6 +8,7 @@ app/node_modules
 app/package-lock.json
 app/yarn.lock
 app/dist
+app/.expo/
 
 */node_modules
 node_modules
