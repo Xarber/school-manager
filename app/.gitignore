@@ -11,3 +11,7 @@ node_modules
 */.DS_Store
 dist
 .expo/
+
+# Remove prebuild directories for native projects
+android
+ios
