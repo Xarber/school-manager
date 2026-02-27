@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken'); // npm i jsonwebtoken
 const { UserInfo, UserData } = require('../models/User'); // Adjust path
+const { Account } = require('../models/Account');
 const { uuidGenerate, idGenerate } = require('../idgenerator');
 const { Verification } = require('../models/Verification');
 const paths = require('./paths.js');
@@ -101,6 +102,16 @@ router.post(paths.authenticateOtp, async (req, res) => {
         completedhomework: []
       });
       await userData.save();
+
+      // Create account data
+      const account = new Account({
+        userid: newUserid,
+        userData: userData._id,
+        pushToken: [],
+        locked: false,
+        active: true
+      });
+      await account.save();
     }
 
     // Delete used verification
