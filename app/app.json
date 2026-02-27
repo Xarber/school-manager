@@ -13,7 +13,6 @@
     "icon": "./assets/images/appicon/SchoolManager-universal-monochrome-1024x1024@1x.png",
     "scheme": "schoolmanager",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "icon": "./assets/images/appicon/SchoolManager.icon",
@@ -29,7 +28,6 @@
         "backgroundImage": "./assets/images/appicon/SchoolManager-android-background-1024x1024@1x.png",
         "monochromeImage": "./assets/images/appicon/SchoolManager-android-foreground-1024x1024@1x.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.xarber.schoolmanager"
     },
@@ -50,7 +48,11 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker",
+      "expo-font",
+      "expo-image",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

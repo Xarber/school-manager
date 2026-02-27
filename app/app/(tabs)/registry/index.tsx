@@ -7,6 +7,7 @@ import DashboardItem from "@/components/dashboardItem";
 import GradeGrid from "@/components/gradeGrid";
 import { useRouter } from "expo-router";
 import useAsyncData, { defaultData, KEYS } from "@/data/datamanager";
+import { Stack } from "expo-router";
 
 export default function RegistryTab() {
     const theme = useTheme();
@@ -19,33 +20,36 @@ export default function RegistryTab() {
     let registryPageData = {grades: userData.data.grades};
     
     return (
-        <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
-            <BlurView style={HomeScreenStyle.dashboardSectionHeader}>
-                <Text style={HomeScreenStyle.welcomeText}>Registry</Text>
-            </BlurView>
-            <View style={HomeScreenStyle.dashboard}>
-                <GradeGrid title="Your Grades" maxValue={10.1} items={registryPageData.grades} />
-                <ActionMenu title="Your Class" items={[
-                    { title: "Homework", onPress: () => {
-                        router.push("/registry/homework");
-                    } },
-                    { title: "Comunications", onPress: () => {
-                        router.push("/registry/comunications");
-                    } },
-                    { title: "Schedule", onPress: () => {
-                        router.push("/registry/schedule");
-                    } },
-                    { title: "Grades", onPress: () => {
-                        router.push("/registry/grades");
-                    } },
-                    { title: "Resources", onPress: () => {
-                        router.push("/registry/resources");
-                    } },
-                    { title: "Attendance", onPress: () => {
-                        router.push("/registry/attendance");
-                    } },
-                ]} />
-            </View>
-        </ScrollView>
+        <>
+            <Stack.Screen options={{ headerTitle: "Registry" }} />
+            <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
+                <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
+                    <Text style={HomeScreenStyle.welcomeText}>Registry</Text>
+                </BlurView>
+                <View style={HomeScreenStyle.dashboard}>
+                    <GradeGrid title="Your Grades" maxValue={10.1} items={registryPageData.grades} />
+                    <ActionMenu title="Your Class" items={[
+                        { title: "Homework", onPress: () => {
+                            router.push("/registry/homework");
+                        } },
+                        { title: "Comunications", onPress: () => {
+                            router.push("/registry/comunications");
+                        } },
+                        { title: "Schedule", onPress: () => {
+                            router.push("/registry/schedule");
+                        } },
+                        { title: "Grades", onPress: () => {
+                            router.push("/registry/grades");
+                        } },
+                        { title: "Resources", onPress: () => {
+                            router.push("/registry/resources");
+                        } },
+                        { title: "Attendance", onPress: () => {
+                            router.push("/registry/attendance");
+                        } },
+                    ]} />
+                </View>
+            </ScrollView>
+        </>
     );
 }

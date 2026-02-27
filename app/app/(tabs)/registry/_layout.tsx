@@ -3,7 +3,7 @@ import {Stack} from "expo-router";
 export default function RegistryLayout() {
     return (
         <Stack>
-            <Stack.Screen name="index" options={{ title: "Registry", headerShown: true,headerTransparent: true,headerTitle: "" }} />
+            <Stack.Screen name="index" options={{ title: "Registry" }} />
             <Stack.Screen name="grades" options={{ headerShown: true, title: "Grades" }} />
             <Stack.Screen name="exams" options={{ headerShown: true, title: "Exams" }} />
             <Stack.Screen name="resources" options={{ headerShown: true, title: "Resources" }} />
