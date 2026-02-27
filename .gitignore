@@ -5,8 +5,6 @@
 app/expo-env.d.ts
 # @end expo-cli
 app/node_modules
-app/package-lock.json
-app/yarn.lock
 app/dist
 app/.expo/
 
@@ -15,9 +13,5 @@ node_modules
 .DS_Store
 */.DS_Store
 
-package-lock.json
-yarn.lock
-
 server/node_modules
-server/package-lock.json
 server/.env
