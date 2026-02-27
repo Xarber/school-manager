@@ -3,8 +3,8 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { HomeworkData, UserData } from '@/data/datamanager';
-import { useHomeworkPageData } from '@/data/dataload';
+import { defaultData, HomeworkData, KEYS, UserData } from '@/data/datamanager';
+
 import useAsyncData, {useAllAsyncData} from '@/data/datamanager';
 
 function renderHomework(homework: HomeworkData[]) {
@@ -58,9 +58,19 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
         }));
     }
 
-    const homeworkPageData = useHomeworkPageData();
+    const userData = useAsyncData(KEYS.userData, defaultData.userData).data;
+    const activeClassId = userData.settings.activeClassId;
+    
+    const allClassHomework = useAllAsyncData(
+        `${KEYS.homeworkData}:${activeClassId}`, 
+        defaultData.homeworkData
+    );
+    
+    const homeworkPageData = {
+        homework: allClassHomework,
+        userdata: userData
+    }
     const homework = Object.values(homeworkPageData.homework.data) as HomeworkData[];
-    const userData = homeworkPageData.userdata.data;
 
     console.log(homeworkPageData);
     const filteredItems = homework.filter((item) => {

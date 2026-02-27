@@ -4,16 +4,52 @@ import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
 import UserGrades from "@/components/gradesComponent";
-import { useHomescreenPageData } from "@/data/dataload";
+
 import { useRouter } from "expo-router";
-import { KEYS } from "@/data/datamanager";
+import useAsyncData, { defaultData, KEYS, useAllAsyncData } from "@/data/datamanager";
 
 export default function HomeScreen() {
     const theme = useTheme();
     const router = useRouter();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
-    const homescreenPageData = useHomescreenPageData();
+    
+    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const activeClassId = userData.data.settings.activeClassId;
+    const classData = useAsyncData(`${KEYS.classData}:${activeClassId}`, defaultData.classData);
+    
+    const allClassHomework = useAllAsyncData(
+        `${KEYS.homeworkData}:${activeClassId}`, 
+        defaultData.homeworkData
+    );
+    const allClassLessons = useAllAsyncData(
+        `${KEYS.lessonData}:${activeClassId}`, 
+        defaultData.lessonData
+    );
+    const allClassSubjects = useAllAsyncData(
+        `${KEYS.subjectData}:${activeClassId}`, 
+        defaultData.subjectData
+    )
+    const exams = Object.values(allClassLessons.data).filter((lesson)=>{
+        const date = new Date(lesson.date + ' ' + lesson.time);
+        const now = new Date();
+        return (date > now) && (lesson.isExam);
+    });
+    const tomorrowDay = new Date(new Date().getTime() + 86400000).toLocaleDateString("en-GB", {
+        weekday: "long",
+    });
+
+    const tomorrow = classData.data.schedule[tomorrowDay];
+    
+    const homescreenPageData = {
+        homework: allClassHomework,
+        grades: userData.data.grades,
+        subjects: allClassSubjects,
+        tomorrowSchedule: tomorrow,
+        exams: exams,
+        userdata: userData
+    };
+    
     const today = new Date().toLocaleDateString("en-GB", {
         weekday: "long",
         day: "2-digit",
