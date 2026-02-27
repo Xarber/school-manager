@@ -8,7 +8,9 @@ const paths = {
     "dbMe": "/me",
 
     "authenticate": "/send",
-    "authenticateOtp": "/verify"
+    "authenticateOtp": "/verify",
+    "accountRegisterForPushNotifications": "/register-push",
+    "accountUnregisterForPushNotifications": "/unregister-push",
 };
 
 module.exports = paths;

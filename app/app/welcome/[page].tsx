@@ -116,48 +116,47 @@ function setNamePage() {
             style={welcomeStyles.container}
             edges={["bottom", "left", "right", "top"]}
         >
-            <ScrollView
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ flexGrow: 1 }}
-
-            >
-                <View style={welcomeStyles.topView}>
-                    <Image source={image} style={welcomeStyles.topViewImage} />
-                </View>
-                <View style={welcomeStyles.bottomView}>
-                    <View style={welcomeStyles.bottomViewHeader}>
-                        <Text style={welcomeStyles.bottomViewHeaderTitle}>Let's get to know each other!</Text>
+            <KeyboardShift extraPadding={-160}>
+                <ScrollView
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                >
+                    <View style={welcomeStyles.topView}>
+                        <Image source={image} style={welcomeStyles.topViewImage} />
                     </View>
-                    <View style={welcomeStyles.bottomViewBody}>
-                        <Text style={welcomeStyles.bottomViewBodyText}>What's your name?</Text>
-                        <TextInput style={welcomeStyles.bottomViewBodyInput} value={name} onChangeText={setName} placeholder="Name" />
+                    <View style={welcomeStyles.bottomView}>
+                        <View style={welcomeStyles.bottomViewHeader}>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>Let's get to know each other!</Text>
+                        </View>
+                        <View style={welcomeStyles.bottomViewBody}>
+                            <Text style={welcomeStyles.bottomViewBodyText}>What's your name?</Text>
+                            <TextInput style={welcomeStyles.bottomViewBodyInput} value={name} onChangeText={setName} placeholder="Name" />
+                        </View>
                     </View>
-                </View>
-                <KeyboardShift>
-                    <View style={welcomeStyles.actions}>
-                        <TouchableOpacity disabled={!name} style={!name ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
-                        onPress={() => {
-                            Alert.alert("Is this correct?", name, [
-                                {
-                                    text: "No",
-                                    onPress: () => {
-                                        setName("");
-                                    }
-                                },
-                                {
-                                    text: "Yes",
-                                    onPress: () => {
-                                        userData.save({...userData.data, userInfo: {...userData.data.userInfo, name}});
-                                        router.replace("/welcome/setsurname");
-                                    }
-                                },
-                            ]);
-                        }} >
-                            <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
-                        </TouchableOpacity>
-                    </View>
-                </KeyboardShift>
-            </ScrollView>
+                        <View style={welcomeStyles.actions}>
+                            <TouchableOpacity disabled={!name} style={!name ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
+                            onPress={() => {
+                                Alert.alert("Is this correct?", name, [
+                                    {
+                                        text: "No",
+                                        onPress: () => {
+                                            setName("");
+                                        }
+                                    },
+                                    {
+                                        text: "Yes",
+                                        onPress: () => {
+                                            userData.save({...userData.data, userInfo: {...userData.data.userInfo, name}});
+                                            router.replace("/welcome/setsurname");
+                                        }
+                                    },
+                                ]);
+                            }} >
+                                <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                            </TouchableOpacity>
+                        </View>
+                </ScrollView>
+            </KeyboardShift>
         </SafeAreaView>
     );
 }
@@ -181,47 +180,47 @@ function setSurnamePage() {
             style={welcomeStyles.container}
             edges={["bottom", "left", "right", "top"]}
         >
-            <ScrollView
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ flexGrow: 1 }}
-            >
-                <View style={welcomeStyles.topView}>
-                    <Image source={image} style={welcomeStyles.topViewImage} />
-                </View>
-                <View style={welcomeStyles.bottomView}>
-                    <View style={welcomeStyles.bottomViewHeader}>
-                        <Text style={welcomeStyles.bottomViewHeaderTitle}>Let's get to know each other!</Text>
+            <KeyboardShift extraPadding={-160}>
+                <ScrollView
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                >
+                    <View style={welcomeStyles.topView}>
+                        <Image source={image} style={welcomeStyles.topViewImage} />
                     </View>
-                    <View style={welcomeStyles.bottomViewBody}>
-                        <Text style={welcomeStyles.bottomViewBodyText}>What about your surname?</Text>
-                        <TextInput style={welcomeStyles.bottomViewBodyInput} value={surname} onChangeText={setSurname} placeholder="Surname" />
+                    <View style={welcomeStyles.bottomView}>
+                        <View style={welcomeStyles.bottomViewHeader}>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>Let's get to know each other!</Text>
+                        </View>
+                        <View style={welcomeStyles.bottomViewBody}>
+                            <Text style={welcomeStyles.bottomViewBodyText}>What about your surname?</Text>
+                            <TextInput style={welcomeStyles.bottomViewBodyInput} value={surname} onChangeText={setSurname} placeholder="Surname" />
+                        </View>
                     </View>
-                </View>
-                <KeyboardShift>
-                    <View style={welcomeStyles.actions}>
-                        <TouchableOpacity disabled={!surname} style={!surname ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
-                        onPress={() => {
-                            Alert.alert("Is this correct?", surname, [
-                                {
-                                    text: "No",
-                                    onPress: () => {
-                                        setSurname("");
-                                    }
-                                },
-                                {
-                                    text: "Yes",
-                                    onPress: () => {
-                                        userData.save({...userData.data, name: `${userData.data.userInfo.name} ${surname}`, userInfo: {...userData.data.userInfo, surname}});
-                                        router.replace("/welcome/notifications");
-                                    }
-                                },
-                            ]);
-                        }}>
-                            <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
-                        </TouchableOpacity>
-                    </View>
-                </KeyboardShift>
-            </ScrollView>
+                        <View style={welcomeStyles.actions}>
+                            <TouchableOpacity disabled={!surname} style={!surname ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
+                            onPress={() => {
+                                Alert.alert("Is this correct?", surname, [
+                                    {
+                                        text: "No",
+                                        onPress: () => {
+                                            setSurname("");
+                                        }
+                                    },
+                                    {
+                                        text: "Yes",
+                                        onPress: () => {
+                                            userData.save({...userData.data, name: `${userData.data.userInfo.name} ${surname}`, userInfo: {...userData.data.userInfo, surname}});
+                                            router.replace("/welcome/notifications");
+                                        }
+                                    },
+                                ]);
+                            }}>
+                                <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                            </TouchableOpacity>
+                        </View>
+                </ScrollView>
+            </KeyboardShift>
         </SafeAreaView>
     );
 }

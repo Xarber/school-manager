@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require("mongoose");
 const { UserInfo, UserData } = require('../models/User');
+const { Account } = require('../models/Account');
 const paths = require('./paths.js');
 
 const router = express.Router();
@@ -67,6 +68,52 @@ router.post(paths.dbUpdate, async (req, res) => {
     console.error('Update user error:', error);
     res.status(500).json({ error: 'Failed to update user' });
   }
+});
+
+// Account specific routes
+
+router.post(paths.accountRegisterForPushNotifications, async (req, res) => {
+    try {
+        const user = req.user; // Assuming user is set by authentication middleware
+        if (!user) return res.status(401).json({ error: 'User authentication required' });
+
+        const { pushToken } = req.body;
+        if (!pushToken) return res.status(400).json({ error: 'Push token is required' });
+
+        const account = await Account.findOne({ userid: user.userid });
+        if (!account) return res.status(404).json({ error: 'Account not found' });
+
+        if (!account.pushToken.includes(pushToken)) {
+            account.pushToken.push(pushToken);
+            await account.save();
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Register push token error:', error);
+        res.status(500).json({ error: 'Failed to register push token' });
+    }
+});
+
+router.post(paths.accountUnregisterForPushNotifications, async (req, res) => {
+    try {
+        const user = req.user; // Assuming user is set by authentication middleware
+        if (!user) return res.status(401).json({ error: 'User authentication required' });
+
+        const { pushToken } = req.body;
+        if (!pushToken) return res.status(400).json({ error: 'Push token is required' });
+
+        const account = await Account.findOne({ userid: user.userid });
+        if (!account) return res.status(404).json({ error: 'Account not found' });
+
+        account.pushToken = account.pushToken.filter(token => token !== pushToken);
+        await account.save();
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Unregister push token error:', error);
+        res.status(500).json({ error: 'Failed to unregister push token' });
+    }
 });
 
 module.exports = router;

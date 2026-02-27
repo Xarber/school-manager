@@ -104,60 +104,60 @@ function loginPage() {
             style={welcomeStyles.container}
             edges={["bottom", "left", "right", "top"]}
         >
-            <ScrollView 
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ flexGrow: 1 }}
-            >
-                <View style={welcomeStyles.topView}>
-                </View>
-                <View style={welcomeStyles.bottomView}>
-                    <View style={welcomeStyles.bottomViewHeader}>
-                        <Text style={welcomeStyles.bottomViewHeaderTitle}>Hello, fellow user!</Text>
+            <KeyboardShift>
+                <ScrollView 
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                >
+                    <View style={welcomeStyles.topView}>
                     </View>
-                    <View style={welcomeStyles.bottomViewBody}>
-                        <Text style={welcomeStyles.bottomViewBodyText}>We'll send a verification code to log you in or create a new account.</Text>
-                        <View style={welcomeStyles.bottomViewBodyForm}>
-                            <View style={welcomeStyles.bottomViewBodyFormField}>
-                                <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Email Address</Text>
-                                <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{reset(); setEmail(text);}} placeholder="Email" />
-                            </View>
-                            <View style={!otpsent ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
-                                <Text style={welcomeStyles.bottomViewBodyFormFieldText}>OTP Code</Text>
-                                <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={otpcode} onChangeText={setOtpcode} placeholder="Password" />
+                    <View style={welcomeStyles.bottomView}>
+                        <View style={welcomeStyles.bottomViewHeader}>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>Hello, fellow user!</Text>
+                        </View>
+                        <View style={welcomeStyles.bottomViewBody}>
+                            <Text style={welcomeStyles.bottomViewBodyText}>We'll send a verification code to log you in or create a new account.</Text>
+                            <View style={welcomeStyles.bottomViewBodyForm}>
+                                <View style={welcomeStyles.bottomViewBodyFormField}>
+                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Email Address</Text>
+                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{reset(); setEmail(text);}} placeholder="Email" />
+                                </View>
+                                <View style={!otpsent ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
+                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>OTP Code</Text>
+                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={otpcode} onChangeText={setOtpcode} placeholder="Password" />
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
-                <KeyboardShift extraPadding={120}>
-                    <View style={welcomeStyles.actions}>
-                        <TouchableOpacity disabled={!validateEmail(email) || loading} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
-                            if (!otpsent) {
-                                sendOtp(email, setOtpsent, setLoading);
-                            } else {
-                                setLoading(true);
-                                verifyOtp(email, otpcode, reset).then(status => {
-                                    setLoading(false);
-                                    if (!status.success) return;
-                                    accountData.save({
-                                        ...accountData.data,
-                                        username: email,
-                                        token: status.token
-                                    }).then(() => {
-                                        if (status.isNewUser) router.replace("/welcome/account/signup");
-                                        else router.replace("/welcome/account/loggedin");
+                        <View style={welcomeStyles.actions}>
+                            <TouchableOpacity disabled={!validateEmail(email) || loading} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
+                                if (!otpsent) {
+                                    sendOtp(email, setOtpsent, setLoading);
+                                } else {
+                                    setLoading(true);
+                                    verifyOtp(email, otpcode, reset).then(status => {
+                                        setLoading(false);
+                                        if (!status.success) return;
+                                        accountData.save({
+                                            ...accountData.data,
+                                            username: email,
+                                            token: status.token
+                                        }).then(() => {
+                                            if (status.isNewUser) router.replace("/welcome/account/signup");
+                                            else router.replace("/welcome/account/loggedin");
+                                        });
                                     });
-                                });
-                            }
-                        }}>
-                            {loading ? (
-                                <ActivityIndicator size="small" />
-                            ) : (
-                                <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
-                            )}
-                        </TouchableOpacity>
-                    </View>
-                </KeyboardShift>
-            </ScrollView>
+                                }
+                            }}>
+                                {loading ? (
+                                    <ActivityIndicator size="small" />
+                                ) : (
+                                    <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                </ScrollView>
+            </KeyboardShift>
         </SafeAreaView>
     );
 }
@@ -182,63 +182,63 @@ function signupPage() {
             style={welcomeStyles.container}
             edges={["bottom", "left", "right", "top"]}
         >
-            <ScrollView 
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ flexGrow: 1 }}
-            >
-                <View style={welcomeStyles.topView}>
-                </View>
-                <View style={welcomeStyles.bottomView}>
-                    <View style={welcomeStyles.bottomViewHeader}>
-                        <Text style={welcomeStyles.bottomViewHeaderTitle}>Welcome!</Text>
+            <KeyboardShift>
+                <ScrollView 
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                >
+                    <View style={welcomeStyles.topView}>
                     </View>
-                    <View style={welcomeStyles.bottomViewBody}>
-                        <Text style={welcomeStyles.bottomViewBodyText}>Thank you for creating an account!{"\n"}What's your name?</Text>
-                        <View style={welcomeStyles.bottomViewBodyForm}>
-                            <View style={welcomeStyles.bottomViewBodyFormField}>
-                                <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Name</Text>
-                                <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={name} onChangeText={setName} placeholder="Name" />
-                            </View>
-                            <View style={welcomeStyles.bottomViewBodyFormField}>
-                                <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Surname</Text>
-                                <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={surname} onChangeText={setSurname} placeholder="Surname" />
+                    <View style={welcomeStyles.bottomView}>
+                        <View style={welcomeStyles.bottomViewHeader}>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>Welcome!</Text>
+                        </View>
+                        <View style={welcomeStyles.bottomViewBody}>
+                            <Text style={welcomeStyles.bottomViewBodyText}>Thank you for creating an account!{"\n"}What's your name?</Text>
+                            <View style={welcomeStyles.bottomViewBodyForm}>
+                                <View style={welcomeStyles.bottomViewBodyFormField}>
+                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Name</Text>
+                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={name} onChangeText={setName} placeholder="Name" />
+                                </View>
+                                <View style={welcomeStyles.bottomViewBodyFormField}>
+                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Surname</Text>
+                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={surname} onChangeText={setSurname} placeholder="Surname" />
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
-                <KeyboardShift extraPadding={120}>
-                    <View style={welcomeStyles.actions}>
-                        <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
-                            Alert.alert("Is this correct?", `${name} ${surname}`, [
-                                {
-                                    text: "No",
-                                    onPress: () => {
-                                        setName("");
-                                        setSurname("");
-                                    }
-                                },
-                                {
-                                    text: "Yes",
-                                    onPress: () => {
-                                        setLoading(true);
-                                        dbUserData.save({name: `${name} ${surname}`, userInfo: {name, surname}}).then(() => {
-                                            setLoading(false);
-                                            userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}});
-                                            router.replace("/welcome/account/loggedin");
-                                        });
-                                    }
-                                },
-                            ]);
-                        }}>
-                            {loading ? (
-                                <ActivityIndicator size="small" />
-                            ) : (
-                                <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
-                            )}
-                        </TouchableOpacity>
-                    </View>
-                </KeyboardShift>
-            </ScrollView>
+                        <View style={welcomeStyles.actions}>
+                            <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
+                                Alert.alert("Is this correct?", `${name} ${surname}`, [
+                                    {
+                                        text: "No",
+                                        onPress: () => {
+                                            setName("");
+                                            setSurname("");
+                                        }
+                                    },
+                                    {
+                                        text: "Yes",
+                                        onPress: () => {
+                                            setLoading(true);
+                                            dbUserData.save({name: `${name} ${surname}`, userInfo: {name, surname}}).then(() => {
+                                                setLoading(false);
+                                                userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}});
+                                                router.replace("/welcome/account/loggedin");
+                                            });
+                                        }
+                                    },
+                                ]);
+                            }}>
+                                {loading ? (
+                                    <ActivityIndicator size="small" />
+                                ) : (
+                                    <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                </ScrollView>
+            </KeyboardShift>
         </SafeAreaView>
     );
 }
