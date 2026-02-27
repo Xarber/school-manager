@@ -267,29 +267,35 @@ function loggedinPage() {
             style={welcomeStyles.container}
             edges={["bottom", "left", "right", "top"]}
         >
-            <ScrollView 
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ flexGrow: 1 }}
-            >
-                <View style={welcomeStyles.topView}>
-                    <Image style={welcomeStyles.topViewImage} source={image} />
+            {dbUserData.loading ? (
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <ActivityIndicator size="small" />
                 </View>
-                <View style={welcomeStyles.bottomView}>
-                    <View style={welcomeStyles.bottomViewHeader}>
-                        <Text style={welcomeStyles.bottomViewHeaderTitle}>{userData.data.name}</Text>
+            ) : (
+                <ScrollView 
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                >
+                    <View style={welcomeStyles.topView}>
+                        <Image style={welcomeStyles.topViewImage} source={image} />
                     </View>
-                    <View style={welcomeStyles.bottomViewBody}>
-                        <Text style={welcomeStyles.bottomViewBodyText}>You've successfully logged in!</Text>
+                    <View style={welcomeStyles.bottomView}>
+                        <View style={welcomeStyles.bottomViewHeader}>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>{userData.data.name}</Text>
+                        </View>
+                        <View style={welcomeStyles.bottomViewBody}>
+                            <Text style={welcomeStyles.bottomViewBodyText}>You've successfully logged in!</Text>
+                        </View>
                     </View>
-                </View>
-                <View style={welcomeStyles.actions}>
-                    <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => {
-                        accountData.save({...accountData.data, active: true}).then(()=>router.dismiss());
-                    }}>
-                        <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
+                    <View style={welcomeStyles.actions}>
+                        <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => {
+                            accountData.save({...accountData.data, active: true}).then(()=>router.dismiss());
+                        }}>
+                            <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            )}
         </SafeAreaView>
     );
 }

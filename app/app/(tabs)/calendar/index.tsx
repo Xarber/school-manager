@@ -7,7 +7,7 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 
-import { useCalendarPageData } from '@/data/dataload';
+import useAsyncData, { defaultData, KEYS, useAllAsyncData } from '@/data/datamanager';
 
 export default function CalendarScreen() {
     const theme = useTheme();
@@ -21,7 +21,28 @@ export default function CalendarScreen() {
     const [markedDates, setMarkedDates] = useState({});
     const [selectedDate, setSelectedDate] = useState(tomorrowStr);
 
-    const calendarPageData = useCalendarPageData();
+    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const activeClassId = userData.data.settings.activeClassId;
+    const classData = useAsyncData(`${KEYS.classData}:${activeClassId}`, defaultData.classData);
+    
+    const allClassHomework = useAllAsyncData(
+        `${KEYS.homeworkData}:${activeClassId}`, 
+        defaultData.homeworkData
+    );
+    const allClassLessons = useAllAsyncData(
+        `${KEYS.lessonData}:${activeClassId}`, 
+        defaultData.lessonData
+    );
+    const exams = Object.values(allClassLessons.data).filter((lesson)=>{
+        return (lesson.isExam);
+    });
+    
+    const calendarPageData = {
+        homework: allClassHomework,
+        lessons: allClassLessons,
+        exams: exams,
+        userdata: userData
+    };
 
     const loadMarkedDates = () => {
         // Load your events from storage/API

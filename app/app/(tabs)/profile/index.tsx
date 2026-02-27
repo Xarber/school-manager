@@ -70,7 +70,9 @@ export default function ProfileTab() {
                                 router.push(`/profile/class/${e.classid}`);
                             }
                         };
-                    })} />
+                    })} expand={()=>{
+                        router.push("/profile/class/all");
+                    }}/>
                 ) : null}
             </View>
         </ScrollView>
