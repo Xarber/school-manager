@@ -89,7 +89,8 @@ router.post(paths.authenticateOtp, async (req, res) => {
         userid: newUserid,
         name: 'New', // Default; update later via profile
         surname: 'User',
-        email
+        email,
+        addedAt: new Date().toISOString()
       });
       await userInfo.save();
 
@@ -99,7 +100,8 @@ router.post(paths.authenticateOtp, async (req, res) => {
         settings: {},
         classes: [],
         grades: [],
-        completedhomework: []
+        completedhomework: [],
+        addedAt: new Date().toISOString()
       });
       await userData.save();
 
@@ -109,7 +111,8 @@ router.post(paths.authenticateOtp, async (req, res) => {
         userData: userData._id,
         pushToken: [],
         locked: false,
-        active: true
+        active: true,
+        addedAt: new Date().toISOString()
       });
       await account.save();
     }

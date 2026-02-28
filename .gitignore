@@ -10,10 +10,5 @@ app/.expo/
 app/ios
 app/android
 
-*/node_modules
-node_modules
 .DS_Store
 */.DS_Store
-
-server/node_modules
-server/.env

@@ -13,6 +13,7 @@ const ClassSchema = new Schema({
     lessons: [{type: Schema.Types.ObjectId, ref: 'Lesson'}],
     subjects: [{type: Schema.Types.ObjectId, ref: 'Subject'}],
     notes: [String],
+    addedAt: {type: String, required: true},
 });
 
 const Class = models.Class || model('Class', ClassSchema);
