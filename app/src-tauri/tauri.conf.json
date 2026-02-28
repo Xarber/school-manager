@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "school-manager",
+  "productName": "School Manager",
   "version": "1.0.0",
   "identifier": "com.xcenter.schoolmanager",
   "build": {
