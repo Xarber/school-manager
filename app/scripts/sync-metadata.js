@@ -32,7 +32,7 @@ Tauri config
 const tauriConfigPath = projectRoot + "/src-tauri/tauri.conf.json";
 const tauriConfig = require(tauriConfigPath);
 
-tauriConfig.productName = pkg.name;
+tauriConfig.productName = pkg.appName;
 tauriConfig.version = pkg.version;
 
 tauriConfig.identifier =
