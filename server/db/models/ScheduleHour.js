@@ -9,7 +9,7 @@ const ScheduleHourSchema = new Schema({
 
 const WeekScheduleSchema = new Schema({
     day: {type: String, required: true},
-    hours: [{type: ScheduleHourSchema, required: true}],
+    hours: [{type: ScheduleHourSchema}],
 });
 
 //const ScheduleHour = models.ScheduleHour || model('ScheduleHour', ScheduleHourSchema);

@@ -43,18 +43,33 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create classes' });
 
+    const userData = await UserData.findOne({ userid: user.userid });
+    if (!userData) return res.status(404).json({ error: 'User data not found' });
+
     // Create new class (replace with actual Class model)
     const newClass = new Class({
       classid: `class_${idGenerate()}`,
       name,
       teachers: [userInfo._id], // Assuming user is the teacher creating the class
       students: [],
-      schedule: {},
+      schedule: {
+        "Monday": [],
+        "Tuesday": [],
+        "Wednesday": [],
+        "Thursday": [],
+        "Friday": [],
+        "Saturday": [],
+        "Sunday": [],
+      },
       comunications: [],
       subjects: [],
       notes: notes || [],
     });
     await newClass.save();
+
+    // Add class to user classes
+    userData.classes.push(newClass._id);
+    await userInfo.save();
 
     res.json({ success: true, data: newClass.classid });
   } catch (error) {
