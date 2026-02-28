@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "icon": "./assets/images/appicon/SchoolManager.icon",
-      "bundleIdentifier": "com.xarber.schoolmanager",
+      "bundleIdentifier": "com.xcenter.schoolmanager",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -30,7 +30,7 @@
         "monochromeImage": "./assets/images/appicon/SchoolManager-android-foreground-1024x1024@1x.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.xarber.schoolmanager"
+      "package": "com.xcenter.schoolmanager"
     },
     "web": {
       "output": "static",

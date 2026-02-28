@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "School Manager",
+  "productName": "school-manager",
   "version": "1.0.0",
-  "identifier": "com.xarber.schoolmanager",
+  "identifier": "com.xcenter.schoolmanager",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:8081",

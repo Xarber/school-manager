@@ -1,7 +1,11 @@
 {
   "name": "school-manager",
+  "appName": "School Manager",
+  "packageIdentifier": "com.xcenter.schoolmanager",
+  "description": "Manage your school activities easily, sync with your classmates & teachers.",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "author": "Xarber <xarber@xcenter.it>",
   "scheme": "school-manager",
   "scripts": {
     "start": "expo start",
@@ -10,7 +14,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "desktop": "cargo-tauri build",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "syncMetadata": "node ./scripts/sync-metadata.js"
   },
   "web": {
     "bundler": "metro"
