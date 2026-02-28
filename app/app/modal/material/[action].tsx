@@ -8,7 +8,7 @@ export default function ClassEdit() {
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={commonStyle.text}>This is the class edit screen.</Text>
+            <Text style={commonStyle.text}>This is the material edit screen.</Text>
         </View>
     );
 }

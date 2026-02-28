@@ -291,6 +291,25 @@ export function useDBdata(key: string) {
     return { data, loading, error, load, save };
 };
 
+export async function DBrequest(path: string, method: string, body: Object) {
+    const userToken = JSON.parse((await AsyncStorage.getItem(KEYS.accountData)) ?? "").token;
+    if (!userToken) return {error: "Save failed: Not logged in"};
+    console.log("DB request to: " + DBKEYS.db + path);
+    return fetch(DBKEYS.db + path, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userToken
+        },
+        body: JSON.stringify(body)
+    })
+    .then(response => {
+        console.log(response);
+        if (response.ok) return response.json();
+        return response;
+    });
+}
+
 export function useAppDataSync(dbkey: string, key: string, defaultValue: any) {
     const [data, setData]: any = useState({});
     const [loading, setLoading] = useState(true);

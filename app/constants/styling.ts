@@ -31,6 +31,12 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         width: "100%",
         alignItems: "center"
     },
+    button: {
+        backgroundColor: theme.primary,
+        padding: 10,
+        borderRadius: 10,
+        alignItems: "center"
+    },
 
     /* Dashboard Component */
     dashboardSection: {
@@ -294,6 +300,69 @@ const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
     },
 });
 
+const createModalStyles = (theme: Theme) => StyleSheet.create({
+    container: {
+        display: "flex",
+        flex: 1,
+        gap: 20,
+        padding: 20,
+    },
+
+    cardEdit: {
+        display: "flex",
+        gap: 15,
+    },
+    cardDetails: {
+        display: "flex",
+        gap: 10,
+        borderWidth: 1,
+        borderRadius: 15,
+        borderColor: theme.primary,
+        padding: 15,
+    },
+
+    cardEditField: {
+        display: "flex",
+        gap: 10
+    },
+    cardEditFieldText: {
+        color: theme.text,
+        fontSize: 18,
+        textAlign: "left"
+    },
+    cardEditFieldInput: {
+        width: "100%",
+        height: 50,
+        backgroundColor: theme.card,
+        borderRadius: 15,
+        color: theme.text,
+        textAlign: "left",
+        paddingLeft: 15,
+        paddingRight: 15
+    },
+
+    bottomActions: {
+        position: "absolute",
+        bottom: 40,
+        right: 40,
+        display: "flex",
+        flexDirection: "row",
+        gap: 10,
+        justifyContent: "flex-end"
+    },
+    bottomActionButton: {
+        backgroundColor: theme.primary,
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        borderRadius: 360,
+    },
+    bottomActionButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold"
+    }
+});
+
 export default {
     createCommonStyles,
     createHomeScreenStyles,
@@ -301,5 +370,6 @@ export default {
     createUserProfileStyles,
     createCalendarStyles,
     createRegistryStyles,
-    createWelcomescreenStyles
+    createWelcomescreenStyles,
+    createModalStyles
 }
