@@ -65,6 +65,7 @@ router.post(paths.dbCreate, async (req, res) => {
             ],
             maxgrade,
             gradeType,
+            addedAt: new Date().toISOString()
         });
         await newSubject.save();
 

@@ -34,7 +34,7 @@ router.post(paths.dbGet, async (req, res) => {
 
 router.post(paths.dbCreate, async (req, res) => {
   try {
-    const { name, notes } = req.body;
+    const { name, notes, description } = req.body;
     const user = req.user; // Assuming user is set by authentication middleware
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!name) return res.status(400).json({ error: 'Class name is required' });
@@ -45,6 +45,12 @@ router.post(paths.dbCreate, async (req, res) => {
 
     const userData = await UserData.findOne({ userid: user.userid });
     if (!userData) return res.status(404).json({ error: 'User data not found' });
+
+    if (!Array.isArray(notes)) {
+      if (typeof notes === "string") notes = [notes];
+      else notes = [];
+    }
+    if (description) notes.push(description);
 
     // Create new class (replace with actual Class model)
     const newClass = new Class({
@@ -63,7 +69,8 @@ router.post(paths.dbCreate, async (req, res) => {
       ],
       comunications: [],
       subjects: [],
-      notes: notes || [],
+      notes: notes,
+      addedAt: new Date().toISOString(),
     });
     await newClass.save();
 

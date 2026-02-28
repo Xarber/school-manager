@@ -76,7 +76,7 @@ function NewClass() {
                         setLoading
                     })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
                         {loading 
-                            ? <ActivityIndicator size="small" color={theme.primary} />
+                            ? <ActivityIndicator size="small" />
                             : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>Create</Text>
                         }
                     </TouchableOpacity>

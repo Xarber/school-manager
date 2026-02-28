@@ -12,6 +12,7 @@ const SubjectSchema = new Schema({
     homework: [{type: Schema.Types.ObjectId, ref: 'Homework'}],
     lessons: [{type: Schema.Types.ObjectId, ref: 'Lesson'}],
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
+    addedAt: {type: String, required: true},
 });
 
 const Subject = models.Subject || model('Subject', SubjectSchema);

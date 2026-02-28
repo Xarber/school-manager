@@ -6,10 +6,15 @@
 - Calcolo medie dei voti e voto necessario per raggiungere una media
 - Filtra per materie
 - Orario scolastico in day-vew
-- Integrazione con X-Auth per classi multiple e gestione autonoma
-- App Store
+- Migrare eventualmente ad X-Auth per single-account-experience (db per dati app, x-auth per token ed autenticazione)
+- App Store & Play store
 - Integrazione con siri/gemini (domani cosa c'è?) ecc
 - Controllo QR per verifica di appartenenza ad una scuola (OTP email istituzionale), il QR deve essere valido per 1 minuto e generato JIT.
 - Possibilmente aggiungere nuovo tipo di dati (istituto/scuola), per eventi come settimana dello studente ecc
-- Todo: change all userData.role to class.teachers.contains for security
+- OK? Todo: change all userData.role to class.teachers.contains for security
 - Idea di documenti e modulistica e altre funzioni come un vero registro elettronico.
+- Integrare BridgefySDK-react-native per consentire l'uso offline:
+  Quando offline, connettiti a utenti in prossimità, e cifra le richieste con private key dell'account salvata nel DB.
+  Quando si manda una richiesta (update/get), manda dati criptati e userid
+  Il server riceve la richiesta, e la decifra con la chiave dell'<userid>, se valida e dentro il msg criptato c'è token valido, allora eseguila.
+  Risultato = Utilizzo networkless stabile, sicuro ed affidabile.

@@ -9,6 +9,7 @@ const DebugSchema = new Schema({
     appVersion: {type: String, required: true},
     errorLogs: [{type: String}],
     performanceMetrics: [{type: Schema.Types.Mixed}],
+    addedAt: {type: String, required: true},
 });
 
 const Debug = models.Debug || model('Debug', DebugSchema);

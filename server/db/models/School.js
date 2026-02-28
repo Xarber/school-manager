@@ -25,6 +25,8 @@ const SchoolSchema = new Schema({
     students: [{type: Schema.Types.ObjectId, ref: 'UserInfo'}],
     teachers: [{type: Schema.Types.ObjectId, ref: 'UserInfo'}],
     admins: [{type: Schema.Types.ObjectId, ref: 'UserInfo'}],
+
+    addedAt: {type: String, required: true},
 });
 
 const School = models.School || model('School', SchoolSchema);

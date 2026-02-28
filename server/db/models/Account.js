@@ -6,6 +6,7 @@ const AccountSchema = new Schema({
     pushToken: [{type: String, required: false}],
     locked: {type: Boolean, required: false, default: false},
     active: {type: Boolean, required: false, default: true},
+    addedAt: {type: String, required: true},
 });
 
 const Account = models.Account || model('Account', AccountSchema);

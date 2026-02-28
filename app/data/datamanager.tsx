@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from "@react-native-community/netinfo";
 import { useEffect, useState } from 'react';
 
 const defaultDebugData = {
@@ -320,7 +321,8 @@ export function useAppDataSync(dbkey: string, key: string, defaultValue: any) {
         try {
             setLoading(true);
             const localstored = await AsyncStorage.getItem(key);
-            if (!!userToken) {
+            const netState = await NetInfo.fetch();
+            if (!!userToken && (netState.isConnected && netState.isInternetReachable)) {
                 const stored = await fetch(DBKEYS.db + dbkey, {
                     method: 'POST',
                     headers: {
@@ -349,7 +351,8 @@ export function useAppDataSync(dbkey: string, key: string, defaultValue: any) {
         const userToken = JSON.parse((await AsyncStorage.getItem(KEYS.accountData)) ?? "").token;
         try {
             let updated = { data: newValue };
-            if (!!userToken) {
+            const netState = await NetInfo.fetch();
+            if (!!userToken && (netState.isConnected && netState.isInternetReachable)) {
                 updated = await fetch(DBKEYS.db + dbkey + DBKEYS.dbUpdate, {
                     method: 'POST',
                     headers: {
