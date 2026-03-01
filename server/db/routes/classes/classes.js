@@ -54,7 +54,7 @@ router.post(paths.dbCreate, async (req, res) => {
 
     // Create new class (replace with actual Class model)
     const newClass = new Class({
-      classid: `class_${idGenerate()}`,
+      //classid: `class_${idGenerate()}`,
       name,
       teachers: [userInfo._id], // Assuming user is the teacher creating the class
       students: [],
@@ -79,7 +79,7 @@ router.post(paths.dbCreate, async (req, res) => {
     userData.classes.push(newClass._id);
     await userInfo.save();
 
-    res.json({ success: true, data: newClass.classid });
+    res.json({ success: true, data: newClass._id });
   } catch (error) {
     console.error('Create class error:', error);
     res.status(500).json({ error: 'Failed to create class' });

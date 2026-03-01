@@ -1,9 +1,6 @@
 const { Schema, model, models } = require("mongoose");
 
 const HomeworkSchema = new Schema({
-    homeworkid: {type: String, required: true, unique: true},
-    classid: {type: String, required: true},
-    subjectid: {type: String, required: true},
     title: {type: String, required: true},
     description: {type: String, required: true},
     points: {type: Number, required: false},

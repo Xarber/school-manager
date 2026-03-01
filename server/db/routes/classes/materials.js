@@ -80,7 +80,7 @@ router.post(paths.dbCreate, async (req, res) => {
     classInfo.materials.push(newMaterial._id);
     await classInfo.save();
 
-    res.json({ success: true, data: newMaterial.materialid });
+    res.json({ success: true, data: newMaterial._id });
   } catch (error) {
     console.error('Create material error:', error);
     res.status(500).json({ error: 'Failed to create material' });

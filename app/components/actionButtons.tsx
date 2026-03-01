@@ -1,13 +1,9 @@
-import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from "react-native";
-import { Icon, Stack } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
-import DashboardItem from "@/components/dashboardItem";
-import useAsyncData, { defaultData, KEYS } from "@/data/datamanager";
-import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ActionButtonsProps {
     items: {

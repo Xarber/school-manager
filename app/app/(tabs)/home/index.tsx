@@ -6,7 +6,7 @@ import DashboardItem from "@/components/dashboardItem";
 import UserGrades from "@/components/gradesComponent";
 
 import { Stack, useRouter } from "expo-router";
-import useAsyncData, { defaultData, KEYS, useAllAsyncData } from "@/data/datamanager";
+import { useAppDataSync, DataManager } from "@/data/datamanager";
 
 export default function HomeScreen() {
     const theme = useTheme();
@@ -14,27 +14,15 @@ export default function HomeScreen() {
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
     
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
     const activeClassId = userData.data.settings.activeClassId;
-    const classData = useAsyncData(`${KEYS.classData}:${activeClassId}`, defaultData.classData);
+    const classData = useAppDataSync(null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default);
     
-    const allClassHomework = useAllAsyncData(
-        `${KEYS.homeworkData}:${activeClassId}`, 
-        defaultData.homeworkData
-    );
-    const allClassLessons = useAllAsyncData(
-        `${KEYS.lessonData}:${activeClassId}`, 
-        defaultData.lessonData
-    );
-    const allClassSubjects = useAllAsyncData(
-        `${KEYS.subjectData}:${activeClassId}`, 
-        defaultData.subjectData
-    )
-    const exams = Object.values(allClassLessons.data).filter((lesson)=>{
-        const date = new Date(lesson.date + ' ' + lesson.time);
-        const now = new Date();
-        return (date > now) && (lesson.isExam);
-    });
+    const allClassHomework = [] as any[]; // todo
+    const allClassLessons = [] as any[]; // todo
+    const allClassSubjects = [] as any[]; // todo
+    const exams = [] as any[]; // todo; remember to check if the exam is passed or not
+
     const tomorrowDay = new Date(new Date().getTime() + 86400000).toLocaleDateString("en-GB", {
         weekday: "long",
     });
@@ -69,16 +57,7 @@ export default function HomeScreen() {
                         router.push("/registry");
                         setTimeout(()=>router.push("/registry/grades"), 36);
                     }}/>
-                    <DashboardItem title="Tomorrow" items={
-                        (homescreenPageData.tomorrowSchedule ?? []).map((lesson) => {
-                            const subjectKey = `${KEYS.subjectData}:${homescreenPageData.userdata.data.settings.activeClassId}:${lesson.subjectid}`;
-                            const subject = homescreenPageData.subjects.data[subjectKey];
-                            return {
-                                title: subject.name,
-                                description: `Teacher: ${lesson.teacher}\nTime: ${lesson.duration}`,
-                            }
-                        })
-                    }/>
+                    <DashboardItem title="Tomorrow" items={[]} /> {/* //todo - Schedule, Exams, Quick Homework */}
                     <DashboardItem title="Upcoming Exams" items={homescreenPageData.exams} maxItems={2} expand={() => {
                         router.push("/registry");
                         setTimeout(()=>router.push("/registry/exams"), 36);

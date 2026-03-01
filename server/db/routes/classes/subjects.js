@@ -73,7 +73,7 @@ router.post(paths.dbCreate, async (req, res) => {
         classInfo.subjects.push(newSubject._id);
         await classInfo.save();
 
-        res.json({ success: true, data: newSubject.subjectid });
+        res.json({ success: true, data: newSubject._id });
     } catch (error) {
         console.error('Create subject error:', error);
         res.status(500).json({ error: 'Failed to create subject' });

@@ -75,7 +75,7 @@ router.post(paths.dbCreate, async (req, res) => {
     classInfo.comunications.push(newComunication._id);
     await classInfo.save();
 
-    res.json({ success: true, data: newComunication.comunicationid });
+    res.json({ success: true, data: newComunication._id });
   } catch (error) {
     console.error('Create comunication error:', error);
     res.status(500).json({ error: 'Failed to create comunication' });

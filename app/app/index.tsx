@@ -1,13 +1,11 @@
 import { Redirect } from "expo-router";
 import { View } from "react-native";
-import useAsyncData from "@/data/datamanager";
-import { KEYS } from "@/data/datamanager";
-import { defaultData } from "@/data/datamanager";
+import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { useEffect } from "react";
 import { useGlobalStore } from "@/data/store";
 
 export default function welcomeScreen() {
-    let appDebugData = useAsyncData(KEYS.debugData, defaultData.debugData);
+    let appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
     if (appDebugData.loading === false) appDebugData.save({...appDebugData.data, lastLaunchDate: new Date().toString(), launchCount: appDebugData.data.launchCount + 1}).then(() => {
         appDebugData.load();
     });

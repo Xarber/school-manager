@@ -7,7 +7,7 @@ import DashboardItem from "@/components/dashboardItem";
 import createStyling from "@/constants/styling";
 import LoginComponent from "@/components/login";
 import { router } from "expo-router";
-import useAsyncData, { useAllAsyncData, KEYS, defaultData } from "@/data/datamanager";
+import { useAppDataSync, DataManager } from "@/data/datamanager";
 import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
 import createToastConfig from "@/constants/toast";
@@ -17,9 +17,9 @@ export default function ProfileTab() {
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
-    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
-    const allUserClasses = useAllAsyncData(`${KEYS.classData}`, defaultData.classData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, );
+    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
+    const allUserClasses = [] as any[]; // todo
     
     let profilePageData = {
         userdata: userData.data,
@@ -31,7 +31,7 @@ export default function ProfileTab() {
         useCallback(() => {
             accountData.load();
             userData.load();
-            allUserClasses.load();
+            // allUserClasses.load();
         }, [])
     );
 
@@ -66,15 +66,7 @@ export default function ProfileTab() {
                         return items;
                     })()} />
                     {isUserLoggedIn ? (
-                        <DashboardItem title="Your Classes" items={Object.values(profilePageData.classes.data).map((e)=>{
-                            return {
-                                title: e.name,
-                                description: `Teachers: ${e.teachers.filter(e=>e.name).join(", ")}\n${e.notes}`,
-                                onPress: () => {
-                                    router.push(`/profile/class/${e.classid}`);
-                                }
-                            };
-                        })} expand={()=>{
+                        <DashboardItem title="Your Classes" items={[]} expand={()=>{ {/* // todo - load all classes */}
                             router.push("/profile/class/all");
                         }}/>
                     ) : null}

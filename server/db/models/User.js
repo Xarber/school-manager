@@ -1,8 +1,7 @@
 const { Schema, model, models } = require("mongoose");
-const { flattenDiagnosticMessageText } = require("typescript");
+const { type } = require("node:os");
 
 const UserInfoSchema = new Schema({
-    userid: {type: String, required: true, unique: true},
     name: {type: String, required: true},
     surname: {type: String, required: true},
     email: {type: String, required: true, unique: true},
@@ -26,14 +25,13 @@ const UserSettingsSchema = new Schema({
 });
 
 const UserDataSchema = new Schema({
-    userid: {type: String, required: true, unique: true},
     name: {type: String, required: false, default: "User"},
     birthday: {type: String, required: false, default: ""},
     userInfo: {type: Schema.Types.ObjectId, ref: 'UserInfo'},
     settings: {type: UserSettingsSchema, required: true},
     classes: [{type: Schema.Types.ObjectId, ref: 'Class'}],
     grades: [{type: Schema.Types.ObjectId, ref: 'Grade'}],
-    completedhomework: [{classid: String, subjectid: String, homeworkid: String}],
+    completedhomework: [{type: Schema.Types.ObjectId, ref: 'Homework'}],
     addedAt: {type: String, required: true},
     editedAt: {type: Number, required: true},
 });
