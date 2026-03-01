@@ -10,6 +10,7 @@ const HomeworkSchema = new Schema({
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
     dueDate: {type: String, required: true},
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const Homework = models.Homework || model('Homework', HomeworkSchema);

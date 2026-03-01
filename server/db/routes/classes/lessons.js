@@ -63,6 +63,7 @@ router.post(paths.dbCreate, async (req, res) => {
         room: room || undefined,
         isExam: isExam || false,
         addedAt: new Date().toISOString(),
+        editedAt: Date.now(),
     });
     await newLesson.save();
 
@@ -134,6 +135,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (room !== undefined) lesson.room = room;
     if (isExam !== undefined) lesson.isExam = isExam;
     lesson.scheduled = lesson.date && lesson.time && new Date(`${lesson.date}T${lesson.time}`).getTime() > new Date(lesson.addedAt).getTime() ? true : false;
+    lesson.editedAt = Date.now();
 
     if (title === undefined && description === undefined && date === undefined && time === undefined && room === undefined && isExam === undefined) {
       return res.status(400).json({ error: 'No fields to update' });

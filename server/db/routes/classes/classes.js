@@ -71,6 +71,7 @@ router.post(paths.dbCreate, async (req, res) => {
       subjects: [],
       notes: notes,
       addedAt: new Date().toISOString(),
+      editedAt: Date.now(),
     });
     await newClass.save();
 
@@ -130,6 +131,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (name) updateData.name = name;
     if (schedule) updateData.schedule = schedule;
     if (notes) updateData.notes = notes;
+    updateData.editedAt = Date.now();
 
     await Class.updateOne({ classid }, { $set: updateData });
 

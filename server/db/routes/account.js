@@ -52,6 +52,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (birthday) updateData.birthday = birthday;
     if (settings) updateData.settings = settings;
     if (name) updateData.name = fullname;
+    updateData.editedAt = Date.now();
 
     await UserData.updateOne({ userid: user.userid }, { $set: updateData });
 
@@ -60,6 +61,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (name) updateInfo.name = name;
     if (surname) updateInfo.surname = surname;
     if (email) updateInfo.email = email;
+    updateInfo.editedAt = Date.now();
 
     await UserInfo.updateOne({ userid: user.userid }, { $set: updateInfo });
 
@@ -84,6 +86,7 @@ router.post(paths.accountRegisterForPushNotifications, async (req, res) => {
         if (!account) return res.status(404).json({ error: 'Account not found' });
 
         if (!account.pushToken.includes(pushToken)) {
+            account.editedAt = Date.now();
             account.pushToken.push(pushToken);
             await account.save();
         }
@@ -107,6 +110,7 @@ router.post(paths.accountUnregisterForPushNotifications, async (req, res) => {
         if (!account) return res.status(404).json({ error: 'Account not found' });
 
         account.pushToken = account.pushToken.filter(token => token !== pushToken);
+        account.editedAt = Date.now();
         await account.save();
 
         res.json({ success: true });

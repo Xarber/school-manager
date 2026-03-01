@@ -67,6 +67,7 @@ router.post(paths.dbCreate, async (req, res) => {
       requiresConfirmation: requiresConfirmation || false,
       sender: userInfo._id,
       addedAt: new Date().toISOString(),
+      editedAt: Date.now(),
     });
     await newComunication.save();
 
@@ -142,6 +143,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (urgency) comunicationInfo.urgency = urgency;
     if (requiresConfirmation !== undefined) comunicationInfo.requiresConfirmation = requiresConfirmation;
     if (subjectid !== undefined) comunicationInfo.subjectid = subjectid;
+    comunicationInfo.editedAt = Date.now();
 
     await comunicationInfo.save();
 

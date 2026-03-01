@@ -10,6 +10,7 @@ const DebugSchema = new Schema({
     errorLogs: [{type: String}],
     performanceMetrics: [{type: Schema.Types.Mixed}],
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const Debug = models.Debug || model('Debug', DebugSchema);

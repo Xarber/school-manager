@@ -14,6 +14,7 @@ const ClassSchema = new Schema({
     subjects: [{type: Schema.Types.ObjectId, ref: 'Subject'}],
     notes: [String],
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const Class = models.Class || model('Class', ClassSchema);

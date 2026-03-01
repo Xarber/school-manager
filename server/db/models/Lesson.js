@@ -14,6 +14,7 @@ const LessonSchema = new Schema({
     scheduled: {type: Boolean, required: false, default: false},
     isExam: {type: Boolean, required: false, default: false},
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const Lesson = models.Lesson || model('Lesson', LessonSchema);

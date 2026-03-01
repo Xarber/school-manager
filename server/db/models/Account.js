@@ -7,6 +7,7 @@ const AccountSchema = new Schema({
     locked: {type: Boolean, required: false, default: false},
     active: {type: Boolean, required: false, default: true},
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const Account = models.Account || model('Account', AccountSchema);

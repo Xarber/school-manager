@@ -13,6 +13,7 @@ const SubjectSchema = new Schema({
     lessons: [{type: Schema.Types.ObjectId, ref: 'Lesson'}],
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const Subject = models.Subject || model('Subject', SubjectSchema);

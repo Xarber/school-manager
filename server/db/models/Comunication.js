@@ -12,6 +12,7 @@ const ComunicationSchema = new Schema({
     requiresConfirmation: {type: Boolean, required: false, default: false},
     sender: {type: Schema.Types.ObjectId, ref: 'UserInfo'},
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const Comunication = models.Comunication || model('Comunication', ComunicationSchema);

@@ -8,6 +8,7 @@ const UserInfoSchema = new Schema({
     email: {type: String, required: true, unique: true},
     role: {type: String, required: false, enum: ['student', 'teacher'], default: 'student'},
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const UserSettingsSchema = new Schema({
@@ -34,6 +35,7 @@ const UserDataSchema = new Schema({
     grades: [{type: Schema.Types.ObjectId, ref: 'Grade'}],
     completedhomework: [{classid: String, subjectid: String, homeworkid: String}],
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const UserInfo = models.UserInfo || model('UserInfo', UserInfoSchema);
