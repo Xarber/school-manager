@@ -125,7 +125,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
 
     // Generate JWT (expires in 7 days; adjust)
     const token = jwt.sign(
-      { userid: userData.userid },
+      { userid: userData._id },
       process.env.JWT_SECRET,
       { expiresIn: '365d' }
     );

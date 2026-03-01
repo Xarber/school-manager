@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Calendar } from 'react-native-calendars';
-import * as CalendarModule from 'expo-calendar';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { Stack } from 'expo-router';
 
-import useAsyncData, { defaultData, KEYS, useAllAsyncData } from '@/data/datamanager';
+import { useAppDataSync, DataManager } from "@/data/datamanager";
 
 export default function CalendarScreen() {
     const theme = useTheme();
@@ -22,21 +21,13 @@ export default function CalendarScreen() {
     const [markedDates, setMarkedDates] = useState({});
     const [selectedDate, setSelectedDate] = useState(tomorrowStr);
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
     const activeClassId = userData.data.settings.activeClassId;
-    const classData = useAsyncData(`${KEYS.classData}:${activeClassId}`, defaultData.classData);
+    const classData = useAppDataSync(null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default);
     
-    const allClassHomework = useAllAsyncData(
-        `${KEYS.homeworkData}:${activeClassId}`, 
-        defaultData.homeworkData
-    );
-    const allClassLessons = useAllAsyncData(
-        `${KEYS.lessonData}:${activeClassId}`, 
-        defaultData.lessonData
-    );
-    const exams = Object.values(allClassLessons.data).filter((lesson)=>{
-        return (lesson.isExam);
-    });
+    const allClassHomework = [] as any[]; // todo
+    const allClassLessons = [] as any[]; // todo
+    const exams = [] as any[]; // todo
     
     const calendarPageData = {
         homework: allClassHomework,
@@ -90,12 +81,9 @@ export default function CalendarScreen() {
                             },
                         },
                     ]} />
-                    <DashboardItem title="Homework" items={Object.values(calendarPageData.homework.data)}
-                    />
-                    <DashboardItem title="Lessons" items={Object.values(calendarPageData.lessons.data)}
-                    />
-                    <DashboardItem title="Exams" items={Object.values(calendarPageData.exams)}
-                    />
+                    <DashboardItem title="Homework" items={[]} /> {/* //todo */}
+                    <DashboardItem title="Lessons" items={[]} /> {/* //todo */}
+                    <DashboardItem title="Exams" items={[]} /> {/* //todo */}
                 </View>
             </ScrollView>
         </>

@@ -1,14 +1,10 @@
 const {Schema, model, models} = require('mongoose');
 
 const SchoolSchema = new Schema({
-    schoolid: {type: String, required: true, unique: true},
     name: {type: String, required: true},
     address: {type: String, required: true},
     city: {type: String, required: true},
     country: {type: String, required: true},
-    postalCode: {type: String, required: true},
-    phoneNumber: {type: String, required: false},
-    email: {type: String, required: false},
     website: {type: String, required: false},
     istitutionalEmailDomain: {type: String, required: true},
 

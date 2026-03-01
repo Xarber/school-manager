@@ -1,14 +1,13 @@
 const { Schema, model, models } = require("mongoose");
 
 const ScheduleHourSchema = new Schema({
-    classid: {type: String, required: true},
-    subjectid: {type: String, required: true},
+    subject: {type: Schema.Types.ObjectId, ref: 'Subject', required: true},
     startTime: {type: String, required: true},
     endTime: {type: String, required: true},
 });
 
 const WeekScheduleSchema = new Schema({
-    day: {type: String, required: true},
+    day: {type: String, required: true, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']},
     hours: [{type: ScheduleHourSchema}],
     addedAt: {type: String, required: true},
     editedAt: {type: Number, required: true},

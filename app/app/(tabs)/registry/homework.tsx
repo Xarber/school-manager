@@ -3,9 +3,7 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { defaultData, HomeworkData, KEYS, UserData } from '@/data/datamanager';
-
-import useAsyncData, {useAllAsyncData} from '@/data/datamanager';
+import { useAppDataSync, DataManager, HomeworkData } from "@/data/datamanager";
 
 function renderHomework(homework: HomeworkData[]) {
     const dateIndex: { [date: string]: HomeworkData[] } = {};
@@ -58,13 +56,10 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
         }));
     }
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData).data;
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default).data;
     const activeClassId = userData.settings.activeClassId;
     
-    const allClassHomework = useAllAsyncData(
-        `${KEYS.homeworkData}:${activeClassId}`, 
-        defaultData.homeworkData
-    );
+    const allClassHomework = [] as any[]; // todo
     
     const homeworkPageData = {
         homework: allClassHomework,

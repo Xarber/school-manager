@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 
+const branch = process.env.BRANCH;
+
 const paths = require('./db/routes/paths.js');
 
 const auth = require("./db/middleware/auth");
@@ -21,7 +23,10 @@ const lessonsRoutes = require('./db/routes/classes/lessons');
 const materialsRoutes = require('./db/routes/classes/materials');
 const subjectsRoutes = require('./db/routes/classes/subjects');
 
-mongoose.connect(process.env.MONGODB_URI).catch(err => {
+mongoose.connect(process.env.MONGODB_URI, {
+    dbName: `schoolmanager-${branch}`,
+    appName: "SchoolManager-API",
+}).catch(err => {
     console.error('MongoDB connection error:', err);
 });
 

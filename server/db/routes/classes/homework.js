@@ -77,7 +77,7 @@ router.post(paths.dbCreate, async (req, res) => {
     subjectInfo.homework.push(newHomework._id);
     await subjectInfo.save();
 
-    res.json({ success: true, data: newHomework.homeworkid });
+    res.json({ success: true, data: newHomework._id });
   } catch (error) {
     console.error('Create homework error:', error);
     res.status(500).json({ error: 'Failed to create homework' });

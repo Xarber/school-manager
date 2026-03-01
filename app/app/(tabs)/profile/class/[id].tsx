@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
-import useAsyncData, { defaultData, KEYS } from "@/data/datamanager";
+import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,7 +16,7 @@ function AllClassList() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
     
     return userData.loading ? 
     (
@@ -26,13 +26,14 @@ function AllClassList() {
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <ScrollView style={commonStyle.dashboardSection}>
-                <DashboardItem title="Your Classes" items={[
+                {/* // todo */}
+                <DashboardItem title="Your Classes" items={[ 
                     {
                         title: "Class 1",
                         description: "Description for Class 1",
                         onPress: () => {
                             router.push(`/profile/class/Prova1`);
-                         },
+                        },
                     }
                 ]} />
             </ScrollView>

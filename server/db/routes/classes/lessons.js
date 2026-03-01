@@ -71,7 +71,7 @@ router.post(paths.dbCreate, async (req, res) => {
     subjectInfo.lessons.push(newLesson._id);
     await subjectInfo.save();
 
-    res.json({ success: true, data: newLesson.lessonid });
+    res.json({ success: true, data: newLesson._id });
   } catch (error) {
     console.error('Create lesson error:', error);
     res.status(500).json({ error: 'Failed to create lesson' });

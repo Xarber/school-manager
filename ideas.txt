@@ -18,3 +18,6 @@
   Quando si manda una richiesta (update/get), manda dati criptati e userid
   Il server riceve la richiesta, e la decifra con la chiave dell'<userid>, se valida e dentro il msg criptato c'è token valido, allora eseguila.
   Risultato = Utilizzo networkless stabile, sicuro ed affidabile.
+- Add AI homework (exercises) generator for a specific topic (upload as pdf material) (student + teacher)
+ -> Maybe topic summary + homework at the end?
+- Add AI summary for homework materials (student)

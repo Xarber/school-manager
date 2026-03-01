@@ -76,7 +76,7 @@ router.post(paths.dbCreate, async (req, res) => {
     });
     await newGrade.save();
 
-    res.json({ success: true, data: newGrade.gradeid });
+    res.json({ success: true, data: newGrade._id });
   } catch (error) {
     console.error('Create grade error:', error);
     res.status(500).json({ error: 'Failed to create grade' });
