@@ -40,7 +40,22 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
 
     const debugData = await Debug.findOne({ userid: user.userid });
-    if (!debugData) return res.status(404).json({ error: 'Debug data not found' });
+    if (!debugData) {
+      const newDebug = new Debug({
+        userid: user.userid,
+        firstLaunch: false,
+        firstLaunchDate: new Date().toString(),
+        lastLaunchDate: new Date().toString(),
+        launchCount: 1,
+        appVersion: "1.0.0",
+        errorLogs: [],
+        performanceMetrics: [],
+        addedAt: new Date().toISOString(),
+        editedAt: Date.now(),
+      });
+      await newDebug.save();
+      debugData = newDebug;
+    }
 
     const { data } = req.body;
     if (!data) return res.status(400).json({ error: 'Data is required' });
@@ -52,6 +67,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     debugData.appVersion = data.appVersion || debugData.appVersion;
     debugData.errorLogs = (data.errorLogs && data.errorLogs.length > 0) ? debugData.errorLogs.concat(data.errorLogs) : debugData.errorLogs;
     debugData.performanceMetrics = (data.performanceMetrics && data.performanceMetrics.length > 0) ? debugData.performanceMetrics.concat(data.performanceMetrics) : debugData.performanceMetrics;
+    debugData.editedAt = Date.now();
 
     await debugData.save();
 

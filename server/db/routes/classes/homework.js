@@ -65,6 +65,7 @@ router.post(paths.dbCreate, async (req, res) => {
         dueDate,
         points: points || undefined,
         addedAt: new Date().toISOString(),
+        editedAt: Date.now(),
     });
     await newHomework.save();
 
@@ -146,6 +147,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (description !== undefined) homework.description = description;
     if (dueDate !== undefined) homework.dueDate = dueDate;
     if (points !== undefined) homework.points = points;
+    homework.editedAt = Date.now();
 
     await homework.save();
 

@@ -72,6 +72,7 @@ router.post(paths.dbCreate, async (req, res) => {
       gradeTitle: gradeTitle || grade.toString(),
       type: type || 'other',
       addedAt: new Date().toISOString(),
+      editedAt: Date.now(),
     });
     await newGrade.save();
 
@@ -140,6 +141,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (title) updatedData.title = title;
     if (gradeTitle) updatedData.gradeTitle = gradeTitle;
     if (type) updatedData.type = type;
+    updatedData.editedAt = Date.now();
 
     const updatedGrade = await Grade.findOneAndUpdate(
       { gradeid, classid, subjectid, user: targetUserInfo._id },

@@ -90,7 +90,8 @@ router.post(paths.authenticateOtp, async (req, res) => {
         name: 'New', // Default; update later via profile
         surname: 'User',
         email,
-        addedAt: new Date().toISOString()
+        addedAt: new Date().toISOString(),
+        editedAt: Date.now(),
       });
       await userInfo.save();
 
@@ -101,7 +102,8 @@ router.post(paths.authenticateOtp, async (req, res) => {
         classes: [],
         grades: [],
         completedhomework: [],
-        addedAt: new Date().toISOString()
+        addedAt: new Date().toISOString(),
+        editedAt: Date.now(),
       });
       await userData.save();
 
@@ -112,7 +114,8 @@ router.post(paths.authenticateOtp, async (req, res) => {
         pushToken: [],
         locked: false,
         active: true,
-        addedAt: new Date().toISOString()
+        addedAt: new Date().toISOString(),
+        editedAt: Date.now(),
       });
       await account.save();
     }
@@ -160,7 +163,7 @@ router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => 
 
     await UserInfo.updateOne(
       { userid: req.user.userid },
-      { $set: {...req.body, userid: req.user.userid} }, // Block updating userid
+      { $set: {name, surname, email, editedAt: Date.now(), userid: req.user.userid} }, // Block updating userid
     ).lean();
     
     res.json({ success: true });

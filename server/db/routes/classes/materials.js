@@ -68,6 +68,7 @@ router.post(paths.dbCreate, async (req, res) => {
         type: type || 'file',
         url,
         addedAt: new Date().toISOString(),
+        editedAt: Date.now(),
     });
     await newMaterial.save();
 
@@ -145,6 +146,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (description !== undefined) material.description = description;
     if (type !== undefined) material.type = type;
     if (url !== undefined) material.url = url;
+    material.editedAt = Date.now();
 
     if (title === undefined && description === undefined && type === undefined && url === undefined) {
       return res.status(400).json({ error: 'No fields to update' });

@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "icon": "./assets/images/appicon/SchoolManager.icon",
-      "bundleIdentifier": "com.xcenter.schoolmanager",
+      "bundleIdentifier": "com.xarber.schoolmanager",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -30,7 +30,7 @@
         "monochromeImage": "./assets/images/appicon/SchoolManager-android-foreground-1024x1024@1x.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.xcenter.schoolmanager"
+      "package": "com.xarber.schoolmanager"
     },
     "web": {
       "output": "static",
@@ -53,7 +53,9 @@
       "@react-native-community/datetimepicker",
       "expo-font",
       "expo-image",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-sqlite",
+      "expo-background-task"
     ],
     "experiments": {
       "typedRoutes": true,

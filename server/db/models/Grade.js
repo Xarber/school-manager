@@ -10,6 +10,7 @@ const GradeSchema = new Schema({
     subjectid: {type: String, required: true},
     homeworkid: {type: String, required: false},
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const Grade = models.Grade || model('Grade', GradeSchema);

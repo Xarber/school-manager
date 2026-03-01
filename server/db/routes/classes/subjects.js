@@ -65,7 +65,8 @@ router.post(paths.dbCreate, async (req, res) => {
             ],
             maxgrade,
             gradeType,
-            addedAt: new Date().toISOString()
+            addedAt: new Date().toISOString(),
+            editedAt: Date.now(),
         });
         await newSubject.save();
 
@@ -131,6 +132,7 @@ router.post(paths.dbUpdate, async (req, res) => {
         if (maxgrade !== undefined) subject.maxgrade = maxgrade;
         if (teacher !== undefined) subject.teacher = teacher;
         if (schedule !== undefined) subject.schedule = schedule;
+        subject.editedAt = Date.now();
 
         if (name === undefined && maxgrade === undefined && teacher === undefined && schedule === undefined) {
             return res.status(400).json({ error: 'No fields to update' });

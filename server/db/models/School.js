@@ -27,6 +27,7 @@ const SchoolSchema = new Schema({
     admins: [{type: Schema.Types.ObjectId, ref: 'UserInfo'}],
 
     addedAt: {type: String, required: true},
+    editedAt: {type: Number, required: true},
 });
 
 const School = models.School || model('School', SchoolSchema);
