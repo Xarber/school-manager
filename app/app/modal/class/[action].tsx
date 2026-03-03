@@ -5,7 +5,7 @@ import {useState} from "react";
 import { TextInput } from 'react-native';
 
 import createStyling from '@/constants/styling';
-import useAsyncData, { DBKEYS, DBrequest, defaultData, KEYS } from '@/data/datamanager';
+import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
 
 interface updateClassProps {
     action: string;
@@ -19,12 +19,17 @@ async function updateClass({action, id, name, description, setLoading}: updateCl
     setLoading(true);
     switch (action) {
         case "create":
-            const data = await DBrequest(DBKEYS.classData + DBKEYS.dbCreate, "POST", { name, description });
-            if (data.success) {
-                alert("Class created");
-            }
+            const newClass = useDBitem(DataManager.classData.db);
+            newClass.create({
+                name,
+                description
+            }).then(data => {
+                alert("Class created!");
+            }).catch(err => {
+                alert(err);
+            })
             setLoading(false);
-            return data;
+            break;
         default:
             setLoading(false);
             return {error: "Invalid action"};
@@ -38,7 +43,7 @@ function NewClass() {
     const [className, setClassName] = useState("New Class");
     const [classDescription, setClassDescription] = useState("This is a new class.");
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
     const [loading, setLoading] = useState(false);
 
     const canProceed = className.length > 0 && classDescription.length > 0;

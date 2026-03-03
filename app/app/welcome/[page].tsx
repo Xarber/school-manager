@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
-import useAsyncData, { KEYS, defaultData } from "@/data/datamanager";
+import { useAppDataSync, DataManager } from "@/data/datamanager";
 
 import { registerForPushNotificationsAsync } from "@/data/notifications";
 import { KeyboardShift } from "@/components/keyboardShift";
@@ -61,7 +61,7 @@ function restorePage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const image = require("@/assets/images/welcome.png");
-    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
+    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
 
     useFocusEffect(
         useCallback(() => {
@@ -106,7 +106,7 @@ function setNamePage() {
 
     const image = require("@/assets/images/welcome.png");
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
 
     const [name, setName] = useState("");
     if (!userData.loading && name === "" && userData.data.userInfo.name != "") setName(userData.data.userInfo.name);
@@ -170,7 +170,7 @@ function setSurnamePage() {
 
     const image = require("@/assets/images/welcome.png");
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
 
     const [surname, setSurname] = useState("");
     if (!userData.loading && surname === "" && userData.data.userInfo.surname != "") setSurname(userData.data.userInfo.surname);
@@ -232,7 +232,7 @@ function notificationsPage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
+    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
 
     const image = require("@/assets/images/welcome.png");
 
@@ -276,7 +276,7 @@ function completePage() {
 
     const image = require("@/assets/images/welcome.png");
 
-    const appDebugData = useAsyncData(KEYS.debugData, defaultData.debugData);
+    const appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
     if (appDebugData.loading === false && appDebugData.data.firstLaunch === false) {
         appDebugData.save({...appDebugData.data, firstLaunch: true, firstLaunchDate: new Date().toString()}).then(() => {
             appDebugData.load();
