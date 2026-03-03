@@ -6,7 +6,7 @@ import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
 import GradeGrid from "@/components/gradeGrid";
 import { useRouter } from "expo-router";
-import useAsyncData, { defaultData, KEYS } from "@/data/datamanager";
+import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { Stack } from "expo-router";
 
 export default function RegistryTab() {
@@ -16,7 +16,7 @@ export default function RegistryTab() {
     const RegistryStyle = createStyling.createRegistryStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
     let registryPageData = {grades: userData.data.grades};
     
     return (

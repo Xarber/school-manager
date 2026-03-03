@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
-import useAsyncData, { DBKEYS, KEYS, defaultData, useDBdata } from "@/data/datamanager";
+import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { KeyboardShift } from "@/components/keyboardShift";
 
 export function validateEmail(email: string) {
@@ -28,7 +28,7 @@ export function validateEmail(email: string) {
 async function sendOtp(email: string, setotpsent: Function, setloading: Function) {
     setloading(true);
 
-    const status = await fetch(DBKEYS.db + DBKEYS.authenticate, {
+    const status = await fetch(DataManager.db.connect + DataManager.db.authenticate, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ async function sendOtp(email: string, setotpsent: Function, setloading: Function
 
 async function verifyOtp(email: string, otpcode: string, reset: Function) {
 
-    const status = await fetch(DBKEYS.db + DBKEYS.authenticateOtp, {
+    const status = await fetch(DataManager.db.connect + DataManager.db.authenticateOtp, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -90,7 +90,7 @@ function loginPage() {
     const [otpcode, setOtpcode] = useState("");
     const [otpsent, setOtpsent] = useState(false);
 
-    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
+    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
     const [loading, setLoading] = useState(false);
 
     const reset = () => {
@@ -173,9 +173,7 @@ function signupPage() {
     const [surname, setSurname] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
-
-    const dbUserData = useDBdata(DBKEYS.accountData);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
 
     return (
         <SafeAreaView
@@ -221,9 +219,8 @@ function signupPage() {
                                         text: "Yes",
                                         onPress: () => {
                                             setLoading(true);
-                                            dbUserData.save({name: `${name} ${surname}`, userInfo: {name, surname}}).then(() => {
+                                            userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}}).then(() => {
                                                 setLoading(false);
-                                                userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}});
                                                 router.replace("/welcome/account/loggedin");
                                             });
                                         }
@@ -251,23 +248,15 @@ function loggedinPage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const image = require("@/assets/images/welcome.png");
-    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
-
-    const dbUserData = useDBdata(DBKEYS.accountData);
-
-    if (!dbUserData.loading && !dbUserData.error) {
-        userData.save({...userData.data, name: `${dbUserData.data.name}`, userInfo: {...userData.data.userInfo, name: dbUserData.data.userInfo.name, surname: dbUserData.data.userInfo.surname}}).then(()=>{
-            userData.load();
-        });
-    }
+    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
 
     return (
         <SafeAreaView
             style={welcomeStyles.container}
             edges={["bottom", "left", "right", "top"]}
         >
-            {dbUserData.loading ? (
+            {userData.loading ? (
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                     <ActivityIndicator size="small" />
                 </View>
@@ -308,8 +297,8 @@ function logoutPage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const image = require("@/assets/images/welcome.png");
-    const accountData = useAsyncData(KEYS.accountData, defaultData.accountData);
-    const userData = useAsyncData(KEYS.userData, defaultData.userData);
+    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
 
     const [isLogoutAvailable, setLogoutAvailable] = useState(false);
     setTimeout(()=>setLogoutAvailable(true), 3000);
@@ -336,7 +325,7 @@ function logoutPage() {
                 </View>
                 <View style={welcomeStyles.actions}>
                     <TouchableOpacity disabled={!isLogoutAvailable} style={{...welcomeStyles.actionsButton, backgroundColor: theme.caution, opacity: (isLogoutAvailable ? 1 : 0.5)}} onPress={() => {
-                        accountData.save(defaultData.accountData).then(()=>router.dismiss());
+                        accountData.save(DataManager.accountData.default).then(()=>router.dismiss());
                     }}>
                         <Text style={welcomeStyles.actionsButtonText}>Log out</Text>
                     </TouchableOpacity>
