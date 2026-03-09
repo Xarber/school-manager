@@ -19,7 +19,7 @@ router.post(paths.dbGet, async (req, res) => {
     if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
     if (!homeworkid) return res.status(400).json({ error: 'Homework ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     const homework = await Homework.findOne({ homeworkid, classid, subjectid }).lean();
@@ -41,17 +41,17 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
     if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create homework' });
 
     const classInfo = await Class.findOne({ classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can create homework' });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create homework' });
 
     const subjectInfo = await Subject.findOne({ subjectid, classid });
     if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
-    if (!subjectInfo.teacher.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can create homework' });
+    if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create homework' });
 
     const { title, description, dueDate, points } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
@@ -92,20 +92,20 @@ router.post(paths.dbDelete, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!homeworkid) return res.status(400).json({ error: 'Homework ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     const homework = await Homework.findOne({ homeworkid });
     if (!homework) return res.status(404).json({ error: 'Homework not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete homework' });
 
-    const classInfo = await Class.findOne({ classid: homework.classid });
+    const classInfo = await Class.findOne({ _id: homework.classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can delete homework' });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete homework' });
 
-    const subjectInfo = await Subject.findOne({ subjectid: homework.subjectid, classid: homework.classid });
+    const subjectInfo = await Subject.findOne({ _id: homework.subjectid, classid: homework.classid });
     if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
-    if (!subjectInfo.teacher.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can delete homework' });
+    if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete homework' });
 
     // Remove homework from class
     classInfo.homework = classInfo.homework.filter(hwId => hwId.toString() !== homework._id.toString());
@@ -133,7 +133,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!homeworkid) return res.status(400).json({ error: 'Homework ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     const homework = await Homework.findOne({ homeworkid });

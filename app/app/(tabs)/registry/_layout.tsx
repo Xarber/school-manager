@@ -1,8 +1,9 @@
 import {Stack} from "expo-router";
+import { colors } from "@/constants/colors";
 
 export default function RegistryLayout() {
     return (
-        <Stack>
+        <Stack screenOptions={{ headerStyle: { backgroundColor: colors.dynamic.surface.toString() } }}>
             <Stack.Screen name="index" options={{ title: "Registry" }} />
             <Stack.Screen name="grades" options={{ headerShown: true, title: "Grades" }} />
             <Stack.Screen name="exams" options={{ headerShown: true, title: "Exams" }} />

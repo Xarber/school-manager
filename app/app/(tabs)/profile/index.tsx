@@ -1,5 +1,5 @@
 import { Text, View, ScrollView } from "react-native";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { Stack, useFocusEffect } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
@@ -7,7 +7,7 @@ import DashboardItem from "@/components/dashboardItem";
 import createStyling from "@/constants/styling";
 import LoginComponent from "@/components/login";
 import { router } from "expo-router";
-import { useAppDataSync, DataManager } from "@/data/datamanager";
+import { useAppDataSync, DataManager, ClassData } from "@/data/datamanager";
 import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
 import createToastConfig from "@/constants/toast";
@@ -17,13 +17,18 @@ export default function ProfileTab() {
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, );
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, {populate: ["classes"]});
     const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
-    const allUserClasses = [] as any[]; // todo
-    
+
     let profilePageData = {
         userdata: userData.data,
-        classes: allUserClasses,
+        classes: userData.data.classes.map((cls: ClassData) => ({
+            title: cls.name,
+            description: cls.notes.slice(0, 2).join("\n"),
+            onPress: () => {
+                router.push(`/profile/class/${cls._id}`);
+            }
+        })),
         accountdata: accountData
     };
 
@@ -31,7 +36,6 @@ export default function ProfileTab() {
         useCallback(() => {
             accountData.load();
             userData.load();
-            // allUserClasses.load();
         }, [])
     );
 
@@ -66,7 +70,7 @@ export default function ProfileTab() {
                         return items;
                     })()} />
                     {isUserLoggedIn ? (
-                        <DashboardItem title="Your Classes" items={[]} expand={()=>{ {/* // todo - load all classes */}
+                        <DashboardItem title="Your Classes" items={profilePageData.classes} expand={()=>{ {/*  todo - load all classes */}
                             router.push("/profile/class/all");
                         }}/>
                     ) : null}

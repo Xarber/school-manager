@@ -10,6 +10,7 @@ interface ActionButtonsProps {
         title: string;
         iconName: React.ComponentProps<typeof Ionicons>["name"];
         onPress: () => void;
+        display?: boolean;
     }[],
     align?: "left" | "right";
     styles?: any;
@@ -34,6 +35,7 @@ export default function ActionButtons({ items, align, styles }: ActionButtonsPro
             align === "left" ? { left: 20 } : { right: 20 }
         ]}>
             {items.map((e, i) => {
+                if (e.display === false) return null;
                 return <TouchableOpacity key={i} style={[commonStyle.button, {display: "flex", flexDirection: "row", alignItems: "center", gap: 5}, styles]} onPress={e.onPress}>
                     <Ionicons name={e.iconName} size={30} color={theme.text}></Ionicons>
                     {e.title && <Text style={{ color: theme.text, fontSize: 12 }}>{e.title}</Text>}

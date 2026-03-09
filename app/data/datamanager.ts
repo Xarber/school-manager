@@ -243,64 +243,86 @@ const defaultSchoolData = {
 };
 export type SchoolData = typeof defaultSchoolData;
 
-export function useAppDataSync(dbkey: string | null, appkey: string, defaultValue: any) {
-    const [data, setData]: any = useState({});
+export function useAppDataSync(dbkey: string | null, appkey: string, defaultValue: any, body: Object = {}) {
+    const [data, setData]: any = useState(defaultValue);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const load = async () => {
-        const userToken = JSON.parse((await AsyncStorage.getItem(DataManager.accountData.app)) ?? "").token;
+        const userToken = JSON.parse((await AsyncStorage.getItem(DataManager.accountData.app)) ?? "{}").token;
+        let loadDebug = {
+            mode: "pending",
+            operation: "load",
+            key: [dbkey, appkey]
+        }
         try {
             setLoading(true);
             const localstored = await AsyncStorage.getItem(appkey);
             const netState = await NetInfo.fetch();
             if (dbkey != null && !!userToken && (netState.isConnected && netState.isInternetReachable)) {
-                const stored = await fetch(DataManager.db.connect + dbkey, {
+                loadDebug.mode = "database";
+                const stored = await fetch(DataManager.db.connect + dbkey + DataManager.db.get, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + userToken
-                    }
+                    },
+                    body: JSON.stringify(body)
                 })
-                .then(response => {
-                    if (response.ok) return response.json();
-                    else throw new Error(response.statusText);
+                .then(async response => {
+                    let responseData = await response.json() as any;
+                    if (response.ok) return responseData;
+                    else throw new Error(responseData.error || response.statusText);
                 });
                 await AsyncStorage.setItem(appkey, JSON.stringify(stored.data));
                 setData(stored.data);
             } else {
-                setData(localstored ? (JSON.parse(localstored) as any) : {...defaultValue, _loaded: false});
+                loadDebug.mode = "local";
+                setData(localstored ? (JSON.parse(localstored) as any) : { ...defaultValue, _loaded: false });
             }
         } catch (err) {
+            console.error(err);
+            loadDebug.mode = "failed";
             setError(err instanceof Error ? err.message : 'Load failed');
-            setData({});
+            setData({ ...defaultValue, _loaded: false });
         } finally {
+            //console.log(loadDebug);
             setLoading(false);
         }
     };
 
     const save = async (newValue: Object) => {
-        const userToken = JSON.parse((await AsyncStorage.getItem(DataManager.accountData.app)) ?? "").token;
+        const userToken = JSON.parse((await AsyncStorage.getItem(DataManager.accountData.app)) ?? "{}").token;
         (newValue as any).editedAt = Date.now();
+        let loadDebug = {
+            mode: "pending",
+            operation: "save",
+            key: [dbkey, appkey]
+        }
         try {
             let updated = { data: newValue };
             const netState = await NetInfo.fetch();
             if (dbkey != null && !!userToken && (netState.isConnected && netState.isInternetReachable)) {
+                loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.update, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + userToken
                     },
-                    body: JSON.stringify(newValue)
+                    body: JSON.stringify({...body, ...newValue})
                 })
-                .then(response => {
-                    if (response.ok) return response.json();
-                    else throw new Error(response.statusText);
+                .then(async response => {
+                    let responseData = await response.json() as any;
+                    //console.log(response, responseData);
+                    if (response.ok) return responseData;
+                    else throw new Error(responseData.error || response.statusText);
                 });
+                //console.log(response, dbkey + DataManager.db.update, newValue);
                 if (!response.success) throw new Error(response.error || response.message || 'Save failed');
             } else if (dbkey != null && !!userToken) {
                 // Save operation to outbox
+                loadDebug.mode = "outbox";
                 let outbox = JSON.parse((await AsyncStorage.getItem(DataManager.outbox.app)) ?? "[]");
                 let outboxData = {
                     keys: {
@@ -309,59 +331,94 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
                         method: "POST",
                         token: userToken
                     },
-                    data: {data: newValue},
+                    data: { data: newValue },
                     addedAt: new Date().toISOString(),
                     editedAt: Date.now()
                 } as OutboxData[0];
                 outbox.push(outboxData);
                 await AsyncStorage.setItem(DataManager.outbox.app, JSON.stringify(outbox));
+            } else {
+                loadDebug.mode = "local";
             }
             await AsyncStorage.setItem(appkey, JSON.stringify(updated.data));
             setData(updated.data);
         } catch (err) {
+            console.error(err);
+            loadDebug.mode = "failed";
             setError('Save failed');
+        } finally {
+            //console.log(loadDebug);
         }
     };
+
+    const remove = async () => {
+        try {
+            await AsyncStorage.removeItem(appkey);
+            setData(defaultValue);
+        } catch (err) {
+            setError('Clear failed');
+        }
+    }
+
+    const clear = async () => {
+        try {
+            await AsyncStorage.clear();
+            setData(defaultValue);
+        } catch (err) {
+            setError('Clear failed');
+        }
+    }
 
     useEffect(() => {
         load();
     }, [appkey]);
 
-    return { data, loading, error, load, save };
+    return { data, loading, error, load, save, remove, clear };
 }
 
-export function useDBitem(dbkey: string) {
-    const [data, setData]: any = useState({_id: null});
+export function useDBitem(dbkey: string, body: Object = {}) {
+    const [data, setData]: any = useState({ _id: null });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const create = async (data: Object) => {
         setLoading(true);
         const userToken = JSON.parse((await AsyncStorage.getItem(DataManager.accountData.app)) ?? "").token;
+        let loadDebug = {
+            mode: "pending",
+            operation: "create",
+            key: [dbkey]
+        }
         try {
             const netState = await NetInfo.fetch();
             if (!!userToken && (netState.isConnected && netState.isInternetReachable)) {
+                loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.create, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + userToken
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({...body, ...data})
                 })
-                .then(response => {
-                    if (response.ok) return response.json();
-                    else throw new Error(response.statusText);
+                .then(async response => {
+                    let responseData = await response.json() as any;
+                    if (response.ok) return responseData;
+                    else throw new Error(responseData.error || response.statusText);
                 });
                 if (response.success) setData(response.data);
                 else throw new Error(response.error || response.message || 'Create failed');
             } else {
+                loadDebug.mode = "no-token";
                 throw new Error('Create failed: ' + ((!!userToken) ? 'Offline' : 'No token'));
             }
         } catch (err) {
+            console.error(err);
+            loadDebug.mode = "failed";
             setError(err instanceof Error ? err.message : 'Create failed');
             setData({});
         } finally {
+            //console.log(loadDebug);
             setLoading(false);
         }
     };
@@ -369,29 +426,40 @@ export function useDBitem(dbkey: string) {
     const remove = async () => {
         setLoading(true);
         const userToken = JSON.parse((await AsyncStorage.getItem(DataManager.accountData.app)) ?? "").token;
+        let loadDebug = {
+            mode: "pending",
+            operation: "remove",
+            key: [dbkey]
+        }
         try {
             const netState = await NetInfo.fetch();
             if (!!userToken && (netState.isConnected && netState.isInternetReachable)) {
+                loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.delete, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + userToken
                     },
-                    body: JSON.stringify({_id: data._id})
+                    body: JSON.stringify({ ...body, _id: data._id })
                 })
-                .then(response => {
-                    if (response.ok) return response.json();
-                    else throw new Error(response.statusText);
+                .then(async response => {
+                    let responseData = await response.json() as any;
+                    if (response.ok) return responseData;
+                    else throw new Error(responseData.error || response.statusText);
                 });
-                if (response.success) setData({_id: null});
+                if (response.success) setData({ _id: null });
                 else throw new Error(response.error || response.message || 'Delete failed');
             } else {
+                loadDebug.mode = "no-token";
                 throw new Error('Delete failed: ' + ((!!userToken) ? 'Offline' : 'No token'));
             }
         } catch (err) {
+            console.error(err);
+            loadDebug.mode = "failed";
             setError(err instanceof Error ? err.message : 'Delete failed');
         } finally {
+            //console.log(loadDebug);
             setLoading(false);
         }
     };
@@ -402,11 +470,12 @@ export function useDBitem(dbkey: string) {
 console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(__DEV__ && !isProductionBinary) ? "true" : "false"}\n`);
 export const DataManager = {
     db: {
-        connect: (__DEV__ && !isProductionBinary) ? "http://192.168.1.176:3000" : 'https://schoolmanager-api.xcenter.it',
+        connect: (__DEV__ && !isProductionBinary) ? "http://127.0.0.1:3000" : 'https://schoolmanager-api.xcenter.it',
         update: "/update",
         create: "/add",
         delete: "/delete",
         get: "/get",
+        me: "/me",
 
         authenticate: "/api/auth/send",
         authenticateOtp: "/api/auth/verify",
@@ -423,7 +492,7 @@ export const DataManager = {
     },
     accountData: {
         app: "@app:accountData",
-        db: "/api/account",
+        db: null,
         default: defaultAccountData
     },
     debugData: {
@@ -443,7 +512,7 @@ export const DataManager = {
     },
     userData: {
         app: "@app:userData",
-        db: "/api/users",
+        db: "/api/account",
         default: defaultUserData
     },
     classData: {

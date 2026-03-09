@@ -19,14 +19,14 @@ router.post(paths.dbGet, async (req, res) => {
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
     if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     if (targetuserid && targetuserid !== user.userid) {
       if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can view other students grades' });
     }
 
-    let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ userid: targetuserid });
+    let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ _id: targetuserid });
     if (!targetUserInfo) return res.status(404).json({ error: 'Target user info not found' });
 
     const grades = await Grade.find({ classid, subjectid, userid: targetUserInfo.userid }).lean();
@@ -48,14 +48,14 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
     if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     if (targetuserid && targetuserid !== user.userid) {
       if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can change other students grades' });
     }
 
-    let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ userid: targetuserid });
+    let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ _id: targetuserid });
     if (!targetUserInfo) return res.status(404).json({ error: 'Target user info not found' });
 
     const { grade, title, gradeTitle, type } = req.body;
@@ -94,14 +94,14 @@ router.post(paths.dbDelete, async (req, res) => {
     if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
     if (!gradeid) return res.status(400).json({ error: 'Grade ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     if (targetuserid && targetuserid !== user.userid) {
       if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete other students grades' });
     }
 
-    let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ userid: targetuserid });
+    let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ _id: targetuserid });
     if (!targetUserInfo) return res.status(404).json({ error: 'Target user info not found' });
 
     await Grade.deleteOne({ gradeid, classid, subjectid, user: targetUserInfo._id });
@@ -124,14 +124,14 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
     if (!gradeid) return res.status(400).json({ error: 'Grade ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     if (targetuserid && targetuserid !== user.userid) {
       if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update other students grades' });
     }
 
-    let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ userid: targetuserid });
+    let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ _id: targetuserid });
     if (!targetUserInfo) return res.status(404).json({ error: 'Target user info not found' });
 
     const { grade, title, gradeTitle, type } = req.body;

@@ -13,14 +13,14 @@ interface updateClassProps {
     name: string;
     description: string;
     setLoading: (loading: boolean) => void;
+    create: (data: Object) => Promise<any>;
 }
 
-async function updateClass({action, id, name, description, setLoading}: updateClassProps) {
+async function updateClass({action, id, name, description, setLoading, create}: updateClassProps) {
     setLoading(true);
     switch (action) {
         case "create":
-            const newClass = useDBitem(DataManager.classData.db);
-            newClass.create({
+            create({
                 name,
                 description
             }).then(data => {
@@ -47,6 +47,8 @@ function NewClass() {
     const [loading, setLoading] = useState(false);
 
     const canProceed = className.length > 0 && classDescription.length > 0;
+
+    const classData = useDBitem(DataManager.classData.db);
 
     return (
         <>
@@ -78,7 +80,8 @@ function NewClass() {
                         action: "create",
                         name: className,
                         description: classDescription,
-                        setLoading
+                        setLoading,
+                        create: classData.create
                     })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
                         {loading 
                             ? <ActivityIndicator size="small" />

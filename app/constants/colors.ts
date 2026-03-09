@@ -1,4 +1,6 @@
 /* Check user color scheme */
+import { Color } from 'expo-router';
+
 export const colors = {
   light: {
     type: "light",
@@ -24,6 +26,9 @@ export const colors = {
     action: "#404040",
     disabled: "rgba(255, 255, 255, 0.3)",
   },
+  dynamic: {
+    surface: Color.android.dynamic.surface ?? "rgba(0, 0, 0, 0.05)",
+  }
 };
 
 export type Theme = typeof colors.light;

@@ -11,7 +11,9 @@ router.post(paths.dbGet, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     if (!user) return res.status(401).json({ error: 'User authentication required' });
 
-    const userData = await UserData.findOne({ userid: user.userid }).populate('userInfo').lean();
+    req.body.populate = req.body.populate ?? [];
+    let populate = ["userInfo", ...req.body.populate];
+    const userData = await UserData.findOne({ _id: user.userdata_id }).populate(populate).exec();
     if (!userData) return res.status(404).json({ error: 'User data not found' });
 
     res.json({ success: true, data: userData });
@@ -36,10 +38,10 @@ router.post(paths.dbUpdate, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     if (!user) return res.status(401).json({ error: 'User authentication required' });
 
-    const userData = await UserData.findOne({ userid: user.userid });
+    const userData = await UserData.findOne({ _id: user.userdata_id });
     if (!userData) return res.status(404).json({ error: 'User data not found' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     let fullname = req.body.name;
@@ -54,7 +56,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (name) updateData.name = fullname;
     updateData.editedAt = Date.now();
 
-    await UserData.updateOne({ userid: user.userid }, { $set: updateData });
+    await UserData.updateOne({ _id: userData._id }, { $set: updateData });
 
     // Update user info
     const updateInfo = {};
@@ -63,7 +65,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (email) updateInfo.email = email;
     updateInfo.editedAt = Date.now();
 
-    await UserInfo.updateOne({ userid: user.userid }, { $set: updateInfo });
+    await UserInfo.updateOne({ _id: userInfo._id }, { $set: updateInfo });
 
     res.json({ success: true });
   } catch (error) {
@@ -82,7 +84,7 @@ router.post(paths.accountRegisterForPushNotifications, async (req, res) => {
         const { pushToken } = req.body;
         if (!pushToken) return res.status(400).json({ error: 'Push token is required' });
 
-        const account = await Account.findOne({ userid: user.userid });
+        const account = await Account.findOne({ _id: user.account_id });
         if (!account) return res.status(404).json({ error: 'Account not found' });
 
         if (!account.pushToken.includes(pushToken)) {
@@ -106,7 +108,7 @@ router.post(paths.accountUnregisterForPushNotifications, async (req, res) => {
         const { pushToken } = req.body;
         if (!pushToken) return res.status(400).json({ error: 'Push token is required' });
 
-        const account = await Account.findOne({ userid: user.userid });
+        const account = await Account.findOne({ _id: user.account_id });
         if (!account) return res.status(404).json({ error: 'Account not found' });
 
         account.pushToken = account.pushToken.filter(token => token !== pushToken);

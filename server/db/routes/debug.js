@@ -11,10 +11,10 @@ router.post(paths.dbGet, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     if (!user) return res.status(401).json({ error: 'User authentication required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
-    const debugData = await Debug.findOne({ userid: user.userid }).lean();
+    const debugData = await Debug.findOne({ _id: user.userid }).lean();
     if (!debugData) return res.status(404).json({ error: 'Debug data not found' });
 
     res.json({ success: true, data: debugData });
@@ -39,7 +39,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     if (!user) return res.status(401).json({ error: 'User authentication required' });
 
-    const debugData = await Debug.findOne({ userid: user.userid });
+    let debugData = await Debug.findOne({ _id: user.userid });
     if (!debugData) {
       const newDebug = new Debug({
         userid: user.userid,

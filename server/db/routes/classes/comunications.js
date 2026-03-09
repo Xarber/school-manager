@@ -15,7 +15,7 @@ router.post(paths.dbGet, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     // Fetch class info (replace with actual Class model)
@@ -25,8 +25,8 @@ router.post(paths.dbGet, async (req, res) => {
     }).lean();
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (
-        !classInfo.students.includes(userInfo._id)
-        && !classInfo.teachers.includes(userInfo._id)
+        !classInfo.students.some(t => t.equals(userInfo._id))
+        && !classInfo.teachers.some(t => t.equals(userInfo._id))
     ) return res.status(403).json({ error: 'Access denied to this class' });
 
     res.json({ success: true, data: classInfo.comunications });
@@ -43,13 +43,13 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID is required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create comunications' });
 
     const classInfo = await Class.findOne({ classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.includes(userInfo._id)) return res.status(403).json({ error: 'Only teachers can create comunications' });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create comunications' });
 
     const { title, content, date, time, urgency, requiresConfirmation } = req.body;
     if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
@@ -90,13 +90,13 @@ router.post(paths.dbDelete, async (req, res) => {
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
     if (!comunicationid) return res.status(400).json({ error: 'Comunication ID required' });
 
-    const userData = await UserData.findOne({ userid: user.userid });
+    const userData = await UserData.findOne({ _id: user.userdata_id });
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete comunications' });
 
     const classInfo = await Class.findOne({ classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.includes(user._id)) return res.status(403).json({ error: 'Only teachers can delete comunications' });
+    if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can delete comunications' });
 
     // Delete comunication (replace with actual Comunication model)
     await Comunication.deleteOne({ comunicationid });
@@ -120,13 +120,13 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
     if (!comunicationid) return res.status(400).json({ error: 'Comunication ID required' });
 
-    const userData = await UserData.findOne({ userid: user.userid });
+    const userData = await UserData.findOne({ _id: user.userdata_id });
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update comunications' });
 
     const classInfo = await Class.findOne({ classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.includes(user._id)) return res.status(403).json({ error: 'Only teachers can update comunications' });
+    if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can update comunications' });
 
     const comunicationInfo = await Comunication.findOne({ comunicationid });
     if (!comunicationInfo) return res.status(404).json({ error: 'Comunication not found' });

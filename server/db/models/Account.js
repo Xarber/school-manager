@@ -1,6 +1,7 @@
 const { Schema, model, models } = require("mongoose");
 
 const AccountSchema = new Schema({
+    userid: {type: String, required: true, unique: true},
     userData: {type: Schema.Types.ObjectId, ref: 'UserData'},
     userDebug: {type: Schema.Types.ObjectId, ref: 'Debug'},
     pushToken: [{type: String, required: false}],

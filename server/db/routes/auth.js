@@ -79,6 +79,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
     let isNewUser = false;
     let userInfo = await UserInfo.findOne({ email });
     let userData = (userInfo && await UserData.findOne({ userid: userInfo.userid })) || null;
+    let account = (userInfo && await Account.findOne({ userid: userInfo.userid })) || null;
 
     if (!userInfo) {
       // Create new user
@@ -108,7 +109,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
       await userData.save();
 
       // Create account data
-      const account = new Account({
+      account = new Account({
         userid: newUserid,
         userData: userData._id,
         pushToken: [],
@@ -125,7 +126,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
 
     // Generate JWT (expires in 7 days; adjust)
     const token = jwt.sign(
-      { userid: userData._id },
+      { userdata_id: userData._id, userinfo_id: userInfo._id, account_id: account._id, userid: userData.userid, issued: Date.now() },
       process.env.JWT_SECRET,
       { expiresIn: '365d' }
     );
@@ -144,7 +145,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
 router.post(paths.dbMe, authenticateToken, async (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const user = await UserInfo.findOne({ userid: req.user.userid }).lean();
+    const user = await UserInfo.findOne({ _id: req.user.userinfo_id }).lean();
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json({ success: true, data: user });
   } catch (err) {
@@ -155,7 +156,7 @@ router.post(paths.dbMe, authenticateToken, async (req, res) => {
 router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const user = await UserInfo.findOne({ userid: req.user.userid }).lean();
+    const user = await UserInfo.findOne({ _id: req.user.userinfo_id }).lean();
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const { name, surname, email } = req.body;
@@ -163,7 +164,7 @@ router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => 
 
     await UserInfo.updateOne(
       { userid: req.user.userid },
-      { $set: {name, surname, email, editedAt: Date.now(), userid: req.user.userid} }, // Block updating userid
+      { $set: {name, surname, email, editedAt: Date.now()} },
     ).lean();
     
     res.json({ success: true });

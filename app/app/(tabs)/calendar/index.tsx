@@ -63,7 +63,7 @@ export default function CalendarScreen() {
                 </BlurView>
                 <View style={{ flex: 1, backgroundColor: theme.background }}>
                     <Calendar
-                        key={theme.type} // Force re-render on theme change
+                        key={theme.type}
                         markedDates={markedDates}
                         current={selectedDate}
                         onDayPress={(day) => setSelectedDate(day.dateString)}
@@ -81,9 +81,12 @@ export default function CalendarScreen() {
                             },
                         },
                     ]} />
-                    <DashboardItem title="Homework" items={[]} /> {/* //todo */}
-                    <DashboardItem title="Lessons" items={[]} /> {/* //todo */}
-                    <DashboardItem title="Exams" items={[]} /> {/* //todo */}
+                    {/* todo */}
+                    <DashboardItem title="Homework" items={[]} />
+                    {/* todo */}
+                    <DashboardItem title="Lessons" items={[]} />
+                    {/* todo */}
+                    <DashboardItem title="Exams" items={[]} />
                 </View>
             </ScrollView>
         </>

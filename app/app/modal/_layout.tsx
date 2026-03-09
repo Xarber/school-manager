@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/constants/useThemes";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Button } from 'react-native';
+import { colors } from "@/constants/colors";
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -20,7 +21,7 @@ export default function TabLayout() {
       style={{ flex: 1, backgroundColor: theme.background }}
       edges={["top"]}
     >
-        <Stack>
+        <Stack screenOptions={{ headerStyle: { backgroundColor: colors.dynamic.surface.toString() } }}>
             <Stack.Screen name="class/[action]" options={{ presentation: "modal", title: "Class", headerShown: true, headerLeft: headerCancel }} />
             <Stack.Screen name="subject/[action]" options={{ presentation: "modal", title: "Subject", headerShown: true, headerLeft: headerCancel }} />
             <Stack.Screen name="homework/[action]" options={{ presentation: "modal", title: "Homework", headerShown: true, headerLeft: headerCancel }} />

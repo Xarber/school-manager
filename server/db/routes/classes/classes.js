@@ -14,15 +14,15 @@ router.post(paths.dbGet, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id }).lean();
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     // Fetch class info (replace with actual Class model)
-    const classInfo = await Class.findOne({ classid }).lean();
+    const classInfo = await Class.findOne({ _id: classid }).lean();
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (
-        !classInfo.students.includes(userInfo._id)
-        && !classInfo.teachers.includes(userInfo._id)
+        !classInfo.students.some(t => t.equals(userInfo._id))
+        && !classInfo.teachers.some(t => t.equals(userInfo._id))
     ) return res.status(403).json({ error: 'Access denied to this class' });
 
     res.json({ success: true, data: classInfo });
@@ -34,17 +34,18 @@ router.post(paths.dbGet, async (req, res) => {
 
 router.post(paths.dbCreate, async (req, res) => {
   try {
-    const { name, notes, description } = req.body;
+    const { name, description } = req.body;
+    let { notes } = req.body;
     const user = req.user; // Assuming user is set by authentication middleware
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!name) return res.status(400).json({ error: 'Class name is required' });
 
-    const userInfo = await UserInfo.findOne({ userid: user.userid });
+    const userData = await UserData.findOne({ _id: user.userdata_id });
+    if (!userData) return res.status(404).json({ error: 'User data not found' });
+
+    const userInfo = await UserInfo.findOne({ _id: userData.userInfo });
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create classes' });
-
-    const userData = await UserData.findOne({ userid: user.userid });
-    if (!userData) return res.status(404).json({ error: 'User data not found' });
 
     if (!Array.isArray(notes)) {
       if (typeof notes === "string") notes = [notes];
@@ -59,13 +60,13 @@ router.post(paths.dbCreate, async (req, res) => {
       teachers: [userInfo._id], // Assuming user is the teacher creating the class
       students: [],
       schedule: [
-        {day: "Monday", hours: []},
-        {day: "Tuesday", hours: []},
-        {day: "Wednesday", hours: []},
-        {day: "Thursday", hours: []},
-        {day: "Friday", hours: []},
-        {day: "Saturday", hours: []},
-        {day: "Sunday", hours: []},
+        {day: "Monday", hours: [], addedAt: new Date().toISOString(), editedAt: Date.now()},
+        {day: "Tuesday", hours: [], addedAt: new Date().toISOString(), editedAt: Date.now()},
+        {day: "Wednesday", hours: [], addedAt: new Date().toISOString(), editedAt: Date.now()},
+        {day: "Thursday", hours: [], addedAt: new Date().toISOString(), editedAt: Date.now()},
+        {day: "Friday", hours: [], addedAt: new Date().toISOString(), editedAt: Date.now()},
+        {day: "Saturday", hours: [], addedAt: new Date().toISOString(), editedAt: Date.now()},
+        {day: "Sunday", hours: [], addedAt: new Date().toISOString(), editedAt: Date.now()},
       ],
       comunications: [],
       subjects: [],
@@ -77,7 +78,7 @@ router.post(paths.dbCreate, async (req, res) => {
 
     // Add class to user classes
     userData.classes.push(newClass._id);
-    await userInfo.save();
+    await userData.save();
 
     res.json({ success: true, data: newClass._id });
   } catch (error) {
@@ -93,13 +94,13 @@ router.post(paths.dbDelete, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID required' });  
 
-    const userData = await UserData.findOne({ userid: user.userid });
+    const userData = await UserData.findOne({ _id: user.userdata_id });
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete classes' });
 
     const classInfo = await Class.findOne({ classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.includes(user._id)) return res.status(403).json({ error: 'Only teachers can delete classes' });
+    if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can delete classes' });
 
     // Delete class (replace with actual Class model)
     await Class.deleteOne({ classid });
@@ -118,13 +119,13 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
 
-    const userData = await UserData.findOne({ userid: user.userid });
+    const userData = await UserData.findOne({ _id: user.userdata_id });
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update classes' });
 
     const classInfo = await Class.findOne({ classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.includes(user._id)) return res.status(403).json({ error: 'Only teachers can update classes' });
+    if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can update classes' });
 
     // Update class (replace with actual Class model)
     const updateData = {};
