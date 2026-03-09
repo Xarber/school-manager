@@ -19,7 +19,7 @@ router.post(paths.dbGet, async (req, res) => {
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
     // Fetch class info (replace with actual Class model)
-    const classInfo = await Class.findOne({ classid }).populate({
+    const classInfo = await Class.findOne({ _id: classid }).populate({
       path: 'comunications',
       populate: { path: 'sender' }
     }).lean();
@@ -47,7 +47,7 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create comunications' });
 
-    const classInfo = await Class.findOne({ classid });
+    const classInfo = await Class.findOne({ _id: classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create comunications' });
 
@@ -94,7 +94,7 @@ router.post(paths.dbDelete, async (req, res) => {
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete comunications' });
 
-    const classInfo = await Class.findOne({ classid });
+    const classInfo = await Class.findOne({ _id: classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can delete comunications' });
 
@@ -124,7 +124,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update comunications' });
 
-    const classInfo = await Class.findOne({ classid });
+    const classInfo = await Class.findOne({ _id: classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can update comunications' });
 

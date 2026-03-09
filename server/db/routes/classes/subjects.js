@@ -42,7 +42,7 @@ router.post(paths.dbCreate, async (req, res) => {
         if (!userInfo) return res.status(404).json({ error: 'User info not found' });
         if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create subjects' });
 
-        const classInfo = await Class.findOne({ classid });
+        const classInfo = await Class.findOne({ _id: classid });
         if (!classInfo) return res.status(404).json({ error: 'Class not found' });
         if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create subjects' });
 

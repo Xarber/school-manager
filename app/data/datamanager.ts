@@ -11,7 +11,7 @@ export const isStoreClient = env === "storeClient";     // Expo Go OR a dev buil
 export const isExpoGo = isStoreClient && !!Constants.expoVersion;
 export const isDevClient = isStoreClient && !Constants.expoVersion;
 
-export const isOnline = NetInfo.fetch().then(state => state.isConnected && state.isInternetReachable);
+export const isOnline = NetInfo.fetch().then(state => (state.isInternetReachable || state.isConnected));
 export const connectionMode = NetInfo.fetch().then(state => state.type);
 
 const defaultIndexData = {
@@ -27,7 +27,8 @@ const defaultOutboxData = [{
         app: "" as string,
         db: "" as string,
         method: "" as "GET" | "POST",
-        token: "" as string
+        token: "" as string,
+        body: undefined as Object | undefined
     },
     data: {} as any,
     addedAt: "" as string | undefined,
@@ -259,7 +260,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
             setLoading(true);
             const localstored = await AsyncStorage.getItem(appkey);
             const netState = await NetInfo.fetch();
-            if (dbkey != null && !!userToken && (netState.isConnected && netState.isInternetReachable)) {
+            if (dbkey != null && !!userToken && (netState.isInternetReachable || netState.isConnected)) {
                 loadDebug.mode = "database";
                 const stored = await fetch(DataManager.db.connect + dbkey + DataManager.db.get, {
                     method: 'POST',
@@ -302,7 +303,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
         try {
             let updated = { data: newValue };
             const netState = await NetInfo.fetch();
-            if (dbkey != null && !!userToken && (netState.isConnected && netState.isInternetReachable)) {
+            if (dbkey != null && !!userToken && (netState.isInternetReachable || netState.isConnected)) {
                 loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.update, {
                     method: 'POST',
@@ -329,7 +330,8 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
                         app: appkey,
                         db: dbkey,
                         method: "POST",
-                        token: userToken
+                        token: userToken,
+                        body: body
                     },
                     data: { data: newValue },
                     addedAt: new Date().toISOString(),
@@ -391,7 +393,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
         }
         try {
             const netState = await NetInfo.fetch();
-            if (!!userToken && (netState.isConnected && netState.isInternetReachable)) {
+            if (!!userToken && (netState.isInternetReachable || netState.isConnected)) {
                 loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.create, {
                     method: 'POST',
@@ -433,7 +435,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
         }
         try {
             const netState = await NetInfo.fetch();
-            if (!!userToken && (netState.isConnected && netState.isInternetReachable)) {
+            if (!!userToken && (netState.isInternetReachable || netState.isConnected)) {
                 loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.delete, {
                     method: 'POST',

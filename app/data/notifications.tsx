@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 
 export async function registerForPushNotificationsAsync() {
     if (!Device.isDevice || Platform.OS === "web") {
-        console.log('Must use physical device for push notifications');
+        console.warn('Push notifications are not supported on simulators. Skipped registering for push notifications.');
         return null;
     }
 
@@ -21,7 +21,7 @@ export async function registerForPushNotificationsAsync() {
     }
   
     if (finalStatus !== 'granted') {
-        console.log('Notification permission not granted');
+        console.warn('Notification permission not granted');
         return null;
     }
   
@@ -35,7 +35,7 @@ export async function registerForPushNotificationsAsync() {
         projectId,
     });
     const expoPushToken = tokenResponse.data;
-    console.log('Expo push token:', expoPushToken);
+    console.warn('Expo push token:', expoPushToken);
   
     return expoPushToken;
 }

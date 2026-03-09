@@ -26,8 +26,6 @@ export default function ProfileTab() {
         }});
     }
 
-    console.log(userData.data.settings);
-
     let profilePageData = {
         userdata: userData.data,
         classes: userData.data.classes.map((cls: ClassData) => (typeof cls === "object" ? {
