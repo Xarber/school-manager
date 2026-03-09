@@ -27,11 +27,12 @@ export default function HomeScreen() {
         weekday: "long",
     });
 
-    const tomorrow = classData.data.schedule[tomorrowDay];
+    let tomorrow = {};
+    if (!classData.loading && classData.data) tomorrow = classData.data.schedule[tomorrowDay];
     
     const homescreenPageData = {
         homework: allClassHomework,
-        grades: userData.data.grades,
+        grades: userData.data.grades ?? [],
         subjects: allClassSubjects,
         tomorrowSchedule: tomorrow,
         exams: exams,
@@ -57,7 +58,8 @@ export default function HomeScreen() {
                         router.push("/registry");
                         setTimeout(()=>router.push("/registry/grades"), 36);
                     }}/>
-                    <DashboardItem title="Tomorrow" items={[]} /> {/* //todo - Schedule, Exams, Quick Homework */}
+                    {/* todo - Schedule, Exams, Quick Homework */}
+                    <DashboardItem title="Tomorrow" items={[]} />
                     <DashboardItem title="Upcoming Exams" items={homescreenPageData.exams} maxItems={2} expand={() => {
                         router.push("/registry");
                         setTimeout(()=>router.push("/registry/exams"), 36);

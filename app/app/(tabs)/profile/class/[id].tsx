@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
-import { useAppDataSync, DataManager } from "@/data/datamanager";
+import { useAppDataSync, DataManager, ClassData } from "@/data/datamanager";
 import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,8 +16,15 @@ function AllClassList() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
-    
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, {populate: ["classes"]});
+    let classes = userData.data.classes.map((cls: ClassData) => ({
+        title: cls.name,
+        description: cls.notes.slice(0, 2).join("\n"),
+        onPress: () => {
+            router.push(`/profile/class/${cls._id}`);
+        }
+    }));
+
     return userData.loading ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -26,18 +33,8 @@ function AllClassList() {
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <ScrollView style={commonStyle.dashboardSection}>
-                {/* // todo */}
-                <DashboardItem title="Your Classes" items={[ 
-                    {
-                        title: "Class 1",
-                        description: "Description for Class 1",
-                        onPress: () => {
-                            router.push(`/profile/class/Prova1`);
-                        },
-                    }
-                ]} />
+                <DashboardItem title="Your Classes" items={classes} />
             </ScrollView>
-            {userData.data.userInfo.role != "teacher" && (
                 <ActionButtons items={[
                     {
                         title: "Create",
@@ -45,6 +42,7 @@ function AllClassList() {
                         onPress: () => {
                             router.push(`/modal/class/create`);
                         },
+                        display: userData.data.userInfo.role != "student",
                     },
                     {
                         title: "Join",
@@ -54,7 +52,6 @@ function AllClassList() {
                         },
                     }
                 ]} align="right" styles={{ borderRadius: 360 }} />
-            )}
         </View>
     );
 }
@@ -66,14 +63,26 @@ export default function ClassTab() {
     const commonStyle = createStyling.createCommonStyles(theme);
     const router = useRouter();
 
+    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
+        classid: classId
+    });
+
+    console.log(JSON.stringify(classData.data, null, 4));
+
     switch (classId) {
         case "all":
             return <AllClassList />;
         default:
-            return (
+            return classData.loading ? 
+            (
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                    <Stack.Screen options={{headerTitle: classId}} />
-                    <Text style={commonStyle.text}>Class Details for {classId}</Text>
+                    <ActivityIndicator size="small" />
+                </View>
+            ) : (
+                <View style={commonStyle.dashboardSection}>
+                    <Stack.Screen options={{headerTitle: classData.data.name}} />
+                    <Text style={commonStyle.headerText}>{classData.data.name}</Text>
+                    <Text style={commonStyle.text}>{classData.data.notes.join("\n")}</Text>
                 </View>
             );
     }
