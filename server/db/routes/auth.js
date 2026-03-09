@@ -8,6 +8,7 @@ const { UserInfo, UserData } = require('../models/User'); // Adjust path
 const { Account } = require('../models/Account');
 const { uuidGenerate, idGenerate } = require('../idgenerator');
 const { Verification } = require('../models/Verification');
+const { Debug } = require('../models/Debug');
 const paths = require('./paths.js');
 
 let transporter;
@@ -79,6 +80,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
     let isNewUser = false;
     let userInfo = await UserInfo.findOne({ email });
     let userData = (userInfo && await UserData.findOne({ userid: userInfo.userid })) || null;
+    let debugData = (userInfo && await Debug.findOne({ userid: userInfo.userid })) || null;
     let account = (userInfo && await Account.findOne({ userid: userInfo.userid })) || null;
 
     if (!userInfo) {
@@ -119,6 +121,14 @@ router.post(paths.authenticateOtp, async (req, res) => {
         editedAt: Date.now(),
       });
       await account.save();
+
+      // Create debug data
+      debugData = new Debug({
+        userid: newUserid,
+        addedAt: new Date().toISOString(),
+        editedAt: Date.now(),
+      });
+      await debugData.save();
     }
 
     // Delete used verification
@@ -126,7 +136,14 @@ router.post(paths.authenticateOtp, async (req, res) => {
 
     // Generate JWT (expires in 7 days; adjust)
     const token = jwt.sign(
-      { userdata_id: userData._id, userinfo_id: userInfo._id, account_id: account._id, userid: userData.userid, issued: Date.now() },
+      {
+        userdata_id: userData._id,
+        userinfo_id: userInfo._id,
+        account_id: account._id,
+        userid: userData.userid,
+        debug_id: debugData._id,
+        issued: Date.now()
+      },
       process.env.JWT_SECRET,
       { expiresIn: '365d' }
     );

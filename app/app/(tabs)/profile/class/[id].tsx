@@ -17,13 +17,31 @@ function AllClassList() {
     const insets = useSafeAreaInsets();
 
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, {populate: ["classes"]});
-    let classes = userData.data.classes.map((cls: ClassData) => ({
+    
+    if (userData.data.classes.length === 1 && userData.data.settings.activeClassId != (userData.data.classes[0]._id ?? userData.data.classes[0])) {
+        userData.save({...userData.data, settings: {...userData.data.settings,
+            activeClassId: (userData.data.classes[0]._id ?? userData.data.classes[0])
+        }});
+    }
+
+    let classes = userData.data.classes.map((cls: ClassData) => ((typeof cls === "object" ? {
         title: cls.name,
         description: cls.notes.slice(0, 2).join("\n"),
+        badge: (cls._id === userData.data.settings.activeClassId ? {
+            text: "Active",
+            color: "#0A84FF"
+        } : null),
         onPress: () => {
             router.push(`/profile/class/${cls._id}`);
         }
-    }));
+    } : null)));
+
+    let activeClassIndex = classes.findIndex((cls: ClassData) => cls._id === userData.data.settings.activeClassId);
+
+    if (activeClassIndex > 0) {
+        const [item] = classes.splice(activeClassIndex, 1);
+        classes.unshift(item);
+    }
 
     return userData.loading ? 
     (

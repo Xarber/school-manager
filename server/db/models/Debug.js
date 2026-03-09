@@ -1,11 +1,12 @@
 const { Schema, model, models } = require("mongoose");
 
 const DebugSchema = new Schema({
-    firstLaunch: {type: Boolean, required: true},
-    firstLaunchDate: {type: String, required: true},
-    lastLaunchDate: {type: String, required: true},
-    launchCount: {type: Number, required: true},
-    appVersion: {type: String, required: true},
+    userid: {type: String, required: true, unique: true},
+    firstLaunch: {type: Boolean},
+    firstLaunchDate: {type: String},
+    lastLaunchDate: {type: String},
+    launchCount: {type: Number},
+    appVersion: {type: String},
     errorLogs: [{type: String}],
     performanceMetrics: [{type: Schema.Types.Mixed}],
     addedAt: {type: String, required: true},

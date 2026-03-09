@@ -14,7 +14,7 @@ router.post(paths.dbGet, async (req, res) => {
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
-    const debugData = await Debug.findOne({ _id: user.userid }).lean();
+    const debugData = await Debug.findOne({ _id: user.debug_id }).lean();
     if (!debugData) return res.status(404).json({ error: 'Debug data not found' });
 
     res.json({ success: true, data: debugData });
