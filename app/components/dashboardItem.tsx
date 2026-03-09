@@ -44,7 +44,7 @@ export default function DashboardItem(props: DashboardItemProps) {
             <View style={commonStyle.dashboardSectionContainer}>
                 <Text style={renderedCount === 0 ? commonStyle.text : { display: "none" }}>{props.noItemsText ?? "Nothing to see here..."}</Text>
                 {props.items.map((item, index) => {
-                    if (props.maxItems === undefined || index < props.maxItems) {
+                    if ((props.maxItems === undefined || index < props.maxItems) && item) {
                         return (
                             <Pressable onPress={item.onPress} key={index} style={commonStyle.dashboardSectionItem}>
                                 {item.icon && <Image style={commonStyle.dashboardSectionItemIcon} source={item.icon} />}

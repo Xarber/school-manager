@@ -98,12 +98,12 @@ router.post(paths.dbDelete, async (req, res) => {
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete classes' });
 
-    const classInfo = await Class.findOne({ classid });
+    const classInfo = await Class.findOne({ _id: classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can delete classes' });
 
     // Delete class (replace with actual Class model)
-    await Class.deleteOne({ classid });
+    await Class.deleteOne({ _id: classid });
 
     res.json({ success: true });    
   } catch (error) {
@@ -123,7 +123,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (!userData) return res.status(404).json({ error: 'User data not found' });
     if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update classes' });
 
-    const classInfo = await Class.findOne({ classid });
+    const classInfo = await Class.findOne({ _id: classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can update classes' });
 
@@ -134,7 +134,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (notes) updateData.notes = notes;
     updateData.editedAt = Date.now();
 
-    await Class.updateOne({ classid }, { $set: updateData });
+    await Class.updateOne({ _id: classid }, { $set: updateData });
 
     res.json({ success: true });
   } catch (error) {

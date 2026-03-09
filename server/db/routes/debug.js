@@ -39,7 +39,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     if (!user) return res.status(401).json({ error: 'User authentication required' });
 
-    let debugData = await Debug.findOne({ _id: user.userid });
+    let debugData = await Debug.findOne({ _id: user.debug_id });
     if (!debugData) {
       const newDebug = new Debug({
         userid: user.userid,
@@ -57,7 +57,17 @@ router.post(paths.dbUpdate, async (req, res) => {
       debugData = newDebug;
     }
 
-    const { data } = req.body;
+    const { firstLaunch, firstLaunchDate, lastLaunchDate, launchCount, appVersion, errorLogs, performanceMetrics } = req.body;
+
+    const data = {
+      firstLaunch,
+      firstLaunchDate,
+      lastLaunchDate,
+      launchCount,
+      appVersion,
+      errorLogs,
+      performanceMetrics
+    };
     if (!data) return res.status(400).json({ error: 'Data is required' });
 
     debugData.firstLaunch = data.firstLaunch || debugData.firstLaunch;

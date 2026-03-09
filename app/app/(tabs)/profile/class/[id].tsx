@@ -74,12 +74,11 @@ function AllClassList() {
     );
 }
 
-export default function ClassTab() {
-    const params = useLocalSearchParams();
-    const classId = params.id as string;
+function Class(props: { classId: string }) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const router = useRouter();
+    const classId = props.classId;
 
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
         classid: classId
@@ -87,21 +86,34 @@ export default function ClassTab() {
 
     console.log(JSON.stringify(classData.data, null, 4));
 
+    return classData.loading ? 
+    (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" />
+        </View>
+    ) : (
+        <View style={commonStyle.dashboardSection}>
+            <Stack.Screen options={{headerTitle: classData.data.name}} />
+            <View style={commonStyle.card}>
+                <Text style={commonStyle.headerText}>{classData.data.name}</Text>
+                <Text style={commonStyle.text}>{classData.data.notes.join("\n")}</Text>
+            </View>
+        </View>
+    );
+}
+
+export default function ClassTab() {
+    const params = useLocalSearchParams();
+    const classId = params.id as string;
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+    const router = useRouter();
+
+
     switch (classId) {
         case "all":
             return <AllClassList />;
         default:
-            return classData.loading ? 
-            (
-                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                    <ActivityIndicator size="small" />
-                </View>
-            ) : (
-                <View style={commonStyle.dashboardSection}>
-                    <Stack.Screen options={{headerTitle: classData.data.name}} />
-                    <Text style={commonStyle.headerText}>{classData.data.name}</Text>
-                    <Text style={commonStyle.text}>{classData.data.notes.join("\n")}</Text>
-                </View>
-            );
+            return <Class classId={classId} />
     }
 }

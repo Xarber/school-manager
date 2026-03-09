@@ -56,5 +56,5 @@ app.use((req, res) => {
 });
 
 app.listen(paths.dbPort, () => {
-    console.log(`Server is running on port ${paths.dbPort}.`);
+    console.warn(`Server is running on port ${paths.dbPort}.`);
 });

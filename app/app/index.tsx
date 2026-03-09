@@ -1,33 +1,46 @@
-import { Redirect } from "expo-router";
+import { Redirect, SplashScreen } from "expo-router";
 import { View } from "react-native";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGlobalStore } from "@/data/store";
 
-export default function welcomeScreen() {
-    let appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
-    if (appDebugData.loading === false) appDebugData.save({...appDebugData.data, lastLaunchDate: new Date().toString(), launchCount: appDebugData.data.launchCount + 1}).then(() => {
-        appDebugData.load();
-    });
+SplashScreen.preventAutoHideAsync();
 
-    const {appData, setAppData} = useGlobalStore();
-    if (Object.keys(appData).length === 0) setAppData({
-        debugData: appDebugData,
-        
-    });
+export default function welcomeScreen() {
+    const [isReady, setIsReady] = useState(false);
+    const [debugDataSaved, setDebugDataSaved] = useState(false);
+    let appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
+
+    useEffect(() => {  
+        // Save launch once
+        if (!appDebugData.loading) {  
+            appDebugData.save({  
+                ...appDebugData.data,  
+                lastLaunchDate: new Date().toString(),  
+                launchCount: (appDebugData.data.launchCount || 0) + 1  
+            }).then(() => {
+                setDebugDataSaved(true);
+            });
+        }
+    }, [appDebugData.loading]);
+
+    useEffect(() => {  
+        if (!appDebugData.loading && debugDataSaved) {
+            setIsReady(true);  
+            SplashScreen.hideAsync();  // Hide native splash  
+        }
+    }, [appDebugData.loading, debugDataSaved]);  
     
     // appDebugData.data.firstLaunch = true; // Temporarily hide setup screen
+
+    if (!isReady) return null;
 
     return (
         <View>
             {
-                appDebugData.data.firstLaunch === false &&
-                appDebugData.loading === false &&
-                <Redirect href="/welcome/start" />
-            }
-            {
-                appDebugData.data.firstLaunch === true &&
-                <Redirect href="/welcome/(tabs)" />
+                appDebugData.data.firstLaunch === true
+                ? <Redirect href="/welcome/(tabs)" />
+                : <Redirect href="/welcome/start" />
             }
         </View>
     );

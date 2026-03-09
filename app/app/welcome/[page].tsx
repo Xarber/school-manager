@@ -5,9 +5,10 @@ import {
     Image,
     TextInput,
     ScrollView,
-    Alert
+    Alert,
+    ActivityIndicator
 } from "react-native";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "expo-router";
 import { useRouter, useLocalSearchParams, router, Redirect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -277,11 +278,16 @@ function completePage() {
     const image = require("@/assets/images/welcome.png");
 
     const appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
-    if (appDebugData.loading === false && appDebugData.data.firstLaunch === false) {
-        appDebugData.save({...appDebugData.data, firstLaunch: true, firstLaunchDate: new Date().toString()}).then(() => {
-            appDebugData.load();
-        });
-    }
+
+    useEffect(() => { 
+        if (appDebugData.loading === false && appDebugData.data.firstLaunch != true) {
+            appDebugData.save({
+                ...appDebugData.data,
+                firstLaunch: true,
+                firstLaunchDate: new Date().toString()
+            });
+        }
+    }, [appDebugData.loading]);  
 
     return (
         <SafeAreaView
@@ -300,10 +306,10 @@ function completePage() {
                 </View>
             </View>
             <View style={welcomeStyles.actions}>
-                <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => {
+                <TouchableOpacity disabled={appDebugData.loading} style={(appDebugData.loading ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : {...welcomeStyles.actionsButton})} onPress={() => {
                     router.replace("/(tabs)");
                 }}>
-                    <Text style={welcomeStyles.actionsButtonText}>Complete</Text>
+                    {appDebugData.loading ? <ActivityIndicator color="white" /> : <Text style={welcomeStyles.actionsButtonText}>Complete</Text>}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
