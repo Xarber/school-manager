@@ -11,7 +11,6 @@
 - Integrazione con siri/gemini (domani cosa c'è?) ecc
 - Controllo QR per verifica di appartenenza ad una scuola (OTP email istituzionale), il QR deve essere valido per 1 minuto e generato JIT.
 - Possibilmente aggiungere nuovo tipo di dati (istituto/scuola), per eventi come settimana dello studente ecc
-- OK? Todo: change all userData.role to class.teachers.contains for security
 - Idea di documenti e modulistica e altre funzioni come un vero registro elettronico.
 - Integrare BridgefySDK-react-native per consentire l'uso offline:
   Quando offline, connettiti a utenti in prossimità, e cifra le richieste con private key dell'account salvata nel DB.

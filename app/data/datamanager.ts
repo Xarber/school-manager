@@ -38,6 +38,7 @@ export type OutboxData = typeof defaultOutboxData;
 
 const defaultAccountData = {
     _id: "" as string,
+    userid: "" as string,
     userData: "" as string, // _id rel
     userDebug: "" as string, // _id rel
     token: "" as string,
@@ -51,6 +52,7 @@ export type AccountData = typeof defaultAccountData;
 
 const defaultDebugData = {
     _id: "" as string,
+    userid: "" as string,
     firstLaunch: false as boolean,
     firstLaunchDate: "" as string,
     lastLaunchDate: "" as string,
@@ -65,6 +67,7 @@ export type DebugData = typeof defaultDebugData;
 
 const defaultUserInfo = {
     _id: "" as string,
+    userid: "" as string,
     name: '' as string,
     surname: '' as string,
     email: '' as string,
@@ -91,6 +94,7 @@ export type UserSettings = typeof defaultUserSettings;
 
 const defaultUserData = {
     _id: "" as string,
+    userid: "" as string,
     name: "User" as string,
     birthday: "" as string,
     userInfo: "" as string, // _id rel
@@ -244,7 +248,33 @@ const defaultSchoolData = {
 };
 export type SchoolData = typeof defaultSchoolData;
 
-export function useAppDataSync(dbkey: string | null, appkey: string, defaultValue: any, body: Object = {}) {
+const defaultInvitationData = {
+    _id: "" as string,
+    author: "" as string, // _id rel
+    targetid: "" as string, // _id rel
+    for: "class" as "class" | "school",
+    joinAs: "student" as "student" | "teacher",
+    maxUsage: -1 as number,
+    used: 0 as number,
+    addedAt: '' as string,
+}
+export type InvitationData = typeof defaultInvitationData;
+
+const defaultReadInvitationData = {
+    _id: "" as string,
+    for: "class" as "class" | "school",
+    name: '' as string,
+    notes: [] as string[],
+    teachers: [] as UserInfo[],
+    students: 0 as number,
+    author: {
+        name: '' as string,
+        surname: '' as string
+    }
+}
+export type ReadInvitationData = typeof defaultReadInvitationData;
+
+export function useAppDataSync(dbkey: string | null, appkey: string | null, defaultValue: any, body: Object = {}) {
     const [data, setData]: any = useState(defaultValue);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -258,7 +288,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
         }
         try {
             setLoading(true);
-            const localstored = await AsyncStorage.getItem(appkey);
+            const localstored = appkey ? (await AsyncStorage.getItem(appkey)) : null;
             const netState = await NetInfo.fetch();
             if (dbkey != null && !!userToken && (netState.isInternetReachable || netState.isConnected)) {
                 loadDebug.mode = "database";
@@ -275,7 +305,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
                     if (response.ok) return responseData;
                     else throw new Error(responseData.error || response.statusText);
                 });
-                await AsyncStorage.setItem(appkey, JSON.stringify(stored.data));
+                if (appkey) await AsyncStorage.setItem(appkey, JSON.stringify(stored.data));
                 setData(stored.data);
             } else {
                 loadDebug.mode = "local";
@@ -289,6 +319,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
         } finally {
             //console.log(loadDebug);
             setLoading(false);
+            return data;
         }
     };
 
@@ -342,7 +373,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
             } else {
                 loadDebug.mode = "local";
             }
-            await AsyncStorage.setItem(appkey, JSON.stringify(updated.data));
+            if (appkey) await AsyncStorage.setItem(appkey, JSON.stringify(updated.data));
             setData(updated.data);
         } catch (err) {
             console.error(err);
@@ -350,15 +381,18 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
             setError('Save failed');
         } finally {
             //console.log(loadDebug);
+            return data;
         }
     };
 
     const remove = async () => {
         try {
-            await AsyncStorage.removeItem(appkey);
+            if (appkey) await AsyncStorage.removeItem(appkey);
             setData(defaultValue);
+            return true;
         } catch (err) {
             setError('Clear failed');
+            return false;
         }
     }
 
@@ -366,8 +400,10 @@ export function useAppDataSync(dbkey: string | null, appkey: string, defaultValu
         try {
             await AsyncStorage.clear();
             setData(defaultValue);
+            return true;
         } catch (err) {
             setError('Clear failed');
+            return false;
         }
     }
 
@@ -383,7 +419,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const create = async (data: Object) => {
+    const create = async (itemdata: Object) => {
         setLoading(true);
         const userToken = JSON.parse((await AsyncStorage.getItem(DataManager.accountData.app)) ?? "").token;
         let loadDebug = {
@@ -401,7 +437,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + userToken
                     },
-                    body: JSON.stringify({...body, ...data})
+                    body: JSON.stringify({...body, ...itemdata})
                 })
                 .then(async response => {
                     let responseData = await response.json() as any;
@@ -422,6 +458,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
         } finally {
             //console.log(loadDebug);
             setLoading(false);
+            return data;
         }
     };
 
@@ -463,6 +500,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
         } finally {
             //console.log(loadDebug);
             setLoading(false);
+            return data;
         }
     };
 
@@ -561,6 +599,11 @@ export const DataManager = {
         app: "@app:comunicationData",
         db: "/api/classes/comunications",
         default: defaultComunicationData
+    },
+    invitation: {
+        app: null,
+        db: "/api/invitation",
+        default: defaultReadInvitationData
     },
     school: {
         app: "@app:school",

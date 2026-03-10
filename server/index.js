@@ -22,6 +22,7 @@ const homeworkRoutes = require('./db/routes/classes/homework');
 const lessonsRoutes = require('./db/routes/classes/lessons');
 const materialsRoutes = require('./db/routes/classes/materials');
 const subjectsRoutes = require('./db/routes/classes/subjects');
+const invitationRoutes = require('./db/routes/invitation');
 
 mongoose.connect(process.env.MONGODB_URI, {
     dbName: `schoolmanager-${branch}`,
@@ -49,6 +50,7 @@ app.use('/api/classes/homework', homeworkRoutes);
 app.use('/api/classes/lessons', lessonsRoutes);
 app.use('/api/classes/materials', materialsRoutes);
 app.use('/api/classes/subjects', subjectsRoutes);
+app.use('/api/invitation', invitationRoutes);
 
 // Invalid URL
 app.use((req, res) => {

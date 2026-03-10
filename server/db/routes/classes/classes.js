@@ -25,6 +25,10 @@ router.post(paths.dbGet, async (req, res) => {
         && !classInfo.teachers.some(t => t.equals(userInfo._id))
     ) return res.status(403).json({ error: 'Access denied to this class' });
 
+    req.body.populate = req.body.populate ?? [];
+    let populate = ["teachers", "students", ...req.body.populate];
+    await Class.populate(classInfo, populate);
+
     res.json({ success: true, data: classInfo });
   } catch (error) {
     console.error('Get class error:', error);

@@ -21,7 +21,7 @@ export default function TabLayout() {
       style={{ flex: 1, backgroundColor: theme.background }}
       edges={["top"]}
     >
-        <Stack screenOptions={{ headerStyle: { backgroundColor: colors.dynamic.surface.toString() } }}>
+        <Stack screenOptions={{ headerStyle: { backgroundColor: colors.light.surface.toString() } }}>
             <Stack.Screen name="class/[action]" options={{ presentation: "modal", title: "Class", headerShown: true, headerLeft: headerCancel }} />
             <Stack.Screen name="subject/[action]" options={{ presentation: "modal", title: "Subject", headerShown: true, headerLeft: headerCancel }} />
             <Stack.Screen name="homework/[action]" options={{ presentation: "modal", title: "Homework", headerShown: true, headerLeft: headerCancel }} />
@@ -29,6 +29,7 @@ export default function TabLayout() {
             <Stack.Screen name="material/[action]" options={{ presentation: "modal", title: "Material", headerShown: true, headerLeft: headerCancel }} />
             <Stack.Screen name="grade/[action]" options={{ presentation: "modal", title: "Grade", headerShown: true, headerLeft: headerCancel }} />
             <Stack.Screen name="comunication/[action]" options={{ presentation: "modal", title: "Communication", headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="invitation/[action]" options={{ presentation: "modal", title: "Invitation", headerShown: true, headerLeft: headerCancel }} />
         </Stack>
     </SafeAreaView>
   );

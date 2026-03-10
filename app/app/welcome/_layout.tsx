@@ -10,7 +10,7 @@ export default function AccountLayout() {
             style={{ flex: 1, backgroundColor: theme.background }}
             edges={["top"]}
         >
-            <Stack screenOptions={{ headerStyle: { backgroundColor: colors.dynamic.surface.toString() } }}>
+            <Stack screenOptions={{ headerStyle: { backgroundColor: colors.light.surface.toString() } }}>
                 <Stack.Screen name="[page]" options={{ title: "Welcome", headerBackVisible: false,headerShown: true,headerTransparent: true,headerTitle: "" }} />
                 <Stack.Screen name="account/[action]" options={{ presentation: "modal", headerShown: true, title: "Account" }} />
             </Stack>
