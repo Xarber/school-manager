@@ -3,10 +3,9 @@ import { colors } from "@/constants/colors";
 
 export default function ProfileLayout() {
   return (
-    <Stack screenOptions={{ headerStyle: { backgroundColor: colors.dynamic.surface.toString() } }}>
+    <Stack screenOptions={{ headerStyle: { backgroundColor: colors.light.surface.toString() } }}>
         <Stack.Screen name="index" options={{ title: "Profile" }} />
-        <Stack.Screen name="settings/index" options={{ headerShown: true, title: "Settings" }} />
-        <Stack.Screen name="settings/[page]" options={{ title: "Settings", headerShown: true,headerTransparent: true,headerTitle: "" }} />
+        <Stack.Screen name="settings/[page]" options={{ title: "Settings", headerShown: true }} />
         <Stack.Screen name="class/[id]" options={{ headerShown: true, title: "Class Details", headerTitle: "Classes" }} />
         <Stack.Screen name="profiledata" options={{ presentation: "modal", headerShown: true, title: "Profile" }} />
     </Stack>

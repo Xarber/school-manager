@@ -37,6 +37,20 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         borderRadius: 10,
         alignItems: "center"
     },
+    listUserElement: {
+        display: "flex",
+        flexDirection: "row",
+        gap: 10
+    },
+    listUserElementIcon: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: theme.text,
+    },
+    listUserElementText: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
 
     /* Dashboard Component */
     dashboardSection: {

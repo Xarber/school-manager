@@ -1,8 +1,12 @@
 import { useColorScheme } from "react-native";
-import { colors, Theme } from "./colors";
+import { colors, Theme, Scheme } from "./colors";
+import { useAppDataSync } from "@/data/datamanager";
+import { DataManager } from "@/data/datamanager";
+import { useState } from "react";
+import useThemeContext from "./ThemeContext";
 
 export function useTheme(): Theme {
-  let scheme = useColorScheme() ?? "light";
-  // scheme = "dark"; // Uncomment to force dark mode for testing
+  let scheme: Scheme = useThemeContext();
+
   return colors[scheme];
 }

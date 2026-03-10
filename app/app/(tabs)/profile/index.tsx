@@ -72,7 +72,7 @@ export default function ProfileTab() {
                                 router.push("/profile/profiledata");
                             }},
                             { title: "Settings", description: "Manage your account settings", onPress: () => {
-                                router.push("/profile/settings");
+                                router.push("/profile/settings/all");
                             }}
                         ];
                         if (!isUserLoggedIn) {
@@ -87,7 +87,7 @@ export default function ProfileTab() {
                         return items;
                     })()} />
                     {isUserLoggedIn ? (
-                        <DashboardItem title="Your Classes" items={profilePageData.classes.slice(0, 5)} expand={()=>{ {/*  todo - load all classes */}
+                        <DashboardItem title="Your Classes" items={profilePageData.classes.slice(0, 5)} expand={()=>{
                             router.push("/profile/class/all");
                         }}/>
                     ) : null}

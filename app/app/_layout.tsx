@@ -4,6 +4,9 @@ import { useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { syncNow, ensureBackgroundSyncRegistered, startForegroundSync } from "@/data/sync";
 import { useEffect } from "react";
+import { useAppDataSync, DataManager } from "@/data/datamanager";
+import useThemeContext from "@/constants/ThemeContext";
+import { Scheme } from "@/constants/colors";
 
 function SyncBootstrap() {
   useEffect(() => {
@@ -16,7 +19,7 @@ function SyncBootstrap() {
 }
 
 export default function RootLayout() {
-  const scheme = useColorScheme();
+  let scheme: Scheme = useThemeContext();
 
   return (
     <ThemeProvider value={scheme === "dark" ? DarkTheme : DefaultTheme}>
