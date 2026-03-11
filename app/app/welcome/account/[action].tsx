@@ -16,6 +16,7 @@ import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { KeyboardShift } from "@/components/keyboardShift";
+import { AlertProps, useAlert } from "@/components/alert/AlertContext";
 
 export function validateEmail(email: string) {
     return !!String(email)
@@ -25,7 +26,7 @@ export function validateEmail(email: string) {
       );
 }
 
-async function sendOtp(email: string, setotpsent: Function, setloading: Function) {
+async function sendOtp(email: string, setotpsent: Function, setloading: Function, alert: {show: (props: AlertProps)=>void, hide: Function}) {
     setloading(true);
 
     const status = await fetch(DataManager.db.connect + DataManager.db.authenticate, {
@@ -44,11 +45,11 @@ async function sendOtp(email: string, setotpsent: Function, setloading: Function
         setotpsent(true);
     } else {
         setloading(false);
-        Alert.alert("Failed to send OTP code", status.message);
+        alert.show({title: "Failed to send OTP code", message: status.message});
     }
 }
 
-async function verifyOtp(email: string, otpcode: string, reset: Function) {
+async function verifyOtp(email: string, otpcode: string, reset: Function, alert: {show: (props: AlertProps)=>void, hide: Function}) {
 
     const status = await fetch(DataManager.db.connect + DataManager.db.authenticateOtp, {
         method: 'POST',
@@ -66,14 +67,14 @@ async function verifyOtp(email: string, otpcode: string, reset: Function) {
     } else {
         switch (status.error) {
             case "Invalid or expired code":
-                Alert.alert("Invalid OTP code");
+                alert.show({title: "Error", message: "Invalid OTP code"});
                 reset();
                 break;
             case "Login failed":
-                Alert.alert("Error", "Unknown error. Please try again later.");
+                alert.show({title:"Error", message: "Unknown error. Please try again later."});
                 break;
             default:
-                Alert.alert("Failed to verify OTP code", (status.message || status.error));
+                alert.show({title: "Failed to verify OTP code", message: (status.message || status.error)});
                 break;
         }
     }
@@ -92,6 +93,8 @@ function loginPage() {
 
     const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
     const [loading, setLoading] = useState(false);
+    
+    const alert = useAlert();
 
     const reset = () => {
         setOtpsent(false);
@@ -132,10 +135,10 @@ function loginPage() {
                         <View style={welcomeStyles.actions}>
                             <TouchableOpacity disabled={!validateEmail(email) || loading} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                                 if (!otpsent) {
-                                    sendOtp(email, setOtpsent, setLoading);
+                                    sendOtp(email, setOtpsent, setLoading, alert);
                                 } else {
                                     setLoading(true);
-                                    verifyOtp(email, otpcode, reset).then(status => {
+                                    verifyOtp(email, otpcode, reset, alert).then(status => {
                                         setLoading(false);
                                         if (!status.success) return;
                                         accountData.save({
@@ -173,6 +176,8 @@ function signupPage() {
     const [surname, setSurname] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const alert = useAlert();
+
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
 
     return (
@@ -207,25 +212,29 @@ function signupPage() {
                     </View>
                         <View style={welcomeStyles.actions}>
                             <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
-                                Alert.alert("Is this correct?", `${name} ${surname}`, [
-                                    {
-                                        text: "No",
-                                        onPress: () => {
-                                            setName("");
-                                            setSurname("");
-                                        }
-                                    },
-                                    {
-                                        text: "Yes",
-                                        onPress: () => {
-                                            setLoading(true);
-                                            userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}}).then(() => {
-                                                setLoading(false);
-                                                router.replace("/welcome/account/loggedin");
-                                            });
-                                        }
-                                    },
-                                ]);
+                                alert.show({
+                                    title: "Is this correct?",
+                                    message: `${name} ${surname}`, 
+                                    actions: [
+                                        {
+                                            title: "Yes",
+                                            onPress: () => {
+                                                setLoading(true);
+                                                userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}}).then(() => {
+                                                    setLoading(false);
+                                                    router.replace("/welcome/account/loggedin");
+                                                });
+                                            }
+                                        },
+                                        {
+                                            title: "No",
+                                            onPress: () => {
+                                                setName("");
+                                                setSurname("");
+                                            }
+                                        },
+                                    ]
+                                });
                             }}>
                                 {loading ? (
                                     <ActivityIndicator size="small" />

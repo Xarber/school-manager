@@ -141,6 +141,32 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         textAlign: "center",
         flexShrink: 1,  // Allows text to wrap if very long
     },
+
+    clipboardTextContainer: {
+        backgroundColor: theme.card,
+        padding: 10,
+        borderRadius: 8,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: 10,
+        gap: 10,
+    },
+    clipboardText: {
+        flexGrow: 1,
+        color: theme.text,
+        fontWeight: "bold",
+        fontSize: 18,
+        textAlign: "center",
+    },
+    clipboardTextCopy: {
+        borderRadius: 8,
+        padding: 5,
+        backgroundColor: theme.card,
+        color: "white",
+        fontWeight: "bold",
+    }
 });
 
 const createHomeScreenStyles = (theme: Theme) => StyleSheet.create({
@@ -377,8 +403,69 @@ const createModalStyles = (theme: Theme) => StyleSheet.create({
     }
 });
 
+const createAlertStyles = (theme: Theme) => StyleSheet.create({
+    container: {
+        display: "flex",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        zIndex: 9999,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 20,
+        padding: 20
+    },
+    alert: {
+        display: "flex",
+        gap: 20,
+        padding: 20,
+        backgroundColor: theme.opaqueCard,
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.5)",
+        borderRadius: 15,
+    },
+    alertHeaderText: {
+        color: theme.text,
+        fontSize: 24,
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    alertContent: {
+        display: "flex",
+        gap: 10,
+        padding: 10
+    },
+    alertText: {
+        color: theme.text,
+        fontSize: 18,
+        textAlign: "center"
+    },
+    alertActions: {
+        display: "flex",
+        flexDirection: "row",
+        gap: 10
+    },
+    alertButton: {
+        width: "100%",
+        height: 50,
+        backgroundColor: theme.primary,
+        borderRadius: 15,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    alertButtonText: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: "bold"
+    }
+});
+
 export default {
     createCommonStyles,
+    createAlertStyles,
     createHomeScreenStyles,
     createUserLoginStyles,
     createUserProfileStyles,

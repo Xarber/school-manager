@@ -36,6 +36,7 @@
     "expo-background-task": "~55.0.9",
     "expo-blur": "~55.0.8",
     "expo-calendar": "~55.0.8",
+    "expo-clipboard": "~55.0.8",
     "expo-constants": "~55.0.7",
     "expo-dev-client": "~55.0.9",
     "expo-device": "~55.0.9",

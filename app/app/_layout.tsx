@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import useThemeContext from "@/constants/ThemeContext";
 import { Scheme } from "@/constants/colors";
+import { AlertProvider } from "@/components/alert/AlertContext";
 
 function SyncBootstrap() {
   useEffect(() => {
@@ -23,9 +24,11 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={scheme === "dark" ? DarkTheme : DefaultTheme}>
-      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-      <SyncBootstrap />
-      <Stack screenOptions={{ headerShown: false }} />
+      <AlertProvider>
+        <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+        <SyncBootstrap />
+        <Stack screenOptions={{ headerShown: false }} />
+      </AlertProvider>
     </ThemeProvider>
   );
 }

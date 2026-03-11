@@ -19,6 +19,7 @@ import { useAppDataSync, DataManager } from "@/data/datamanager";
 
 import { registerForPushNotificationsAsync } from "@/data/notifications";
 import { KeyboardShift } from "@/components/keyboardShift";
+import { useAlert } from "@/components/alert/AlertContext";
 
 function startPage() {
     const router = useRouter();
@@ -112,6 +113,8 @@ function setNamePage() {
     const [name, setName] = useState("");
     if (!userData.loading && name === "" && userData.data.userInfo.name != "") setName(userData.data.userInfo.name);
 
+    const alert = useAlert();
+
     return (
         <SafeAreaView
             style={welcomeStyles.container}
@@ -137,21 +140,24 @@ function setNamePage() {
                         <View style={welcomeStyles.actions}>
                             <TouchableOpacity disabled={!name} style={!name ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
                             onPress={() => {
-                                Alert.alert("Is this correct?", name, [
-                                    {
-                                        text: "No",
-                                        onPress: () => {
-                                            setName("");
-                                        }
-                                    },
-                                    {
-                                        text: "Yes",
-                                        onPress: () => {
-                                            userData.save({...userData.data, userInfo: {...userData.data.userInfo, name}});
-                                            router.replace("/welcome/setsurname");
-                                        }
-                                    },
-                                ]);
+                                alert.show({
+                                    title: "Is this correct?",
+                                    message: name,
+                                    actions: [
+                                        {
+                                            title: "Yes",
+                                            onPress: () => {
+                                                userData.save({...userData.data, userInfo: {...userData.data.userInfo, name}});
+                                                router.replace("/welcome/setsurname");
+                                            }
+                                        },
+                                        {
+                                            title: "No",
+                                            onPress: () => {
+                                                setName("");
+                                            }
+                                        },
+                                ]});
                             }} >
                                 <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
                             </TouchableOpacity>
@@ -175,6 +181,8 @@ function setSurnamePage() {
 
     const [surname, setSurname] = useState("");
     if (!userData.loading && surname === "" && userData.data.userInfo.surname != "") setSurname(userData.data.userInfo.surname);
+
+    const alert = useAlert();
 
     return (
         <SafeAreaView
@@ -201,21 +209,25 @@ function setSurnamePage() {
                         <View style={welcomeStyles.actions}>
                             <TouchableOpacity disabled={!surname} style={!surname ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
                             onPress={() => {
-                                Alert.alert("Is this correct?", surname, [
-                                    {
-                                        text: "No",
-                                        onPress: () => {
-                                            setSurname("");
-                                        }
-                                    },
-                                    {
-                                        text: "Yes",
-                                        onPress: () => {
-                                            userData.save({...userData.data, name: `${userData.data.userInfo.name} ${surname}`, userInfo: {...userData.data.userInfo, surname}});
-                                            router.replace("/welcome/notifications");
-                                        }
-                                    },
-                                ]);
+                                alert.show({
+                                    title: "Is this correct?",
+                                    message: surname,
+                                    actions: [
+                                        {
+                                            title: "Yes",
+                                            onPress: () => {
+                                                userData.save({...userData.data, name: `${userData.data.userInfo.name} ${surname}`, userInfo: {...userData.data.userInfo, surname}});
+                                                router.replace("/welcome/notifications");
+                                            }
+                                        },
+                                        {
+                                            title: "No",
+                                            onPress: () => {
+                                                setSurname("");
+                                            }
+                                        },
+                                    ]
+                                })
                             }}>
                                 <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
                             </TouchableOpacity>

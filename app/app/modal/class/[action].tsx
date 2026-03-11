@@ -6,6 +6,7 @@ import { TextInput } from 'react-native';
 
 import createStyling from '@/constants/styling';
 import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
+import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 
 interface updateClassProps {
     action: string;
@@ -14,9 +15,13 @@ interface updateClassProps {
     description: string;
     setLoading: (loading: boolean) => void;
     create: (data: Object) => Promise<any>;
+    alert: {
+        show: (props: AlertProps) => void;
+        hide: () => void;
+    }
 }
 
-async function updateClass({action, id, name, description, setLoading, create}: updateClassProps) {
+async function updateClass({action, id, name, description, setLoading, create, alert}: updateClassProps) {
     setLoading(true);
     switch (action) {
         case "create":
@@ -24,9 +29,9 @@ async function updateClass({action, id, name, description, setLoading, create}: 
                 name,
                 description
             }).then(data => {
-                alert("Class created!");
+                alert.show({title: "Success", message: "Class created!"});
             }).catch(err => {
-                alert(err);
+                alert.show({title: "Error", message: err});
             })
             setLoading(false);
             break;
@@ -49,6 +54,8 @@ function NewClass() {
     const canProceed = className.length > 0 && classDescription.length > 0;
 
     const classData = useDBitem(DataManager.classData.db);
+
+    const alert = useAlert();
 
     return (
         <>
@@ -81,7 +88,8 @@ function NewClass() {
                         name: className,
                         description: classDescription,
                         setLoading,
-                        create: classData.create
+                        create: classData.create,
+                        alert
                     })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
                         {loading 
                             ? <ActivityIndicator size="small" />
