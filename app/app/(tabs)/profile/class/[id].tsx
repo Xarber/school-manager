@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
-import { useAppDataSync, DataManager, ClassData, UserInfo, useDBitem } from "@/data/datamanager";
+import { useAppDataSync, DataManager, ClassData, UserInfo, useDBitem, SubjectData } from "@/data/datamanager";
 import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -88,10 +88,6 @@ function Class(props: { classId: string }) {
         classid: classId
     });
 
-    const invitationHook = useDBitem(DataManager.invitation.db);
-
-    console.log(JSON.stringify(classData.data, null, 4));
-
     return classData.loading ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -99,6 +95,7 @@ function Class(props: { classId: string }) {
         </View>
     ) : (
         <View style={commonStyle.dashboardSection}>
+            {/* CLASS INFO */}
             <View style={{...commonStyle.card, gap: 10}}>
                 <View>
                     <Text style={commonStyle.headerText}>{classData.data.name}</Text>
@@ -121,32 +118,103 @@ function Class(props: { classId: string }) {
                         </Link>
                     )}
                 </View>
+            </View>
+            {/* CLASS SUBJECTS */}
+            <View style={{...commonStyle.card, gap: 10}}>
+                <DashboardItem title={"Subjects"} items={[]} collapsed={true} expand={()=>{
+                    router.push({ pathname: `/profile/class/${classId}` as any, params: { page: "subjects" } });
+                }} />
+            </View>
+            {/* CLASS USERS */}
+            <View style={{gap: 10}}>
+                {/* CLASS TEACHERS */}
+                <View style={{...commonStyle.card, gap: 10}}>
+                    <Text style={commonStyle.headerText}>Teachers</Text>
+                    <View style={{...commonStyle.card, gap: 10}}>
+                        {classData.data.teachers.length === 0 && <Text style={commonStyle.text}>No teachers</Text>}
+                        {classData.data.teachers.map((teacher: UserInfo) => (
+                            <View key={teacher.userid} style={commonStyle.listUserElement}>
+                                <Ionicons style={commonStyle.listUserElementIcon} name="id-card" size={30} color={theme.text} />
+                                <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{teacher.name} {teacher.surname}</Text>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+                {/* CLASS STUDENTS */}
+                <View style={{...commonStyle.card, gap: 10}}>
+                    <Text style={commonStyle.headerText}>Students</Text>
+                    <View style={{...commonStyle.card, gap: 10}}>
+                        {classData.data.students.length === 0 && <Text style={commonStyle.text}>No students</Text>}
+                        {classData.data.students.map((student: UserInfo) => (
+                            <View key={student.userid} style={commonStyle.listUserElement}>
+                                <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
+                                <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{student.name} {student.surname}</Text>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            </View>
+        </View>
+    );
+}
 
-            </View>
-            <View style={{...commonStyle.card, gap: 10}}>
-                <Text style={commonStyle.headerText}>Teachers</Text>
-                <View style={{...commonStyle.card, gap: 10}}>
-                    {classData.data.teachers.length === 0 && <Text style={commonStyle.text}>No teachers</Text>}
-                    {classData.data.teachers.map((teacher: UserInfo) => (
-                        <View key={teacher.userid} style={commonStyle.listUserElement}>
-                            <Ionicons style={commonStyle.listUserElementIcon} name="id-card" size={30} color={theme.text} />
-                            <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{teacher.name} {teacher.surname}</Text>
-                        </View>
-                    ))}
-                </View>
-            </View>
-            <View style={{...commonStyle.card, gap: 10}}>
-                <Text style={commonStyle.headerText}>Students</Text>
-                <View style={{...commonStyle.card, gap: 10}}>
-                    {classData.data.students.length === 0 && <Text style={commonStyle.text}>No students</Text>}
-                    {classData.data.students.map((student: UserInfo) => (
-                        <View key={student.userid} style={commonStyle.listUserElement}>
-                            <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
-                            <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{student.name} {student.surname}</Text>
-                        </View>
-                    ))}
-                </View>
-            </View>
+function AllClassSubjects() {
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+    const router = useRouter();
+    const insets = useSafeAreaInsets();
+    const params = useLocalSearchParams();
+    const classId = params.id as string;
+
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
+        populate: ["subjects"],
+        classid: classId
+    });
+
+    console.log(JSON.stringify(classData.data, null, 4));
+
+    let subjects = classData.loading === false ? classData.data.subjects.map((subject: SubjectData) => {
+        let subjectTeachers = [];
+
+        for (let teacher of subject.teacher) {
+            // classData.data.teachers where {_id: teacher}
+            let teacherData = classData.data.teachers.find((teacherData: UserInfo) => teacherData._id === teacher);
+
+            if (teacherData) {
+                subjectTeachers.push(teacherData);
+            }
+        }
+
+        return {
+            title: subject.name,
+            description: `Teachers: ${subjectTeachers.map((teacher: UserInfo) => teacher.name + " " + teacher.surname).join(", ")}`,
+            onPress: () => {
+
+            }
+        }
+    }) : [];
+
+    return (classData.loading || userData.loading) ? 
+    (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" />
+        </View>
+    ) : (
+        <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
+            <ScrollView style={commonStyle.dashboardSection}>
+                <DashboardItem title={`${classData.data.name} Subjects`} items={subjects} />
+            </ScrollView>
+            <ActionButtons items={[
+                {
+                    title: "Create",
+                    iconName: "add",
+                    onPress: () => {
+                        router.push({pathname: `/modal/subject/create` as any, params: { classid: classId }});
+                    },
+                    display: classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid),
+                }
+            ]} align="right" styles={{ borderRadius: 360 }} />
         </View>
     );
 }
@@ -154,14 +222,16 @@ function Class(props: { classId: string }) {
 export default function ClassTab() {
     const params = useLocalSearchParams();
     const classId = params.id as string;
+    const page = params.page as string;
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const router = useRouter();
 
+    if (classId === "all") return <AllClassList />;
 
-    switch (classId) {
-        case "all":
-            return <AllClassList />;
+    switch (page) {
+        case "subjects":
+            return <AllClassSubjects />;
         default:
             return <Class classId={classId} />
     }

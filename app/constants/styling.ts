@@ -420,8 +420,8 @@ const createAlertStyles = (theme: Theme) => StyleSheet.create({
     },
     alert: {
         display: "flex",
-        maxWidth: "80%",
-        minWidth: "40%",
+        width: "80%",
+        maxWidth: 400,
         gap: 20,
         padding: 20,
         backgroundColor: theme.opaqueCard,

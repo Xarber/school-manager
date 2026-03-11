@@ -11,7 +11,7 @@ export default function AccountLayout() {
             edges={["top"]}
         >
             <Stack screenOptions={{ headerStyle: { backgroundColor: colors.light.surface.toString() } }}>
-                <Stack.Screen name="[page]" options={{ title: "Welcome", headerBackVisible: false,headerShown: true,headerTransparent: true,headerTitle: "" }} />
+                <Stack.Screen name="[page]" options={{ title: "Welcome", headerBackVisible: false,headerShown: false,headerTransparent: true,headerTitle: "" }} />
                 <Stack.Screen name="account/[action]" options={{ presentation: "modal", headerShown: true, title: "Account" }} />
             </Stack>
         </SafeAreaView>

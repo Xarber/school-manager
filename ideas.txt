@@ -20,3 +20,4 @@
 - Add AI homework (exercises) generator for a specific topic (upload as pdf material) (student + teacher)
  -> Maybe topic summary + homework at the end?
 - Add AI summary for homework materials (student)
+- Add exam scheduling for DSA students
