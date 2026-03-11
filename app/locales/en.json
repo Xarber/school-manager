@@ -26,6 +26,7 @@
             }
         },
         "gradesComponent": {
+            "title": "Grades",
             "seeAll": {
                 "text": "See All"
             },
