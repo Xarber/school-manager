@@ -8,6 +8,7 @@ import ClipboardText from "@/components/clipboardText";
 
 import { Stack, useRouter } from "expo-router";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
+import i18n from "@/constants/i18n";
 
 export default function HomeScreen() {
     const theme = useTheme();
@@ -128,8 +129,8 @@ export default function HomeScreen() {
                         setTimeout(()=>router.push("/registry/grades"), 36);
                     }}/>
                     {/* todo - Schedule, Exams, Quick Homework */}
-                    <DashboardItem title="Tomorrow" items={homescreenPageData.tomorrow} />
-                    <DashboardItem title="Upcoming Exams" items={homescreenPageData.exams} maxItems={2} expand={() => {
+                    <DashboardItem title={i18n.t("home.tomorrow.title")} items={homescreenPageData.tomorrow} />
+                    <DashboardItem title={i18n.t("home.upcoming.title")} items={homescreenPageData.exams} maxItems={2} expand={() => {
                         router.push("/registry");
                         setTimeout(()=>router.push("/registry/exams"), 36);
                     }}/>

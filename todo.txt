@@ -1,4 +1,4 @@
 - Fix invite and modal header colors (it has weird outlines, probably after the material you color update)
 - Live appearance change from settings
 - Input class data into registry
-- 
+- Fix keyboard auto capitalization on email fields

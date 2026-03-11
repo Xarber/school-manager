@@ -1,0 +1,571 @@
+{
+        "components": {
+        "alert": {
+            "close": {
+                "default": {
+                    "text": "Chiudi"
+                }
+            }
+        },
+        "dashboardItem": {
+            "seeAll": {
+                "text": "Vedi Tutto"
+            },
+            "empty": {
+                "text": "Niente da vedere..."
+            },
+            "item": {
+                "nodescription": {
+                    "text": "Nessuna descrizione"
+                }
+            }
+        },
+        "gradeGrid": {
+            "empty": {
+                "text": "Niente da vedere..."
+            }
+        },
+        "gradesComponent": {
+            "seeAll": {
+                "text": "Vedi Tutto"
+            },
+            "empty": {
+                "text": "Nessuna descrizione..."
+            }
+        }
+    },
+    "welcome": {
+        "page": {
+            "divider": "--------------------WELCOME PAGE --------------------"
+        },
+        "stack": {
+            "title": "Ciao!"
+        },
+        "main": {
+            "title": "Ciao!",
+            "description": "Iniziamo la nostra avventura.",
+            "start": "Inizia"
+        },
+        "account": {
+            "stack": {
+                "title": "Account"
+            },
+            "title": "Ci conosciamo?",
+            "description": "Vuoi accedere ad un account?",
+            "login": "Continua",
+            "skip": "Forse dopo",
+            "auth": {
+                "title": "Ciao, utente!",
+                "description": "Ti manderemo un codice di verifica per accedere o creare un nuovo account.",
+                "input": {
+                    "email": {
+                        "title": "Indirizzo email",
+                        "placeholder": "Email"
+                    },
+                    "otp": {
+                        "title": "Codice OTP",
+                        "placeholder": "Password"
+                    }
+                },
+                "continue": "Continua",
+                "success": {
+                    "title": "Hai effettuato l'accesso!",
+                    "continue": "Continua"
+                }
+            },
+            "signup": {
+                "title": "Benvenuto/a!",
+                "description": "Grazie per aver creato un account!\nCome ti chiami?",
+                "input": {
+                    "name": {
+                        "title": "Nome",
+                        "placeholder": "Nome"
+                    },
+                    "surname": {
+                        "title": "Cognome",
+                        "placeholder": "Cognome"
+                    }
+                },
+                "confirm": {
+                    "title": "È corretto?",
+                    "true": "Sì",
+                    "false": "No"
+                },
+                "continue": "Continua"
+            },
+            "error": {
+                "otpsendfail": {
+                    "title": "Impossibile mandare il codice OTP"
+                },
+                "otpinvalid": "OTP non valido",
+                "otpverifyfail": {
+                    "title": "Impossibile verificare il codice OTP"
+                },
+                "generic": {
+                    "title": "Errore",
+                    "description": "Qualcosa è andato storto. Per favore, riprova più tardi."
+                }
+            },
+            "logout": {
+                "description": "Sei sicuro di voler uscire dall'account?\nI tuoi dati non verranno eliminati, ma le tue classi non verranno più sincronizzate.",
+                "continue": "Esci"
+            }
+        },
+        "name": {
+            "title": "Conosciamoci meglio!",
+            "description": "Come ti chiami?",
+            "input": {
+                "placeholder": "Nome"
+            },
+            "next": "Continua",
+            "confirm": {
+                "title": "È corretto?",
+                "true": "Sì",
+                "false": "No"
+            }
+        },
+        "surname": {
+            "title": "Conosciamoci meglio!",
+            "description": "E il tuo cognome?",
+            "input": {
+                "placeholder": "Cognome"
+            },
+            "next": "Continua",
+            "confirm": {
+                "title": "È corretto?",
+                "true": "Sì",
+                "false": "No"
+            }
+        },
+        "notifications": {
+            "title": "Vuoi stare al passo?",
+            "description": "Vuoi attivare le notifiche?",
+            "next": "Continua"
+        },
+        "complete": {
+            "title": "Tutto fatto!",
+            "description": "Ora puoi usare l'app!",
+            "finish": "Completa"
+        }
+    },
+    "modal": {
+        "page": {
+            "divider": "--------------------MODAL PAGE --------------------"
+        },
+        "stack": {
+            "cancel": "Annulla"
+        },
+        "class": {
+            "stack": {
+                "title": "Classe"
+            },
+            "create": {
+                "stack": {
+                    "title": "Crea una classe"
+                },
+                "success": {
+                    "title": "Fatto!",
+                    "description": "Classe creata con successo.",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Errore"
+                },
+                "name": {
+                    "default": "Nuova Classe"
+                },
+                "description": {
+                    "default": "Questa è una nuova classe"
+                },
+                "teacher": {
+                    "text": "Insegnante: {{teacher}}"
+                },
+                "createdon": {
+                    "text": "Creata il: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Nome della classe"
+                    },
+                    "description": {
+                        "title": "Descrizione della classe"
+                    }
+                },
+                "confirm": "Crea"
+            }
+        },
+        "subject": {
+            "stack": {
+                "title": "Materia"
+            },
+            "create": {
+                "stack": {
+                    "title": "Crea una materia"
+                },
+                "success": {
+                    "title": "Fatto!",
+                    "description": "Materia creata con successo.",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Errore"
+                },
+                "name": {
+                    "default": "Nuova Materia"
+                },
+                "teacher": {
+                    "text": "Insegnante: {{teacher}}"
+                },
+                "createdon": {
+                    "text": "Creata il: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Nome della materia"
+                    }
+                },
+                "merge": {
+                    "text": "\"{{subjectName}}\" verrà aggiunta alla classe {{className}}"
+                },
+                "confirm": "Crea"
+            }
+        },
+        "homework": {
+            "stack": {
+                "title": "Compiti"
+            }
+        },
+        "lesson": {
+            "stack": {
+                "title": "Lezioni"
+            }
+        },
+        "material": {
+            "stack": {
+                "title": "Materiali"
+            }
+        },
+        "grade": {
+            "stack": {
+                "title": "Valutazioni"
+            }
+        },
+        "comunication": {
+            "stack": {
+                "title": "Comunicazioni"
+            }
+        },
+        "invitation": {
+            "stack": {
+                "title": "Invito"
+            }
+        }
+    },
+    "root": {
+        "page": {
+            "divider": "--------------------ROOT PAGE --------------------"
+        },
+        "tabs": {
+            "home": {
+                "label": "Home"
+            },
+            "calendar": {
+                "label": "Calendario"
+            },
+            "registry": {
+                "label": "Registro"
+            },
+            "profile": {
+                "label": "Profilo"
+            },
+            "ai": {
+                "label": "AI"
+            }
+        }
+    },
+    "ai": {
+        "page": {
+            "divider": "--------------------AI PAGE --------------------"
+        }
+    },
+    "home": {
+        "page": {
+            "divider": "--------------------HOME PAGE --------------------"
+        },
+        "stack": {
+            "title": "Home"
+        },
+        "tomorrow": {
+            "title": "Domani"
+        },
+        "upcoming": {
+            "title": "Prossime verifiche"
+        }
+    },
+    "calendar": {
+        "page": {
+            "divider": "--------------------CALENDAR PAGE --------------------"
+        },
+        "stack": {
+            "title": "Calendario"
+        },
+        "dayview": {
+            "stack": {
+                "title": "Vista giornaliera"
+            }
+        },
+        "customheader": {
+            "title": "Calendario"
+        },
+        "homework": {
+            "title": "Compiti"
+        },
+        "lessons": {
+            "title": "Lezioni"
+        },
+        "exams": {
+            "title": "Verifiche"
+        }
+    },
+    "registry": {
+        "page": {
+            "divider": "--------------------REGISTRY PAGE --------------------"
+        },
+        "stack": {
+            "title": "Registro"
+        },
+        "customheader": {
+            "title": "Registro"
+        },
+        "grades": {
+            "title": "I tuoi voti",
+            "stack": {
+                "title": "Valutazioni"
+            }
+        },
+        "class": {
+            "title": "Le tue classi",
+            "homework": {
+                "title": "Compiti"
+            },
+            "comunications": {
+                "title": "Comunicazioni"
+            },
+            "schedule": {
+                "title": "Orario"
+            },
+            "grades": {
+                "title": "Voti"
+            },
+            "resources": {
+                "title": "Risorse"
+            },
+            "lessons": {
+                "title": "Lezioni"
+            }
+        },
+        "exams": {
+            "stack": {
+                "title": "Verifiche"
+            }
+        },
+        "resources": {
+            "stack": {
+                "title": "Risorse"
+            }
+        },
+        "schedule": {
+            "stack": {
+                "title": "Orario"
+            }
+        },
+        "homework": {
+            "stack": {
+                "title": "Compiti"
+            },
+            "tab": {
+                "all": {
+                    "title": "Tutti"
+                },
+                "completed": {
+                    "title": "Completati"
+                },
+                "missed": {
+                    "title": "Mancanti"
+                }
+            }
+        },
+        "comunications": {
+            "stack": {
+                "title": "Comunicazioni"
+            }
+        },
+        "lessons": {
+            "stack": {
+                "title": "Lezioni"
+            }
+        }
+    },
+    "profile": {
+        "page": {
+            "divider": "--------------------PROFILE PAGE --------------------"
+        },
+        "stack": {
+            "title": "Profilo"
+        },
+        "customheader": {
+            "loggedin": {
+                "title": "Ciao, {{user}}!"
+            },
+            "loggedout": {
+                "title": "Profilo"
+            }
+        },
+        "panel": {
+            "loggedin": {
+                "title": "Ciao, {{user}}!"
+            },
+            "loggedout": {
+                "title": "Nessun account"
+            },
+            "name": {
+                "title": "Nome"
+            },
+            "settings": {
+                "title": "Impostazioni",
+                "description": "Gestisci le impostazioni dell'account"
+            },
+            "login": {
+                "title": "Accedi",
+                "description": "Accedi ad un account"
+            },
+            "logout": {
+                "title": "Esci",
+                "description": "Esci dal tuo account"
+            }
+        },
+        "class": {
+            "active": {
+                "badge": {
+                    "title": "Attiva"
+                },
+                "title": "Attiva",
+                "set": {
+                    "title": "Imposta come attiva"
+                }
+            },
+            "header": {
+                "title": "Le tue classi"
+            },
+            "stack": {
+                "stacktitle": "Dettagli della classe",
+                "title": "Classi"
+            },
+            "create": {
+                "title": "Crea"
+            },
+            "join": {
+                "title": "Unisciti"
+            },
+            "invite": {
+                "text": "Invita"
+            },
+            "subjects": {
+                "header": {
+                    "title": "Materie"
+                },
+                "teachers": {
+                    "list": {
+                        "text": "Insegnanti: {{teachers}}"
+                    }
+                },
+                "all": {
+                    "header": {
+                        "title": "Materie per {{class}}"
+                    },
+                    "create": {
+                        "title": "Crea"
+                    }
+                }
+            },
+            "users": {
+                "teachers": {
+                    "title": "Insegnanti",
+                    "noteachers": {
+                        "text": "Nessun insegnante"
+                    }
+                },
+                "students": {
+                    "title": "Studenti",
+                    "nostudents": {
+                        "text": "Nessuno studente"
+                    }
+                }
+            }
+        },
+        "settings": {
+            "stack": {
+                "title": "Impostazioni",
+                "stacktitle": "Impostazioni"
+            },
+            "general": {
+                "title": "Generali",
+                "profile": {
+                    "title": "Il tuo profilo"
+                },
+                "appearance": {
+                    "title": "Tema"
+                },
+                "language": {
+                    "title": "Lingua"
+                },
+                "notifications": {
+                    "title": "Notifiche"
+                },
+                "noitems": {
+                    "text": "Impostazioni"
+                }
+            },
+            "data": {
+                "title": "Dati",
+                "clear": {
+                    "title": "Svuota i dati",
+                    "success": {
+                        "title": "Fatto!",
+                        "description": "I dati sono stati svuotati."
+                    }
+                },
+                "noitems": {
+                    "text": "Dati"
+                }
+            },
+            "language": {
+                "stack": {
+                    "title": "Lingua"
+                }
+            },
+            "notifications": {
+                "stack": {
+                    "title": "Notifiche"
+                }
+            },
+            "appearance": {
+                "stack": {
+                    "title": "Tema"
+                },
+                "header": {
+                    "text": "Tema dell'app"
+                },
+                "system": {
+                    "text": "Sistema"
+                },
+                "light": {
+                    "text": "Chiaro"
+                },
+                "dark": {
+                    "text": "Scuro"
+                }
+            }
+        }
+    }
+}

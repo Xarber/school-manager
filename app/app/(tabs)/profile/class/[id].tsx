@@ -9,6 +9,7 @@ import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import ActionButtons from "@/components/actionButtons";
+import i18n from "@/constants/i18n";
 
 function AllClassList() {
     const theme = useTheme();
@@ -28,7 +29,7 @@ function AllClassList() {
         title: cls.name,
         description: cls.notes.slice(0, 2).join("\n"),
         badge: (cls._id === userData.data.settings.activeClassId ? {
-            text: "Active",
+            text: i18n.t("profile.class.active.badge.title"),
             color: "#0A84FF"
         } : null),
         onPress: () => {
@@ -51,11 +52,11 @@ function AllClassList() {
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <ScrollView style={commonStyle.dashboardSection}>
-                <DashboardItem title="Your Classes" items={classes} />
+                <DashboardItem title={i18n.t("profile.class.header.title")} items={classes} />
             </ScrollView>
             <ActionButtons items={[
                 {
-                    title: "Create",
+                    title: i18n.t("profile.class.create.title"),
                     iconName: "add",
                     onPress: () => {
                         router.push(`/modal/class/create`);
@@ -63,7 +64,7 @@ function AllClassList() {
                     display: userData.data.userInfo.role != "student",
                 },
                 {
-                    title: "Join",
+                    title: i18n.t("profile.class.join.title"),
                     iconName: "log-in",
                     onPress: () => {
                         router.push(`/modal/invitation/enter`);
@@ -105,14 +106,14 @@ function Class(props: { classId: string }) {
                     <TouchableOpacity disabled={userData.loading} onPress={() => {
                         userData.save({...userData.data, settings: {...userData.data.settings, activeClassId: classId}});
                     }} style={{...commonStyle.button, flexGrow: 1, backgroundColor: isActiveClass ? "#7d7d7d7d" : theme.primary}}>
-                        {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.buttonText}>{isActiveClass ? "Active" : "Set as active"}</Text>}
+                        {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.buttonText}>{isActiveClass ? i18n.t("profile.class.active.title") : i18n.t("profile.class.active.set.title")}</Text>}
                     </TouchableOpacity>
                     {classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid) && (
                         <Link href={{ pathname: "/modal/invitation/create" as any, params: { for: "class", targetid: classId, name: classData.data.name }}} style={{...commonStyle.button}}>
                             {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : (
                                 <View style={commonStyle.listUserElement}>
                                     <Ionicons style={commonStyle.listUserElementIcon} name="person-add" size={30} color={theme.text} key="icon" />
-                                    <Text style={[commonStyle.text, commonStyle.listUserElementText, { fontWeight: "normal"}]}>Invite</Text>
+                                    <Text style={[commonStyle.text, commonStyle.listUserElementText, { fontWeight: "normal"}]}>{i18n.t("profile.class.invite.text")}</Text>
                                 </View>
                             )}
                         </Link>
@@ -121,7 +122,7 @@ function Class(props: { classId: string }) {
             </View>
             {/* CLASS SUBJECTS */}
             <View style={{...commonStyle.card, gap: 10}}>
-                <DashboardItem title={"Subjects"} items={[]} collapsed={true} expand={()=>{
+                <DashboardItem title={i18n.t("profile.class.subjects.header.title")} items={[]} collapsed={true} expand={()=>{
                     router.push({ pathname: `/profile/class/${classId}` as any, params: { page: "subjects" } });
                 }} />
             </View>
@@ -129,9 +130,9 @@ function Class(props: { classId: string }) {
             <View style={{gap: 10}}>
                 {/* CLASS TEACHERS */}
                 <View style={{...commonStyle.card, gap: 10}}>
-                    <Text style={commonStyle.headerText}>Teachers</Text>
+                    <Text style={commonStyle.headerText}>{i18n.t("profile.class.users.teachers.title")}</Text>
                     <View style={{...commonStyle.card, gap: 10}}>
-                        {classData.data.teachers.length === 0 && <Text style={commonStyle.text}>No teachers</Text>}
+                        {classData.data.teachers.length === 0 && <Text style={commonStyle.text}>{i18n.t("profile.class.users.teachers.noteachers.text")}</Text>}
                         {classData.data.teachers.map((teacher: UserInfo) => (
                             <View key={teacher.userid} style={commonStyle.listUserElement}>
                                 <Ionicons style={commonStyle.listUserElementIcon} name="id-card" size={30} color={theme.text} />
@@ -142,9 +143,9 @@ function Class(props: { classId: string }) {
                 </View>
                 {/* CLASS STUDENTS */}
                 <View style={{...commonStyle.card, gap: 10}}>
-                    <Text style={commonStyle.headerText}>Students</Text>
+                    <Text style={commonStyle.headerText}>{i18n.t("profile.class.users.students.title")}</Text>
                     <View style={{...commonStyle.card, gap: 10}}>
-                        {classData.data.students.length === 0 && <Text style={commonStyle.text}>No students</Text>}
+                        {classData.data.students.length === 0 && <Text style={commonStyle.text}>{i18n.t("profile.class.users.students.nostudents.text")}</Text>}
                         {classData.data.students.map((student: UserInfo) => (
                             <View key={student.userid} style={commonStyle.listUserElement}>
                                 <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
@@ -188,7 +189,7 @@ function AllClassSubjects() {
 
         return {
             title: subject.name,
-            description: `Teachers: ${subjectTeachers.map((teacher: UserInfo) => teacher.name + " " + teacher.surname).join(", ")}`,
+            description: i18n.t("profile.class.subjects.teachers.list.text", {teachers: subjectTeachers.map((teacher: UserInfo) => teacher.name + " " + teacher.surname).join(", ")}),
             onPress: () => {
 
             }
@@ -203,11 +204,11 @@ function AllClassSubjects() {
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <ScrollView style={commonStyle.dashboardSection}>
-                <DashboardItem title={`${classData.data.name} Subjects`} items={subjects} />
+                <DashboardItem title={i18n.t("profile.class.subjects.all.header.title", {class: classData.data.name})} items={subjects} />
             </ScrollView>
             <ActionButtons items={[
                 {
-                    title: "Create",
+                    title: i18n.t("profile.class.subjects.all.create.title"),
                     iconName: "add",
                     onPress: () => {
                         router.push({pathname: `/modal/subject/create` as any, params: { classid: classId }});

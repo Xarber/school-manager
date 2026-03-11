@@ -6,6 +6,7 @@ import { useTheme } from "@/constants/useThemes";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import { Button } from 'react-native';
 import { colors } from "@/constants/colors";
+import i18n from '@/constants/i18n';
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -13,7 +14,7 @@ export default function TabLayout() {
   
 
   const headerCancel = () => (
-    <Button title="Cancel" onPress={() => router.back()} />
+    <Button title={i18n.t("modal.stack.cancel")} onPress={() => router.back()} />
   );
 
   return (
@@ -22,14 +23,14 @@ export default function TabLayout() {
       edges={["top"]}
     >
         <Stack screenOptions={{ headerStyle: { backgroundColor: colors.light.surface.toString() } }}>
-            <Stack.Screen name="class/[action]" options={{ presentation: "modal", title: "Class", headerShown: true, headerLeft: headerCancel }} />
-            <Stack.Screen name="subject/[action]" options={{ presentation: "modal", title: "Subject", headerShown: true, headerLeft: headerCancel }} />
-            <Stack.Screen name="homework/[action]" options={{ presentation: "modal", title: "Homework", headerShown: true, headerLeft: headerCancel }} />
-            <Stack.Screen name="lesson/[action]" options={{ presentation: "modal", title: "Lesson", headerShown: true, headerLeft: headerCancel }} />
-            <Stack.Screen name="material/[action]" options={{ presentation: "modal", title: "Material", headerShown: true, headerLeft: headerCancel }} />
-            <Stack.Screen name="grade/[action]" options={{ presentation: "modal", title: "Grade", headerShown: true, headerLeft: headerCancel }} />
-            <Stack.Screen name="comunication/[action]" options={{ presentation: "modal", title: "Communication", headerShown: true, headerLeft: headerCancel }} />
-            <Stack.Screen name="invitation/[action]" options={{ presentation: "modal", title: "Invitation", headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="class/[action]" options={{ presentation: "modal", title: i18n.t("modal.class.stack.title"), headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="subject/[action]" options={{ presentation: "modal", title: i18n.t("modal.subject.stack.title"), headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="homework/[action]" options={{ presentation: "modal", title: i18n.t("modal.homework.stack.title"), headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="lesson/[action]" options={{ presentation: "modal", title: i18n.t("modal.lesson.stack.title"), headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="material/[action]" options={{ presentation: "modal", title: i18n.t("modal.material.stack.title"), headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="grade/[action]" options={{ presentation: "modal", title: i18n.t("modal.grade.stack.title"), headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="comunication/[action]" options={{ presentation: "modal", title: i18n.t("modal.comunication.stack.title"), headerShown: true, headerLeft: headerCancel }} />
+            <Stack.Screen name="invitation/[action]" options={{ presentation: "modal", title: i18n.t("modal.invitation.stack.title"), headerShown: true, headerLeft: headerCancel }} />
         </Stack>
     </SafeAreaView>
   );

@@ -3,6 +3,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@/constants/useThemes"
 import { useState } from "react";
 import createStyling from "@/constants/styling";
+import i18n from "@/constants/i18n";
 
 type DashboardItemBadge = {
     text: string;
@@ -36,14 +37,14 @@ export default function DashboardItem(props: DashboardItemProps) {
             <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <View>
                     <Text style={commonStyle.dashboardSectionTitle}>{props.title}</Text>
-                    {props.expand && <Text style={{...commonStyle.text, fontSize: 14, color: theme.primary}}>See All</Text>}
+                    {props.expand && <Text style={{...commonStyle.text, fontSize: 14, color: theme.primary}}>{i18n.t("components.dashboardItem.seeAll.text")}</Text>}
                 </View>
                 {props.expand && (
                     <MaterialIcons name="arrow-forward-ios" size={16} color={theme.primary} style={{ marginLeft: "auto" }} />
                 )}
             </Pressable>
             <View style={[commonStyle.dashboardSectionContainer, props.collapsed ? {display: "none"} : null]}>
-                <Text style={renderedCount === 0 ? commonStyle.text : { display: "none" }}>{props.noItemsText ?? "Nothing to see here..."}</Text>
+                <Text style={renderedCount === 0 ? commonStyle.text : { display: "none" }}>{props.noItemsText ?? i18n.t("components.dashboardItem.empty.text")}</Text>
                 {props.items.map((item, index) => {
                     if ((props.maxItems === undefined || index < props.maxItems) && item) {
                         return (
@@ -52,7 +53,7 @@ export default function DashboardItem(props: DashboardItemProps) {
                                 <View style={commonStyle.dashboardSectionItemContent}>
                                     <View style={commonStyle.dashboardSectionItemTextContainer}>
                                         <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemText}}>{item.title}</Text>
-                                        <Text style={commonStyle.text}>{item.description ?? "No Description"}</Text>
+                                        <Text style={commonStyle.text}>{item.description ?? i18n.t("components.dashboardItem.item.nodescription.text")}</Text>
                                     </View>
                                     {item.badge && <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemBadge, backgroundColor: item.badge.color}}>{item.badge.text}</Text>}
                                 </View>

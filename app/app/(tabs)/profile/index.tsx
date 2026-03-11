@@ -5,12 +5,12 @@ import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
 import DashboardItem from "@/components/dashboardItem";
 import createStyling from "@/constants/styling";
-import LoginComponent from "@/components/login";
 import { router } from "expo-router";
 import { useAppDataSync, DataManager, ClassData } from "@/data/datamanager";
 import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
 import createToastConfig from "@/constants/toast";
+import i18n from "@/constants/i18n";
 
 export default function ProfileTab() {
     const theme = useTheme();
@@ -32,7 +32,7 @@ export default function ProfileTab() {
             title: cls.name,
             description: cls.notes.slice(0, 2).join("\n"),
             badge: (cls._id === userData.data.settings.activeClassId ? {
-                text: "Active",
+                text: i18n.t("profile.class.active.badge.title"),
                 color: "#0A84FF"
             } : null),
             onPress: () => {
@@ -60,34 +60,34 @@ export default function ProfileTab() {
     
     return (
         <>
-            <Stack.Screen options={{ headerTitle: "Profile" }} />
+            <Stack.Screen options={{ headerTitle: i18n.t("profile.stack.title") }} />
             <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
                 <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
-                    <Text style={HomeScreenStyle.welcomeText}>{isUserLoggedIn ? `Hello, ${profilePageData.userdata.userInfo.name}!` : "Profile"}</Text>
+                    <Text style={HomeScreenStyle.welcomeText}>{isUserLoggedIn ? i18n.t("profile.customheader.loggedin.title", {user: profilePageData.userdata.userInfo.name}) : i18n.t("profile.customheader.loggedout.title")}</Text>
                 </BlurView>
                 <View style={HomeScreenStyle.dashboard}>
-                    <DashboardItem title={isUserLoggedIn ? `Hello, ${profilePageData.userdata.userInfo.name}!` : "Not logged in"} items={(()=>{
+                    <DashboardItem title={isUserLoggedIn ? i18n.t("profile.panel.loggedin.title", {user: profilePageData.userdata.userInfo.name}) : i18n.t("profile.panel.loggedout.title")} items={(()=>{
                         let items = [
-                            { title: "Name", description: profilePageData.userdata.name, onPress: () => {
+                            { title: i18n.t("profile.panel.name.title"), description: profilePageData.userdata.name, onPress: () => {
                                 router.push("/profile/profiledata");
                             }},
-                            { title: "Settings", description: "Manage your account settings", onPress: () => {
+                            { title: i18n.t("profile.panel.settings.title"), description: i18n.t("profile.panel.settings.description"), onPress: () => {
                                 router.push("/profile/settings/all");
                             }}
                         ];
                         if (!isUserLoggedIn) {
-                            items.push({ title: "Login", description: "Log in to your account", onPress: () => {
+                            items.push({ title: i18n.t("profile.panel.login.title"), description: i18n.t("profile.panel.login.description"), onPress: () => {
                                 router.push("/welcome/account/login");
                             }});
                         } else {
-                            items.push({ title: "Logout", description: "Log out of your account", onPress: () => {
+                            items.push({ title: i18n.t("profile.panel.logout.title"), description: i18n.t("profile.panel.logout.description"), onPress: () => {
                                 router.push("/welcome/account/logout");
                             }});
                         }
                         return items;
                     })()} />
                     {isUserLoggedIn ? (
-                        <DashboardItem title="Your Classes" items={profilePageData.classes.slice(0, 5)} expand={()=>{
+                        <DashboardItem title={i18n.t("profile.class.header.title")} items={profilePageData.classes.slice(0, 5)} expand={()=>{
                             router.push("/profile/class/all");
                         }}/>
                     ) : null}

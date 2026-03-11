@@ -4,6 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@/constants/useThemes"
 import createStyling from "@/constants/styling";
 import CircularProgress from 'react-native-circular-progress-indicator';
+import i18n from "@/constants/i18n";
 
 type Grade = {
     title: string;
@@ -33,7 +34,7 @@ export default function GradeGrid(props: GradeGridProps) {
         <View style={commonStyle.dashboardSection}>
             {props.title && <Text style={commonStyle.dashboardSectionTitle}>{props.title}</Text>}
             <View style={commonStyle.dashboardSectionContainer}>
-                <Text style={props.items.length === 0 ? commonStyle.text : { display: "none" }}>Nothing to see here...</Text>
+                <Text style={props.items.length === 0 ? commonStyle.text : { display: "none" }}>{i18n.t("components.gradeGrid.empty.text")}</Text>
                 {props.items.map((item, index) => {
                     let colorIndex = "100%";
                     if (typeof item.grade === "number") {

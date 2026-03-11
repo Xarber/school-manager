@@ -55,7 +55,8 @@
       "expo-image",
       "expo-web-browser",
       "expo-sqlite",
-      "expo-background-task"
+      "expo-background-task",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

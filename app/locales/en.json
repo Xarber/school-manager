@@ -1,0 +1,571 @@
+{
+    "components": {
+        "alert": {
+            "close": {
+                "default": {
+                    "text": "Close"
+                }
+            }
+        },
+        "dashboardItem": {
+            "seeAll": {
+                "text": "See All"
+            },
+            "empty": {
+                "text": "Nothing to see here..."
+            },
+            "item": {
+                "nodescription": {
+                    "text": "No Description"
+                }
+            }
+        },
+        "gradeGrid": {
+            "empty": {
+                "text": "Nothing to see here..."
+            }
+        },
+        "gradesComponent": {
+            "seeAll": {
+                "text": "See All"
+            },
+            "empty": {
+                "text": "Nothing to see here..."
+            }
+        }
+    },
+    "welcome": {
+        "page": {
+            "divider": "--------------------WELCOME PAGE --------------------"
+        },
+        "stack": {
+            "title": "Welcome"
+        },
+        "main": {
+            "title": "Welcome!",
+            "description": "Let's get you right into the app.",
+            "start": "Get Started"
+        },
+        "account": {
+            "stack": {
+                "title": "Account"
+            },
+            "title": "Have we met before?",
+            "description": "Do you want to log into an account?",
+            "login": "Continue",
+            "skip": "Maybe later",
+            "auth": {
+                "title": "Hello, fellow user!",
+                "description": "We'll send a verification code to log you in or create a new account.",
+                "input": {
+                    "email": {
+                        "title": "Email Address",
+                        "placeholder": "Email"
+                    },
+                    "otp": {
+                        "title": "OTP Code",
+                        "placeholder": "Password"
+                    }
+                },
+                "continue": "Continue",
+                "success": {
+                    "title": "You've successfully signed in!",
+                    "continue": "Continue"
+                }
+            },
+            "signup": {
+                "title": "Welcome!",
+                "description": "Thank you for creating an account!\nWhat's your name?",
+                "input": {
+                    "name": {
+                        "title": "Name",
+                        "placeholder": "Name"
+                    },
+                    "surname": {
+                        "title": "Surname",
+                        "placeholder": "Surname"
+                    }
+                },
+                "confirm": {
+                    "title": "Is this correct?",
+                    "true": "Yes",
+                    "false": "No"
+                },
+                "continue": "Continue"
+            },
+            "error": {
+                "otpsendfail": {
+                    "title": "Failed to send OTP code"
+                },
+                "otpinvalid": "Invalid OTP code",
+                "otpverifyfail": {
+                    "title": "Failed to verify OTP code"
+                },
+                "generic": {
+                    "title": "Error",
+                    "description": "Something went wrong. Please try again later."
+                }
+            },
+            "logout": {
+                "description": "Are you sure you want to log out?\nThis won't delete any data, but your classes won't sync anymore.",
+                "continue": "Log out"
+            }
+        },
+        "name": {
+            "title": "Let's get to know each other!",
+            "description": "What's your name?",
+            "input": {
+                "placeholder": "Name"
+            },
+            "next": "Continue",
+            "confirm": {
+                "title": "Is this correct?",
+                "true": "Yes",
+                "false": "No"
+            }
+        },
+        "surname": {
+            "title": "Let's get to know each other!",
+            "description": "What about your surname?",
+            "input": {
+                "placeholder": "Surname"
+            },
+            "next": "Continue",
+            "confirm": {
+                "title": "Is this correct?",
+                "true": "Yes",
+                "false": "No"
+            }
+        },
+        "notifications": {
+            "title": "Stay updated?",
+            "description": "Do you want to enable notifications?",
+            "next": "Continue"
+        },
+        "complete": {
+            "title": "All done!",
+            "description": "You can start using the app now!",
+            "finish": "Complete"
+        }
+    },
+    "modal": {
+        "page": {
+            "divider": "--------------------MODAL PAGE --------------------"
+        },
+        "stack": {
+            "cancel": "Cancel"
+        },
+        "class": {
+            "stack": {
+                "title": "Class"
+            },
+            "create": {
+                "stack": {
+                    "title": "Create a class"
+                },
+                "success": {
+                    "title": "Success",
+                    "description": "Class created!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Error"
+                },
+                "name": {
+                    "default": "New Class"
+                },
+                "description": {
+                    "default": "This is a new class"
+                },
+                "teacher": {
+                    "text": "Teacher: {{teacher}}"
+                },
+                "createdon": {
+                    "text": "Created on: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Class Name"
+                    },
+                    "description": {
+                        "title": "Class Description"
+                    }
+                },
+                "confirm": "Create"
+            }
+        },
+        "subject": {
+            "stack": {
+                "title": "Subject"
+            },
+            "create": {
+                "stack": {
+                    "title": "Create a subject"
+                },
+                "success": {
+                    "title": "Success",
+                    "description": "Subject created!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Error"
+                },
+                "name": {
+                    "default": "New Subject"
+                },
+                "teacher": {
+                    "text": "Teacher: {{teacher}}"
+                },
+                "createdon": {
+                    "text": "Created on: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Subject Name"
+                    }
+                },
+                "merge": {
+                    "text": "\"{{subjectName}}\" will be added to {{className}}"
+                },
+                "confirm": "Create"
+            }
+        },
+        "homework": {
+            "stack": {
+                "title": "Homework"
+            }
+        },
+        "lesson": {
+            "stack": {
+                "title": "Lesson"
+            }
+        },
+        "material": {
+            "stack": {
+                "title": "Material"
+            }
+        },
+        "grade": {
+            "stack": {
+                "title": "Grade"
+            }
+        },
+        "comunication": {
+            "stack": {
+                "title": "Communication"
+            }
+        },
+        "invitation": {
+            "stack": {
+                "title": "Invitation"
+            }
+        }
+    },
+    "root": {
+        "page": {
+            "divider": "--------------------ROOT PAGE --------------------"
+        },
+        "tabs": {
+            "home": {
+                "label": "Home"
+            },
+            "calendar": {
+                "label": "Calendar"
+            },
+            "registry": {
+                "label": "Registry"
+            },
+            "profile": {
+                "label": "Profile"
+            },
+            "ai": {
+                "label": "AI"
+            }
+        }
+    },
+    "ai": {
+        "page": {
+            "divider": "--------------------AI PAGE --------------------"
+        }
+    },
+    "home": {
+        "page": {
+            "divider": "--------------------HOME PAGE --------------------"
+        },
+        "stack": {
+            "title": "Home"
+        },
+        "tomorrow": {
+            "title": "Tomorrow"
+        },
+        "upcoming": {
+            "title": "Upcoming Exams"
+        }
+    },
+    "calendar": {
+        "page": {
+            "divider": "--------------------CALENDAR PAGE --------------------"
+        },
+        "stack": {
+            "title": "Calendar"
+        },
+        "dayview": {
+            "stack": {
+                "title": "Day View"
+            }
+        },
+        "customheader": {
+            "title": "Calendar"
+        },
+        "homework": {
+            "title": "Homework"
+        },
+        "lessons": {
+            "title": "Lessons"
+        },
+        "exams": {
+            "title": "Exams"
+        }
+    },
+    "registry": {
+        "page": {
+            "divider": "--------------------REGISTRY PAGE --------------------"
+        },
+        "stack": {
+            "title": "Registry"
+        },
+        "customheader": {
+            "title": "Registry"
+        },
+        "grades": {
+            "title": "Your Grades",
+            "stack": {
+                "title": "Grades"
+            }
+        },
+        "class": {
+            "title": "Your Class",
+            "homework": {
+                "title": "Homework"
+            },
+            "comunications": {
+                "title": "Comunications"
+            },
+            "schedule": {
+                "title": "Schedule"
+            },
+            "grades": {
+                "title": "Grades"
+            },
+            "resources": {
+                "title": "Resources"
+            },
+            "lessons": {
+                "title": "Lessons"
+            }
+        },
+        "exams": {
+            "stack": {
+                "title": "Exams"
+            }
+        },
+        "resources": {
+            "stack": {
+                "title": "Resources"
+            }
+        },
+        "schedule": {
+            "stack": {
+                "title": "Schedule"
+            }
+        },
+        "homework": {
+            "stack": {
+                "title": "Homework"
+            },
+            "tab": {
+                "all": {
+                    "title": "All"
+                },
+                "completed": {
+                    "title": "Completed"
+                },
+                "missed": {
+                    "title": "Missed"
+                }
+            }
+        },
+        "comunications": {
+            "stack": {
+                "title": "Comunications"
+            }
+        },
+        "lessons": {
+            "stack": {
+                "title": "Lessons"
+            }
+        }
+    },
+    "profile": {
+        "page": {
+            "divider": "--------------------PROFILE PAGE --------------------"
+        },
+        "stack": {
+            "title": "Profile"
+        },
+        "customheader": {
+            "loggedin": {
+                "title": "Hello, {{user}}!"
+            },
+            "loggedout": {
+                "title": "Profile"
+            }
+        },
+        "panel": {
+            "loggedin": {
+                "title": "Hello, {{user}}!"
+            },
+            "loggedout": {
+                "title": "Not logged in"
+            },
+            "name": {
+                "title": "Name"
+            },
+            "settings": {
+                "title": "Settings",
+                "description": "Manage your account settings"
+            },
+            "login": {
+                "title": "Login",
+                "description": "Log into your account"
+            },
+            "logout": {
+                "title": "Logout",
+                "description": "Log out of your account"
+            }
+        },
+        "class": {
+            "active": {
+                "badge": {
+                    "title": "Active"
+                },
+                "title": "Active",
+                "set": {
+                    "title": "Set as active"
+                }
+            },
+            "header": {
+                "title": "Your Classes"
+            },
+            "stack": {
+                "stacktitle": "Class Details",
+                "title": "Classes"
+            },
+            "create": {
+                "title": "Create"
+            },
+            "join": {
+                "title": "Join"
+            },
+            "invite": {
+                "text": "Invite"
+            },
+            "subjects": {
+                "header": {
+                    "title": "Subjects"
+                },
+                "teachers": {
+                    "list": {
+                        "text": "Teachers: {{teachers}}"
+                    }
+                },
+                "all": {
+                    "header": {
+                        "title": "{{class}} Subjects"
+                    },
+                    "create": {
+                        "title": "Create"
+                    }
+                }
+            },
+            "users": {
+                "teachers": {
+                    "title": "Teachers",
+                    "noteachers": {
+                        "text": "No teachers"
+                    }
+                },
+                "students": {
+                    "title": "Students",
+                    "nostudents": {
+                        "text": "No students"
+                    }
+                }
+            }
+        },
+        "settings": {
+            "stack": {
+                "title": "Settings",
+                "stacktitle": "Settings"
+            },
+            "general": {
+                "title": "General",
+                "profile": {
+                    "title": "Your Profile"
+                },
+                "appearance": {
+                    "title": "Appearance"
+                },
+                "language": {
+                    "title": "Language"
+                },
+                "notifications": {
+                    "title": "Notifications"
+                },
+                "noitems": {
+                    "text": "Settings"
+                }
+            },
+            "data": {
+                "title": "Data",
+                "clear": {
+                    "title": "Clear Data",
+                    "success": {
+                        "title": "Success",
+                        "description": "Data was cleared."
+                    }
+                },
+                "noitems": {
+                    "text": "Data"
+                }
+            },
+            "language": {
+                "stack": {
+                    "title": "Language"
+                }
+            },
+            "notifications": {
+                "stack": {
+                    "title": "Notifications"
+                }
+            },
+            "appearance": {
+                "stack": {
+                    "title": "Appearance"
+                },
+                "header": {
+                    "text": "App Theme"
+                },
+                "system": {
+                    "text": "System"
+                },
+                "light": {
+                    "text": "Light"
+                },
+                "dark": {
+                    "text": "Dark"
+                }
+            }
+        }
+    }
+}

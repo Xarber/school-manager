@@ -8,6 +8,7 @@ import DashboardItem from '@/components/dashboardItem';
 import { Stack } from 'expo-router';
 
 import { useAppDataSync, DataManager } from "@/data/datamanager";
+import i18n from '@/constants/i18n';
 
 export default function CalendarScreen() {
     const theme = useTheme();
@@ -56,10 +57,10 @@ export default function CalendarScreen() {
 
     return (
         <>
-            <Stack.Screen options={{ headerTitle: "Calendar" }} />
+            <Stack.Screen options={{ headerTitle: i18n.t("calendar.stack.title") }} />
             <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
                 <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
-                    <Text style={HomeScreenStyle.welcomeText}>Calendar</Text>
+                    <Text style={HomeScreenStyle.welcomeText}>{i18n.t("calendar.customheader.title")}</Text>
                 </BlurView>
                 <View style={{ flex: 1, backgroundColor: theme.background }}>
                     <Calendar
@@ -82,11 +83,11 @@ export default function CalendarScreen() {
                         },
                     ]} />
                     {/* todo */}
-                    <DashboardItem title="Homework" items={[]} />
+                    <DashboardItem title={i18n.t("calendar.homework.title")} items={[]} />
                     {/* todo */}
-                    <DashboardItem title="Lessons" items={[]} />
+                    <DashboardItem title={i18n.t("calendar.lessons.title")} items={[]} />
                     {/* todo */}
-                    <DashboardItem title="Exams" items={[]} />
+                    <DashboardItem title={i18n.t("calendar.exams.title")} items={[]} />
                 </View>
             </ScrollView>
         </>

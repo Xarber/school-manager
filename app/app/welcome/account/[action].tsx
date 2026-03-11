@@ -17,6 +17,7 @@ import createStyling from "@/constants/styling";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { KeyboardShift } from "@/components/keyboardShift";
 import { AlertProps, useAlert } from "@/components/alert/AlertContext";
+import i18n from "@/constants/i18n";
 
 export function validateEmail(email: string) {
     return !!String(email)
@@ -45,7 +46,7 @@ async function sendOtp(email: string, setotpsent: Function, setloading: Function
         setotpsent(true);
     } else {
         setloading(false);
-        alert.show({title: "Failed to send OTP code", message: status.message});
+        alert.show({title: i18n.t("welcome.account.error.otpsendfail.title"), message: status.message});
     }
 }
 
@@ -67,14 +68,14 @@ async function verifyOtp(email: string, otpcode: string, reset: Function, alert:
     } else {
         switch (status.error) {
             case "Invalid or expired code":
-                alert.show({title: "Error", message: "Invalid OTP code"});
+                alert.show({title: i18n.t("welcome.account.error.generic.title"), message: i18n.t("welcome.account.error.otpinvalid")});
                 reset();
                 break;
             case "Login failed":
-                alert.show({title:"Error", message: "Unknown error. Please try again later."});
+                alert.show({title: i18n.t("welcome.account.error.generic.title"), message: i18n.t("welcome.account.error.generic.description")});
                 break;
             default:
-                alert.show({title: "Failed to verify OTP code", message: (status.message || status.error)});
+                alert.show({title: i18n.t("welcome.account.error.otpverifyfail.title"), message: (status.message || status.error)});
                 break;
         }
     }
@@ -116,18 +117,18 @@ function loginPage() {
                     </View>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
-                            <Text style={welcomeStyles.bottomViewHeaderTitle}>Hello, fellow user!</Text>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.account.auth.title")}</Text>
                         </View>
                         <View style={welcomeStyles.bottomViewBody}>
-                            <Text style={welcomeStyles.bottomViewBodyText}>We'll send a verification code to log you in or create a new account.</Text>
+                            <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.auth.description")}</Text>
                             <View style={welcomeStyles.bottomViewBodyForm}>
                                 <View style={welcomeStyles.bottomViewBodyFormField}>
-                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Email Address</Text>
-                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{reset(); setEmail(text);}} placeholder="Email" />
+                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.email.title")}</Text>
+                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{reset(); setEmail(text);}} placeholder={i18n.t("welcome.account.auth.input.email.placeholder")} />
                                 </View>
                                 <View style={!otpsent ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
-                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>OTP Code</Text>
-                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={otpcode} onChangeText={setOtpcode} placeholder="Password" />
+                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.otp.title")}</Text>
+                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={otpcode} onChangeText={setOtpcode} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
                                 </View>
                             </View>
                         </View>
@@ -155,7 +156,7 @@ function loginPage() {
                                 {loading ? (
                                     <ActivityIndicator size="small" />
                                 ) : (
-                                    <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.auth.continue")}</Text>
                                 )}
                             </TouchableOpacity>
                         </View>
@@ -194,18 +195,18 @@ function signupPage() {
                     </View>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
-                            <Text style={welcomeStyles.bottomViewHeaderTitle}>Welcome!</Text>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.account.signup.title")}</Text>
                         </View>
                         <View style={welcomeStyles.bottomViewBody}>
-                            <Text style={welcomeStyles.bottomViewBodyText}>Thank you for creating an account!{"\n"}What's your name?</Text>
+                            <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.signup.description")}</Text>
                             <View style={welcomeStyles.bottomViewBodyForm}>
                                 <View style={welcomeStyles.bottomViewBodyFormField}>
-                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Name</Text>
-                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={name} onChangeText={setName} placeholder="Name" />
+                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.signup.input.name.title")}</Text>
+                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={name} onChangeText={setName} placeholder={i18n.t("welcome.account.signup.input.name.placeholder")} />
                                 </View>
                                 <View style={welcomeStyles.bottomViewBodyFormField}>
-                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>Surname</Text>
-                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={surname} onChangeText={setSurname} placeholder="Surname" />
+                                    <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.signup.input.surname.title")}</Text>
+                                    <TextInput style={welcomeStyles.bottomViewBodyFormFieldInput} value={surname} onChangeText={setSurname} placeholder={i18n.t("welcome.account.signup.input.surname.placeholder")} />
                                 </View>
                             </View>
                         </View>
@@ -213,11 +214,11 @@ function signupPage() {
                         <View style={welcomeStyles.actions}>
                             <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                                 alert.show({
-                                    title: "Is this correct?",
+                                    title: i18n.t("welcome.account.signup.confirm.title"),
                                     message: `${name} ${surname}`, 
                                     actions: [
                                         {
-                                            title: "Yes",
+                                            title: i18n.t("welcome.account.signup.confirm.true"),
                                             onPress: () => {
                                                 setLoading(true);
                                                 userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}}).then(() => {
@@ -227,7 +228,7 @@ function signupPage() {
                                             }
                                         },
                                         {
-                                            title: "No",
+                                            title: i18n.t("welcome.account.signup.confirm.false"),
                                             onPress: () => {
                                                 setName("");
                                                 setSurname("");
@@ -239,7 +240,7 @@ function signupPage() {
                                 {loading ? (
                                     <ActivityIndicator size="small" />
                                 ) : (
-                                    <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.signup.continue")}</Text>
                                 )}
                             </TouchableOpacity>
                         </View>
@@ -282,14 +283,14 @@ function loggedinPage() {
                             <Text style={welcomeStyles.bottomViewHeaderTitle}>{userData.data.name}</Text>
                         </View>
                         <View style={welcomeStyles.bottomViewBody}>
-                            <Text style={welcomeStyles.bottomViewBodyText}>You've successfully logged in!</Text>
+                            <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.auth.success.title")}</Text>
                         </View>
                     </View>
                     <View style={welcomeStyles.actions}>
                         <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => {
                             accountData.save({...accountData.data, active: true}).then(()=>router.dismiss());
                         }}>
-                            <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                            <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.auth.success.continue")}</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -329,14 +330,14 @@ function logoutPage() {
                         <Text style={welcomeStyles.bottomViewHeaderTitle}>{userData.data.name}</Text>
                     </View>
                     <View style={welcomeStyles.bottomViewBody}>
-                        <Text style={welcomeStyles.bottomViewBodyText}>Are you sure you want to logout?{"\n"}This won't delete any data, but your classes won't sync anymore.</Text>
+                        <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.logout.description")}</Text>
                     </View>
                 </View>
                 <View style={welcomeStyles.actions}>
                     <TouchableOpacity disabled={!isLogoutAvailable} style={{...welcomeStyles.actionsButton, backgroundColor: theme.caution, opacity: (isLogoutAvailable ? 1 : 0.5)}} onPress={() => {
                         accountData.save(DataManager.accountData.default).then(()=>router.dismiss());
                     }}>
-                        <Text style={welcomeStyles.actionsButtonText}>Log out</Text>
+                        <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.logout.continue")}</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
