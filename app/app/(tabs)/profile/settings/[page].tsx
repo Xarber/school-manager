@@ -1,4 +1,4 @@
-import { View, Text, Alert, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
@@ -8,6 +8,7 @@ import { useLocalSearchParams } from "expo-router";
 import { Stack } from "expo-router";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { RadioButton } from "react-native-paper";
+import { useAlert } from "@/components/alert/AlertContext";
 
 export default function settingsPage() {
     const params = useLocalSearchParams();
@@ -71,6 +72,7 @@ function AllSettingsTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const router = useRouter();
+    const alert = useAlert();
 
     return (
         <View style={commonStyle.dashboardSection}>
@@ -91,7 +93,7 @@ function AllSettingsTab() {
             ]} noItemsText="Settings" />
             <DashboardItem title="Data" items={[
                 { title: "Clear Data", onPress: () => {
-                    AsyncStorage.clear().then(()=>Alert.alert("Cleared"));
+                    AsyncStorage.clear().then(()=>alert.show({title: "Success", message: "Data was cleared."}));
                 } },
             ]} noItemsText="Data" />
         </View>

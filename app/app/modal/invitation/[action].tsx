@@ -11,6 +11,8 @@ import { RadioButton } from 'react-native-paper';
 import { TextInput } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { AlertProps, AlertProvider, useAlert } from '@/components/alert/AlertContext';
+import ClipboardText from '@/components/clipboardText';
 
 function addDashes(str: string) {
   return str.replace(/(.{4})/g, '$1-').replace(/-$/, '');
@@ -21,11 +23,16 @@ interface updateInviteProps {
     targetid: string;
     invitefor: string;
     joinAs: string;
+    styles: any;
+    alert: {
+        show: (props: AlertProps) => void;
+        hide: () => void;
+    };
     setLoading: (loading: boolean) => void;
     create: (data: Object) => Promise<any>;
 }
 
-function updateInvite({action, invitefor, targetid, joinAs, setLoading, create}: updateInviteProps) {
+function updateInvite({action, invitefor, targetid, joinAs, setLoading, create, alert}: updateInviteProps) {
     setLoading(true);
     switch (action) {
         case "create":
@@ -34,10 +41,28 @@ function updateInvite({action, invitefor, targetid, joinAs, setLoading, create}:
                 joinAs: joinAs,
                 targetid: targetid
             }).then(data => {
-                alert("Class created!");
                 console.log(data);
+                alert.show({
+                    title: "Invite created!",
+                    message: "Share this code:",
+                    children: (
+                        <ClipboardText text={data.toString()} />
+                    ),
+                    actions: [
+                        {
+                            title: "Close",
+                            onPress: () => {
+                                alert.hide();
+                                router.back();
+                            }
+                        }
+                    ]
+                });
             }).catch(err => {
-                alert(err);
+                alert.show({
+                    title: "Error",
+                    message: err.message
+                });
             })
             setLoading(false);
             break;
@@ -62,6 +87,8 @@ function NewInvitation() {
     const [loading, setLoading] = useState(false);
     const [canProceed, setCanProceed] = useState(true);
     const [joinAs, setJoinAs] = useState("student" as "student" | "teacher");
+
+    const alertContext = useAlert();
 
     return (
         <>
@@ -91,6 +118,8 @@ function NewInvitation() {
                         invitefor: targetType,
                         targetid: targetId,
                         joinAs: joinAs,
+                        styles: commonStyle,
+                        alert: alertContext,
                         setLoading,
                         create: inviteData.create
                     })} style={[modalStyle.bottomActionButton]}>

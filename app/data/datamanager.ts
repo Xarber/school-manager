@@ -307,19 +307,23 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
                 });
                 if (appkey) await AsyncStorage.setItem(appkey, JSON.stringify(stored.data));
                 setData(stored.data);
+                return stored.data;
             } else {
                 loadDebug.mode = "local";
-                setData(localstored ? (JSON.parse(localstored) as any) : { ...defaultValue, _loaded: false });
+                let outputData = localstored ? (JSON.parse(localstored) as any) : { ...defaultValue, _loaded: false };
+                setData(outputData);
+                return outputData;
             }
         } catch (err) {
             console.error(err);
             loadDebug.mode = "failed";
             setError(err instanceof Error ? err.message : 'Load failed');
-            setData({ ...defaultValue, _loaded: false });
+            let outputData = { ...defaultValue, _loaded: false }
+            setData(outputData);
+            return outputData;
         } finally {
             //console.log(loadDebug);
             setLoading(false);
-            return data;
         }
     };
 
@@ -375,13 +379,14 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
             }
             if (appkey) await AsyncStorage.setItem(appkey, JSON.stringify(updated.data));
             setData(updated.data);
+            return updated.data;
         } catch (err) {
             console.error(err);
             loadDebug.mode = "failed";
             setError('Save failed');
+            return data;
         } finally {
             //console.log(loadDebug);
-            return data;
         }
     };
 
@@ -446,6 +451,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
                 });
                 if (response.success) setData(response.data);
                 else throw new Error(response.error || response.message || 'Create failed');
+                return response.data;
             } else {
                 loadDebug.mode = "no-token";
                 throw new Error('Create failed: ' + ((!!userToken) ? 'Offline' : 'No token'));
@@ -455,10 +461,10 @@ export function useDBitem(dbkey: string, body: Object = {}) {
             loadDebug.mode = "failed";
             setError(err instanceof Error ? err.message : 'Create failed');
             setData({});
+            return {};
         } finally {
             //console.log(loadDebug);
             setLoading(false);
-            return data;
         }
     };
 
@@ -489,6 +495,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
                 });
                 if (response.success) setData({ _id: null });
                 else throw new Error(response.error || response.message || 'Delete failed');
+                return { _id: null };
             } else {
                 loadDebug.mode = "no-token";
                 throw new Error('Delete failed: ' + ((!!userToken) ? 'Offline' : 'No token'));
@@ -497,10 +504,10 @@ export function useDBitem(dbkey: string, body: Object = {}) {
             console.error(err);
             loadDebug.mode = "failed";
             setError(err instanceof Error ? err.message : 'Delete failed');
+            return false;
         } finally {
             //console.log(loadDebug);
             setLoading(false);
-            return data;
         }
     };
 
