@@ -27,7 +27,7 @@ export default function UserGrades(props: UserGradesProps) {
         <View style={commonStyle.dashboardSection}>
             <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center", marginBottom: 10}}>
                 <View>
-                    <Text style={commonStyle.dashboardSectionTitle}>{props.title ?? "Grades"}</Text>
+                    <Text style={commonStyle.dashboardSectionTitle}>{props.title ?? i18n.t("components.gradesComponent.title")}</Text>
                     {props.expand && <Text style={{...commonStyle.text, fontSize: 14, color: theme.primary}}>{i18n.t("components.gradesComponent.seeAll.text")}</Text>}
                 </View>
                 {props.expand && (
