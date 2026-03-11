@@ -20,6 +20,7 @@ import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { registerForPushNotificationsAsync } from "@/data/notifications";
 import { KeyboardShift } from "@/components/keyboardShift";
 import { useAlert } from "@/components/alert/AlertContext";
+import i18n from "@/constants/i18n";
 
 function startPage() {
     const router = useRouter();
@@ -40,15 +41,15 @@ function startPage() {
             </View>
             <View style={welcomeStyles.bottomView}>
                 <View style={welcomeStyles.bottomViewHeader}>
-                    <Text style={welcomeStyles.bottomViewHeaderTitle}>Welcome!</Text>
+                    <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.main.title")}</Text>
                 </View>
                 <View style={welcomeStyles.bottomViewBody}>
-                    <Text style={welcomeStyles.bottomViewBodyText}>Let's get you right into the app.</Text>
+                    <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.main.description")}</Text>
                 </View>
             </View>
             <View style={welcomeStyles.actions}>
                 <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => router.replace("/welcome/restore")}>
-                    <Text style={welcomeStyles.actionsButtonText}>Get Started</Text>
+                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.main.start")}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -81,18 +82,18 @@ function restorePage() {
             </View>
             <View style={welcomeStyles.bottomView}>
                 <View style={welcomeStyles.bottomViewHeader}>
-                    <Text style={welcomeStyles.bottomViewHeaderTitle}>Have we met before?</Text>
+                    <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.account.title")}</Text>
                 </View>
                 <View style={welcomeStyles.bottomViewBody}>
-                    <Text style={welcomeStyles.bottomViewBodyText}>Do you want to log into an account?</Text>
+                    <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.description")}</Text>
                 </View>
             </View>
             <View style={welcomeStyles.actions}>
                 <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => router.push("/welcome/account/login")}>
-                    <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.login")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={{...welcomeStyles.actionsButton, backgroundColor: theme.secondary}} onPress={() => router.replace("/welcome/setname")}>
-                    <Text style={welcomeStyles.actionsButtonText}>Maybe later</Text>
+                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.skip")}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -130,36 +131,36 @@ function setNamePage() {
                     </View>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
-                            <Text style={welcomeStyles.bottomViewHeaderTitle}>Let's get to know each other!</Text>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.name.title")}</Text>
                         </View>
                         <View style={welcomeStyles.bottomViewBody}>
-                            <Text style={welcomeStyles.bottomViewBodyText}>What's your name?</Text>
-                            <TextInput style={welcomeStyles.bottomViewBodyInput} value={name} onChangeText={setName} placeholder="Name" />
+                            <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.name.description")}</Text>
+                            <TextInput style={welcomeStyles.bottomViewBodyInput} value={name} onChangeText={setName} placeholder={i18n.t("welcome.name.input.placeholder")} />
                         </View>
                     </View>
                         <View style={welcomeStyles.actions}>
                             <TouchableOpacity disabled={!name} style={!name ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
                             onPress={() => {
                                 alert.show({
-                                    title: "Is this correct?",
+                                    title: i18n.t("welcome.name.confirm.title"),
                                     message: name,
                                     actions: [
                                         {
-                                            title: "Yes",
+                                            title: i18n.t("welcome.name.confirm.true"),
                                             onPress: () => {
                                                 userData.save({...userData.data, userInfo: {...userData.data.userInfo, name}});
                                                 router.replace("/welcome/setsurname");
                                             }
                                         },
                                         {
-                                            title: "No",
+                                            title: i18n.t("welcome.name.confirm.false"),
                                             onPress: () => {
                                                 setName("");
                                             }
                                         },
                                 ]});
                             }} >
-                                <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                                <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.name.next")}</Text>
                             </TouchableOpacity>
                         </View>
                 </ScrollView>
@@ -199,29 +200,29 @@ function setSurnamePage() {
                     </View>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
-                            <Text style={welcomeStyles.bottomViewHeaderTitle}>Let's get to know each other!</Text>
+                            <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.surname.title")}</Text>
                         </View>
                         <View style={welcomeStyles.bottomViewBody}>
-                            <Text style={welcomeStyles.bottomViewBodyText}>What about your surname?</Text>
-                            <TextInput style={welcomeStyles.bottomViewBodyInput} value={surname} onChangeText={setSurname} placeholder="Surname" />
+                            <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.surname.description")}</Text>
+                            <TextInput style={welcomeStyles.bottomViewBodyInput} value={surname} onChangeText={setSurname} placeholder={i18n.t("welcome.surname.input.placeholder")} />
                         </View>
                     </View>
                         <View style={welcomeStyles.actions}>
                             <TouchableOpacity disabled={!surname} style={!surname ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
                             onPress={() => {
                                 alert.show({
-                                    title: "Is this correct?",
+                                    title: i18n.t("welcome.surname.confirm.title"),
                                     message: surname,
                                     actions: [
                                         {
-                                            title: "Yes",
+                                            title: i18n.t("welcome.surname.confirm.true"),
                                             onPress: () => {
                                                 userData.save({...userData.data, name: `${userData.data.userInfo.name} ${surname}`, userInfo: {...userData.data.userInfo, surname}});
                                                 router.replace("/welcome/notifications");
                                             }
                                         },
                                         {
-                                            title: "No",
+                                            title: i18n.t("welcome.surname.confirm.false"),
                                             onPress: () => {
                                                 setSurname("");
                                             }
@@ -229,7 +230,7 @@ function setSurnamePage() {
                                     ]
                                 })
                             }}>
-                                <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                                <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.surname.next")}</Text>
                             </TouchableOpacity>
                         </View>
                 </ScrollView>
@@ -259,10 +260,10 @@ function notificationsPage() {
             </View>
             <View style={welcomeStyles.bottomView}>
                 <View style={welcomeStyles.bottomViewHeader}>
-                    <Text style={welcomeStyles.bottomViewHeaderTitle}>Stay updated?</Text>
+                    <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.notifications.title")}</Text>
                 </View>
                 <View style={welcomeStyles.bottomViewBody}>
-                    <Text style={welcomeStyles.bottomViewBodyText}>Do you want to enable notifications?</Text>
+                    <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.notifications.description")}</Text>
                 </View>
             </View>
             <View style={welcomeStyles.actions}>
@@ -273,7 +274,7 @@ function notificationsPage() {
                         return router.replace("/welcome/complete");
                     });
                 }}>
-                    <Text style={welcomeStyles.actionsButtonText}>Continue</Text>
+                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.notifications.next")}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -311,17 +312,17 @@ function completePage() {
             </View>
             <View style={welcomeStyles.bottomView}>
                 <View style={welcomeStyles.bottomViewHeader}>
-                    <Text style={welcomeStyles.bottomViewHeaderTitle}>All done!</Text>
+                    <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.complete.title")}</Text>
                 </View>
                 <View style={welcomeStyles.bottomViewBody}>
-                    <Text style={welcomeStyles.bottomViewBodyText}>You can start using the app now!</Text>
+                    <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.complete.description")}</Text>
                 </View>
             </View>
             <View style={welcomeStyles.actions}>
                 <TouchableOpacity disabled={appDebugData.loading} style={(appDebugData.loading ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : {...welcomeStyles.actionsButton})} onPress={() => {
                     router.replace("/(tabs)");
                 }}>
-                    {appDebugData.loading ? <ActivityIndicator color="white" /> : <Text style={welcomeStyles.actionsButtonText}>Complete</Text>}
+                    {appDebugData.loading ? <ActivityIndicator color="white" /> : <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.complete.finish")}</Text>}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

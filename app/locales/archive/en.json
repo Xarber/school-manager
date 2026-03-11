@@ -1,0 +1,226 @@
+{
+    "welcome.page.divider": "--------------------WELCOME PAGE --------------------",
+
+    "welcome.stack.title": "Welcome",
+    "welcome.main.title": "Welcome!",
+    "welcome.main.description": "Let's get you right into the app.",
+    "welcome.main.start": "Get Started",
+
+    "welcome.account.stack.title": "Account",
+    "welcome.account.title": "Have we met before?",
+    "welcome.account.description": "Do you want to log into an account?",
+    "welcome.account.login": "Continue",
+    "welcome.account.skip": "Maybe later",
+
+    "welcome.account.auth.title": "Hello, fellow user!",
+    "welcome.account.auth.description": "We'll send a verification code to log you in or create a new account.",
+    "welcome.account.auth.input.email.title": "Email Address",
+    "welcome.account.auth.input.email.placeholder": "Email",
+    "welcome.account.auth.input.otp.title": "OTP Code",
+    "welcome.account.auth.input.otp.placeholder": "Password",
+    "welcome.account.auth.continue": "Continue",
+
+    "welcome.account.signup.title": "Welcome!",
+    "welcome.account.signup.description": "Thank you for creating an account!\nWhat's your name?",
+    "welcome.account.signup.input.name.title": "Name",
+    "welcome.account.signup.input.name.placeholder": "Name",
+    "welcome.account.signup.input.surname.title": "Surname",
+    "welcome.account.signup.input.surname.placeholder": "Surname",
+    "welcome.account.signup.confirm.title": "Is this correct?",
+    "welcome.account.signup.confirm.true": "Yes",
+    "welcome.account.signup.confirm.false": "No",
+    "welcome.account.signup.continue": "Continue",
+
+    "welcome.account.error.otpsendfail.title": "Failed to send OTP code",
+    "welcome.account.error.otpinvalid": "Invalid OTP code",
+    "welcome.account.error.otpverifyfail.title": "Failed to verify OTP code",
+    "welcome.account.error.generic.title": "Error",
+    "welcome.account.error.generic.description": "Something went wrong. Please try again later.",
+
+    "welcome.account.auth.success.title": "You've successfully signed in!",
+    "welcome.account.auth.success.continue": "Continue",
+
+    "welcome.account.logout.description": "Are you sure you want to log out?\nThis won't delete any data, but your classes won't sync anymore.",
+    "welcome.account.logout.continue": "Log out",
+
+    "welcome.name.title": "Let's get to know each other!",
+    "welcome.name.description": "What's your name?",
+    "welcome.name.input.placeholder": "Name",
+    "welcome.name.next": "Continue",
+    "welcome.name.confirm.title": "Is this correct?",
+    "welcome.name.confirm.true": "Yes",
+    "welcome.name.confirm.false": "No",
+
+    "welcome.surname.title": "Let's get to know each other!",
+    "welcome.surname.description": "What about your surname?",
+    "welcome.surname.input.placeholder": "Surname",
+    "welcome.surname.next": "Continue",
+    "welcome.surname.confirm.title": "Is this correct?",
+    "welcome.surname.confirm.true": "Yes",
+    "welcome.surname.confirm.false": "No",
+
+    "welcome.notifications.title": "Stay updated?",
+    "welcome.notifications.description": "Do you want to enable notifications?",
+    "welcome.notifications.next": "Continue",
+
+    "welcome.complete.title": "All done!",
+    "welcome.complete.description": "You can start using the app now!",
+    "welcome.complete.finish": "Complete",
+
+    "modal.page.divider": "--------------------MODAL PAGE --------------------",
+    
+    "modal.stack.cancel": "Cancel",
+
+    "modal.class.stack.title": "Class",
+    "modal.class.create.stack.title": "Create a class",
+    "modal.class.create.success.title": "Success",
+    "modal.class.create.success.description": "Class created!",
+    "modal.class.create.success.confirm": "Okay",
+    "modal.class.create.error.title": "Error",
+    "modal.class.create.name.default": "New Class",
+    "modal.class.create.description.default": "This is a new class",
+    "modal.class.create.teacher.text": "Teacher: {{teacher}}",
+    "modal.class.create.createdon.text": "Created on: {{createdOn}}",
+    "modal.class.create.input.name.title": "Class Name",
+    "modal.class.create.input.description.title": "Class Description",
+    "modal.class.create.confirm": "Create",
+
+    "modal.subject.stack.title": "Subject",
+    "modal.subject.create.stack.title": "Create a subject",
+    "modal.subject.create.success.title": "Success",
+    "modal.subject.create.success.description": "Subject created!",
+    "modal.subject.create.success.confirm": "Okay",
+    "modal.subject.create.error.title": "Error",
+    "modal.subject.create.name.default": "New Subject",
+    "modal.subject.create.teacher.text": "Teacher: {{teacher}}",
+    "modal.subject.create.createdon.text": "Created on: {{createdOn}}",
+    "modal.subject.create.input.name.title": "Subject Name",
+    "modal.subject.create.merge.text": "\"{{subjectName}}\" will be added to {{className}}",
+    "modal.subject.create.confirm": "Create",
+
+    "modal.homework.stack.title": "Homework",
+
+    "modal.lesson.stack.title": "Lesson",
+    
+    "modal.material.stack.title": "Material",
+
+    "modal.grade.stack.title": "Grade",
+
+    "modal.comunication.stack.title": "Communication",
+
+    "modal.invitation.stack.title": "Invitation",
+
+    "root.page.divider": "--------------------ROOT PAGE --------------------",
+
+    "root.tabs.home.label": "Home",
+    "root.tabs.calendar.label": "Calendar",
+    "root.tabs.registry.label": "Registry",
+    "root.tabs.profile.label": "Profile",
+    "root.tabs.ai.label": "AI",
+
+    "ai.page.divider": "--------------------AI PAGE --------------------",
+
+    "home.page.divider": "--------------------HOME PAGE --------------------",
+
+    "home.stack.title": "Home",
+    
+    "home.tomorrow.title": "Tomorrow",
+    "home.upcoming.title": "Upcoming Exams",
+
+    "calendar.page.divider": "--------------------CALENDAR PAGE --------------------",
+
+    "calendar.stack.title": "Calendar",
+    "calendar.dayview.stack.title": "Day View",
+    "calendar.customheader.title": "Calendar",
+    "calendar.homework.title": "Homework",
+    "calendar.lessons.title": "Lessons",
+    "calendar.exams.title": "Exams",
+
+    "registry.page.divider": "--------------------REGISTRY PAGE --------------------",
+
+    "registry.stack.title": "Registry",
+    "registry.customheader.title": "Registry",
+    "registry.grades.title": "Your Grades",
+    "registry.class.title": "Your Class",
+    "registry.class.homework.title": "Homework",
+    "registry.class.comunications.title": "Comunications",
+    "registry.class.schedule.title": "Schedule",
+    "registry.class.grades.title": "Grades",
+    "registry.class.resources.title": "Resources",
+    "registry.class.lessons.title": "Lessons",
+
+    "registry.grades.stack.title": "Grades",
+
+    "registry.exams.stack.title": "Exams",
+
+    "registry.resources.stack.title": "Resources",
+
+    "registry.schedule.stack.title": "Schedule",
+
+    "registry.homework.stack.title": "Homework",
+    "registry.homework.tab.all.title": "All",
+    "registry.homework.tab.completed.title": "Completed",
+    "registry.homework.tab.missed.title": "Missed",
+
+    "registry.comunications.stack.title": "Comunications",
+
+    "registry.lessons.stack.title": "Lessons",
+
+    "profile.page.divider": "--------------------PROFILE PAGE --------------------",
+
+    "profile.stack.title": "Profile",
+    "profile.customheader.loggedin.title": "Hello, {{user}}!",
+    "profile.customheader.loggedout.title": "Profile",
+    "profile.panel.loggedin.title": "Hello, {{user}}!",
+    "profile.panel.loggedout.title": "Not logged in",
+    "profile.panel.name.title": "Name",
+    "profile.panel.settings.title": "Settings",
+    "profile.panel.settings.description": "Manage your account settings",
+    "profile.panel.login.title": "Login",
+    "profile.panel.login.description": "Log into your account",
+    "profile.panel.logout.title": "Logout",
+    "profile.panel.logout.description": "Log out of your account",
+    "profile.class.active.badge.title": "Active",
+    "profile.class.header.title": "Your Classes",
+
+    "profile.settings.stack.title": "Settings",
+    "profile.settings.stack.stacktitle": "Settings",
+    "profile.settings.general.title": "General",
+    "profile.settings.general.profile.title": "Your Profile",
+    "profile.settings.general.appearance.title": "Appearance",
+    "profile.settings.general.language.title": "Language",
+    "profile.settings.general.notifications.title": "Notifications",
+    "profile.settings.general.noitems.text": "Settings",
+
+    "profile.settings.data.title": "Data",
+    "profile.settings.data.clear.title": "Clear Data",
+    "profile.settings.data.clear.success.title": "Success",
+    "profile.settings.data.clear.success.description": "Data was cleared.",
+    "profile.settings.data.noitems.text": "Data",
+
+    "profile.settings.language.stack.title": "Language",
+    "profile.settings.notifications.stack.title": "Notifications",
+    "profile.settings.appearance.stack.title": "Appearance",
+    "profile.settings.appearance.header.text": "App Theme",
+    "profile.settings.appearance.system.text": "System",
+    "profile.settings.appearance.light.text": "Light",
+    "profile.settings.appearance.dark.text": "Dark",
+    
+
+    "profile.class.stack.stacktitle": "Class Details",
+    "profile.class.stack.title": "Classes",
+    "profile.class.create.title": "Create",
+    "profile.class.join.title": "Join",
+    "profile.class.active.title": "Active",
+    "profile.class.active.set.title": "Set as active",
+    "profile.class.invite.text": "Invite",
+    "profile.class.subjects.header.title": "Subjects",
+    "profile.class.users.teachers.title": "Teachers",
+    "profile.class.users.teachers.noteachers.text": "No teachers",
+    "profile.class.users.students.title": "Students",
+    "profile.class.users.students.nostudents.text": "No students",
+
+    "profile.class.subjects.teachers.list.text": "Teachers: {{teachers}}",
+    "profile.class.subjects.all.header.title": "{{class}} Subjects",
+    "profile.class.subjects.all.create.title": "Create"
+}

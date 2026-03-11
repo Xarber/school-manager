@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
+import i18n from "@/constants/i18n";
 
 interface Action {
   title: string;
@@ -78,7 +79,7 @@ export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
                     hide();
                   }}
                 >
-                  <Text style={styles.alertButtonText}>Close</Text>
+                  <Text style={styles.alertButtonText}>{i18n.t("components.alert.close.default.text")}</Text>
                 </TouchableOpacity>
               )}
             </View>

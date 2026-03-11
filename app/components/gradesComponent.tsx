@@ -2,6 +2,7 @@ import { View, Text, Pressable } from "react-native"
 import { useTheme } from "@/constants/useThemes"
 import createStyling from "@/constants/styling";
 import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
+import i18n from "@/constants/i18n";
 
 type UserGrade = {
     title: string;
@@ -27,14 +28,14 @@ export default function UserGrades(props: UserGradesProps) {
             <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center", marginBottom: 10}}>
                 <View>
                     <Text style={commonStyle.dashboardSectionTitle}>{props.title ?? "Grades"}</Text>
-                    {props.expand && <Text style={{...commonStyle.text, fontSize: 14, color: theme.primary}}>See All</Text>}
+                    {props.expand && <Text style={{...commonStyle.text, fontSize: 14, color: theme.primary}}>{i18n.t("components.gradesComponent.seeAll.text")}</Text>}
                 </View>
                 {props.expand && (
                     <MaterialIcons name="arrow-forward-ios" size={16} color={theme.primary} style={{ marginLeft: "auto" }} />
                 )}
             </Pressable>
             <View style={commonStyle.userGrades}>
-                <Text style={renderedCount === 0 ? commonStyle.text : { display: "none" }}>{props.noItemsText ?? "Nothing to see here..."}</Text>
+                <Text style={renderedCount === 0 ? commonStyle.text : { display: "none" }}>{props.noItemsText ?? i18n.t("components.gradesComponent.empty.text")}</Text>
                 {props.items.map((item, index) => {
                     if (props.maxItems === undefined || index < props.maxItems) {
                         return (

@@ -8,6 +8,7 @@ import GradeGrid from "@/components/gradeGrid";
 import { useRouter } from "expo-router";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { Stack } from "expo-router";
+import i18n from "@/constants/i18n";
 
 export default function RegistryTab() {
     const theme = useTheme();
@@ -21,31 +22,31 @@ export default function RegistryTab() {
     
     return (
         <>
-            <Stack.Screen options={{ headerTitle: "Registry" }} />
+            <Stack.Screen options={{ headerTitle: i18n.t("registry.stack.title") }} />
             <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
                 <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
-                    <Text style={HomeScreenStyle.welcomeText}>Registry</Text>
+                    <Text style={HomeScreenStyle.welcomeText}>{i18n.t("registry.customheader.title")}</Text>
                 </BlurView>
                 <View style={HomeScreenStyle.dashboard}>
-                    <GradeGrid title="Your Grades" maxValue={10.1} items={registryPageData.grades} />
-                    <ActionMenu title="Your Class" items={[
-                        { title: "Homework", onPress: () => {
+                    <GradeGrid title={i18n.t("registry.grades.title")} maxValue={10.1} items={registryPageData.grades} />
+                    <ActionMenu title={i18n.t("registry.class.title")} items={[
+                        { title: i18n.t("registry.class.homework.title"), onPress: () => {
                             router.push("/registry/homework");
                         } },
-                        { title: "Comunications", onPress: () => {
+                        { title: i18n.t("registry.class.comunications.title"), onPress: () => {
                             router.push("/registry/comunications");
                         } },
-                        { title: "Schedule", onPress: () => {
+                        { title: i18n.t("registry.class.schedule.title"), onPress: () => {
                             router.push("/registry/schedule");
                         } },
-                        { title: "Grades", onPress: () => {
+                        { title: i18n.t("registry.class.grades.title"), onPress: () => {
                             router.push("/registry/grades");
                         } },
-                        { title: "Resources", onPress: () => {
+                        { title: i18n.t("registry.class.resources.title"), onPress: () => {
                             router.push("/registry/resources");
                         } },
-                        { title: "Attendance", onPress: () => {
-                            router.push("/registry/attendance");
+                        { title: i18n.t("registry.class.lessons.title"), onPress: () => {
+                            router.push("/registry/lessons");
                         } },
                     ]} />
                 </View>

@@ -2,13 +2,13 @@ import { Text, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 
-export default function Attendancetab() {
+export default function LessonsTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={commonStyle.text}>This is the attendance screen.</Text>
+            <Text style={commonStyle.text}>This is the lessons screen.</Text>
         </View>
     );
 }

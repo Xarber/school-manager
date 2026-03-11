@@ -4,6 +4,7 @@ import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useAppDataSync, DataManager, HomeworkData } from "@/data/datamanager";
+import i18n from '@/constants/i18n';
 
 function renderHomework(homework: HomeworkData[]) {
     const dateIndex: { [date: string]: HomeworkData[] } = {};
@@ -95,9 +96,9 @@ const Tab = createMaterialTopTabNavigator();
 export default function HomeworkTab() {
     return (
         <Tab.Navigator>
-            <Tab.Screen name="All" component={()=>HomeworkComponent("all")} />
-            <Tab.Screen name="Completed" component={()=>HomeworkComponent("completed")} />
-            <Tab.Screen name="Missed" component={()=>HomeworkComponent("missed")} />
+            <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={()=>HomeworkComponent("all")} />
+            <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={()=>HomeworkComponent("completed")} />
+            <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={()=>HomeworkComponent("missed")} />
         </Tab.Navigator>
     )
 }

@@ -9,6 +9,7 @@ import { Stack } from "expo-router";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { RadioButton } from "react-native-paper";
 import { useAlert } from "@/components/alert/AlertContext";
+import i18n from "@/constants/i18n";
 
 export default function settingsPage() {
     const params = useLocalSearchParams();
@@ -32,7 +33,7 @@ function LanguageTab() {
 
     return (
         <View>
-            <Stack.Screen options={{headerTitle: "Language"}} />
+            <Stack.Screen options={{headerTitle: i18n.t("profile.settings.language.stack.title")}} />
             <Text style={commonStyle.text}>Language</Text>
         </View>
     )
@@ -44,7 +45,7 @@ function NotificationsTab() {
 
     return (
         <View>
-            <Stack.Screen options={{headerTitle: "Notifications"}} />
+            <Stack.Screen options={{headerTitle: i18n.t("profile.settings.notifications.stack.title")}} />
             <Text style={commonStyle.text}>Notifications</Text>
         </View>
     )
@@ -57,12 +58,12 @@ function AppearanceTab() {
 
     return (
         <View style={commonStyle.dashboardSection}>
-            <Stack.Screen options={{headerTitle: "Appearance"}} />
-            <Text style={commonStyle.headerText}>App Theme</Text>
+            <Stack.Screen options={{headerTitle: i18n.t("profile.settings.appearance.stack.title")}} />
+            <Text style={commonStyle.headerText}>{i18n.t("profile.settings.appearance.header.text")}</Text>
             <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, theme: v}})}} value={userData.data.settings.theme}>
-                <RadioButton.Item label="System" value="system" labelStyle={commonStyle.text} />
-                <RadioButton.Item label="Light" value="light" labelStyle={commonStyle.text} />
-                <RadioButton.Item label="Dark" value="dark" labelStyle={commonStyle.text} />
+                <RadioButton.Item label={i18n.t("profile.settings.appearance.system.text")} value="system" labelStyle={commonStyle.text} />
+                <RadioButton.Item label={i18n.t("profile.settings.appearance.light.text")} value="light" labelStyle={commonStyle.text} />
+                <RadioButton.Item label={i18n.t("profile.settings.appearance.dark.text")} value="dark" labelStyle={commonStyle.text} />
             </RadioButton.Group>
         </View>
     )
@@ -76,26 +77,26 @@ function AllSettingsTab() {
 
     return (
         <View style={commonStyle.dashboardSection}>
-            <Stack.Screen options={{headerTitle: "Settings"}} />
-            <DashboardItem title="General" items={[
-                { title: "Your Profile", onPress: () => {
+            <Stack.Screen options={{headerTitle: i18n.t("profile.settings.stack.title")}} />
+            <DashboardItem title={i18n.t("profile.settings.general.title")} items={[
+                { title: i18n.t("profile.settings.general.profile.title"), onPress: () => {
                     router.push("/profile/profiledata");
                 } },
-                { title: "Appearance", onPress: () => {
+                { title: i18n.t("profile.settings.general.appearance.title"), onPress: () => {
                     router.push("/profile/settings/appearance");
                 } },
-                // { title: "Language", onPress: () => {
+                // { title: {i18n.t("profile.settings.general.language.title")}, onPress: () => {
                 //     router.push("/profile/settings/language");
                 // } },
-                { title: "Notifications", onPress: () => {
+                { title: i18n.t("profile.settings.general.notifications.title"), onPress: () => {
                     router.push("/profile/settings/notifications");
                 } },
-            ]} noItemsText="Settings" />
-            <DashboardItem title="Data" items={[
-                { title: "Clear Data", onPress: () => {
-                    AsyncStorage.clear().then(()=>alert.show({title: "Success", message: "Data was cleared."}));
+            ]} noItemsText={i18n.t("profile.settings.general.noitems.text")} />
+            <DashboardItem title={i18n.t("profile.settings.data.title")} items={[
+                { title: i18n.t("profile.settings.data.clear.title"), onPress: () => {
+                    AsyncStorage.clear().then(()=>alert.show({title: i18n.t("profile.settings.data.clear.success.title"), message: i18n.t("profile.settings.data.clear.success.description")}));
                 } },
-            ]} noItemsText="Data" />
+            ]} noItemsText={i18n.t("profile.settings.data.noitems.text")} />
         </View>
     );
 }
