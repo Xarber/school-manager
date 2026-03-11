@@ -1,6 +1,6 @@
 import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
-import {Stack, useLocalSearchParams} from "expo-router";
+import {router, Stack, useLocalSearchParams} from "expo-router";
 import {useState} from "react";
 import { TextInput } from 'react-native';
 
@@ -10,7 +10,6 @@ import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 
 interface updateClassProps {
     action: string;
-    id?: string;
     name: string;
     description: string;
     setLoading: (loading: boolean) => void;
@@ -21,7 +20,7 @@ interface updateClassProps {
     }
 }
 
-async function updateClass({action, id, name, description, setLoading, create, alert}: updateClassProps) {
+async function updateClass({action, name, description, setLoading, create, alert}: updateClassProps) {
     setLoading(true);
     switch (action) {
         case "create":
@@ -29,7 +28,17 @@ async function updateClass({action, id, name, description, setLoading, create, a
                 name,
                 description
             }).then(data => {
-                alert.show({title: "Success", message: "Class created!"});
+                alert.show({title: "Success", message: "Class created!", actions: [
+                    {
+                        title: "Okay",
+                        onPress: () => {
+                            alert.hide();
+                            router.back();
+                            router.push({pathname: `/(tabs)/profile/class/${data}` as any});
+                        }
+                    }
+                ]});
+
             }).catch(err => {
                 alert.show({title: "Error", message: err});
             })

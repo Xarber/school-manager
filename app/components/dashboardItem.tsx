@@ -20,6 +20,7 @@ type DashboardItemProps = {
     items: DashboardItem[];
     maxItems?: number;
     noItemsText?: string;
+    collapsed?: boolean;
     expand?: () => void;
 }
 
@@ -31,8 +32,8 @@ export default function DashboardItem(props: DashboardItemProps) {
     ).length;
 
     return (
-        <View style={commonStyle.dashboardSection}>
-            <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center", marginBottom: 10}}>
+        <View style={[commonStyle.dashboardSection, {gap: 10}]}>
+            <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <View>
                     <Text style={commonStyle.dashboardSectionTitle}>{props.title}</Text>
                     {props.expand && <Text style={{...commonStyle.text, fontSize: 14, color: theme.primary}}>See All</Text>}
@@ -41,7 +42,7 @@ export default function DashboardItem(props: DashboardItemProps) {
                     <MaterialIcons name="arrow-forward-ios" size={16} color={theme.primary} style={{ marginLeft: "auto" }} />
                 )}
             </Pressable>
-            <View style={commonStyle.dashboardSectionContainer}>
+            <View style={[commonStyle.dashboardSectionContainer, props.collapsed ? {display: "none"} : null]}>
                 <Text style={renderedCount === 0 ? commonStyle.text : { display: "none" }}>{props.noItemsText ?? "Nothing to see here..."}</Text>
                 {props.items.map((item, index) => {
                     if ((props.maxItems === undefined || index < props.maxItems) && item) {
