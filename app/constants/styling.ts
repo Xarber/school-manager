@@ -380,6 +380,70 @@ const createModalStyles = (theme: Theme) => StyleSheet.create({
         paddingLeft: 15,
         paddingRight: 15
     },
+    cardEditFieldSelect: {
+        width: "100%",
+        height: 50,
+        backgroundColor: theme.card,
+        borderRadius: 15,
+        overflow: "hidden",
+        color: theme.text,
+        textAlign: "left",
+        padding: 15,
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "row"
+    },
+    cardEditFieldSelectItem: {
+        backgroundColor: theme.opaqueCard,
+        color: theme.text
+    },
+    cardEditFieldSelectText: {
+        color: theme.text,
+        fontSize: 18,
+        textAlign: "left",
+        textAlignVertical: "center",
+        flexGrow: 1
+    },
+    cardEditFieldSelectChevron: {
+
+    },
+    cardEditFieldPickerBackground: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        padding: 20,
+        zIndex: 9999,
+        backgroundColor: "rgba(0,0,0,0.5)",
+    },
+    cardEditFieldPickerView: {
+        position: "absolute",
+        bottom: 20,
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.5)",
+        borderRadius: 16,
+        backgroundColor: theme.card,
+
+        width: "100%",
+        alignSelf: "center",
+        overflow: "hidden"
+    },
+    cardEditFieldPickerBlurView: {
+        flex: 1
+    },
+    cardEditFieldPicker: {
+        
+    },
+    cardEditFieldTextArea: {
+        width: "100%",
+        height: 100,
+        backgroundColor: theme.card,
+        borderRadius: 15,
+        color: theme.text,
+        textAlign: "left",
+        textAlignVertical: "top",
+        padding: 15,
+    },
 
     bottomActions: {
         position: "absolute",

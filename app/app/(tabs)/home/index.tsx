@@ -18,7 +18,9 @@ export default function HomeScreen() {
     
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
     const activeClassId = userData.data.settings.activeClassId;
-    const classData = useAppDataSync(null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default);
+    const classData = useAppDataSync(null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
+        classid: activeClassId
+    });
     
     const allClassHomework = [] as any[]; // todo
     const allClassLessons = [] as any[]; // todo

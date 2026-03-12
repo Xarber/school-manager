@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require("mongoose");
 const { Lesson } = require("../../models/Lesson");
 const { UserInfo, UserData } = require('../../models/User');
+const { Subject } = require("../../models/Subject");
+const { Class } = require("../../models/Class");
 const paths = require('../paths.js');
 const { idGenerate } = require('../../idgenerator');
 
@@ -10,17 +12,38 @@ const router = express.Router();
 router.post(paths.dbGet, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
-    const { classid, subjectid, lessonid } = req.body;
+    const { classid, lessonid } = req.body;
 
     if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
-    if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
-    if (!lessonid) return res.status(400).json({ error: 'Lesson ID required' });
+    if (!classid && !lessonid) return res.status(400).json({ error: 'Class ID or Lesson ID required' });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
-    const lesson = await Lesson.findOne({ lessonid, classid, subjectid }).lean();
+    // if classid is specified, return all lessons for that class: find subjects, and find all lessons for subjects (return [{subjectid, data: lessondata}])
+    if (classid) {
+      const classInfo = await Class.findOne({ _id: classid }).lean();
+      if (!classInfo) {
+        return res.status(404).json({ error: 'Class not found' });
+      }
+
+      if (!classInfo.subjects || classInfo.subjects.length === 0) {
+        return res.json({ success: true, data: [] });
+      }
+
+      const subjects = await Subject.find({ _id: { $in: classInfo.subjects } })
+        .populate('lessons')
+        .lean();
+
+      const result = subjects.map(subject => ({
+        subjectid: subject._id,
+        data: subject.lessons || []
+      }));
+
+      return res.json({ success: true, data: result });
+    }
+
+    const lesson = await Lesson.findOne({ _id: lessonid }).lean();
     if (!lesson) return res.status(404).json({ error: 'Lesson not found' });
 
     res.json({ success: true, data: lesson });
@@ -43,7 +66,7 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create lessons' });
 
-    const subjectInfo = await Subject.findOne({ subjectid, classid });
+    const subjectInfo = await Subject.findOne({ _id: subjectid });
     if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
     if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can create lessons' });
 

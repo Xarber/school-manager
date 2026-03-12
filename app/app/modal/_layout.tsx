@@ -4,9 +4,10 @@ import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/constants/useThemes";
 import { FontAwesome, Feather } from "@expo/vector-icons";
-import { Button } from 'react-native';
+import { Button, Platform } from 'react-native';
 import { colors } from "@/constants/colors";
 import i18n from '@/constants/i18n';
+import { View } from 'react-native';
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -14,7 +15,9 @@ export default function TabLayout() {
   
 
   const headerCancel = () => (
-    <Button title={i18n.t("modal.stack.cancel")} onPress={() => router.back()} />
+    <View style={{ marginRight: Platform.OS === "android" ? 15 : null}}>
+      <Button title={i18n.t("modal.stack.cancel")} onPress={() => router.back()} />
+    </View>
   );
 
   return (

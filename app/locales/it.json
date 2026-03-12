@@ -1,5 +1,5 @@
 {
-        "components": {
+    "components": {
         "alert": {
             "close": {
                 "default": {
@@ -339,7 +339,7 @@
             "title": "Registro"
         },
         "grades": {
-            "title": "I tuoi voti",
+            "title": "Le tue valutazioni",
             "stack": {
                 "title": "Valutazioni"
             }
@@ -356,7 +356,7 @@
                 "title": "Orario"
             },
             "grades": {
-                "title": "Voti"
+                "title": "Valutazioni"
             },
             "resources": {
                 "title": "Risorse"

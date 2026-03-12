@@ -3,7 +3,7 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useAppDataSync, DataManager, HomeworkData } from "@/data/datamanager";
+import { useAppDataSync, DataManager, HomeworkData, UserData } from "@/data/datamanager";
 import i18n from '@/constants/i18n';
 
 function renderHomework(homework: HomeworkData[]) {
@@ -57,24 +57,24 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
         }));
     }
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default).data;
-    const activeClassId = userData.settings.activeClassId;
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const activeClassId = userData.data.settings.activeClassId;
     
     const allClassHomework = [] as any[]; // todo
     
     const homeworkPageData = {
         homework: allClassHomework,
-        userdata: userData
+        userdata: userData.data as UserData
     }
-    const homework = Object.values(homeworkPageData.homework.data) as HomeworkData[];
+    const homework = Object.values(homeworkPageData.homework) as HomeworkData[];
 
     console.log(homeworkPageData);
     const filteredItems = homework.filter((item) => {
         if (mode === "all") return true;
         // Filter user's completedhomework {classid, subjectid, homeworkid}, and check if the homework item has those same properties
         if (mode === "completed") {
-            const completedhomework = userData.completedhomework.filter((completedhomework) => {
-                return completedhomework.classid === item.classid && completedhomework.subjectid === item.subjectid && completedhomework.homeworkid === item.homeworkid;
+            const completedhomework = userData.data.completedhomework.filter((homeworkid: String) => {
+                return homeworkid === item._id;
             });
             if (completedhomework.length > 0) return true;
         }
