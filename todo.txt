@@ -2,3 +2,8 @@
 - Live appearance change from settings
 - Input class data into registry
 - Fix keyboard auto capitalization on email fields
+- Data sync if creating an account after the first setup (debug glitches and doesn't sync first launch)
+- Update keyboard input views for proper handling
+- Add animations to alert screens
+- Allow pressing the background to dismiss alerts (option)
+_> FINISH LESSON CREATE PAGE (check android time picker)

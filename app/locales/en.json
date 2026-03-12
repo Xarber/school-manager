@@ -239,6 +239,52 @@
         "lesson": {
             "stack": {
                 "title": "Lesson"
+            },
+            "create": {
+                "stack": {
+                    "title": "Create a lesson"
+                },
+                "success": {
+                    "title": "Success",
+                    "description": "Lesson created!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Error"
+                },
+                "name": {
+                    "default": "New Lesson"
+                },
+                "description": {
+                    "default": "This is a new lesson"
+                },
+                "teacher": {
+                    "text": "Teacher: {{teacher}}"
+                },
+                "subject": {
+                    "title": "Subject",
+                    "text": "Subject: {{subject}}",
+                    "select": "Select a subject"
+                },
+                "datetime": {
+                    "title": "Date & Time",
+                    "description": "{{date}} at {{time}}"
+                },
+                "createdon": {
+                    "text": "Created on: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Lesson Name"
+                    },
+                    "description": {
+                        "title": "Lesson Description"
+                    }
+                },
+                "merge": {
+                    "text": "\"{{lessonName}}\" will be added to {{className}}"
+                },
+                "confirm": "Create"
             }
         },
         "material": {
@@ -404,6 +450,20 @@
         "lessons": {
             "stack": {
                 "title": "Lessons"
+            },
+            "warn": {
+                "noclass": {
+                    "text": "No active class."
+                },
+                "nolessons": {
+                    "text": "There are no lessons for this class."
+                }
+            },
+            "header": {
+                "text": "{{class}} Lessons"
+            },
+            "create": {
+                "title": "Create"
             }
         }
     },

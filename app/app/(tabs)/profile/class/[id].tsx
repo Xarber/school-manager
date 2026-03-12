@@ -1,5 +1,5 @@
 import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from "react-native";
-import { Icon, Link, Stack } from "expo-router";
+import { Icon, Link, Stack, useFocusEffect } from "expo-router";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import ActionButtons from "@/components/actionButtons";
 import i18n from "@/constants/i18n";
+import { useCallback } from "react";
 
 function AllClassList() {
     const theme = useTheme();
@@ -24,6 +25,12 @@ function AllClassList() {
             activeClassId: (userData.data.classes[0]._id ?? userData.data.classes[0])
         }});
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            userData.load();
+        }, [])
+    );
 
     let classes = userData.data.classes.map((cls: ClassData) => ((typeof cls === "object" ? {
         title: cls.name,
@@ -88,6 +95,13 @@ function Class(props: { classId: string }) {
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
         classid: classId
     });
+
+    useFocusEffect(
+        useCallback(() => {
+            userData.load();
+            classData.load();
+        }, [])
+    );
 
     return classData.loading ? 
     (
@@ -172,6 +186,13 @@ function AllClassSubjects() {
         populate: ["subjects"],
         classid: classId
     });
+
+    useFocusEffect(
+        useCallback(() => {
+            userData.load();
+            classData.load();
+        }, [])
+    );
 
     console.log(JSON.stringify(classData.data, null, 4));
 
