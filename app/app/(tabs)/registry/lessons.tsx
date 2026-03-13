@@ -78,7 +78,6 @@ export default function LessonsTab() {
                     ) : null}
                     {lessons.map((e, i) => (
                         <DashboardItem title={e[0]} items={e[1].map((e: any) => {
-                            console.log(e)
                             return {
                                 title: classData.data.subjects.find((s: SubjectData) => s._id == e.subjectid)?.name,
                                 description: `${e.data.description}\n\n${classData.data.teachers.find((t: UserInfo) => t._id == e.data.teacher)?.name}\n${new Date(`${e.data.date}T${e.data.time}`).toLocaleTimeString()}`,

@@ -52,8 +52,8 @@ router.post(paths.dbCreate, async (req, res) => {
         if (!gradeType) return res.status(400).json({ error: 'Grade type is required' });
 
         const newSubject = new Subject({
-            subjectid: `subject_${idGenerate()}`,
-            classid,
+            // subjectid: `subject_${idGenerate()}`,
+            // classid,
             name,
             teacher: [userInfo._id],
             schedule: [
