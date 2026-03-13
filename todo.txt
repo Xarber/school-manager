@@ -4,7 +4,8 @@
 - Fix keyboard auto capitalization on email fields
 - Data sync if creating an account after the first setup (debug glitches and doesn't sync first launch)
 - Update keyboard input views for proper handling
-- Add animations to alert screens
+- Add animations to alert screens (and to everything really)
 - Allow pressing the background to dismiss alerts (option)
-_> FINISH LESSON CREATE PAGE (check android time picker)
 -> Finish lesson display page (change lesson content message, maybe update UI)
+- Fix lessons page going blank when creating a lesson and then going back (cancelling)
+- Fix homework badge on mobile (overflows)

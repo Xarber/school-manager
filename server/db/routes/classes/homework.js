@@ -15,14 +15,34 @@ router.post(paths.dbGet, async (req, res) => {
     const { classid, subjectid, homeworkid } = req.body;
 
     if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
-    if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
-    if (!homeworkid) return res.status(400).json({ error: 'Homework ID required' });
+    if (!classid && !homeworkid) return res.status(400).json({ error: 'Class ID or Homework ID required' });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
-    const homework = await Homework.findOne({ homeworkid, classid, subjectid }).lean();
+    if (classid) {
+      const classInfo = await Class.findOne({ _id: classid }).lean();
+      if (!classInfo) {
+        return res.status(404).json({ error: 'Class not found' });
+      }
+
+      if (!classInfo.subjects || classInfo.subjects.length === 0) {
+        return res.json({ success: true, data: [] });
+      }
+
+      const subjects = await Subject.find({ _id: { $in: classInfo.subjects } })
+        .populate('homework')
+        .lean();
+
+      const result = subjects.map(subject => ({
+        subjectid: subject._id,
+        data: subject.homework || []
+      }));
+
+      return res.json({ success: true, data: result });
+    }
+
+    const homework = await Homework.findOne({ _id: homeworkid }).lean();
     if (!homework) return res.status(404).json({ error: 'Homework not found' });
 
     res.json({ success: true, data: homework });
@@ -49,7 +69,7 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create homework' });
 
-    const subjectInfo = await Subject.findOne({ subjectid, classid });
+    const subjectInfo = await Subject.findOne({ _id: subjectid });
     if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
     if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create homework' });
 
@@ -57,7 +77,7 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!title) return res.status(400).json({ error: 'Title is required' });
 
     const newHomework = new Homework({
-        homeworkid: `homework_${idGenerate()}`,
+        // homeworkid: `homework_${idGenerate()}`,
         classid,
         subjectid,
         title,
@@ -95,7 +115,7 @@ router.post(paths.dbDelete, async (req, res) => {
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
-    const homework = await Homework.findOne({ homeworkid });
+    const homework = await Homework.findOne({ _id: homeworkid });
     if (!homework) return res.status(404).json({ error: 'Homework not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete homework' });
 

@@ -234,6 +234,52 @@
         "homework": {
             "stack": {
                 "title": "Homework"
+            },
+            "create": {
+                "stack": {
+                    "title": "Create Homework"
+                },
+                "success": {
+                    "title": "Success",
+                    "description": "Homework created!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Error"
+                },
+                "name": {
+                    "default": "Homework"
+                },
+                "description": {
+                    "default": "This is some homework"
+                },
+                "teacher": {
+                    "text": "Teacher: {{teacher}}"
+                },
+                "subject": {
+                    "title": "Subject",
+                    "text": "Subject: {{subject}}",
+                    "select": "Select a subject"
+                },
+                "datetime": {
+                    "title": "Due date",
+                    "description": "{{date}} at {{time}}"
+                },
+                "createdon": {
+                    "text": "Created on: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Homework title"
+                    },
+                    "description": {
+                        "title": "Homework description"
+                    }
+                },
+                "merge": {
+                    "text": "\"{{homeworkTitle}}\" will be added to {{className}}"
+                },
+                "confirm": "Create"
             }
         },
         "lesson": {
@@ -429,6 +475,9 @@
         "homework": {
             "stack": {
                 "title": "Homework"
+            },
+            "create": {
+                "title": "Create"
             },
             "tab": {
                 "all": {
