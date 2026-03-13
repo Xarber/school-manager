@@ -7,3 +7,4 @@
 - Add animations to alert screens
 - Allow pressing the background to dismiss alerts (option)
 _> FINISH LESSON CREATE PAGE (check android time picker)
+-> Finish lesson display page (change lesson content message, maybe update UI)

@@ -460,7 +460,7 @@
                 }
             },
             "header": {
-                "text": "{{class}} Lessons"
+                "text": "{{class}}'s lessons"
             },
             "create": {
                 "title": "Create"
