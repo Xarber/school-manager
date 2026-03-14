@@ -133,9 +133,15 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
     })
 
     return userData.loading || classData.loading || homeworkData.loading ? <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}><ActivityIndicator size="small" /></View> : (
-        <ScrollView style={commonStyle.dashboardSection}>
-            {renderHomework(filteredItems, classData.data)}
-        </ScrollView>
+        filteredItems.length == 0 ? (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
+            </View>
+        ) : (
+            <ScrollView style={commonStyle.dashboardSection}>
+                {renderHomework(filteredItems, classData.data)}
+            </ScrollView>
+        )
     );
 }
 
@@ -148,9 +154,9 @@ export default function HomeworkTab() {
     return (
         <>
             <Tab.Navigator>
-            <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={()=>HomeworkComponent("all")} />
-            <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={()=>HomeworkComponent("completed")} />
-            <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={()=>HomeworkComponent("missed")} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={()=>HomeworkComponent("all")} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={()=>HomeworkComponent("completed")} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={()=>HomeworkComponent("missed")} />
             </Tab.Navigator>
             <ActionButtons items={[
                 {
