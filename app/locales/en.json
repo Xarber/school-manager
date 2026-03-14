@@ -346,6 +346,52 @@
         "comunication": {
             "stack": {
                 "title": "Communication"
+            },
+            "create": {
+                "stack": {
+                    "title": "Create a Comunication"
+                },
+                "success": {
+                    "title": "Success",
+                    "description": "Comunication created!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Error"
+                },
+                "name": {
+                    "default": "New Comunication"
+                },
+                "description": {
+                    "default": "This is a new comunication"
+                },
+                "teacher": {
+                    "text": "Teacher: {{teacher}}"
+                },
+                "subject": {
+                    "title": "Subject",
+                    "text": "Subject: {{subject}}",
+                    "select": "Select a subject"
+                },
+                "datetime": {
+                    "title": "Date & Time",
+                    "description": "{{date}} at {{time}}"
+                },
+                "createdon": {
+                    "text": "Created on: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Comunication Name"
+                    },
+                    "description": {
+                        "title": "Comunication Description"
+                    }
+                },
+                "merge": {
+                    "text": "\"{{comunicationName}}\" will be added to {{className}}"
+                },
+                "confirm": "Create"
             }
         },
         "invitation": {
@@ -476,6 +522,14 @@
             "stack": {
                 "title": "Homework"
             },
+            "warn": {
+                "noclass": {
+                    "text": "No active class."
+                },
+                "nohomework": {
+                    "text": "There's no homework for this class."
+                }
+            },
             "create": {
                 "title": "Create"
             },
@@ -494,6 +548,20 @@
         "comunications": {
             "stack": {
                 "title": "Comunications"
+            },
+            "warn": {
+                "noclass": {
+                    "text": "No active class."
+                },
+                "nocomunications": {
+                    "text": "There are no comunications for this class."
+                }
+            },
+            "header": {
+                "text": "{{class}}'s comunications"
+            },
+            "create": {
+                "title": "Create"
             }
         },
         "lessons": {
