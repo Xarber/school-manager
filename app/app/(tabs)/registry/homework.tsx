@@ -7,7 +7,7 @@ import { useAppDataSync, DataManager, HomeworkData, UserData, ClassData, Subject
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -115,8 +115,6 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
         userdata: userData.data as UserData
     }
     const homework = Object.values(homeworkPageData.homework) as HomeworkData[];
-
-    console.log(homeworkPageData);
     const filteredItems = homework.filter((item) => {
         if (mode === "all") return true;
         // Filter user's completedhomework {classid, subjectid, homeworkid}, and check if the homework item has those same properties
@@ -133,7 +131,11 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
     })
 
     return userData.loading || classData.loading || homeworkData.loading ? <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}><ActivityIndicator size="small" /></View> : (
-        filteredItems.length == 0 ? (
+        (userData.data.settings.activeClassId == "") ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
+            </View>
+        ) : (filteredItems.length == 0 ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
             </View>
@@ -141,7 +143,7 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
             <ScrollView style={commonStyle.dashboardSection}>
                 {renderHomework(filteredItems, classData.data)}
             </ScrollView>
-        )
+        ))
     );
 }
 
@@ -165,7 +167,7 @@ export default function HomeworkTab() {
                     onPress: () => {
                         router.push({pathname: `/modal/homework/create` as any, params: {classid: userData.data.settings.activeClassId}});
                     },
-                    display: userData.data.userInfo.role != "student",
+                    display: userData.data.settings.activeClassId != "" && userData.data.userInfo.role != "student",
                 }
             ]} align="right" styles={{ borderRadius: 360 }} />
         </>

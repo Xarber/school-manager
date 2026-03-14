@@ -28,7 +28,10 @@ function AllClassList() {
 
     useFocusEffect(
         useCallback(() => {
-            userData.load();
+            const reload = async () => {
+                await Promise.all([userData.load()]);
+            };
+            reload();
         }, [])
     );
 
@@ -98,8 +101,11 @@ function Class(props: { classId: string }) {
 
     useFocusEffect(
         useCallback(() => {
-            userData.load();
-            classData.load();
+            const reload = async () => {
+                await Promise.all([userData.load()]);
+                await Promise.all([classData.load()]);
+            };
+            reload();
         }, [])
     );
 
@@ -189,12 +195,13 @@ function AllClassSubjects() {
 
     useFocusEffect(
         useCallback(() => {
-            userData.load();
-            classData.load();
+            const reload = async () => {
+                await Promise.all([userData.load()]);
+                await Promise.all([classData.load()]);
+            };
+            reload();
         }, [])
     );
-
-    console.log(JSON.stringify(classData.data, null, 4));
 
     let subjects = classData.loading === false ? classData.data.subjects.map((subject: SubjectData) => {
         let subjectTeachers = [];

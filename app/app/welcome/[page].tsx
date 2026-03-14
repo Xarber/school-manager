@@ -68,7 +68,10 @@ function restorePage() {
 
     useFocusEffect(
         useCallback(() => {
-            accountData.load();
+            const reload = async () => {
+                await Promise.all([accountData.load()]);
+            };
+            reload();
         }, [])
     );
 
@@ -249,6 +252,7 @@ function notificationsPage() {
     const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
 
     const image = require("@/assets/images/welcome.png");
+    const alert = useAlert();
 
     return (
         <SafeAreaView
@@ -272,6 +276,20 @@ function notificationsPage() {
                     registerForPushNotificationsAsync().then(token => {
                         accountData.save({...accountData.data, pushToken: token});
                         return router.replace("/welcome/complete");
+                    }).catch(e=>{
+                        alert.show({
+                            title: i18n.t("welcome.notifications.error.title"),
+                            message: i18n.t("welcome.notifications.error.description"),
+                            actions: [
+                                {
+                                    title: i18n.t("welcome.notifications.error.ok"),
+                                    onPress: ()=>{
+                                        alert.hide();
+                                        return router.replace("/welcome/complete");
+                                    }
+                                }
+                            ]
+                        });
                     });
                 }}>
                     <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.notifications.next")}</Text>

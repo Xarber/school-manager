@@ -141,7 +141,12 @@
         "notifications": {
             "title": "Stay updated?",
             "description": "Do you want to enable notifications?",
-            "next": "Continue"
+            "next": "Continue",
+            "error": {
+                "title": "Error",
+                "description": "Couldn't enable notifications.\nYou can try again later in settings.",
+                "ok": "Okay"
+            }
         },
         "complete": {
             "title": "All done!",
@@ -366,12 +371,18 @@
                     "default": "This is a new comunication"
                 },
                 "teacher": {
-                    "text": "Teacher: {{teacher}}"
+                    "text": "Created by: {{teacher}}"
                 },
-                "subject": {
-                    "title": "Subject",
-                    "text": "Subject: {{subject}}",
-                    "select": "Select a subject"
+                "urgency": {
+                    "title": "Urgency",
+                    "options": {
+                        "low": "Low",
+                        "medium": "Medium",
+                        "high": "High"
+                    }
+                },
+                "requiresconfirmation": {
+                    "title": "Requires confirmation?"
                 },
                 "datetime": {
                     "title": "Date & Time",
@@ -382,10 +393,10 @@
                 },
                 "input": {
                     "name": {
-                        "title": "Comunication Name"
+                        "title": "Title"
                     },
                     "description": {
-                        "title": "Comunication Description"
+                        "title": "Content"
                     }
                 },
                 "merge": {
@@ -555,6 +566,9 @@
                 },
                 "nocomunications": {
                     "text": "There are no comunications for this class."
+                },
+                "notfound": {
+                    "text": "Can't find this comunication."
                 }
             },
             "header": {
