@@ -1,7 +1,7 @@
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
-import { DataManager, LessonData, SubjectData, useAppDataSync, UserInfo } from '@/data/datamanager';
+import { DataManager, LessonData, SubjectData, useAppDataSync, UserData, UserInfo } from '@/data/datamanager';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import i18n from '@/constants/i18n';
@@ -33,27 +33,25 @@ export function regroupLessonsByDate(lessonArray: {subjectid: string, data: Less
     return dateIndex;
 }
 
-export default function LessonsTab() {
+function LessonsTab({classid, userData}: {classid: string, userData: UserData}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
-
-    const classData = useAppDataSync(userData.loading ? null : DataManager.classData.db, `${DataManager.classData.app}:${userData.data.settings.activeClassId}`, DataManager.classData.default, {
-        classid: userData.data.settings.activeClassId,
+    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
+        classid: classid,
         populate: ["subjects"]
     });
 
     let defaultLessonsData = [{subjectid: "", data: [DataManager.lessonData.default]}];
-    const lessonData = useAppDataSync(userData.loading ? null : DataManager.lessonData.db, `${DataManager.lessonData.app}:${userData.data.settings.activeClassId}`, defaultLessonsData, {
-        classid: userData.data.settings.activeClassId
+    const lessonData = useAppDataSync(DataManager.lessonData.db, `${DataManager.lessonData.app}:${classid}`, defaultLessonsData, {
+        classid: classid
     });
 
     const reload = async () => {
         setRefreshing(true);
-        await Promise.all([userData.load()]);
+        //await Promise.all([userData.load()]);
         await Promise.all([classData.load(), lessonData.load()]);
         setRefreshing(false);
     };
@@ -66,11 +64,11 @@ export default function LessonsTab() {
 
     const lessons = regroupLessonsByDate(lessonData.data) as any[];
 
-    return (userData.loading || classData.loading) ? ( 
+    return (classData.loading) ? ( 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" />
         </View>
-    ) : (userData.data.settings.activeClassId == "") ? (
+    ) : (classid == "") ? (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
             </View>
@@ -99,11 +97,24 @@ export default function LessonsTab() {
                     title: i18n.t("registry.lessons.create.title"),
                     iconName: "add",
                     onPress: () => {
-                        router.push({pathname: `/modal/lesson/create` as any, params: {classid: userData.data.settings.activeClassId}});
+                        router.push({pathname: `/modal/lesson/create` as any, params: {classid}});
                     },
-                    display: userData.data.userInfo.role != "student",
+                    display: (userData.userInfo as any).role != "student",
                 }
             ]} align="right" styles={{ borderRadius: 360 }} />
         </View>
     );
+}
+
+export default function LessonsWrapper() {
+    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const classid = userData.data.settings.activeClassId;
+
+    if (userData.loading) return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" />
+        </View>
+    );
+
+    return <LessonsTab classid={classid} userData={userData.data} />
 }

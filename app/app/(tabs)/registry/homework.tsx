@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
@@ -6,8 +6,9 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { useAppDataSync, DataManager, HomeworkData, UserData, ClassData, SubjectData } from "@/data/datamanager";
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ActivityIndicator } from 'react-native';
+import { useCallback, useState } from 'react';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -80,9 +81,10 @@ function renderHomework(homework: HomeworkData[], classData: ClassData) {
     ) : null;
 }
 
-function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
+function HomeworkComponent({mode, userData, classid}: {mode: 'all' | 'completed' | 'missed', userData: UserData, classid: string}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const [refreshing, setRefreshing] = useState(false);
     const datePoolLength = 5;
     const datePool = [];
     for (let i = 0; i < datePoolLength; i++) {
@@ -96,30 +98,42 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
         }));
     }
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
-
-    const classData = useAppDataSync(userData.loading ? null : DataManager.classData.db, `${DataManager.classData.app}:${userData.data.settings.activeClassId}`, DataManager.classData.default, {
-        classid: userData.data.settings.activeClassId,
+    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
+        classid: classid,
         populate: ["subjects"]
     });
 
     let defaultHomeworkData = [{subjectid: "", data: [DataManager.homeworkData.default]}];
-    const homeworkData = useAppDataSync(userData.loading ? null : DataManager.homeworkData.db, `${DataManager.homeworkData.app}:${userData.data.settings.activeClassId}`, defaultHomeworkData, {
-        classid: userData.data.settings.activeClassId
+    const homeworkData = useAppDataSync(DataManager.homeworkData.db, `${DataManager.homeworkData.app}:${classid}`, defaultHomeworkData, {
+        classid: classid
     });
+
+    const reload = async () => {
+        setRefreshing(true);
+        //await Promise.all([userData.load()]);
+        await Promise.all([classData.load(), homeworkData.load()]);
+        setRefreshing(false);
+    };
+
+    useFocusEffect(
+        useCallback(()=>{
+            reload();
+        }, [])
+    )
     
     const allClassHomework = regroupHomework(homeworkData.data || []);
     
     const homeworkPageData = {
         homework: allClassHomework,
-        userdata: userData.data as UserData
+        userdata: userData as UserData
     }
+
     const homework = Object.values(homeworkPageData.homework) as HomeworkData[];
     const filteredItems = homework.filter((item) => {
         if (mode === "all") return true;
         // Filter user's completedhomework {classid, subjectid, homeworkid}, and check if the homework item has those same properties
         if (mode === "completed") {
-            const completedhomework = userData.data.completedhomework.filter((homeworkid: String) => {
+            const completedhomework = userData.completedhomework.filter((homeworkid: String) => {
                 return homeworkid === item._id;
             });
             if (completedhomework.length > 0) return true;
@@ -130,8 +144,8 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
         return false;
     })
 
-    return userData.loading || classData.loading || homeworkData.loading ? <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}><ActivityIndicator size="small" /></View> : (
-        (userData.data.settings.activeClassId == "") ? (
+    return classData.loading || homeworkData.loading ? <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}><ActivityIndicator size="small" /></View> : (
+        (classid == "") ? (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
             </View>
@@ -140,7 +154,9 @@ function HomeworkComponent(mode: 'all' | 'completed' | 'missed') {
                 <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
             </View>
         ) : (
-            <ScrollView style={commonStyle.dashboardSection}>
+            <ScrollView style={commonStyle.dashboardSection} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+            }>
                 {renderHomework(filteredItems, classData.data)}
             </ScrollView>
         ))
@@ -152,13 +168,20 @@ const Tab = createMaterialTopTabNavigator();
 export default function HomeworkTab() {
     const router = useRouter();
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const classid = userData.data.settings.activeClassId;
+
+    if (userData.loading) return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" />
+        </View>
+    );
 
     return (
         <>
             <Tab.Navigator>
-                <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={()=>HomeworkComponent("all")} />
-                <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={()=>HomeworkComponent("completed")} />
-                <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={()=>HomeworkComponent("missed")} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={()=>HomeworkComponent({mode: "all", userData: userData.data, classid})} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={()=>HomeworkComponent({mode: "completed", userData: userData.data, classid})} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={()=>HomeworkComponent({mode: "missed", userData: userData.data, classid})} />
             </Tab.Navigator>
             <ActionButtons items={[
                 {
