@@ -41,7 +41,6 @@ function updateInvite({action, invitefor, targetid, joinAs, setLoading, create, 
                 joinAs: joinAs,
                 targetid: targetid
             }).then(data => {
-                console.log(data);
                 alert.show({
                     title: "Invite created!",
                     message: "Share this code:",

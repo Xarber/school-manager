@@ -1,9 +1,9 @@
-import { ScrollView, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import { DataManager, LessonData, SubjectData, useAppDataSync, UserInfo } from '@/data/datamanager';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
@@ -37,6 +37,7 @@ export default function LessonsTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const router = useRouter();
+    const [refreshing, setRefreshing] = useState(false);
 
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
 
@@ -50,11 +51,16 @@ export default function LessonsTab() {
         classid: userData.data.settings.activeClassId
     });
 
+    const reload = async () => {
+        setRefreshing(true);
+        await Promise.all([userData.load()]);
+        await Promise.all([classData.load(), lessonData.load()]);
+        setRefreshing(false);
+    };
+
     useFocusEffect(
         useCallback(() => {
-            userData.load();
-            classData.load();
-            lessonData.load();
+            reload();
         }, [])
     );
 
@@ -70,7 +76,9 @@ export default function LessonsTab() {
             </View>
         ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection}>
+            <ScrollView style={commonStyle.dashboardSection} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+            }>
                 <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.header.text", {class: classData.data.name})}</Text>
                 <View>
                     {lessons.length === 0 ? (

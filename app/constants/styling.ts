@@ -93,7 +93,7 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         fontWeight: "900",
     },
     dashboardSectionItemContent: { flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between"},
-    dashboardSectionItemTextContainer: { display: "flex", flexDirection: "column", gap: 2 },
+    dashboardSectionItemTextContainer: { display: "flex", flexDirection: "column", gap: 2, flex: 1 },
     dashboardSectionItemBadge: {
         paddingHorizontal: 12,
         paddingVertical: 5,

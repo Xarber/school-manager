@@ -284,7 +284,8 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
         let loadDebug = {
             mode: "pending",
             operation: "load",
-            key: [dbkey, appkey]
+            key: [dbkey, appkey],
+            body
         }
         try {
             setLoading(true);
@@ -333,7 +334,8 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
         let loadDebug = {
             mode: "pending",
             operation: "save",
-            key: [dbkey, appkey]
+            key: [dbkey, appkey],
+            body
         }
         try {
             let updated = { data: newValue };
@@ -430,7 +432,8 @@ export function useDBitem(dbkey: string, body: Object = {}) {
         let loadDebug = {
             mode: "pending",
             operation: "create",
-            key: [dbkey]
+            key: [dbkey],
+            body
         }
         try {
             const netState = await NetInfo.fetch();
@@ -474,7 +477,8 @@ export function useDBitem(dbkey: string, body: Object = {}) {
         let loadDebug = {
             mode: "pending",
             operation: "remove",
-            key: [dbkey]
+            key: [dbkey],
+            body
         }
         try {
             const netState = await NetInfo.fetch();

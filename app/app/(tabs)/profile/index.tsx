@@ -51,8 +51,10 @@ export default function ProfileTab() {
 
     useFocusEffect(
         useCallback(() => {
-            accountData.load();
-            userData.load();
+            const reload = async () => {
+                await Promise.all([accountData.load(), userData.load()]);
+            };
+            reload();
         }, [])
     );
 

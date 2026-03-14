@@ -12,17 +12,18 @@ import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
+import { Switch } from 'react-native';
+import SegmentedSlider from "@/components/segmentedPicker";
 
 interface updateComunicationProps {
     action: string;
     classid: string;
-    subjectid: string;
     title: string;
-    description: string;
+    content: string;
     date: string;
     time: string;
-    room?: string;
-    isExam: boolean;
+    urgency: "low" | "medium" | "high";
+    requiresConfirmation: boolean;
     setLoading: (loading: boolean) => void;
     create: (data: Object) => Promise<any>;
     alert: {
@@ -31,18 +32,18 @@ interface updateComunicationProps {
     }
 }
 
-async function updateComunication({action, classid, subjectid, title, description, date, time, isExam, setLoading, create, alert}: updateComunicationProps) {
+async function updateComunication({action, classid, title, content, date, time, urgency, requiresConfirmation, setLoading, create, alert}: updateComunicationProps) {
     setLoading(true);
     switch (action) {
         case "create":
             create({
                 classid,
-                subjectid,
                 title,
-                description,
+                content,
                 date,
                 time,
-                isExam
+                urgency,
+                requiresConfirmation
             }).then(data => {
                 alert.show({title: i18n.t("modal.comunication.create.success.title"), message: i18n.t("modal.comunication.create.success.description"), actions: [
                     {
@@ -69,10 +70,9 @@ function NewComunication() {
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
     const [comunicationName, setComunicationName] = useState(i18n.t("modal.comunication.create.name.default"));
-    const [subjectId, setSubjectId] = useState("");
     const [date, setDate] = useState(new Date());
-    const [isExam, setIsExam] = useState(false);
-    const [subjectPickeriOSvisible, setSubjectPickeriOSvisible] = useState(false);
+    const [urgency, setUrgency] = useState("low" as "low" | "medium" | "high");
+    const [requiresConfirmation, setRequiresConfirmation] = useState(false);
     const [comunicationDescription, setComunicationDescription] = useState(i18n.t("modal.comunication.create.description.default"));
     const params = useLocalSearchParams();
     const classId = params.classid as string;
@@ -80,11 +80,10 @@ function NewComunication() {
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
     const [loading, setLoading] = useState(false);
 
-    const canProceed = (comunicationName.length > 0) && (subjectId.length > 0);
+    const canProceed = (comunicationName.length > 0) && (comunicationDescription.length > 0);
 
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
-        classid: classId,
-        populate: ["subjects"]
+        classid: classId
     });
 
     const comunicationData = useDBitem(DataManager.comunicationData.db);
@@ -132,35 +131,6 @@ function NewComunication() {
                             <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} value={comunicationDescription} onChangeText={text => setComunicationDescription(text)}/>
                         </View>
                         <View style={modalStyle.cardEditField}>
-                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.subject.title")}</Text>
-                            {
-                                Platform.OS === "ios" && (
-                                    <>
-                                        <TouchableOpacity style={modalStyle.cardEditFieldSelect} onPress={()=>setSubjectPickeriOSvisible(true)}>
-                                            <Text style={modalStyle.cardEditFieldSelectText}>{classData.data.subjects.find((subject: SubjectData) => subject._id === subjectId)?.name ?? i18n.t("modal.comunication.create.subject.select")}</Text>
-                                            <Ionicons style={modalStyle.cardEditFieldSelectChevron} name="chevron-down" size={18} color={theme.text} />
-                                        </TouchableOpacity>
-                                    </>
-                                )
-                            }
-                            {
-                                Platform.OS === "android" && (
-                                    <Picker
-                                        mode="dropdown"
-                                        style={modalStyle.cardEditFieldSelect}
-                                        dropdownIconColor={theme.text}
-                                        selectedValue={subjectId}
-                                        onValueChange={value => setSubjectId(value)}
-                                    >
-                                        <Picker.Item style={modalStyle.cardEditFieldSelectItem} label={i18n.t("modal.comunication.create.subject.select")} value="" enabled={subjectId.length === 0} />
-                                        {
-                                            classData.data.subjects.map((subject: SubjectData) => <Picker.Item style={modalStyle.cardEditFieldSelectItem} key={subject._id} label={subject.name} value={subject._id} />)
-                                        }
-                                    </Picker>
-                                )
-                            }
-                        </View>
-                        <View style={modalStyle.cardEditField}>
                             <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.datetime.title")}</Text>
                             {
                                 Platform.OS === "android" && (
@@ -183,17 +153,45 @@ function NewComunication() {
                                 />
                             }
                         </View>
+                        <View style={modalStyle.cardEditField}>
+                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.urgency.title")}</Text>
+                            <SegmentedSlider 
+                                options={[
+                                    i18n.t("modal.comunication.create.urgency.options.low"),
+                                    i18n.t("modal.comunication.create.urgency.options.medium"),
+                                    i18n.t("modal.comunication.create.urgency.options.high"),
+                                ]}
+                                value={i18n.t(`modal.comunication.create.urgency.options.${urgency}`)}
+                                onChange={(v)=>{
+                                    switch (v) {
+                                        case i18n.t("modal.comunication.create.urgency.options.low"):
+                                            setUrgency("low");
+                                            break;
+                                        case i18n.t("modal.comunication.create.urgency.options.medium"):
+                                            setUrgency("medium");
+                                            break;
+                                        case i18n.t("modal.comunication.create.urgency.options.high"):
+                                            setUrgency("high");
+                                            break;
+                                    }
+                                }}
+                            />
+                        </View>
+                        <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
+                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.requiresconfirmation.title")}</Text>
+                            <Switch value={requiresConfirmation} onValueChange={setRequiresConfirmation} />
+                        </View>
                     </View>
                     <View style={modalStyle.bottomActions}>
                         <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateComunication({
                             action: "create",
+                            classid: classId,
                             title: comunicationName,
-                            description: comunicationDescription,
+                            content: comunicationDescription,
                             date: date.toISOString().split("T")[0],
                             time: date.toISOString().split("T")[1],
-                            isExam: isExam,
-                            classid: classId,
-                            subjectid: subjectId,
+                            urgency,
+                            requiresConfirmation,
                             setLoading,
                             create: comunicationData.create,
                             alert
@@ -204,21 +202,6 @@ function NewComunication() {
                             }
                         </TouchableOpacity>
                     </View>
-                    {
-                        Platform.OS === "ios" && 
-                        <Pressable onPress={()=>setSubjectPickeriOSvisible(false)} style={[modalStyle.cardEditFieldPickerBackground, !subjectPickeriOSvisible && {display: "none"}]}>
-                            <Pressable style={[modalStyle.cardEditFieldPickerView]} onPress={e=>e.stopPropagation()}>
-                                <BlurView style={modalStyle.cardEditFieldPickerBlurView}>
-                                    <Picker style={modalStyle.cardEditFieldPicker} selectedValue={subjectId} onValueChange={value => {if (value.length > 0) setSubjectId(value)}}>
-                                        <Picker.Item label={i18n.t("modal.comunication.create.subject.select")} value="" enabled={subjectId.length === 0}/>
-                                        {
-                                            classData.data.subjects.map((subject: SubjectData) => <Picker.Item key={subject._id} label={subject.name} value={subject._id} />)
-                                        }
-                                    </Picker>
-                                </BlurView>
-                            </Pressable>
-                        </Pressable>
-                    }
                 </View>
             }
         </>

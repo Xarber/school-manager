@@ -34,7 +34,7 @@ export default function RegistryTab() {
                             router.push("/registry/homework");
                         } },
                         { title: i18n.t("registry.class.comunications.title"), onPress: () => {
-                            router.push("/registry/comunications");
+                            router.push("/registry/comunications/all");
                         } },
                         { title: i18n.t("registry.class.schedule.title"), onPress: () => {
                             router.push("/registry/schedule");
