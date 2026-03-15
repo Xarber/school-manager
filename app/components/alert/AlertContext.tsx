@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
+import { Keyboard } from "react-native";
 import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
@@ -38,6 +39,7 @@ export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
   const [alertProps, setAlertProps] = useState<AlertProps | null>(null);
 
   const show = (props: AlertProps) => {
+    Keyboard.dismiss();
     if (props.dismissable === undefined && !props.actions) props.dismissable = true;
     else if (!!props.actions) props.dismissable = false;
     setAlertProps(props);
