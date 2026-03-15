@@ -254,18 +254,20 @@ const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
         gap: 10
     },
     topView: {
-        justifyContent: "center",
-        alignItems: "center",
+        flex: 1,
+        maxHeight: 230,
         width: "100%",
-        maxHeight: "45%",
+        justifyContent: "center",
+        alignItems: "center"
     },
     topViewImage: {
+        width: "100%",
         height: "100%",
         aspectRatio: 1,
         resizeMode: "contain"
     },
     bottomView: {
-        flex: 1,
+        flex: 2,
         display: "flex",
         gap: 10
     },
@@ -292,7 +294,7 @@ const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
         width: "100%",
         minHeight: 60,
         display: "flex",
-        gap: 10,
+        gap: 10
     },
     actionsButton: {
         width: "100%",

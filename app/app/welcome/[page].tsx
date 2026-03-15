@@ -11,7 +11,7 @@ import {
 import { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "expo-router";
 import { useRouter, useLocalSearchParams, router, Redirect } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
@@ -26,7 +26,7 @@ import { useAccountData } from "@/data/AccountDataContext";
 
 import welcomeImage from "@/assets/images/welcome.png";
 
-function startPage() {
+function StartPage() {
     const router = useRouter();
 
     const theme = useTheme();
@@ -34,9 +34,8 @@ function startPage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     return (
-        <SafeAreaView
+        <View
             style={welcomeStyles.container}
-            edges={["bottom", "left", "right", "top"]}
         >
             <View style={welcomeStyles.topView}>
                 <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
@@ -54,11 +53,11 @@ function startPage() {
                     <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.main.start")}</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
-function restorePage() {
+function RestorePage() {
     const router = useRouter();
 
     const theme = useTheme();
@@ -77,9 +76,8 @@ function restorePage() {
     );
 
     return accountData.data.active ? <Redirect href="/welcome/notifications" /> : (
-        <SafeAreaView
+        <View
             style={welcomeStyles.container}
-            edges={["bottom", "left", "right", "top"]}
         >
             <View style={welcomeStyles.topView}>
                 <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
@@ -100,11 +98,11 @@ function restorePage() {
                     <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.skip")}</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
-function setNamePage() {
+function SetNamePage() {
     const router = useRouter();
 
     const theme = useTheme();
@@ -112,6 +110,8 @@ function setNamePage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const userData = useUserData();
+    let safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const [name, setName] = useState("");
     if (!userData.loading && name === "" && userData.data.userInfo.name != "") setName(userData.data.userInfo.name);
@@ -119,15 +119,9 @@ function setNamePage() {
     const alert = useAlert();
 
     return (
-        <SafeAreaView
-            style={welcomeStyles.container}
-            edges={["bottom", "left", "right", "top"]}
-        >
-            <KeyboardShift extraPadding={-160}>
-                <ScrollView
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={{ flexGrow: 1 }}
-                >
+        <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
+            <ScrollView keyboardShouldPersistTaps="handled">
+                <View style={welcomeStyles.container}>
                     <View style={welcomeStyles.topView}>
                         <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
                     </View>
@@ -140,38 +134,38 @@ function setNamePage() {
                             <TextInput autoFocus autoCapitalize="words" maxLength={30} style={welcomeStyles.bottomViewBodyInput} value={name} onChangeText={setName} placeholder={i18n.t("welcome.name.input.placeholder")} />
                         </View>
                     </View>
-                        <View style={welcomeStyles.actions}>
-                            <TouchableOpacity disabled={!name} style={!name ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
-                            onPress={() => {
-                                alert.show({
-                                    title: i18n.t("welcome.name.confirm.title"),
-                                    message: name,
-                                    actions: [
-                                        {
-                                            title: i18n.t("welcome.name.confirm.true"),
-                                            onPress: () => {
-                                                userData.save({...userData.data, userInfo: {...userData.data.userInfo, name}});
-                                                router.replace("/welcome/setsurname");
-                                            }
-                                        },
-                                        {
-                                            title: i18n.t("welcome.name.confirm.false"),
-                                            onPress: () => {
-                                                setName("");
-                                            }
-                                        },
-                                ]});
-                            }} >
-                                <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.name.next")}</Text>
-                            </TouchableOpacity>
-                        </View>
-                </ScrollView>
-            </KeyboardShift>
-        </SafeAreaView>
+                </View>
+            </ScrollView>
+            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+                <TouchableOpacity disabled={!name} style={!name ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
+                onPress={() => {
+                    alert.show({
+                        title: i18n.t("welcome.name.confirm.title"),
+                        message: name,
+                        actions: [
+                            {
+                                title: i18n.t("welcome.name.confirm.true"),
+                                onPress: () => {
+                                    userData.save({...userData.data, userInfo: {...userData.data.userInfo, name}});
+                                    router.replace("/welcome/setsurname");
+                                }
+                            },
+                            {
+                                title: i18n.t("welcome.name.confirm.false"),
+                                onPress: () => {
+                                    setName("");
+                                }
+                            },
+                    ]});
+                }} >
+                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.name.next")}</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardShift>
     );
 }
 
-function setSurnamePage() {
+function SetSurnamePage() {
     const router = useRouter();
 
     const theme = useTheme();
@@ -179,6 +173,8 @@ function setSurnamePage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const userData = useUserData();
+    let safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const [surname, setSurname] = useState("");
     if (!userData.loading && surname === "" && userData.data.userInfo.surname != "") setSurname(userData.data.userInfo.surname);
@@ -186,15 +182,9 @@ function setSurnamePage() {
     const alert = useAlert();
 
     return (
-        <SafeAreaView
-            style={welcomeStyles.container}
-            edges={["bottom", "left", "right", "top"]}
-        >
-            <KeyboardShift extraPadding={-160}>
-                <ScrollView
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={{ flexGrow: 1 }}
-                >
+        <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
+            <ScrollView keyboardShouldPersistTaps="handled">
+                <View style={welcomeStyles.container}>
                     <View style={welcomeStyles.topView}>
                         <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
                     </View>
@@ -207,39 +197,39 @@ function setSurnamePage() {
                             <TextInput autoFocus autoCapitalize="words" maxLength={40} style={welcomeStyles.bottomViewBodyInput} value={surname} onChangeText={setSurname} placeholder={i18n.t("welcome.surname.input.placeholder")} />
                         </View>
                     </View>
-                        <View style={welcomeStyles.actions}>
-                            <TouchableOpacity disabled={!surname} style={!surname ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
-                            onPress={() => {
-                                alert.show({
-                                    title: i18n.t("welcome.surname.confirm.title"),
-                                    message: surname,
-                                    actions: [
-                                        {
-                                            title: i18n.t("welcome.surname.confirm.true"),
-                                            onPress: () => {
-                                                userData.save({...userData.data, name: `${userData.data.userInfo.name} ${surname}`, userInfo: {...userData.data.userInfo, surname}});
-                                                router.replace("/welcome/notifications");
-                                            }
-                                        },
-                                        {
-                                            title: i18n.t("welcome.surname.confirm.false"),
-                                            onPress: () => {
-                                                setSurname("");
-                                            }
-                                        },
-                                    ]
-                                })
-                            }}>
-                                <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.surname.next")}</Text>
-                            </TouchableOpacity>
-                        </View>
-                </ScrollView>
-            </KeyboardShift>
-        </SafeAreaView>
+                </View>
+            </ScrollView>
+            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+                <TouchableOpacity disabled={!surname} style={!surname ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
+                onPress={() => {
+                    alert.show({
+                        title: i18n.t("welcome.surname.confirm.title"),
+                        message: surname,
+                        actions: [
+                            {
+                                title: i18n.t("welcome.surname.confirm.true"),
+                                onPress: () => {
+                                    userData.save({...userData.data, name: `${userData.data.userInfo.name} ${surname}`, userInfo: {...userData.data.userInfo, surname}});
+                                    router.replace("/welcome/notifications");
+                                }
+                            },
+                            {
+                                title: i18n.t("welcome.surname.confirm.false"),
+                                onPress: () => {
+                                    setSurname("");
+                                }
+                            },
+                        ]
+                    })
+                }}>
+                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.surname.next")}</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardShift>
     );
 }
 
-function notificationsPage() {
+function NotificationsPage() {
     const router = useRouter();
 
     const theme = useTheme();
@@ -251,9 +241,8 @@ function notificationsPage() {
     const alert = useAlert();
 
     return (
-        <SafeAreaView
+        <View
             style={welcomeStyles.container}
-            edges={["bottom", "left", "right", "top"]}
         >
             <View style={welcomeStyles.topView}>
                 <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
@@ -291,11 +280,11 @@ function notificationsPage() {
                     <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.notifications.next")}</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
-function completePage() {
+function CompletePage() {
     const router = useRouter();
 
     const theme = useTheme();
@@ -315,9 +304,8 @@ function completePage() {
     }, [appDebugData.loading]);  
 
     return (
-        <SafeAreaView
+        <View
             style={welcomeStyles.container}
-            edges={["bottom", "left", "right", "top"]}
         >
             <View style={welcomeStyles.topView}>
                 <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
@@ -337,28 +325,34 @@ function completePage() {
                     {appDebugData.loading ? <ActivityIndicator color="white" /> : <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.complete.finish")}</Text>}
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
-export default function welcomeScreen() {
+export default function WelcomeScreen() {
     const params = useLocalSearchParams();
     const page = params.page as string;
 
-    switch (page) {
-        case "start":
-            return startPage();
-        case "restore":
-            return restorePage();
-        case "setname":
-            return setNamePage();
-        case "setsurname":
-            return setSurnamePage();
-        case "notifications":
-            return notificationsPage();
-        case "complete":
-            return completePage();
-        default:
-            return <Redirect href="/(tabs)" />
-    }
+    if (page === "setname" || page === "setsurname") return (
+        <>
+            {
+                page === "setname"
+                ? <SetNamePage />
+                : <SetSurnamePage />
+            }
+        </>
+    )
+
+    return (
+        <SafeAreaView
+            style={{ flex: 1 }}
+            edges={["bottom", "left", "right", "top"]}
+        >
+            {page === "start" ? <StartPage />
+            : page === "restore" ? <RestorePage />
+            : page === "notifications" ? <NotificationsPage />
+            : page === "complete" ? <CompletePage />
+            : <Redirect href="/(tabs)" />}
+        </SafeAreaView>
+    );
 }
