@@ -254,12 +254,14 @@ const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
         gap: 10
     },
     topView: {
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
         maxHeight: "45%",
     },
     topViewImage: {
-        width: "80%",
         height: "100%",
-        margin: "auto",
+        aspectRatio: 1,
         resizeMode: "contain"
     },
     bottomView: {

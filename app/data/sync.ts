@@ -40,8 +40,9 @@ TaskManager.defineTask(SYNC_TASK, async () => {
 });
 
 export async function ensureBackgroundSyncRegistered() {
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(SYNC_TASK);
-    if (!isRegistered) {
+    let stopRunning = false;
+    const isRegistered = await TaskManager.isTaskRegisteredAsync(SYNC_TASK).catch(() => stopRunning = true);
+    if (!isRegistered && !stopRunning) {
         await BackgroundTask.registerTaskAsync(SYNC_TASK, { minimumInterval: 15 }); // minutes (inexact)
     }
 }

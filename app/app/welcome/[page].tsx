@@ -24,6 +24,8 @@ import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
 import { useAccountData } from "@/data/AccountDataContext";
 
+import welcomeImage from "@/assets/images/welcome.png";
+
 function startPage() {
     const router = useRouter();
 
@@ -31,15 +33,13 @@ function startPage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const image = require("@/assets/images/welcome.png");
-
     return (
         <SafeAreaView
             style={welcomeStyles.container}
             edges={["bottom", "left", "right", "top"]}
         >
             <View style={welcomeStyles.topView}>
-                <Image source={image} style={welcomeStyles.topViewImage} />
+                <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
             </View>
             <View style={welcomeStyles.bottomView}>
                 <View style={welcomeStyles.bottomViewHeader}>
@@ -65,7 +65,6 @@ function restorePage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const image = require("@/assets/images/welcome.png");
     const accountData = useAccountData();
 
     useFocusEffect(
@@ -83,7 +82,7 @@ function restorePage() {
             edges={["bottom", "left", "right", "top"]}
         >
             <View style={welcomeStyles.topView}>
-                <Image source={image} style={welcomeStyles.topViewImage} />
+                <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
             </View>
             <View style={welcomeStyles.bottomView}>
                 <View style={welcomeStyles.bottomViewHeader}>
@@ -112,8 +111,6 @@ function setNamePage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const image = require("@/assets/images/welcome.png");
-
     const userData = useUserData();
 
     const [name, setName] = useState("");
@@ -132,7 +129,7 @@ function setNamePage() {
                     contentContainerStyle={{ flexGrow: 1 }}
                 >
                     <View style={welcomeStyles.topView}>
-                        <Image source={image} style={welcomeStyles.topViewImage} />
+                        <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
                     </View>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
@@ -181,8 +178,6 @@ function setSurnamePage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const image = require("@/assets/images/welcome.png");
-
     const userData = useUserData();
 
     const [surname, setSurname] = useState("");
@@ -201,7 +196,7 @@ function setSurnamePage() {
                     contentContainerStyle={{ flexGrow: 1 }}
                 >
                     <View style={welcomeStyles.topView}>
-                        <Image source={image} style={welcomeStyles.topViewImage} />
+                        <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
                     </View>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
@@ -253,7 +248,6 @@ function notificationsPage() {
 
     const accountData = useAccountData();
 
-    const image = require("@/assets/images/welcome.png");
     const alert = useAlert();
 
     return (
@@ -262,7 +256,7 @@ function notificationsPage() {
             edges={["bottom", "left", "right", "top"]}
         >
             <View style={welcomeStyles.topView}>
-                <Image source={image} style={welcomeStyles.topViewImage} />
+                <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
             </View>
             <View style={welcomeStyles.bottomView}>
                 <View style={welcomeStyles.bottomViewHeader}>
@@ -308,8 +302,6 @@ function completePage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const image = require("@/assets/images/welcome.png");
-
     const appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
 
     useEffect(() => { 
@@ -328,7 +320,7 @@ function completePage() {
             edges={["bottom", "left", "right", "top"]}
         >
             <View style={welcomeStyles.topView}>
-                <Image source={image} style={welcomeStyles.topViewImage} />
+                <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
             </View>
             <View style={welcomeStyles.bottomView}>
                 <View style={welcomeStyles.bottomViewHeader}>
