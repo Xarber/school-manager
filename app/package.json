@@ -15,7 +15,8 @@
     "web": "expo start --web",
     "desktop": "cargo-tauri build",
     "lint": "expo lint",
-    "syncMetadata": "node ./scripts/sync-metadata.js"
+    "syncMetadata": "node ./scripts/sync-metadata.js",
+    "syncLocales": "node ./scripts/sync-locales.js"
   },
   "web": {
     "bundler": "metro"

@@ -141,7 +141,12 @@
         "notifications": {
             "title": "Vuoi stare al passo?",
             "description": "Vuoi attivare le notifiche?",
-            "next": "Continua"
+            "next": "Continua",
+            "error": {
+                "title": "Errore",
+                "description": "Impossibile attivare le notifiche.\nPuoi riprovare più tardi nelle impostazioni.",
+                "ok": "Okay"
+            }
         },
         "complete": {
             "title": "Tutto fatto!",
@@ -234,11 +239,103 @@
         "homework": {
             "stack": {
                 "title": "Compiti"
+            },
+            "create": {
+                "stack": {
+                    "title": "Crea compito"
+                },
+                "success": {
+                    "title": "Fatto!",
+                    "description": "Compito creato con successo!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Errore"
+                },
+                "name": {
+                    "default": "Compito"
+                },
+                "description": {
+                    "default": "Questo è un nuovo compito."
+                },
+                "teacher": {
+                    "text": "Insegnante: {{teacher}}"
+                },
+                "subject": {
+                    "title": "Materia",
+                    "text": "Materia: {{subject}}",
+                    "select": "Scegli una materia"
+                },
+                "datetime": {
+                    "title": "Scadenza",
+                    "description": "{{date}} alle {{time}}"
+                },
+                "createdon": {
+                    "text": "Creato il: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Titolo del compito"
+                    },
+                    "description": {
+                        "title": "Descrizione del compito"
+                    }
+                },
+                "merge": {
+                    "text": "\"{{homeworkTitle}}\" verrà aggiunto alla classe {{className}}"
+                },
+                "confirm": "Crea"
             }
         },
         "lesson": {
             "stack": {
                 "title": "Lezioni"
+            },
+            "create": {
+                "stack": {
+                    "title": "Crea una lezione"
+                },
+                "success": {
+                    "title": "Fatto!",
+                    "description": "Lezione creata con successo!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Errore"
+                },
+                "name": {
+                    "default": "Nuova lezione"
+                },
+                "description": {
+                    "default": "Questa è una nuova lezione"
+                },
+                "teacher": {
+                    "text": "Insegnante: {{teacher}}"
+                },
+                "subject": {
+                    "title": "Materia",
+                    "text": "Materia: {{subject}}",
+                    "select": "Seleziona una materia"
+                },
+                "datetime": {
+                    "title": "Data e ora",
+                    "description": "{{date}} alle {{time}}"
+                },
+                "createdon": {
+                    "text": "Creata il: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Titolo della lezione"
+                    },
+                    "description": {
+                        "title": "Descrizione della lezione"
+                    }
+                },
+                "merge": {
+                    "text": "\"{{lessonName}}\" verrà aggiunta alla classe {{className}}"
+                },
+                "confirm": "Crea"
             }
         },
         "material": {
@@ -254,6 +351,58 @@
         "comunication": {
             "stack": {
                 "title": "Comunicazioni"
+            },
+            "create": {
+                "stack": {
+                    "title": "Crea una comunicazione"
+                },
+                "success": {
+                    "title": "Fatto!",
+                    "description": "Comunicazione creata con successo!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Errore"
+                },
+                "name": {
+                    "default": "Nuova comunicazione"
+                },
+                "description": {
+                    "default": "Questa è una nuova comunicazione."
+                },
+                "teacher": {
+                    "text": "Creata da: {{teacher}}"
+                },
+                "urgency": {
+                    "title": "Urgenza",
+                    "options": {
+                        "low": "Bassa",
+                        "medium": "Media",
+                        "high": "Alta"
+                    }
+                },
+                "requiresconfirmation": {
+                    "title": "Richiede conferma?"
+                },
+                "datetime": {
+                    "title": "Data e ora",
+                    "description": "{{date}} alle {{time}}"
+                },
+                "createdon": {
+                    "text": "Creata il: {{createdOn}}"
+                },
+                "input": {
+                    "name": {
+                        "title": "Titolo"
+                    },
+                    "description": {
+                        "title": "Contenuto"
+                    }
+                },
+                "merge": {
+                    "text": "\"{{comunicationName}}\" verrà aggiunta alla classe {{className}}"
+                },
+                "confirm": "Crea"
             }
         },
         "invitation": {
@@ -394,16 +543,58 @@
                 "missed": {
                     "title": "Mancanti"
                 }
+            },
+            "warn": {
+                "noclass": {
+                    "text": "Nessuna classe attiva."
+                },
+                "nohomework": {
+                    "text": "Non ci sono compiti per questa classe."
+                }
+            },
+            "create": {
+                "title": "Crea"
             }
         },
         "comunications": {
             "stack": {
                 "title": "Comunicazioni"
+            },
+            "warn": {
+                "noclass": {
+                    "text": "Nessuna classe attiva."
+                },
+                "nocomunications": {
+                    "text": "Non ci sono comunicazioni per questa classe."
+                },
+                "notfound": {
+                    "text": "Impossibile trovare la comunicazione."
+                }
+            },
+            "header": {
+                "text": "Comunicazioni per {{class}}"
+            },
+            "create": {
+                "title": "Crea"
             }
         },
         "lessons": {
             "stack": {
                 "title": "Lezioni"
+            },
+            "warn": {
+                "noclass": {
+                    "text": "Nessuna classe attiva."
+                },
+                "nolessons": {
+                    "text": "Non ci sono lezioni per questa classe."
+                }
+            },
+            "header": {
+                "text": "Lezioni per {{class}}"
+            },
+            "create": {
+                "title": "Crea"
             }
         }
     },
@@ -512,16 +703,20 @@
             "general": {
                 "title": "Generali",
                 "profile": {
-                    "title": "Il tuo profilo"
+                    "title": "Il tuo profilo",
+                    "description": "Gestisci il profilo"
                 },
                 "appearance": {
-                    "title": "Tema"
+                    "title": "Tema",
+                    "description": "Stile dell'app"
                 },
                 "language": {
-                    "title": "Lingua"
+                    "title": "Lingua",
+                    "description": "Cambia la lingua"
                 },
                 "notifications": {
-                    "title": "Notifiche"
+                    "title": "Notifiche",
+                    "description": "Gestisci le notifiche"
                 },
                 "noitems": {
                     "text": "Impostazioni"
@@ -534,7 +729,8 @@
                     "success": {
                         "title": "Fatto!",
                         "description": "I dati sono stati svuotati."
-                    }
+                    },
+                    "description": "Riparti da zero"
                 },
                 "noitems": {
                     "text": "Dati"
@@ -567,6 +763,24 @@
                     "text": "Scuro"
                 }
             }
+        },
+        "data": {
+            "title": "Il tuo profilo",
+            "actions": {
+                "edit": {
+                    "title": "Modifica"
+                },
+                "save": {
+                    "title": "Salva"
+                }
+            },
+            "edit": {
+                "name": "Nome",
+                "surname": "Cognome"
+            },
+            "role": "Ruolo",
+            "joindate": "Data di iscrizione",
+            "classes": "Numero di classi"
         }
     }
 }

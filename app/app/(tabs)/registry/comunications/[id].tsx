@@ -20,7 +20,6 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     });
 
     let comunication = classData.loading ? null : classData.data.comunications.find((e: ComunicationData) => e._id === id);
-    console.log(comunication);
 
     return classData.loading ? 
     (
@@ -28,10 +27,10 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
             <ActivityIndicator size="small" />
         </View>
     ) : !!comunication ? (
-        <View style={commonStyle.dashboardSection}>
+        <View style={[commonStyle.dashboardSection]}>
             <Text style={commonStyle.headerText}>{comunication.title}</Text>
-            <View style={[commonStyle.card, { minHeight: 200 }]}>
-                <Text style={commonStyle.text}>{comunication.content}</Text>
+            <View style={[commonStyle.card]}>
+                <Text style={[commonStyle.text, { fontSize: 15 }]}>{comunication.content}</Text>
             </View>
         </View>
     ) : (

@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
@@ -9,6 +9,9 @@ interface ActionButtonsProps {
     items: {
         title: string;
         iconName: React.ComponentProps<typeof Ionicons>["name"];
+        iconSize?: number;
+        buffering?: boolean;
+        enabled?: boolean;
         onPress: () => void;
         display?: boolean;
     }[],
@@ -36,9 +39,17 @@ export default function ActionButtons({ items, align, styles }: ActionButtonsPro
         ]}>
             {items.map((e, i) => {
                 if (e.display === false) return null;
-                return <TouchableOpacity key={i} style={[commonStyle.button, {display: "flex", flexDirection: "row", alignItems: "center", gap: 5}, styles]} onPress={e.onPress}>
-                    <Ionicons name={e.iconName} size={30} color={theme.text}></Ionicons>
-                    {e.title && <Text style={{ color: theme.text, fontSize: 12 }}>{e.title}</Text>}
+                e.buffering ??= false;
+                e.enabled ??= !e.buffering;
+                return <TouchableOpacity disabled={!e.enabled} key={i} style={[
+                        commonStyle.button, 
+                        {display: "flex", flexDirection: "row", alignItems: "center", gap: 5},
+                        (!e.enabled ? { backgroundColor: theme.disabled} : null),
+                        styles
+                    ]} onPress={e.onPress}>
+                    {e.buffering ? <ActivityIndicator size="small" color="white" /> : null}
+                    {!e.buffering && <Ionicons name={e.iconName} size={e.iconSize ?? 30} color={theme.text}></Ionicons>}
+                    {!e.buffering && (e.title && <Text style={{ color: theme.text, fontSize: 12, paddingRight: 10 }}>{e.title}</Text>)}
                 </TouchableOpacity>
             })}
         </View>
