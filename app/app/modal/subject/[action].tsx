@@ -59,7 +59,7 @@ function NewSubject() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
-    const [subjectName, setSubjectName] = useState(i18n.t("modal.subject.create.name.default"));
+    const [subjectName, setSubjectName] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
@@ -84,19 +84,19 @@ function NewSubject() {
                     <ScrollView keyboardShouldPersistTaps="handled">
                         <View style={[commonStyle.dashboardSection, modalStyle.container]}>
                             <View style={modalStyle.cardDetails}>
-                                <Text style={commonStyle.headerText}>{subjectName}</Text>
+                                <Text style={commonStyle.headerText}>{subjectName || i18n.t("modal.subject.create.name.default")}</Text>
                                 {
                                     userData.loading ? 
                                     <ActivityIndicator size="small" color={theme.primary} /> :
                                     <Text style={commonStyle.text}>{i18n.t("modal.subject.create.teacher.text", { teacher: userData.data.name })}</Text>
                                 }
                                 <Text style={commonStyle.text}>{i18n.t("modal.subject.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
-                                <Text style={commonStyle.text}>{i18n.t("modal.subject.create.merge.text", {subjectName: subjectName, className: classData.data.name})}</Text>
+                                <Text style={commonStyle.text}>{i18n.t("modal.subject.create.merge.text", {subjectName: subjectName || i18n.t("modal.subject.create.name.default"), className: classData.data.name})}</Text>
                             </View>
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.subject.create.input.name.title")}</Text>
-                                    <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} value={subjectName} onChangeText={text => setSubjectName(text)}/>
+                                    <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.subject.create.name.default")} value={subjectName} onChangeText={text => setSubjectName(text)}/>
                                 </View>
                             </View>
                         </View>

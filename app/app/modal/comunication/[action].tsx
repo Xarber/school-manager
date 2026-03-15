@@ -71,11 +71,11 @@ function NewComunication() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
-    const [comunicationName, setComunicationName] = useState(i18n.t("modal.comunication.create.name.default"));
+    const [comunicationName, setComunicationName] = useState("");
     const [date, setDate] = useState(new Date());
     const [urgency, setUrgency] = useState("low" as "low" | "medium" | "high");
     const [requiresConfirmation, setRequiresConfirmation] = useState(false);
-    const [comunicationDescription, setComunicationDescription] = useState(i18n.t("modal.comunication.create.description.default"));
+    const [comunicationDescription, setComunicationDescription] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
@@ -114,8 +114,8 @@ function NewComunication() {
                     <ScrollView keyboardShouldPersistTaps="handled">
                         <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
                             <View style={modalStyle.cardDetails}>
-                                <Text style={commonStyle.headerText}>{comunicationName}</Text>
-                                <Text style={commonStyle.text}>{comunicationDescription}</Text>
+                                <Text style={commonStyle.headerText}>{comunicationName || i18n.t("modal.comunication.create.name.default")}</Text>
+                                <Text style={commonStyle.text}>{comunicationDescription || i18n.t("modal.comunication.create.description.default")}</Text>
                                 <Text style={commonStyle.text}>{i18n.t("modal.comunication.create.datetime.description", {date: date.toLocaleDateString(), time: date.toLocaleTimeString()})}</Text>
                                 {
                                     userData.loading ? 
@@ -123,16 +123,16 @@ function NewComunication() {
                                     <Text style={commonStyle.text}>{i18n.t("modal.comunication.create.teacher.text", { teacher: userData.data.name })}</Text>
                                 }
                                 <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.comunication.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
-                                <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.comunication.create.merge.text", {comunicationName: comunicationName, className: classData.data.name})}</Text>
+                                <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.comunication.create.merge.text", {comunicationName: comunicationName || i18n.t("modal.comunication.create.name.default"), className: classData.data.name})}</Text>
                             </View>
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.input.name.title")}</Text>
-                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} value={comunicationName} onChangeText={text => setComunicationName(text)}/>
+                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.comunication.create.name.default")} value={comunicationName} onChangeText={text => setComunicationName(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.input.description.title")}</Text>
-                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} value={comunicationDescription} onChangeText={text => setComunicationDescription(text)}/>
+                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} placeholder={i18n.t("modal.comunication.create.description.default")} value={comunicationDescription} onChangeText={text => setComunicationDescription(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.datetime.title")}</Text>

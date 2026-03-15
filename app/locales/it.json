@@ -187,7 +187,7 @@
                     "text": "Insegnante: {{teacher}}"
                 },
                 "createdon": {
-                    "text": "Creata il: {{createdOn}}"
+                    "text": "Creata: {{createdOn}}"
                 },
                 "input": {
                     "name": {
@@ -223,7 +223,7 @@
                     "text": "Insegnante: {{teacher}}"
                 },
                 "createdon": {
-                    "text": "Creata il: {{createdOn}}"
+                    "text": "Creata: {{createdOn}}"
                 },
                 "input": {
                     "name": {
@@ -322,7 +322,7 @@
                     "description": "{{date}} alle {{time}}"
                 },
                 "createdon": {
-                    "text": "Creata il: {{createdOn}}"
+                    "text": "Creata: {{createdOn}}"
                 },
                 "input": {
                     "name": {
@@ -389,7 +389,7 @@
                     "description": "{{date}} alle {{time}}"
                 },
                 "createdon": {
-                    "text": "Creata il: {{createdOn}}"
+                    "text": "Creata: {{createdOn}}"
                 },
                 "input": {
                     "name": {
