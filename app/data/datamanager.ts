@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from "@react-native-community/netinfo";
 import { useEffect, useState } from 'react';
 import Constants from "expo-constants";
+import { Platform } from 'react-native';
 
 export const env = Constants.executionEnvironment;
 export const isProductionBinary = env === "standalone"; // release build created with/without EAS Build
@@ -13,6 +14,8 @@ export const isDevClient = isStoreClient && !Constants.expoVersion;
 
 export const isOnline = NetInfo.fetch().then(state => (state.isInternetReachable || state.isConnected));
 export const connectionMode = NetInfo.fetch().then(state => state.type);
+
+export const isWeb = Platform.OS === "web";
 
 const defaultIndexData = {
     accountId: "" as string,
@@ -521,12 +524,25 @@ export function useDBitem(dbkey: string, body: Object = {}) {
 console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(__DEV__ && !isProductionBinary) ? "true" : "false"}\n`);
 export const DataManager = {
     db: {
-        connect: (__DEV__ && !isProductionBinary) ? "http://192.168.1.168:3000" : 'https://schoolmanager-api.xcenter.it',
+        connect: (__DEV__ && !isProductionBinary && !isWeb) ? "http://192.168.1.168:3000" : 'https://schoolmanager-api.xcenter.it',
         update: "/update",
         create: "/add",
         delete: "/delete",
         get: "/get",
         me: "/me",
+
+        testConnect: async () => {
+            try {
+                const res = await fetch(DataManager.db.connect);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const data = await res.json();
+                console.log(data);
+                return !!data.success;
+            } catch (err) {
+                console.error('Fetch failed:', err);
+                return false;
+            }
+        },
 
         authenticate: "/api/auth/send",
         authenticateOtp: "/api/auth/verify",
@@ -622,3 +638,5 @@ export const DataManager = {
         default: defaultSchoolData
     }
 }
+
+// DataManager.db.testConnect();
