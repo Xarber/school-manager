@@ -22,6 +22,7 @@ import { KeyboardShift } from "@/components/keyboardShift";
 import { useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
+import { useAccountData } from "@/data/AccountDataContext";
 
 function startPage() {
     const router = useRouter();
@@ -65,7 +66,7 @@ function restorePage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const image = require("@/assets/images/welcome.png");
-    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
+    const accountData = useAccountData();
 
     useFocusEffect(
         useCallback(() => {
@@ -250,7 +251,7 @@ function notificationsPage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
+    const accountData = useAccountData();
 
     const image = require("@/assets/images/welcome.png");
     const alert = useAlert();

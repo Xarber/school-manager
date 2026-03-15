@@ -19,6 +19,7 @@ import { KeyboardShift } from "@/components/keyboardShift";
 import { AlertProps, useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
+import { useAccountData } from "@/data/AccountDataContext";
 
 export function validateEmail(email: string) {
     return !!String(email)
@@ -93,7 +94,7 @@ function loginPage() {
     const [otpcode, setOtpcode] = useState("");
     const [otpsent, setOtpsent] = useState(false);
 
-    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
+    const accountData = useAccountData();
     const [loading, setLoading] = useState(false);
     
     const alert = useAlert();
@@ -259,7 +260,7 @@ function loggedinPage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const image = require("@/assets/images/welcome.png");
-    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
+    const accountData = useAccountData();
     const userData = useUserData();
 
     return (
@@ -308,7 +309,7 @@ function logoutPage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const image = require("@/assets/images/welcome.png");
-    const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
+    const accountData = useAccountData();
     const userData = useUserData();
 
     const [isLogoutAvailable, setLogoutAvailable] = useState(false);

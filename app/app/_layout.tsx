@@ -9,17 +9,16 @@ import { ThemeProvider as ContextThemeProvider, useThemeContext } from "@/consta
 import { Scheme } from "@/constants/colors";
 import { AlertProvider } from "@/components/alert/AlertContext";
 import { UserDataProvider } from "@/data/UserDataContext";
+import { AccountDataProvider } from "@/data/AccountDataContext";
 
 function AppLayout() {
   const scheme: Scheme = useThemeContext();
 
   return (
     <ThemeProvider value={scheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AlertProvider>
         <StatusBar style={scheme === "dark" ? "light" : "dark"} />
         <SyncBootstrap />
         <Stack screenOptions={{ headerShown: false }} />
-      </AlertProvider>
     </ThemeProvider>
   );
 }
@@ -36,10 +35,14 @@ function SyncBootstrap() {
 
 export default function RootLayout() {
   return (
-    <UserDataProvider>
-      <ContextThemeProvider>
-        <AppLayout />
-      </ContextThemeProvider>
-    </UserDataProvider>
+    <AccountDataProvider>
+      <UserDataProvider>
+        <ContextThemeProvider>
+          <AlertProvider>
+            <AppLayout />
+          </AlertProvider>
+        </ContextThemeProvider>
+      </UserDataProvider>
+    </AccountDataProvider>
   );
 }
