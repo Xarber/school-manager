@@ -57,8 +57,6 @@ function AppearanceTab() {
     const commonStyle = createStyling.createCommonStyles(theme);
     const userData = useUserData();
 
-    userData.load();
-
     return (
         <View style={commonStyle.dashboardSection}>
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.appearance.stack.title")}} />

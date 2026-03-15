@@ -25,7 +25,8 @@ export default function TabLayout() {
       style={{ flex: 1, backgroundColor: theme.background }}
       edges={["top"]}
     >
-        <Stack screenOptions={{ headerStyle: { backgroundColor: colors.light.surface.toString() } }}>
+        <Stack>
+            {/* screenOptions={{ headerStyle: { backgroundColor: colors.light.surface.toString() } }} */}
             <Stack.Screen name="class/[action]" options={{ presentation: "modal", title: i18n.t("modal.class.stack.title"), headerShown: true, headerLeft: headerCancel }} />
             <Stack.Screen name="subject/[action]" options={{ presentation: "modal", title: i18n.t("modal.subject.stack.title"), headerShown: true, headerLeft: headerCancel }} />
             <Stack.Screen name="homework/[action]" options={{ presentation: "modal", title: i18n.t("modal.homework.stack.title"), headerShown: true, headerLeft: headerCancel }} />
