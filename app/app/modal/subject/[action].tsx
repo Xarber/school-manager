@@ -8,6 +8,7 @@ import createStyling from '@/constants/styling';
 import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
+import { useUserData } from '@/data/UserDataContext';
 
 interface updateSubjectProps {
     action: string;
@@ -61,7 +62,7 @@ function NewSubject() {
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
     const canProceed = subjectName.length > 0;

@@ -18,6 +18,7 @@ import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { KeyboardShift } from "@/components/keyboardShift";
 import { AlertProps, useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";
+import { useUserData } from "@/data/UserDataContext";
 
 export function validateEmail(email: string) {
     return !!String(email)
@@ -179,7 +180,7 @@ function signupPage() {
 
     const alert = useAlert();
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
 
     return (
         <SafeAreaView
@@ -259,7 +260,7 @@ function loggedinPage() {
 
     const image = require("@/assets/images/welcome.png");
     const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
 
     return (
         <SafeAreaView
@@ -308,7 +309,7 @@ function logoutPage() {
 
     const image = require("@/assets/images/welcome.png");
     const accountData = useAppDataSync(DataManager.accountData.db, DataManager.accountData.app, DataManager.accountData.default);
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
 
     const [isLogoutAvailable, setLogoutAvailable] = useState(false);
     setTimeout(()=>setLogoutAvailable(true), 3000);

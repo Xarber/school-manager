@@ -13,6 +13,7 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { AlertProps, AlertProvider, useAlert } from '@/components/alert/AlertContext';
 import ClipboardText from '@/components/clipboardText';
+import { useUserData } from '@/data/UserDataContext';
 
 function addDashes(str: string) {
   return str.replace(/(.{4})/g, '$1-').replace(/-$/, '');
@@ -81,7 +82,7 @@ function NewInvitation() {
     const targetType = params.for as string;
     const targetId = params.targetid as string;
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const inviteData = useDBitem(DataManager.invitation.db);
     const [loading, setLoading] = useState(false);
     const [canProceed, setCanProceed] = useState(true);

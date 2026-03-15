@@ -11,6 +11,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import ActionButtons from "@/components/actionButtons";
 import i18n from "@/constants/i18n";
 import { useCallback } from "react";
+import { useUserData } from "@/data/UserDataContext";
 
 function AllClassList() {
     const theme = useTheme();
@@ -91,7 +92,7 @@ function Class(props: { classId: string }) {
     const router = useRouter();
     const classId = props.classId;
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     let activeClass = userData.loading === false ? userData.data.settings.activeClassId : 0;
     let isActiveClass = activeClass === classId;
 
@@ -187,7 +188,7 @@ function AllClassSubjects() {
     const params = useLocalSearchParams();
     const classId = params.id as string;
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
         populate: ["subjects"],
         classid: classId

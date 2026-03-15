@@ -21,6 +21,7 @@ import { registerForPushNotificationsAsync } from "@/data/notifications";
 import { KeyboardShift } from "@/components/keyboardShift";
 import { useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";
+import { useUserData } from "@/data/UserDataContext";
 
 function startPage() {
     const router = useRouter();
@@ -112,7 +113,7 @@ function setNamePage() {
 
     const image = require("@/assets/images/welcome.png");
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
 
     const [name, setName] = useState("");
     if (!userData.loading && name === "" && userData.data.userInfo.name != "") setName(userData.data.userInfo.name);
@@ -181,7 +182,7 @@ function setSurnamePage() {
 
     const image = require("@/assets/images/welcome.png");
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
 
     const [surname, setSurname] = useState("");
     if (!userData.loading && surname === "" && userData.data.userInfo.surname != "") setSurname(userData.data.userInfo.surname);

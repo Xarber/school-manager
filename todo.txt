@@ -9,3 +9,4 @@
 -> Finish lesson display page (change lesson content message, maybe update UI)
 - Fix lessons page going blank when creating a lesson and then going back (cancelling)
 - Fix homework badge on mobile (overflows)
+- Check login and setup pages

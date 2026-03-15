@@ -6,6 +6,7 @@ import i18n from '@/constants/i18n';
 import { useState } from 'react';
 import ActionButtons from '@/components/actionButtons';
 import { ScrollView } from 'react-native';
+import { useUserData } from '@/data/UserDataContext';
 
 export default function ProfileData() {
     const theme = useTheme();
@@ -14,7 +15,7 @@ export default function ProfileData() {
     const [mode, setMode] = useState<"read" | "write">("read");
     const [loading, setLoading] = useState(false);
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     console.warn(JSON.stringify(userData, null, 4));
 
     const [username, setUsername] = useState("");

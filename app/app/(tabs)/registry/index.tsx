@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { Stack } from "expo-router";
 import i18n from "@/constants/i18n";
+import { useUserData } from "@/data/UserDataContext";
 
 export default function RegistryTab() {
     const theme = useTheme();
@@ -17,7 +18,7 @@ export default function RegistryTab() {
     const RegistryStyle = createStyling.createRegistryStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     let registryPageData = {grades: userData.data.grades};
     
     return (

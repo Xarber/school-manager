@@ -9,6 +9,7 @@ import { Stack } from 'expo-router';
 
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import i18n from '@/constants/i18n';
+import { useUserData } from '@/data/UserDataContext';
 
 export default function CalendarScreen() {
     const theme = useTheme();
@@ -22,7 +23,7 @@ export default function CalendarScreen() {
     const [markedDates, setMarkedDates] = useState({});
     const [selectedDate, setSelectedDate] = useState(tomorrowStr);
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const activeClassId = userData.data.settings.activeClassId;
     const classData = useAppDataSync(null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
         classid: activeClassId

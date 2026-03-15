@@ -14,6 +14,7 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { Switch } from 'react-native';
 import SegmentedSlider from "@/components/segmentedPicker";
+import { useUserData } from '@/data/UserDataContext';
 
 interface updateComunicationProps {
     action: string;
@@ -77,7 +78,7 @@ function NewComunication() {
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
     const canProceed = (comunicationName.length > 0) && (comunicationDescription.length > 0);
