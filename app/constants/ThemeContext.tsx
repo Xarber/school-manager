@@ -1,19 +1,34 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
-import { Scheme, Theme } from "./colors";
+import { Scheme } from "./colors";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
+import { useUserData } from "@/data/UserDataContext";
 
-export default function useThemeContext() {
-    // Todo: Live reload for theme switch in settings
-    let [scheme, setScheme] = useState((useColorScheme() ?? 'light') as Scheme);
+const ThemeContext = createContext<Scheme>("light");
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
-    if (userData.loading === false && (["light", "dark"].includes(userData.data.settings.theme)) && scheme != userData.data.settings.theme)
-        setScheme(userData.data.settings.theme as Scheme);
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+    const systemScheme = useColorScheme() ?? "light";
+    const [scheme, setScheme] = useState<Scheme>(systemScheme as Scheme);
 
-    useEffect(()=>{
-        setScheme(scheme);
-    }, [(userData.data.settings ?? {}).theme]);
+    const userData = useUserData();
 
-    return scheme;
+    useEffect(() => {
+        const userTheme = userData.data.settings?.theme;
+
+        if (userTheme === "system") {
+            setScheme(systemScheme as Scheme);
+        } else if (userTheme) {
+            setScheme(userTheme);
+        }
+    }, [userData.data.settings?.theme, systemScheme]);
+
+    return (
+        <ThemeContext.Provider value={scheme}>
+            {children}
+        </ThemeContext.Provider>
+    );
+}
+
+export function useThemeContext() {
+    return useContext(ThemeContext);
 }

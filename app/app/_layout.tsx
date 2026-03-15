@@ -5,9 +5,24 @@ import { StatusBar } from "expo-status-bar";
 import { syncNow, ensureBackgroundSyncRegistered, startForegroundSync } from "@/data/sync";
 import { useEffect } from "react";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
-import useThemeContext from "@/constants/ThemeContext";
+import { ThemeProvider as ContextThemeProvider, useThemeContext } from "@/constants/ThemeContext";
 import { Scheme } from "@/constants/colors";
 import { AlertProvider } from "@/components/alert/AlertContext";
+import { UserDataProvider } from "@/data/UserDataContext";
+
+function AppLayout() {
+  const scheme: Scheme = useThemeContext();
+
+  return (
+    <ThemeProvider value={scheme === "dark" ? DarkTheme : DefaultTheme}>
+      <AlertProvider>
+        <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+        <SyncBootstrap />
+        <Stack screenOptions={{ headerShown: false }} />
+      </AlertProvider>
+    </ThemeProvider>
+  );
+}
 
 function SyncBootstrap() {
   useEffect(() => {
@@ -20,15 +35,11 @@ function SyncBootstrap() {
 }
 
 export default function RootLayout() {
-  let scheme: Scheme = useThemeContext();
-
   return (
-    <ThemeProvider value={scheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AlertProvider>
-        <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-        <SyncBootstrap />
-        <Stack screenOptions={{ headerShown: false }} />
-      </AlertProvider>
-    </ThemeProvider>
+    <UserDataProvider>
+      <ContextThemeProvider>
+        <AppLayout />
+      </ContextThemeProvider>
+    </UserDataProvider>
   );
 }

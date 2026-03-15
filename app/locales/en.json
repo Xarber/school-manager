@@ -703,16 +703,20 @@
             "general": {
                 "title": "General",
                 "profile": {
-                    "title": "Your Profile"
+                    "title": "Your Profile",
+                    "description": "Manage your profile"
                 },
                 "appearance": {
-                    "title": "Appearance"
+                    "title": "Appearance",
+                    "description": "App's appearance"
                 },
                 "language": {
-                    "title": "Language"
+                    "title": "Language",
+                    "description": "Change the language"
                 },
                 "notifications": {
-                    "title": "Notifications"
+                    "title": "Notifications",
+                    "description": "Manage your notifications"
                 },
                 "noitems": {
                     "text": "Settings"
@@ -722,6 +726,7 @@
                 "title": "Data",
                 "clear": {
                     "title": "Clear Data",
+                    "description": "Restart from scratch",
                     "success": {
                         "title": "Success",
                         "description": "Data was cleared."
@@ -758,6 +763,24 @@
                     "text": "Dark"
                 }
             }
+        },
+        "data": {
+            "title": "Your profile",
+            "actions": {
+                "edit": {
+                    "title": "Edit"
+                },
+                "save": {
+                    "title": "Save"
+                }
+            },
+            "edit": {
+                "name": "Name",
+                "surname": "Surname"
+            },
+            "role": "Role",
+            "joindate": "Join Date",
+            "classes": "Class Count"
         }
     }
 }

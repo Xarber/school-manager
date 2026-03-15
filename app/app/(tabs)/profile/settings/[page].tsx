@@ -10,6 +10,7 @@ import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { RadioButton } from "react-native-paper";
 import { useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";
+import { useUserData } from "@/data/UserDataContext";
 
 export default function settingsPage() {
     const params = useLocalSearchParams();
@@ -54,7 +55,9 @@ function NotificationsTab() {
 function AppearanceTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
+
+    userData.load();
 
     return (
         <View style={commonStyle.dashboardSection}>
@@ -79,21 +82,21 @@ function AllSettingsTab() {
         <View style={commonStyle.dashboardSection}>
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.stack.title")}} />
             <DashboardItem title={i18n.t("profile.settings.general.title")} items={[
-                { title: i18n.t("profile.settings.general.profile.title"), onPress: () => {
+                { title: i18n.t("profile.settings.general.profile.title"), description: i18n.t("profile.settings.general.profile.description"), onPress: () => {
                     router.push("/profile/profiledata");
                 } },
-                { title: i18n.t("profile.settings.general.appearance.title"), onPress: () => {
+                { title: i18n.t("profile.settings.general.appearance.title"), description: i18n.t("profile.settings.general.appearance.description"), onPress: () => {
                     router.push("/profile/settings/appearance");
                 } },
                 // { title: {i18n.t("profile.settings.general.language.title")}, onPress: () => {
                 //     router.push("/profile/settings/language");
                 // } },
-                { title: i18n.t("profile.settings.general.notifications.title"), onPress: () => {
-                    router.push("/profile/settings/notifications");
-                } },
+                // { title: i18n.t("profile.settings.general.notifications.title"), description: i18n.t("profile.settings.general.notifications.description"), onPress: () => {
+                //     router.push("/profile/settings/notifications");
+                // } },
             ]} noItemsText={i18n.t("profile.settings.general.noitems.text")} />
             <DashboardItem title={i18n.t("profile.settings.data.title")} items={[
-                { title: i18n.t("profile.settings.data.clear.title"), onPress: () => {
+                { title: i18n.t("profile.settings.data.clear.title"), description: i18n.t("profile.settings.data.clear.description"), onPress: () => {
                     AsyncStorage.clear().then(()=>alert.show({title: i18n.t("profile.settings.data.clear.success.title"), message: i18n.t("profile.settings.data.clear.success.description")}));
                 } },
             ]} noItemsText={i18n.t("profile.settings.data.noitems.text")} />
