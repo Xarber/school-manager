@@ -33,7 +33,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 const app = express();
-app.use(cors);
+app.use(cors());
 app.use(express.json());
 app.use(debugTest);  // Debug middleware for metrics and testing
 app.use('/api/auth', authRoutes);
