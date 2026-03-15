@@ -6,8 +6,10 @@ import {
     TextInput,
     ScrollView,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Pressable
 } from "react-native";
+import { Keyboard } from "react-native";
 import { useState } from "react";
 import { useRouter, useLocalSearchParams, router, Redirect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,11 +18,40 @@ import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { KeyboardShift } from "@/components/keyboardShift";
-import { AlertProps, useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
 import { useAccountData } from "@/data/AccountDataContext";
 import welcomeImage from "@/assets/images/welcome.png";
+
+interface AlertProps {
+    title: string;
+    message: string;
+    dismissable?: boolean;
+    children?: React.ReactNode;
+    actions?: {
+        title: string;
+        onPress?: () => void;
+    }[];
+}
+
+interface RootAlertProps {
+    title: string;
+    message: string;
+    dismissable?: boolean;
+    children?: React.ReactNode;
+    actions?: {
+        title: string;
+        onPress?: () => void;
+    }[];
+    hide: any
+}
+
+interface AccountProps {
+    alert: {
+        show: Function,
+        hide: Function
+    }
+}
 
 export function validateEmail(email: string) {
     return !!String(email)
@@ -84,7 +115,7 @@ async function verifyOtp(email: string, otpcode: string, reset: Function, alert:
     }
 }
 
-function loginPage() {
+function LoginPage({alert}: AccountProps) {
     const router = useRouter();
 
     const theme = useTheme();
@@ -97,8 +128,6 @@ function loginPage() {
 
     const accountData = useAccountData();
     const [loading, setLoading] = useState(false);
-    
-    const alert = useAlert();
 
     const reset = () => {
         setOtpsent(false);
@@ -139,10 +168,10 @@ function loginPage() {
                         <View style={welcomeStyles.actions}>
                             <TouchableOpacity disabled={!validateEmail(email) || loading} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                                 if (!otpsent) {
-                                    sendOtp(email, setOtpsent, setLoading, alert);
+                                    sendOtp(email, setOtpsent, setLoading, alert as any);
                                 } else {
                                     setLoading(true);
-                                    verifyOtp(email, otpcode, reset, alert).then(status => {
+                                    verifyOtp(email, otpcode, reset, alert as any).then(status => {
                                         setLoading(false);
                                         if (!status.success) return;
                                         accountData.save({
@@ -169,7 +198,7 @@ function loginPage() {
     );
 }
 
-function signupPage() {
+function SignupPage({alert}: AccountProps) {
     const router = useRouter();
 
     const theme = useTheme();
@@ -179,8 +208,6 @@ function signupPage() {
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
     const [loading, setLoading] = useState(false);
-
-    const alert = useAlert();
 
     const userData = useUserData();
 
@@ -253,7 +280,7 @@ function signupPage() {
     );
 }
 
-function loggedinPage() {
+function LoggedInPage({alert}: AccountProps) {
     const router = useRouter();
 
     const theme = useTheme();
@@ -301,7 +328,7 @@ function loggedinPage() {
     );
 }
 
-function logoutPage() {
+function LogoutPage({alert}: AccountProps) {
     const router = useRouter();
 
     const theme = useTheme();
@@ -346,20 +373,77 @@ function logoutPage() {
     );
 }
 
-export default function accountScreen() {
+function AlertComponent(alertProps: RootAlertProps) {
+    const colors = useTheme();
+    const styles = createStyling.createAlertStyles(colors);
+
+    return (
+        <>
+            <Pressable style={styles.container} onPress={alertProps.dismissable ? alertProps.hide : undefined}>
+                <Pressable style={styles.alert} onPress={(e) => e.stopPropagation()}>
+                    <Text style={styles.alertHeaderText}>{alertProps.title}</Text>
+
+                    <View style={styles.alertContent}>
+                    <Text style={styles.alertText}>{alertProps.message}</Text>
+                        {alertProps.children}
+                    </View>
+
+                    <View style={styles.alertActions}>
+                        {alertProps.actions?.slice(0,2).map((action, i) => (
+                            <TouchableOpacity
+                                key={i}
+                                style={[styles.alertButton, {backgroundColor: i === 0 ? colors.primary : colors.secondary}]}
+                                onPress={() => {
+                                    action.onPress?.();
+                                    alertProps.hide();
+                                }}
+                            >
+                                <Text style={styles.alertButtonText}>{action.title}</Text>
+                            </TouchableOpacity>
+                        ))}
+                        {(alertProps.actions ?? []).length === 0 && (
+                            <TouchableOpacity
+                                style={[styles.alertButton, { backgroundColor: colors.primary }]}
+                                onPress={() => {
+                                    alertProps.hide();
+                                }}
+                            >
+                                <Text style={styles.alertButtonText}>{i18n.t("components.alert.close.default.text")}</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                </Pressable>
+            </Pressable>
+        </>
+    )
+}
+
+export default function AccountScreen() {
     const params = useLocalSearchParams();
     const action = params.action as string;
 
-    switch (action) {
-        case "login":
-            return loginPage();
-        case "signup":
-            return signupPage();
-        case "loggedin":
-            return loggedinPage();
-        case "logout":
-            return logoutPage();
-        default:
-            return loginPage();
-    }
+    const [visible, setVisible] = useState(false);
+    const [alertProps, setAlertProps] = useState<AlertProps | null>(null);
+
+    const show = (props: AlertProps) => {
+        Keyboard.dismiss();
+        if (props.dismissable === undefined && !props.actions) props.dismissable = true;
+        else if (!!props.actions) props.dismissable = false;
+        setAlertProps(props);
+        setVisible(true);
+    };
+
+    const hide = () => {
+        setVisible(false);
+    };
+
+    return (
+        <View style={{flex: 1}}>
+            {action === "login" && <LoginPage alert={{show, hide}} />}
+            {action === "signup" && <SignupPage alert={{show, hide}} />}
+            {action === "loggedin" && <LoggedInPage alert={{show, hide}} />}
+            {action === "logout" && <LogoutPage alert={{show, hide}} />}
+            {visible && alertProps && (<AlertComponent title={alertProps.title} message={alertProps.message} dismissable={alertProps.dismissable} children={alertProps.children} actions={alertProps.actions} hide={hide} />)}
+        </View>
+    );
 }

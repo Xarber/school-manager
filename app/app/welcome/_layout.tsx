@@ -11,12 +11,12 @@ export default function AccountLayout() {
             style={{ flex: 1, backgroundColor: theme.background }}
             edges={["top"]}
         >
-            <Stack screenOptions={{ headerStyle: { 
-                //backgroundColor: colors.light.surface.toString() 
-            } }}>
-                <Stack.Screen name="[page]" options={{ title: i18n.t("welcome.stack.title"), headerBackVisible: false,headerShown: false,headerTransparent: true,headerTitle: "" }} />
-                <Stack.Screen name="account/[action]" options={{ presentation: "modal", headerShown: true, title: i18n.t("welcome.account.stack.title"), headerStyle: { backgroundColor: "" } }} />
-            </Stack>
+                <Stack screenOptions={{ headerStyle: { 
+                    //backgroundColor: colors.light.surface.toString() 
+                } }}>
+                    <Stack.Screen name="[page]" options={{ title: i18n.t("welcome.stack.title"), headerBackVisible: false,headerShown: false,headerTransparent: true,headerTitle: "" }} />
+                    <Stack.Screen name="account/[action]" options={{ presentation: "modal", headerShown: true, title: i18n.t("welcome.account.stack.title"), headerStyle: { backgroundColor: "" } }} />
+                </Stack>
         </SafeAreaView>
     );
 }
