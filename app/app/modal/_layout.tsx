@@ -15,7 +15,7 @@ export default function TabLayout() {
   
 
   const headerCancel = () => (
-    <View style={{ marginRight: Platform.OS === "android" ? 15 : null}}>
+    <View style={{ marginRight: (Platform.OS === "android" || Platform.OS === "web") ? 15 : null}}>
       <Button title={i18n.t("modal.stack.cancel")} onPress={() => router.back()} />
     </View>
   );
