@@ -3,8 +3,8 @@ const { type } = require("node:os");
 
 const UserInfoSchema = new Schema({
     userid: {type: String, required: true, unique: true},
-    name: {type: String, required: true},
-    surname: {type: String, required: true},
+    name: {type: String, required: true, maxlength: [30, "Name cannot exceed 30 characters"]},
+    surname: {type: String, required: true, maxlength: [40, "Surname cannot exceed 40 characters"]},
     email: {type: String, required: true, unique: true},
     role: {type: String, required: false, enum: ['student', 'teacher'], default: 'student'},
     addedAt: {type: String, required: true},
@@ -27,7 +27,7 @@ const UserSettingsSchema = new Schema({
 
 const UserDataSchema = new Schema({
     userid: {type: String, required: true, unique: true},
-    name: {type: String, required: false, default: "User"},
+    name: {type: String, required: false, default: "User", maxlength: [70, "Full name cannot exceed 70 characters"]},
     birthday: {type: String, required: false, default: ""},
     userInfo: {type: Schema.Types.ObjectId, ref: 'UserInfo'},
     settings: {type: UserSettingsSchema, required: true},

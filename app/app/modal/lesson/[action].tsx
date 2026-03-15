@@ -129,7 +129,7 @@ function NewLesson() {
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.input.name.title")}</Text>
-                                    <TextInput style={modalStyle.cardEditFieldInput} value={lessonName} onChangeText={text => setLessonName(text)}/>
+                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} value={lessonName} onChangeText={text => setLessonName(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.input.description.title")}</Text>

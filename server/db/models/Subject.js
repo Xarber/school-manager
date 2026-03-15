@@ -2,7 +2,7 @@ const { Schema, model, models } = require("mongoose");
 const { WeekScheduleSchema } = require("./ScheduleHour");
 
 const SubjectSchema = new Schema({
-    name: {type: String, required: true},
+    name: {type: String, required: true, maxlength: [30, "Name cannot exceed 30 characters"]},
     teacher: [{type: Schema.Types.ObjectId, ref: 'UserInfo', required: true}],
     maxgrade: {type: Number, required: true},
     gradeType: {type: String, required: false, enum: ['letter', 'percentage', 'points'], default: 'percentage'},

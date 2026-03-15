@@ -1,7 +1,7 @@
 const {Schema, model, models} = require('mongoose');
 
 const SchoolSchema = new Schema({
-    name: {type: String, required: true},
+    name: {type: String, required: true, maxlength: [30, "Name cannot exceed 30 characters"]},
     address: {type: String, required: true},
     city: {type: String, required: true},
     country: {type: String, required: true},

@@ -159,6 +159,7 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         fontWeight: "bold",
         fontSize: 18,
         textAlign: "center",
+        marginLeft: 20,
     },
     clipboardTextCopy: {
         borderRadius: 8,
@@ -166,6 +167,7 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         backgroundColor: theme.card,
         color: "white",
         fontWeight: "bold",
+        marginRight: 20
     }
 });
 

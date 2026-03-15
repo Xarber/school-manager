@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import i18n from "@/constants/i18n";
@@ -12,6 +12,7 @@ interface Action {
 export interface AlertProps {
   title: string;
   message: string;
+  dismissable?: boolean;
   children?: React.ReactNode;
   actions?: Action[];
 }
@@ -37,6 +38,8 @@ export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
   const [alertProps, setAlertProps] = useState<AlertProps | null>(null);
 
   const show = (props: AlertProps) => {
+    if (props.dismissable === undefined && !props.actions) props.dismissable = true;
+    else if (!!props.actions) props.dismissable = false;
     setAlertProps(props);
     setVisible(true);
   };
@@ -50,8 +53,8 @@ export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
 
       {visible && alertProps && (
-        <View style={styles.container}>
-          <View style={styles.alert}>
+        <Pressable style={styles.container} onPress={alertProps.dismissable ? hide : undefined}>
+          <Pressable style={styles.alert} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.alertHeaderText}>{alertProps.title}</Text>
 
             <View style={styles.alertContent}>
@@ -84,8 +87,8 @@ export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
               )}
             </View>
 
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       )}
 
     </AlertContext.Provider>
