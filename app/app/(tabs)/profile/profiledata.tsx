@@ -7,6 +7,7 @@ import { useState } from 'react';
 import ActionButtons from '@/components/actionButtons';
 import { ScrollView } from 'react-native';
 import { useUserData } from '@/data/UserDataContext';
+import { KeyboardShift } from '@/components/keyboardShift';
 
 export default function ProfileData() {
     const theme = useTheme();
@@ -16,7 +17,6 @@ export default function ProfileData() {
     const [loading, setLoading] = useState(false);
 
     const userData = useUserData();
-    console.warn(JSON.stringify(userData, null, 4));
 
     const [username, setUsername] = useState("");
     const [usersurname, setUsersurname] = useState("");
@@ -34,41 +34,43 @@ export default function ProfileData() {
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView keyboardShouldPersistTaps="handled">
-                <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-                    <Text style={commonStyle.headerText}>{i18n.t("profile.data.title")}</Text>
-                    <View style={[commonStyle.card, { gap: 10 }]}>
-                        <View>
-                            <Text style={[commonStyle.headerText, { fontSize: 20 }]}>{username} {usersurname}</Text>
-                            <Text style={[commonStyle.text, { fontSize: 15, color: theme.secondary }]}>{userData.data.userInfo.email}</Text>
-                        </View>
-                        {mode == "write" && (
-                            <View style={modalStyle.cardEdit}>
-                                <View style={modalStyle.cardEditField}>
-                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.data.edit.name")}</Text>
-                                    <TextInput style={modalStyle.cardEditFieldInput} value={username} onChangeText={setUsername} />
-                                </View>
-                                <View style={modalStyle.cardEditField}>
-                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.data.edit.surname")}</Text>
-                                    <TextInput style={modalStyle.cardEditFieldInput} value={usersurname} onChangeText={setUsersurname} />
-                                </View>
+            <KeyboardShift extraPadding={70}>
+                <ScrollView keyboardShouldPersistTaps="handled">
+                    <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
+                        <Text style={commonStyle.headerText}>{i18n.t("profile.data.title")}</Text>
+                        <View style={[commonStyle.card, { gap: 10 }]}>
+                            <View>
+                                <Text style={[commonStyle.headerText, { fontSize: 20 }]}>{username} {usersurname}</Text>
+                                <Text style={[commonStyle.text, { fontSize: 15, color: theme.secondary }]}>{userData.data.userInfo.email}</Text>
                             </View>
-                        )}
+                            {mode == "write" && (
+                                <View style={modalStyle.cardEdit}>
+                                    <View style={modalStyle.cardEditField}>
+                                        <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.data.edit.name")}</Text>
+                                        <TextInput style={modalStyle.cardEditFieldInput} value={username} onChangeText={setUsername} />
+                                    </View>
+                                    <View style={modalStyle.cardEditField}>
+                                        <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.data.edit.surname")}</Text>
+                                        <TextInput style={modalStyle.cardEditFieldInput} value={usersurname} onChangeText={setUsersurname} />
+                                    </View>
+                                </View>
+                            )}
+                        </View>
+                        <View style={[commonStyle.card]}>
+                            <Text style={[commonStyle.headerText, { fontSize: 20 }]}>{i18n.t(`profile.data.role`)}</Text>
+                            <Text style={[commonStyle.text, { fontSize: 15 }]}>{i18n.t(`profile.data.roles.${userData.data.userInfo.role}`)}</Text>
+                        </View>
+                        <View style={[commonStyle.card]}>
+                            <Text style={[commonStyle.headerText, { fontSize: 20 }]}>{i18n.t(`profile.data.joindate`)}</Text>
+                            <Text style={[commonStyle.text, { fontSize: 15 }]}>{new Date(userData.data.addedAt).toLocaleDateString()}</Text>
+                        </View>
+                        <View style={[commonStyle.card]}>
+                            <Text style={[commonStyle.headerText, { fontSize: 20 }]}>{i18n.t(`profile.data.classes`)}</Text>
+                            <Text style={[commonStyle.text, { fontSize: 15 }]}>{userData.data.classes.length}</Text>
+                        </View>
                     </View>
-                    <View style={[commonStyle.card]}>
-                        <Text style={[commonStyle.headerText, { fontSize: 20 }]}>{i18n.t(`profile.data.role`)}</Text>
-                        <Text style={[commonStyle.text, { fontSize: 15 }]}>{userData.data.userInfo.role.split("")[0].toUpperCase() + userData.data.userInfo.role.slice(1)}</Text>
-                    </View>
-                    <View style={[commonStyle.card]}>
-                        <Text style={[commonStyle.headerText, { fontSize: 20 }]}>{i18n.t(`profile.data.joindate`)}</Text>
-                        <Text style={[commonStyle.text, { fontSize: 15 }]}>{new Date(userData.data.addedAt).toLocaleDateString()}</Text>
-                    </View>
-                    <View style={[commonStyle.card]}>
-                        <Text style={[commonStyle.headerText, { fontSize: 20 }]}>{i18n.t(`profile.data.classes`)}</Text>
-                        <Text style={[commonStyle.text, { fontSize: 15 }]}>{userData.data.classes.length}</Text>
-                    </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </KeyboardShift>
             <ActionButtons items={[
                 {
                     title: i18n.t("profile.data.actions.edit.title"),

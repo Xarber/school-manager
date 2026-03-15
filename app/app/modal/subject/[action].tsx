@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import {router, Stack, useLocalSearchParams} from "expo-router";
 import {useState} from "react";
@@ -9,6 +9,7 @@ import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
+import { KeyboardShift } from '@/components/keyboardShift';
 
 interface updateSubjectProps {
     action: string;
@@ -79,23 +80,27 @@ function NewSubject() {
             <Stack.Screen options={{headerTitle: i18n.t("modal.subject.create.stack.title")}} />
             {
                 classData.loading ? <ActivityIndicator size="small" /> : 
-                <View style={[commonStyle.dashboardSection, modalStyle.container]}>
-                    <View style={modalStyle.cardDetails}>
-                        <Text style={commonStyle.headerText}>{subjectName}</Text>
-                        {
-                            userData.loading ? 
-                            <ActivityIndicator size="small" color={theme.primary} /> :
-                            <Text style={commonStyle.text}>{i18n.t("modal.subject.create.teacher.text", { teacher: userData.data.name })}</Text>
-                        }
-                        <Text style={commonStyle.text}>{i18n.t("modal.subject.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
-                        <Text style={commonStyle.text}>{i18n.t("modal.subject.create.merge.text", {subjectName: subjectName, className: classData.data.name})}</Text>
-                    </View>
-                    <View style={modalStyle.cardEdit}>
-                        <View style={modalStyle.cardEditField}>
-                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.subject.create.input.name.title")}</Text>
-                            <TextInput style={modalStyle.cardEditFieldInput} value={subjectName} onChangeText={text => setSubjectName(text)}/>
+                <KeyboardShift>
+                    <ScrollView keyboardShouldPersistTaps="handled">
+                        <View style={[commonStyle.dashboardSection, modalStyle.container]}>
+                            <View style={modalStyle.cardDetails}>
+                                <Text style={commonStyle.headerText}>{subjectName}</Text>
+                                {
+                                    userData.loading ? 
+                                    <ActivityIndicator size="small" color={theme.primary} /> :
+                                    <Text style={commonStyle.text}>{i18n.t("modal.subject.create.teacher.text", { teacher: userData.data.name })}</Text>
+                                }
+                                <Text style={commonStyle.text}>{i18n.t("modal.subject.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
+                                <Text style={commonStyle.text}>{i18n.t("modal.subject.create.merge.text", {subjectName: subjectName, className: classData.data.name})}</Text>
+                            </View>
+                            <View style={modalStyle.cardEdit}>
+                                <View style={modalStyle.cardEditField}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.subject.create.input.name.title")}</Text>
+                                    <TextInput style={modalStyle.cardEditFieldInput} value={subjectName} onChangeText={text => setSubjectName(text)}/>
+                                </View>
+                            </View>
                         </View>
-                    </View>
+                    </ScrollView>
                     <View style={modalStyle.bottomActions}>
                         <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateSubject({
                             action: "create",
@@ -113,7 +118,8 @@ function NewSubject() {
                             }
                         </TouchableOpacity>
                     </View>
-                </View>
+                </KeyboardShift>
+
             }
         </>
     );

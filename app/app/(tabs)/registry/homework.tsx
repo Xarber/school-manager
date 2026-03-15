@@ -178,12 +178,24 @@ export default function HomeworkTab() {
         </View>
     );
 
+    function AllHomework() {
+        return <HomeworkComponent mode="all" userData={userData.data} classid={classid} />
+    }
+
+    function CompletedHomework() {
+        return <HomeworkComponent mode="completed" userData={userData.data} classid={classid} />
+    }
+
+    function MissedHomework() {
+        return <HomeworkComponent mode="missed" userData={userData.data} classid={classid} />
+    }
+
     return (
         <>
             <Tab.Navigator>
-                <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={()=>HomeworkComponent({mode: "all", userData: userData.data, classid})} />
-                <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={()=>HomeworkComponent({mode: "completed", userData: userData.data, classid})} />
-                <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={()=>HomeworkComponent({mode: "missed", userData: userData.data, classid})} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={AllHomework} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={CompletedHomework} />
+                <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={MissedHomework} />
             </Tab.Navigator>
             <ActionButtons items={[
                 {

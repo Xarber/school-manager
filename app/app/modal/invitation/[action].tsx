@@ -14,6 +14,9 @@ import { useRouter } from 'expo-router';
 import { AlertProps, AlertProvider, useAlert } from '@/components/alert/AlertContext';
 import ClipboardText from '@/components/clipboardText';
 import { useUserData } from '@/data/UserDataContext';
+import { KeyboardShift } from '@/components/keyboardShift';
+import { ScrollView } from 'react-native';
+import i18n from '@/constants/i18n';
 
 function addDashes(str: string) {
   return str.replace(/(.{4})/g, '$1-').replace(/-$/, '');
@@ -43,14 +46,14 @@ function updateInvite({action, invitefor, targetid, joinAs, setLoading, create, 
                 targetid: targetid
             }).then(data => {
                 alert.show({
-                    title: "Invite created!",
-                    message: "Share this code:",
+                    title: i18n.t("modal.invitation.create.alert.title"),
+                    message: i18n.t("modal.invitation.create.alert.message"),
                     children: (
                         <ClipboardText text={data.toString()} />
                     ),
                     actions: [
                         {
-                            title: "Close",
+                            title: i18n.t("modal.invitation.create.alert.close"),
                             onPress: () => {
                                 alert.hide();
                                 router.back();
@@ -60,7 +63,7 @@ function updateInvite({action, invitefor, targetid, joinAs, setLoading, create, 
                 });
             }).catch(err => {
                 alert.show({
-                    title: "Error",
+                    title: i18n.t("modal.invitation.create.alert.error.title"),
                     message: err.message
                 });
             })
@@ -92,24 +95,24 @@ function NewInvitation() {
 
     return (
         <>
-            <Stack.Screen options={{headerTitle: "Create an invite"}} />
+            <Stack.Screen options={{headerTitle: i18n.t("modal.invitation.create.stack.title")}} />
             <View style={[commonStyle.dashboardSection, modalStyle.container]}>
-                <Text style={commonStyle.text}>Your invite will look like this:</Text>
+                <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.preview.text")}</Text>
                 <View style={modalStyle.cardDetails}>
                     <Text style={commonStyle.headerText}>{targetName}</Text>
                     {
                         userData.loading ? 
                         <ActivityIndicator size="small" color={theme.primary} /> :
-                        <Text style={commonStyle.text}>{userData.data.name} has invited you to join a {targetType}!</Text>
+                        <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.invited.text", {user: userData.data.name, target: i18n.t("modal.invitation.types." + targetType)})}</Text>
                     }
-                    <Text style={commonStyle.text}>Created on: {new Date().toDateString()}</Text>
-                    <Text style={commonStyle.text}>Will be joining as: {joinAs}</Text>
+                    <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.createdate", {date: new Date().toDateString()})}</Text>
+                    <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.joinas", {joinAs: i18n.t("modal.invitation.types." + joinAs)})}</Text>
                 </View>
                 <View style={modalStyle.cardEdit}>
-                    <Text style={commonStyle.headerText}>Invite a:</Text>
+                    <Text style={commonStyle.headerText}>{i18n.t("modal.invitation.create.type.title")}</Text>
                     <RadioButton.Group onValueChange={((v) => {setJoinAs(v as any)})} value={joinAs}>
-                        <RadioButton.Item label="Student" value="student" labelStyle={commonStyle.text} />
-                        <RadioButton.Item label="Teacher" value="teacher" labelStyle={commonStyle.text} />
+                        <RadioButton.Item label={i18n.t("modal.invitation.create.type.student")} value="student" labelStyle={commonStyle.text} />
+                        <RadioButton.Item label={i18n.t("modal.invitation.create.type.teacher")} value="teacher" labelStyle={commonStyle.text} />
                     </RadioButton.Group>
                 </View>
                 <View style={modalStyle.bottomActions}>
@@ -125,7 +128,7 @@ function NewInvitation() {
                     })} style={[modalStyle.bottomActionButton]}>
                         {loading 
                             ? <ActivityIndicator size="small" color="white" />
-                            : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>Create</Text>
+                            : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.invitation.create.confirm")}</Text>
                         }
                     </TouchableOpacity>
                 </View>
@@ -145,24 +148,28 @@ function EnterInvitation() {
     const [canProceed, setCanProceed] = useState(false);
 
     return (
-        <View style={[commonStyle.dashboardSection, {flex: 1, justifyContent: "center", alignItems: "center"}]}>
-            <Stack.Screen options={{headerTitle: "Enter an invite"}} />
-            <Feather name="mail" size={100} color={theme.primary} />
-            <View style={{padding: 50, width: "100%", alignItems: "center", gap: 20}}>
-                <Text style={commonStyle.headerText}>Enter your invite here</Text>
-                <View style={{gap: 10, width: "100%"}}>
-                    <TextInput maxLength={14} style={[modalStyle.cardEditFieldInput, {textAlign: "center"}]} value={inviteCode} onChangeText={(t)=>{
-                        setInviteCode(addDashes(t.toUpperCase().replaceAll('-', '')));
-                        setCanProceed(t.length == 14);
-                    }} />
-                    <TouchableOpacity disabled={!canProceed} onPress={() => {
-                        router.push({ pathname: "/modal/invitation/read" as any, params: {invitecode: inviteCode}});
-                    }} style={[commonStyle.wideButton, canProceed ? null : {backgroundColor: theme.disabled}]}>
-                        <Text style={commonStyle.text}>Confirm</Text>
-                    </TouchableOpacity>
+        <KeyboardShift>
+            <ScrollView keyboardShouldPersistTaps="handled">
+                <View style={[commonStyle.dashboardSection, {flex: 1, justifyContent: "center", alignItems: "center"}]}>
+                    <Stack.Screen options={{headerTitle: i18n.t("modal.invitation.enter.stack.title")}} />
+                    <Feather name="mail" size={100} color={theme.primary} />
+                    <View style={{padding: 50, width: "100%", alignItems: "center", gap: 20}}>
+                        <Text style={commonStyle.headerText}>{i18n.t("modal.invitation.enter.title")}</Text>
+                        <View style={{gap: 10, width: "100%"}}>
+                            <TextInput autoFocus={true} maxLength={14} style={[modalStyle.cardEditFieldInput, {textAlign: "center"}]} value={inviteCode} onChangeText={(t)=>{
+                                setInviteCode(addDashes(t.toUpperCase().replaceAll('-', '')));
+                                setCanProceed(t.length == 14);
+                            }} />
+                            <TouchableOpacity disabled={!canProceed} onPress={() => {
+                                router.replace({ pathname: "/modal/invitation/read" as any, params: {invitecode: inviteCode}});
+                            }} style={[commonStyle.wideButton, canProceed ? null : {backgroundColor: theme.disabled}]}>
+                                <Text style={commonStyle.text}>{i18n.t("modal.invitation.enter.confirm")}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
-            </View>
-        </View>
+            </ScrollView>
+        </KeyboardShift>
     )
 }
 
@@ -179,7 +186,7 @@ function ReadInvitation() {
 
     return (
         <View style={{flex: 1, justifyContent: "center", alignItems: "center", gap: 20}}>
-            <Stack.Screen options={{headerTitle: "Invitation"}} />
+            <Stack.Screen options={{headerTitle: i18n.t("modal.invitation.read.stack.title")}} />
             <Feather name="mail" size={100} color={theme.primary} />
             <View style={modalStyle.cardDetails}>
                 {
@@ -187,8 +194,8 @@ function ReadInvitation() {
                     <ActivityIndicator size="small" color={theme.primary} /> : (
                         <>
                             <Text style={commonStyle.headerText}>{inviteData.data.name}</Text>
-                            <Text style={commonStyle.text}>{inviteData.data.author?.name + " " + inviteData.data.author?.surname} has invited you to join a {inviteData.data.for}!</Text>
-                            <Text style={commonStyle.text}>Will be joining as: {inviteData.data.joinAs}</Text>
+                            <Text style={commonStyle.text}>{i18n.t("modal.invitation.read.title", {author: `${inviteData.data.author?.name} ${inviteData.data.author?.surname}`, type: i18n.t("modal.invitation.types." + inviteData.data.for)})}</Text>
+                            <Text style={commonStyle.text}>{i18n.t("modal.invitation.read.joinas", {joinAs: i18n.t("modal.invitation.types." + inviteData.data.joinAs)})}</Text>
                         </>
                     )
                 }
@@ -200,7 +207,7 @@ function ReadInvitation() {
                     router.dismissAll();
                 })
             })} style={modalStyle.bottomActionButton}>
-                {inviteData.loading ? <ActivityIndicator size="small" color={theme.primary} /> : <Text style={commonStyle.text}>Accept</Text>}
+                {inviteData.loading ? <ActivityIndicator size="small" color={theme.primary} /> : <Text style={commonStyle.text}>{i18n.t("modal.invitation.read.accept")}</Text>}
             </TouchableOpacity>
         </View>
 
@@ -222,7 +229,7 @@ export default function InvitationPage() {
             return <ReadInvitation />;
         default:
             return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={commonStyle.text}>There was an error loading the page.</Text>
+                <Text style={commonStyle.text}>{i18n.t("modal.invitation.error")}</Text>
             </View>
     }
 }

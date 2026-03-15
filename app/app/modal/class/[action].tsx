@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import {router, Stack, useLocalSearchParams} from "expo-router";
 import {useState} from "react";
@@ -9,6 +9,7 @@ import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
+import { KeyboardShift } from '@/components/keyboardShift';
 
 interface updateClassProps {
     action: string;
@@ -71,28 +72,32 @@ function NewClass() {
     return (
         <>
             <Stack.Screen options={{headerTitle: i18n.t("modal.class.create.stack.title")}} />
-            <View style={[commonStyle.dashboardSection, modalStyle.container]}>
-                <View style={modalStyle.cardDetails}>
-                    <Text style={commonStyle.headerText}>{className}</Text>
-                    {
-                        userData.loading ? 
-                        <ActivityIndicator size="small" color={theme.primary} /> :
-                        <Text style={commonStyle.text}>{i18n.t("modal.class.create.teacher.text", {teacher: userData.data.name})}</Text>
-                    }
-                    <Text style={commonStyle.text}>{i18n.t("modal.class.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
-                    <Text style={commonStyle.text}>{classDescription}</Text>
-                </View>
-                <View style={modalStyle.cardEdit}>
-                    <View style={modalStyle.cardEditField}>
-                        <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.name.title")}</Text>
-                        <TextInput style={modalStyle.cardEditFieldInput} value={className} onChangeText={text => setClassName(text)}/>
-                    </View>
+            <KeyboardShift>
+                <ScrollView keyboardShouldPersistTaps="handled">
+                    <View style={[commonStyle.dashboardSection, modalStyle.container]}>
+                        <View style={modalStyle.cardDetails}>
+                            <Text style={commonStyle.headerText}>{className}</Text>
+                            {
+                                userData.loading ? 
+                                <ActivityIndicator size="small" color={theme.primary} /> :
+                                <Text style={commonStyle.text}>{i18n.t("modal.class.create.teacher.text", {teacher: userData.data.name})}</Text>
+                            }
+                            <Text style={commonStyle.text}>{i18n.t("modal.class.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
+                            <Text style={commonStyle.text}>{classDescription}</Text>
+                        </View>
+                        <View style={modalStyle.cardEdit}>
+                            <View style={modalStyle.cardEditField}>
+                                <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.name.title")}</Text>
+                                <TextInput style={modalStyle.cardEditFieldInput} value={className} onChangeText={text => setClassName(text)}/>
+                            </View>
 
-                    <View>
-                        <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.description.title")}</Text>
-                        <TextInput style={modalStyle.cardEditFieldInput} value={classDescription} onChangeText={text => setClassDescription(text)} />
+                            <View>
+                                <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.description.title")}</Text>
+                                <TextInput style={modalStyle.cardEditFieldInput} value={classDescription} onChangeText={text => setClassDescription(text)} />
+                            </View>
+                        </View>
                     </View>
-                </View>
+                </ScrollView>
                 <View style={modalStyle.bottomActions}>
                     <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateClass({
                         action: "create",
@@ -108,7 +113,7 @@ function NewClass() {
                         }
                     </TouchableOpacity>
                 </View>
-            </View>
+            </KeyboardShift>
         </>
     );
 }

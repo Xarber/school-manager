@@ -408,7 +408,56 @@
         "invitation": {
             "stack": {
                 "title": "Invitation"
-            }
+            },
+            "types": {
+                "class": "class",
+                "school": "school",
+                "student": "student",
+                "teacher": "teacher"
+            },
+            "create": {
+                "stack": {
+                    "title": "Create an invite"
+                },
+                "preview": {
+                    "text": "Your invite will look like this:"
+                },
+                "invited": {
+                    "text": "{{user}} has invited you to join a {{target}}!"
+                },
+                "createdate": "Created on: {{date}}",
+                "joinas": "Will be joining as: {{joinAs}}",
+                "type": {
+                    "title": "Invite a:",
+                    "student": "Student",
+                    "teacher": "Teacher"
+                },
+                "alert": {
+                    "title": "Invite created!",
+                    "message": "Share this code:",
+                    "close": "Close",
+                    "error": {
+                        "title": "Error"
+                    }
+                },
+                "confirm": "Invite"
+            },
+            "enter": {
+                "stack": {
+                    "title": "Enter an invite"
+                },
+                "title": "Enter your invite here",
+                "confirm": "Confirm"
+            },
+            "read": {
+                "stack": {
+                    "title": "Invitation"
+                },
+                "title": "{{author}} has invited you to join a {{type}}!",
+                "joinas": "Will be joining as: {{joinAs}}",
+                "accept": "Accept"
+            },
+            "error": "There was an error loading the page."
         }
     },
     "root": {
@@ -779,6 +828,10 @@
                 "surname": "Surname"
             },
             "role": "Role",
+            "roles": {
+                "student": "Student",
+                "teacher": "Teacher"
+            },
             "joindate": "Join Date",
             "classes": "Class Count"
         }

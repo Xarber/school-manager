@@ -408,7 +408,56 @@
         "invitation": {
             "stack": {
                 "title": "Invito"
-            }
+            },
+            "types": {
+                "class": "classe",
+                "school": "scuola",
+                "student": "studente",
+                "teacher": "insegnante"
+            },
+            "create": {
+                "stack": {
+                    "title": "Crea un invito"
+                },
+                "preview": {
+                    "text": "Questo sarà il tuo invito:"
+                },
+                "invited": {
+                    "text": "{{user}} ti ha invitato ad unirti ad una {{target}}!"
+                },
+                "createdate": "Creato il: {{date}}",
+                "joinas": "Ti unirai come: {{joinAs}}",
+                "type": {
+                    "title": "Invita:",
+                    "student": "Studente",
+                    "teacher": "Insegnante"
+                },
+                "alert": {
+                    "title": "Invito creato!",
+                    "message": "Condividi questo codice:",
+                    "close": "Chiudi",
+                    "error": {
+                        "title": "Errore"
+                    }
+                },
+                "confirm": "Invita"
+            },
+            "enter": {
+                "stack": {
+                    "title": "Inserisci un invito"
+                },
+                "title": "Inserisci qui il tuo invito",
+                "confirm": "Conferma"
+            },
+            "read": {
+                "stack": {
+                    "title": "Invito"
+                },
+                "title": "{{author}} ti ha invitato ad unirti ad una {{type}}!",
+                "joinas": "Ti unirai come: {{joinAs}}",
+                "accept": "Accetta"
+            },
+            "error": "C'è stato un errore nel caricamento della pagina."
         }
     },
     "root": {
@@ -779,6 +828,10 @@
                 "surname": "Cognome"
             },
             "role": "Ruolo",
+            "roles": {
+                "student": "Studente",
+                "teacher": "Insegnante"
+            },
             "joindate": "Data di iscrizione",
             "classes": "Numero di classi"
         }

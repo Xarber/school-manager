@@ -13,6 +13,7 @@ import i18n from '@/constants/i18n';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserData } from '@/data/UserDataContext';
+import { KeyboardShift } from '@/components/keyboardShift';
 
 interface updateLessonProps {
     action: string;
@@ -110,81 +111,85 @@ function NewLesson() {
             <Stack.Screen options={{headerTitle: i18n.t("modal.lesson.create.stack.title")}} />
             {
                 classData.loading ? <ActivityIndicator size="small" /> : 
-                <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
-                    <View style={modalStyle.cardDetails}>
-                        <Text style={commonStyle.headerText}>{lessonName}</Text>
-                        <Text style={commonStyle.text}>{lessonDescription}</Text>
-                        <Text style={commonStyle.text}>{i18n.t("modal.lesson.create.datetime.description", {date: date.toLocaleDateString(), time: date.toLocaleTimeString()})}</Text>
-                        {
-                            userData.loading ? 
-                            <ActivityIndicator size="small" color={theme.primary} /> :
-                            <Text style={commonStyle.text}>{i18n.t("modal.lesson.create.teacher.text", { teacher: userData.data.name })}</Text>
-                        }
-                        <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.lesson.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
-                        <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.lesson.create.merge.text", {lessonName: lessonName, className: classData.data.name})}</Text>
-                    </View>
-                    <View style={modalStyle.cardEdit}>
-                        <View style={modalStyle.cardEditField}>
-                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.input.name.title")}</Text>
-                            <TextInput style={modalStyle.cardEditFieldInput} value={lessonName} onChangeText={text => setLessonName(text)}/>
+                <KeyboardShift>
+                    <ScrollView keyboardShouldPersistTaps="handled">
+                        <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
+                            <View style={modalStyle.cardDetails}>
+                                <Text style={commonStyle.headerText}>{lessonName}</Text>
+                                <Text style={commonStyle.text}>{lessonDescription}</Text>
+                                <Text style={commonStyle.text}>{i18n.t("modal.lesson.create.datetime.description", {date: date.toLocaleDateString(), time: date.toLocaleTimeString()})}</Text>
+                                {
+                                    userData.loading ? 
+                                    <ActivityIndicator size="small" color={theme.primary} /> :
+                                    <Text style={commonStyle.text}>{i18n.t("modal.lesson.create.teacher.text", { teacher: userData.data.name })}</Text>
+                                }
+                                <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.lesson.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
+                                <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.lesson.create.merge.text", {lessonName: lessonName, className: classData.data.name})}</Text>
+                            </View>
+                            <View style={modalStyle.cardEdit}>
+                                <View style={modalStyle.cardEditField}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.input.name.title")}</Text>
+                                    <TextInput style={modalStyle.cardEditFieldInput} value={lessonName} onChangeText={text => setLessonName(text)}/>
+                                </View>
+                                <View style={modalStyle.cardEditField}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.input.description.title")}</Text>
+                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} value={lessonDescription} onChangeText={text => setLessonDescription(text)}/>
+                                </View>
+                                <View style={modalStyle.cardEditField}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.subject.title")}</Text>
+                                    {
+                                        Platform.OS === "ios" && (
+                                            <>
+                                                <TouchableOpacity style={modalStyle.cardEditFieldSelect} onPress={()=>setSubjectPickeriOSvisible(true)}>
+                                                    <Text style={modalStyle.cardEditFieldSelectText}>{classData.data.subjects.find((subject: SubjectData) => subject._id === subjectId)?.name ?? i18n.t("modal.lesson.create.subject.select")}</Text>
+                                                    <Ionicons style={modalStyle.cardEditFieldSelectChevron} name="chevron-down" size={18} color={theme.text} />
+                                                </TouchableOpacity>
+                                            </>
+                                        )
+                                    }
+                                    {
+                                        Platform.OS === "android" && (
+                                            <Picker
+                                                mode="dropdown"
+                                                style={modalStyle.cardEditFieldSelect}
+                                                dropdownIconColor={theme.text}
+                                                selectedValue={subjectId}
+                                                onValueChange={value => setSubjectId(value)}
+                                            >
+                                                <Picker.Item style={modalStyle.cardEditFieldSelectItem} label={i18n.t("modal.lesson.create.subject.select")} value="" enabled={subjectId.length === 0} />
+                                                {
+                                                    classData.data.subjects.map((subject: SubjectData) => <Picker.Item style={modalStyle.cardEditFieldSelectItem} key={subject._id} label={subject.name} value={subject._id} />)
+                                                }
+                                            </Picker>
+                                        )
+                                    }
+                                </View>
+                                <View style={modalStyle.cardEditField}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.datetime.title")}</Text>
+                                    {
+                                        Platform.OS === "android" && (
+                                            <View style={{display: "flex", flexDirection: "row", gap: 10}}>
+                                                <TouchableOpacity style={[commonStyle.button, {backgroundColor: theme.opaqueCard}]} onPress={()=>showMode("date")}>
+                                                    <Text style={commonStyle.text}>{date.toDateString()}</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[commonStyle.button, {backgroundColor: theme.opaqueCard}]} onPress={()=>showMode("time")}>
+                                                    <Text style={commonStyle.text}>{date.toTimeString().split(" ")[0]}</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )
+                                    }
+                                    {
+                                        Platform.OS === "ios" && <DateTimePicker 
+                                            value={date}
+                                            mode="datetime"
+                                            display="default"
+                                            onChange={updateDate}
+                                        />
+                                    }
+                                </View>
+                            </View>
                         </View>
-                        <View style={modalStyle.cardEditField}>
-                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.input.description.title")}</Text>
-                            <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} value={lessonDescription} onChangeText={text => setLessonDescription(text)}/>
-                        </View>
-                        <View style={modalStyle.cardEditField}>
-                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.subject.title")}</Text>
-                            {
-                                Platform.OS === "ios" && (
-                                    <>
-                                        <TouchableOpacity style={modalStyle.cardEditFieldSelect} onPress={()=>setSubjectPickeriOSvisible(true)}>
-                                            <Text style={modalStyle.cardEditFieldSelectText}>{classData.data.subjects.find((subject: SubjectData) => subject._id === subjectId)?.name ?? i18n.t("modal.lesson.create.subject.select")}</Text>
-                                            <Ionicons style={modalStyle.cardEditFieldSelectChevron} name="chevron-down" size={18} color={theme.text} />
-                                        </TouchableOpacity>
-                                    </>
-                                )
-                            }
-                            {
-                                Platform.OS === "android" && (
-                                    <Picker
-                                        mode="dropdown"
-                                        style={modalStyle.cardEditFieldSelect}
-                                        dropdownIconColor={theme.text}
-                                        selectedValue={subjectId}
-                                        onValueChange={value => setSubjectId(value)}
-                                    >
-                                        <Picker.Item style={modalStyle.cardEditFieldSelectItem} label={i18n.t("modal.lesson.create.subject.select")} value="" enabled={subjectId.length === 0} />
-                                        {
-                                            classData.data.subjects.map((subject: SubjectData) => <Picker.Item style={modalStyle.cardEditFieldSelectItem} key={subject._id} label={subject.name} value={subject._id} />)
-                                        }
-                                    </Picker>
-                                )
-                            }
-                        </View>
-                        <View style={modalStyle.cardEditField}>
-                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.datetime.title")}</Text>
-                            {
-                                Platform.OS === "android" && (
-                                    <View style={{display: "flex", flexDirection: "row", gap: 10}}>
-                                        <TouchableOpacity style={[commonStyle.button, {backgroundColor: theme.opaqueCard}]} onPress={()=>showMode("date")}>
-                                            <Text style={commonStyle.text}>{date.toDateString()}</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={[commonStyle.button, {backgroundColor: theme.opaqueCard}]} onPress={()=>showMode("time")}>
-                                            <Text style={commonStyle.text}>{date.toTimeString().split(" ")[0]}</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )
-                            }
-                            {
-                                Platform.OS === "ios" && <DateTimePicker 
-                                    value={date}
-                                    mode="datetime"
-                                    display="default"
-                                    onChange={updateDate}
-                                />
-                            }
-                        </View>
-                    </View>
+                    </ScrollView>
                     <View style={modalStyle.bottomActions}>
                         <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateLesson({
                             action: "create",
@@ -220,7 +225,7 @@ function NewLesson() {
                             </Pressable>
                         </Pressable>
                     }
-                </View>
+                </KeyboardShift>
             }
         </>
     );
