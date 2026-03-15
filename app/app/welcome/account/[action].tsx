@@ -20,6 +20,7 @@ import { AlertProps, useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
 import { useAccountData } from "@/data/AccountDataContext";
+import welcomeImage from "@/assets/images/welcome.png";
 
 export function validateEmail(email: string) {
     return !!String(email)
@@ -259,7 +260,6 @@ function loggedinPage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const image = require("@/assets/images/welcome.png");
     const accountData = useAccountData();
     const userData = useUserData();
 
@@ -278,7 +278,7 @@ function loggedinPage() {
                     contentContainerStyle={{ flexGrow: 1 }}
                 >
                     <View style={welcomeStyles.topView}>
-                        <Image style={welcomeStyles.topViewImage} source={image} />
+                        <Image style={welcomeStyles.topViewImage} source={welcomeImage} />
                     </View>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
@@ -308,7 +308,6 @@ function logoutPage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const image = require("@/assets/images/welcome.png");
     const accountData = useAccountData();
     const userData = useUserData();
 
@@ -325,7 +324,7 @@ function logoutPage() {
                 contentContainerStyle={{ flexGrow: 1 }}
             >
                 <View style={welcomeStyles.topView}>
-                    <Image style={welcomeStyles.topViewImage} source={image} />
+                    <Image style={welcomeStyles.topViewImage} source={welcomeImage} />
                 </View>
                 <View style={welcomeStyles.bottomView}>
                     <View style={welcomeStyles.bottomViewHeader}>
