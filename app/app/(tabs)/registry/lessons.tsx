@@ -84,7 +84,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                         <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.nolessons.text")}</Text>
                     ) : null}
                     {lessons.map((e, i) => (
-                        <DashboardItem title={e[0]} items={e[1].map((e: any) => {
+                        <DashboardItem key={e[0]} title={e[0]} items={e[1].map((e: any) => {
                             return {
                                 title: classData.data.subjects.find((s: SubjectData) => s._id == e.subjectid)?.name,
                                 description: `${e.data.description}\n\n${classData.data.teachers.find((t: UserInfo) => t._id == e.data.teacher)?.name}\n${new Date(`${e.data.date}T${e.data.time}`).toLocaleTimeString()}`,

@@ -62,6 +62,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData) {
                 allDates.map((date) => {
                     return (
                         <DashboardItem
+                            key={date}
                             title={date}
                             items={dateIndex[date].map(e=>{
                                 return {
