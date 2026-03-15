@@ -70,12 +70,12 @@ function NewLesson() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
-    const [lessonName, setLessonName] = useState(i18n.t("modal.lesson.create.name.default"));
+    const [lessonName, setLessonName] = useState("");
     const [subjectId, setSubjectId] = useState("");
     const [date, setDate] = useState(new Date());
     const [isExam, setIsExam] = useState(false);
     const [subjectPickeriOSvisible, setSubjectPickeriOSvisible] = useState(false);
-    const [lessonDescription, setLessonDescription] = useState(i18n.t("modal.lesson.create.description.default"));
+    const [lessonDescription, setLessonDescription] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
@@ -115,8 +115,8 @@ function NewLesson() {
                     <ScrollView keyboardShouldPersistTaps="handled">
                         <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
                             <View style={modalStyle.cardDetails}>
-                                <Text style={commonStyle.headerText}>{lessonName}</Text>
-                                <Text style={commonStyle.text}>{lessonDescription}</Text>
+                                <Text style={commonStyle.headerText}>{lessonName || i18n.t("modal.lesson.create.name.default")}</Text>
+                                <Text style={commonStyle.text}>{lessonDescription || i18n.t("modal.lesson.create.description.default")}</Text>
                                 <Text style={commonStyle.text}>{i18n.t("modal.lesson.create.datetime.description", {date: date.toLocaleDateString(), time: date.toLocaleTimeString()})}</Text>
                                 {
                                     userData.loading ? 
@@ -124,16 +124,16 @@ function NewLesson() {
                                     <Text style={commonStyle.text}>{i18n.t("modal.lesson.create.teacher.text", { teacher: userData.data.name })}</Text>
                                 }
                                 <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.lesson.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
-                                <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.lesson.create.merge.text", {lessonName: lessonName, className: classData.data.name})}</Text>
+                                <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.lesson.create.merge.text", {lessonName: lessonName || i18n.t("modal.lesson.create.name.default"), className: classData.data.name})}</Text>
                             </View>
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.input.name.title")}</Text>
-                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} value={lessonName} onChangeText={text => setLessonName(text)}/>
+                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.lesson.create.name.default")} value={lessonName} onChangeText={text => setLessonName(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.input.description.title")}</Text>
-                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} value={lessonDescription} onChangeText={text => setLessonDescription(text)}/>
+                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} placeholder={i18n.t("modal.lesson.create.description.default")} value={lessonDescription} onChangeText={text => setLessonDescription(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.subject.title")}</Text>

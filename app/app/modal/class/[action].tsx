@@ -57,8 +57,8 @@ function NewClass() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
-    const [className, setClassName] = useState(i18n.t("modal.class.create.name.default"));
-    const [classDescription, setClassDescription] = useState(i18n.t("modal.class.create.description.default"));
+    const [className, setClassName] = useState("");
+    const [classDescription, setClassDescription] = useState("");
 
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
@@ -76,24 +76,24 @@ function NewClass() {
                 <ScrollView keyboardShouldPersistTaps="handled">
                     <View style={[commonStyle.dashboardSection, modalStyle.container]}>
                         <View style={modalStyle.cardDetails}>
-                            <Text style={commonStyle.headerText}>{className}</Text>
+                            <Text style={commonStyle.headerText}>{className || i18n.t("modal.class.create.name.default")}</Text>
                             {
                                 userData.loading ? 
                                 <ActivityIndicator size="small" color={theme.primary} /> :
                                 <Text style={commonStyle.text}>{i18n.t("modal.class.create.teacher.text", {teacher: userData.data.name})}</Text>
                             }
                             <Text style={commonStyle.text}>{i18n.t("modal.class.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
-                            <Text style={commonStyle.text}>{classDescription}</Text>
+                            <Text style={commonStyle.text}>{classDescription || i18n.t("modal.class.create.description.default")}</Text>
                         </View>
                         <View style={modalStyle.cardEdit}>
                             <View style={modalStyle.cardEditField}>
                                 <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.name.title")}</Text>
-                                <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} value={className} onChangeText={text => setClassName(text)}/>
+                                <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.class.create.name.default")} value={className} onChangeText={text => setClassName(text)}/>
                             </View>
 
                             <View>
                                 <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.description.title")}</Text>
-                                <TextInput style={modalStyle.cardEditFieldInput} value={classDescription} onChangeText={text => setClassDescription(text)} />
+                                <TextInput style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.class.create.description.default")} value={classDescription} onChangeText={text => setClassDescription(text)} />
                             </View>
                         </View>
                     </View>

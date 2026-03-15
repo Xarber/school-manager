@@ -68,12 +68,12 @@ function NewHomework() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
-    const [homeworkName, setHomeworkName] = useState(i18n.t("modal.homework.create.name.default"));
+    const [homeworkName, setHomeworkName] = useState("");
     const [subjectId, setSubjectId] = useState("");
     const [date, setDate] = useState(new Date());
     const [points, setPoints] = useState(undefined);
     const [subjectPickeriOSvisible, setSubjectPickeriOSvisible] = useState(false);
-    const [homeworkDescription, setHomeworkDescription] = useState(i18n.t("modal.homework.create.description.default"));
+    const [homeworkDescription, setHomeworkDescription] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
@@ -113,8 +113,8 @@ function NewHomework() {
                     <ScrollView keyboardShouldPersistTaps="handled">
                         <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
                             <View style={modalStyle.cardDetails}>
-                                <Text style={commonStyle.headerText}>{homeworkName}</Text>
-                                <Text style={commonStyle.text}>{homeworkDescription}</Text>
+                                <Text style={commonStyle.headerText}>{homeworkName || i18n.t("modal.homework.create.name.default")}</Text>
+                                <Text style={commonStyle.text}>{homeworkDescription || i18n.t("modal.homework.create.description.default")}</Text>
                                 <Text style={commonStyle.text}>{i18n.t("modal.homework.create.datetime.description", {date: date.toLocaleDateString(), time: date.toLocaleTimeString()})}</Text>
                                 {
                                     userData.loading ? 
@@ -122,16 +122,16 @@ function NewHomework() {
                                     <Text style={commonStyle.text}>{i18n.t("modal.homework.create.teacher.text", { teacher: userData.data.name })}</Text>
                                 }
                                 <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.homework.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
-                                <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.homework.create.merge.text", {homeworkName: homeworkName, className: classData.data.name})}</Text>
+                                <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.homework.create.merge.text", {homeworkName: homeworkName || i18n.t("modal.homework.create.name.default"), className: classData.data.name})}</Text>
                             </View>
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.homework.create.input.name.title")}</Text>
-                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} value={homeworkName} onChangeText={text => setHomeworkName(text)}/>
+                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.homework.create.name.default")} value={homeworkName} onChangeText={text => setHomeworkName(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.homework.create.input.description.title")}</Text>
-                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} value={homeworkDescription} onChangeText={text => setHomeworkDescription(text)}/>
+                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} placeholder={i18n.t("modal.homework.create.description.default")} value={homeworkDescription} onChangeText={text => setHomeworkDescription(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.homework.create.subject.title")}</Text>
