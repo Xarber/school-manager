@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/constants/useThemes";
 import { FontAwesome, Feather } from "@expo/vector-icons";
 import i18n from '@/constants/i18n';
+import { Platform } from 'react-native';
 
 function renderNativeTabs() {
   const theme = useTheme();
@@ -75,7 +76,9 @@ function renderTabs() {
 }
 
 export default function TabLayout() {
-  const renderMode = "native"; // "native" for native tabs, any other for stable tabs.
+
+  const isWeb = Platform.OS === "web";
+  const renderMode = !isWeb ? "native" : "standard";
 
   if ((renderMode as any) === "native") {
     return renderNativeTabs();

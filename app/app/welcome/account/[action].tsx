@@ -10,9 +10,9 @@ import {
     Pressable
 } from "react-native";
 import { Keyboard } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useLocalSearchParams, router, Redirect } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
@@ -128,6 +128,8 @@ function LoginPage({alert}: AccountProps) {
 
     const accountData = useAccountData();
     const [loading, setLoading] = useState(false);
+    let safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const reset = () => {
         setOtpsent(false);
@@ -136,17 +138,9 @@ function LoginPage({alert}: AccountProps) {
     }
 
     return (
-        <SafeAreaView
-            style={welcomeStyles.container}
-            edges={["bottom", "left", "right", "top"]}
-        >
-            <KeyboardShift>
-                <ScrollView 
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={{ flexGrow: 1 }}
-                >
-                    <View style={welcomeStyles.topView}>
-                    </View>
+        <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
+            <ScrollView keyboardShouldPersistTaps="handled">
+                <View style={welcomeStyles.container}>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
                             <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.account.auth.title")}</Text>
@@ -160,41 +154,41 @@ function LoginPage({alert}: AccountProps) {
                                 </View>
                                 <View style={!otpsent ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.otp.title")}</Text>
-                                    <TextInput autoCapitalize="none" maxLength={6} keyboardType="number-pad" style={welcomeStyles.bottomViewBodyFormFieldInput} value={otpcode} onChangeText={setOtpcode} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
+                                    <TextInput autoFocus autoCapitalize="none" maxLength={6} keyboardType="number-pad" style={welcomeStyles.bottomViewBodyFormFieldInput} value={otpcode} onChangeText={setOtpcode} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
                                 </View>
                             </View>
                         </View>
                     </View>
-                        <View style={welcomeStyles.actions}>
-                            <TouchableOpacity disabled={!validateEmail(email) || loading} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
-                                if (!otpsent) {
-                                    sendOtp(email, setOtpsent, setLoading, alert as any);
-                                } else {
-                                    setLoading(true);
-                                    verifyOtp(email, otpcode, reset, alert as any).then(status => {
-                                        setLoading(false);
-                                        if (!status.success) return;
-                                        accountData.save({
-                                            ...accountData.data,
-                                            username: email,
-                                            token: status.token
-                                        }).then(() => {
-                                            if (status.isNewUser) router.replace("/welcome/account/signup");
-                                            else router.replace("/welcome/account/loggedin");
-                                        });
-                                    });
-                                }
-                            }}>
-                                {loading ? (
-                                    <ActivityIndicator size="small" />
-                                ) : (
-                                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.auth.continue")}</Text>
-                                )}
-                            </TouchableOpacity>
-                        </View>
-                </ScrollView>
-            </KeyboardShift>
-        </SafeAreaView>
+                </View>
+            </ScrollView>
+            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+                <TouchableOpacity disabled={!validateEmail(email) || loading} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
+                    if (!otpsent) {
+                        sendOtp(email, setOtpsent, setLoading, alert as any);
+                    } else {
+                        setLoading(true);
+                        verifyOtp(email, otpcode, reset, alert as any).then(status => {
+                            setLoading(false);
+                            if (!status.success) return;
+                            accountData.save({
+                                ...accountData.data,
+                                username: email,
+                                token: status.token
+                            }).then(() => {
+                                if (status.isNewUser) router.replace("/welcome/account/signup");
+                                else router.replace("/welcome/account/loggedin");
+                            });
+                        });
+                    }
+                }}>
+                    {loading ? (
+                        <ActivityIndicator size="small" />
+                    ) : (
+                        <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.auth.continue")}</Text>
+                    )}
+                </TouchableOpacity>
+            </View>
+        </KeyboardShift>
     );
 }
 
@@ -211,18 +205,13 @@ function SignupPage({alert}: AccountProps) {
 
     const userData = useUserData();
 
+    let safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     return (
-        <SafeAreaView
-            style={welcomeStyles.container}
-            edges={["bottom", "left", "right", "top"]}
-        >
-            <KeyboardShift>
-                <ScrollView 
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={{ flexGrow: 1 }}
-                >
-                    <View style={welcomeStyles.topView}>
-                    </View>
+        <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
+            <ScrollView keyboardShouldPersistTaps="handled">
+                <View style={welcomeStyles.container}>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
                             <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.account.signup.title")}</Text>
@@ -241,42 +230,42 @@ function SignupPage({alert}: AccountProps) {
                             </View>
                         </View>
                     </View>
-                        <View style={welcomeStyles.actions}>
-                            <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
-                                alert.show({
-                                    title: i18n.t("welcome.account.signup.confirm.title"),
-                                    message: `${name} ${surname}`, 
-                                    actions: [
-                                        {
-                                            title: i18n.t("welcome.account.signup.confirm.true"),
-                                            onPress: () => {
-                                                setLoading(true);
-                                                userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}}).then(() => {
-                                                    setLoading(false);
-                                                    router.replace("/welcome/account/loggedin");
-                                                });
-                                            }
-                                        },
-                                        {
-                                            title: i18n.t("welcome.account.signup.confirm.false"),
-                                            onPress: () => {
-                                                setName("");
-                                                setSurname("");
-                                            }
-                                        },
-                                    ]
-                                });
-                            }}>
-                                {loading ? (
-                                    <ActivityIndicator size="small" />
-                                ) : (
-                                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.signup.continue")}</Text>
-                                )}
-                            </TouchableOpacity>
-                        </View>
-                </ScrollView>
-            </KeyboardShift>
-        </SafeAreaView>
+                </View>
+            </ScrollView>
+            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+                <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
+                    alert.show({
+                        title: i18n.t("welcome.account.signup.confirm.title"),
+                        message: `${name} ${surname}`, 
+                        actions: [
+                            {
+                                title: i18n.t("welcome.account.signup.confirm.true"),
+                                onPress: () => {
+                                    setLoading(true);
+                                    userData.save({...userData.data, name: `${name} ${surname}`, userInfo: {...userData.data.userInfo, name, surname}}).then(() => {
+                                        setLoading(false);
+                                        router.replace("/welcome/account/loggedin");
+                                    });
+                                }
+                            },
+                            {
+                                title: i18n.t("welcome.account.signup.confirm.false"),
+                                onPress: () => {
+                                    setName("");
+                                    setSurname("");
+                                }
+                            },
+                        ]
+                    });
+                }}>
+                    {loading ? (
+                        <ActivityIndicator size="small" />
+                    ) : (
+                        <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.signup.continue")}</Text>
+                    )}
+                </TouchableOpacity>
+            </View>
+        </KeyboardShift>
     );
 }
 
@@ -289,6 +278,10 @@ function LoggedInPage({alert}: AccountProps) {
 
     const accountData = useAccountData();
     const userData = useUserData();
+
+    useEffect(() => {
+        userData.load();
+    }, []);
 
     return (
         <SafeAreaView
@@ -437,13 +430,24 @@ export default function AccountScreen() {
         setVisible(false);
     };
 
+    if (action === "login" || action === "signup" ) {
+        return (
+            <>
+                {action === "login" && <LoginPage alert={{show, hide}} />}
+                {action === "signup" && <SignupPage alert={{show, hide}} />}
+                {visible && alertProps && (<AlertComponent title={alertProps.title} message={alertProps.message} dismissable={alertProps.dismissable} children={alertProps.children} actions={alertProps.actions} hide={hide} />)}
+            </>
+        )
+    };
+
     return (
-        <View style={{flex: 1}}>
-            {action === "login" && <LoginPage alert={{show, hide}} />}
-            {action === "signup" && <SignupPage alert={{show, hide}} />}
+        <SafeAreaView
+            style={{flex: 1}}
+            edges={["bottom", "left", "right", "top"]}
+        >
             {action === "loggedin" && <LoggedInPage alert={{show, hide}} />}
             {action === "logout" && <LogoutPage alert={{show, hide}} />}
             {visible && alertProps && (<AlertComponent title={alertProps.title} message={alertProps.message} dismissable={alertProps.dismissable} children={alertProps.children} actions={alertProps.actions} hide={hide} />)}
-        </View>
+        </SafeAreaView>
     );
 }
