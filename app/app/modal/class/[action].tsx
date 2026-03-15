@@ -88,7 +88,7 @@ function NewClass() {
                         <View style={modalStyle.cardEdit}>
                             <View style={modalStyle.cardEditField}>
                                 <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.name.title")}</Text>
-                                <TextInput style={modalStyle.cardEditFieldInput} value={className} onChangeText={text => setClassName(text)}/>
+                                <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} value={className} onChangeText={text => setClassName(text)}/>
                             </View>
 
                             <View>

@@ -127,7 +127,7 @@ function NewHomework() {
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.homework.create.input.name.title")}</Text>
-                                    <TextInput style={modalStyle.cardEditFieldInput} value={homeworkName} onChangeText={text => setHomeworkName(text)}/>
+                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} value={homeworkName} onChangeText={text => setHomeworkName(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.homework.create.input.description.title")}</Text>

@@ -1,7 +1,7 @@
 const { Schema, model, models } = require("mongoose");
 
 const HomeworkSchema = new Schema({
-    title: {type: String, required: true},
+    title: {type: String, required: true, maxlength: [50, "Name cannot exceed 50 characters"]},
     description: {type: String, required: true},
     points: {type: Number, required: false},
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],

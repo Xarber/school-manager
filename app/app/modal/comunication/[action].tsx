@@ -128,7 +128,7 @@ function NewComunication() {
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.input.name.title")}</Text>
-                                    <TextInput style={modalStyle.cardEditFieldInput} value={comunicationName} onChangeText={text => setComunicationName(text)}/>
+                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} value={comunicationName} onChangeText={text => setComunicationName(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.input.description.title")}</Text>

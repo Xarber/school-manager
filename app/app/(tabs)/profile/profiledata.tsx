@@ -47,11 +47,11 @@ export default function ProfileData() {
                                 <View style={modalStyle.cardEdit}>
                                     <View style={modalStyle.cardEditField}>
                                         <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.data.edit.name")}</Text>
-                                        <TextInput style={modalStyle.cardEditFieldInput} value={username} onChangeText={setUsername} />
+                                        <TextInput autoCapitalize="words" maxLength={30} style={modalStyle.cardEditFieldInput} value={username} onChangeText={setUsername} />
                                     </View>
                                     <View style={modalStyle.cardEditField}>
                                         <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.data.edit.surname")}</Text>
-                                        <TextInput style={modalStyle.cardEditFieldInput} value={usersurname} onChangeText={setUsersurname} />
+                                        <TextInput  autoCapitalize="words" maxLength={40} style={modalStyle.cardEditFieldInput} value={usersurname} onChangeText={setUsersurname} />
                                     </View>
                                 </View>
                             )}

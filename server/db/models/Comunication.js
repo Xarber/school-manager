@@ -1,7 +1,7 @@
 const { Schema, model, models } = require("mongoose");
 
 const ComunicationSchema = new Schema({
-    title: {type: String, required: true},
+    title: {type: String, required: true, maxlength: [50, "Name cannot exceed 50 characters"]},
     content: {type: String, required: true},
     date: {type: String, required: false},
     time: {type: String, required: false},
