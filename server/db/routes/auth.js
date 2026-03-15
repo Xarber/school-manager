@@ -57,6 +57,8 @@ router.post(paths.authenticate, async (req, res) => {
       html: `<p>Your verification code is: <strong>${code}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p>`
     };
 
+    console.log(`[AUTH] Sent verification code to ${email}\n`);
+
     if (process.env.EMAIL_SEND_MODE === 'resend') await transporter.emails.send(mailOptions);
     if (process.env.EMAIL_SEND_MODE === 'nodemailer') await transporter.sendMail(mailOptions);
     
