@@ -12,6 +12,7 @@ import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
+import { useUserData } from '@/data/UserDataContext';
 
 interface updateHomeworkProps {
     action: string;
@@ -75,7 +76,7 @@ function NewHomework() {
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
     const canProceed = (homeworkName.length > 0) && (subjectId.length > 0);

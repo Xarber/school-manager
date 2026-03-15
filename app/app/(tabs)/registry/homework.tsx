@@ -9,6 +9,7 @@ import ActionButtons from '@/components/actionButtons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ActivityIndicator } from 'react-native';
 import { useCallback, useState } from 'react';
+import { useUserData } from '@/data/UserDataContext';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -167,7 +168,7 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function HomeworkTab() {
     const router = useRouter();
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const classid = userData.data.settings.activeClassId;
 
     if (userData.loading) return (

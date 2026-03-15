@@ -8,6 +8,7 @@ import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
 import DashboardItem from '@/components/dashboardItem';
+import { useUserData } from '@/data/UserDataContext';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
     let dateIndex = {};
@@ -107,7 +108,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
 }
 
 export default function LessonsWrapper() {
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const classid = userData.data.settings.activeClassId;
 
     if (userData.loading) return (

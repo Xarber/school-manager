@@ -8,6 +8,7 @@ import createStyling from '@/constants/styling';
 import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
+import { useUserData } from '@/data/UserDataContext';
 
 interface updateClassProps {
     action: string;
@@ -58,7 +59,7 @@ function NewClass() {
     const [className, setClassName] = useState(i18n.t("modal.class.create.name.default"));
     const [classDescription, setClassDescription] = useState(i18n.t("modal.class.create.description.default"));
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
     const canProceed = className.length > 0 && classDescription.length > 0;

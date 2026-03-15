@@ -8,6 +8,7 @@ import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
 import DashboardItem from '@/components/dashboardItem';
+import { useUserData } from '@/data/UserDataContext';
 
 function ComunicationTab({classid, comunicationid}: {classid: string, comunicationid: string}) {
     const theme = useTheme();
@@ -112,7 +113,7 @@ export default function ComunicationsTab() {
     const params = useLocalSearchParams();
     const id = params.id;
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const activeClassId = userData.data.settings.activeClassId;
 
     if (userData.loading) return (

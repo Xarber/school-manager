@@ -9,6 +9,7 @@ import ClipboardText from "@/components/clipboardText";
 import { Stack, useRouter } from "expo-router";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import i18n from "@/constants/i18n";
+import { useUserData } from "@/data/UserDataContext";
 
 export default function HomeScreen() {
     const theme = useTheme();
@@ -16,7 +17,7 @@ export default function HomeScreen() {
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
     
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default);
+    const userData = useUserData();
     const activeClassId = userData.data.settings.activeClassId;
     const classData = useAppDataSync(null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
         classid: activeClassId
