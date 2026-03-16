@@ -66,22 +66,22 @@ cd ./server/ && node .
 * ✔️ Communication creation + adding to subject
 * ✔️ Homework creation + adding to subject
 * ✔️ First app optimization review (fix all warnings and optimize views)
+* ✔️ Calendar page
 
 </details>
 
 <details open>
 <summary>⚙️ In progress</summary>
 
-* ⚙️ Calendar page
 * ⚙️ Server updates for other components
+* ⚙️ Setting for language switching
+* ⚙️ Setting for notification handling
 
 </details>
 
 <details>
 <summary>✧ Future</summary>
 
-* ✧ Setting for language switching
-* ✧ Setting for notification handling
 * ✧ Resources (links to websites or files)
 * ✧ Confirmations for communications (accept, deny, message, read status)
 * ✧ Revise server code, check permissions (minor milestone)
