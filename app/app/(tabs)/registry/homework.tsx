@@ -156,7 +156,7 @@ function HomeworkComponent({mode, userData, classid}: {mode: 'all' | 'completed'
                 <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
             </View>
         ) : (
-            <ScrollView style={commonStyle.dashboardSection} refreshControl={
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={reload} />
             }>
                 {renderHomework(filteredItems, classData.data)}

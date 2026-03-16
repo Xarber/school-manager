@@ -77,6 +77,8 @@ function NewHomework() {
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
+    const [bottomHeight, setBottomHeight] = useState(0);
+
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
@@ -110,7 +112,7 @@ function NewHomework() {
             {
                 classData.loading ? <ActivityIndicator size="small" /> : 
                 <KeyboardShift>
-                    <ScrollView keyboardShouldPersistTaps="handled">
+                    <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomHeight}}>
                         <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
                             <View style={modalStyle.cardDetails}>
                                 <Text style={commonStyle.headerText}>{homeworkName || i18n.t("modal.homework.create.name.default")}</Text>
@@ -188,25 +190,27 @@ function NewHomework() {
                             </View>
                         </View>
                     </ScrollView>
-                    <View style={modalStyle.bottomActions}>
-                        <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateHomework({
-                            action: "create",
-                            title: homeworkName,
-                            description: homeworkDescription,
-                            date: date.toISOString().split("T")[0],
-                            time: date.toISOString().split("T")[1],
-                            points: points,
-                            classid: classId,
-                            subjectid: subjectId,
-                            setLoading,
-                            create: homeworkData.create,
-                            alert
-                        })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
-                            {loading 
-                                ? <ActivityIndicator size="small" />
-                                : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.homework.create.confirm")}</Text>
-                            }
-                        </TouchableOpacity>
+                    <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
+                        <BlurView>
+                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateHomework({
+                                action: "create",
+                                title: homeworkName,
+                                description: homeworkDescription,
+                                date: date.toISOString().split("T")[0],
+                                time: date.toISOString().split("T")[1],
+                                points: points,
+                                classid: classId,
+                                subjectid: subjectId,
+                                setLoading,
+                                create: homeworkData.create,
+                                alert
+                            })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
+                                {loading 
+                                    ? <ActivityIndicator size="small" />
+                                    : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.homework.create.confirm")}</Text>
+                                }
+                            </TouchableOpacity>
+                        </BlurView>
                     </View>
                     {
                         Platform.OS === "ios" && 

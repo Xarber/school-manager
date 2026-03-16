@@ -12,7 +12,7 @@ import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import { Switch } from 'react-native';
+import { Switch } from 'react-native-paper';
 import SegmentedSlider from "@/components/segmentedPicker";
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
@@ -79,6 +79,8 @@ function NewComunication() {
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
+    const [bottomHeight, setBottomHeight] = useState(0);
+
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
@@ -111,7 +113,7 @@ function NewComunication() {
             {
                 classData.loading ? <ActivityIndicator size="small" /> : 
                 <KeyboardShift>
-                    <ScrollView keyboardShouldPersistTaps="handled">
+                    <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomHeight}}>
                         <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
                             <View style={modalStyle.cardDetails}>
                                 <Text style={commonStyle.headerText}>{comunicationName || i18n.t("modal.comunication.create.name.default")}</Text>
@@ -188,25 +190,27 @@ function NewComunication() {
                             </View>
                         </View>
                     </ScrollView>
-                    <View style={modalStyle.bottomActions}>
-                        <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateComunication({
-                            action: "create",
-                            classid: classId,
-                            title: comunicationName,
-                            content: comunicationDescription,
-                            date: date.toISOString().split("T")[0],
-                            time: date.toISOString().split("T")[1],
-                            urgency,
-                            requiresConfirmation,
-                            setLoading,
-                            create: comunicationData.create,
-                            alert
-                        })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
-                            {loading 
-                                ? <ActivityIndicator size="small" />
-                                : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.comunication.create.confirm")}</Text>
-                            }
-                        </TouchableOpacity>
+                    <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
+                        <BlurView>
+                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateComunication({
+                                action: "create",
+                                classid: classId,
+                                title: comunicationName,
+                                content: comunicationDescription,
+                                date: date.toISOString().split("T")[0],
+                                time: date.toISOString().split("T")[1],
+                                urgency,
+                                requiresConfirmation,
+                                setLoading,
+                                create: comunicationData.create,
+                                alert
+                            })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
+                                {loading 
+                                    ? <ActivityIndicator size="small" />
+                                    : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.comunication.create.confirm")}</Text>
+                                }
+                            </TouchableOpacity>
+                        </BlurView>
                     </View>
                 </KeyboardShift>
             }

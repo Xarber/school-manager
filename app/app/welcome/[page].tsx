@@ -120,7 +120,7 @@ function SetNamePage() {
 
     return (
         <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <View style={welcomeStyles.container}>
                     <View style={welcomeStyles.topView}>
                         <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
@@ -183,7 +183,7 @@ function SetSurnamePage() {
 
     return (
         <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <View style={welcomeStyles.container}>
                     <View style={welcomeStyles.topView}>
                         <Image source={welcomeImage} style={welcomeStyles.topViewImage} />

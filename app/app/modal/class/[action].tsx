@@ -10,6 +10,7 @@ import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
+import { BlurView } from 'expo-blur';
 
 interface updateClassProps {
     action: string;
@@ -60,6 +61,8 @@ function NewClass() {
     const [className, setClassName] = useState("");
     const [classDescription, setClassDescription] = useState("");
 
+    const [bottomHeight, setBottomHeight] = useState(0);
+    
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
@@ -73,7 +76,7 @@ function NewClass() {
         <>
             <Stack.Screen options={{headerTitle: i18n.t("modal.class.create.stack.title")}} />
             <KeyboardShift>
-                <ScrollView keyboardShouldPersistTaps="handled">
+                <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomHeight}}>
                     <View style={[commonStyle.dashboardSection, modalStyle.container]}>
                         <View style={modalStyle.cardDetails}>
                             <Text style={commonStyle.headerText}>{className || i18n.t("modal.class.create.name.default")}</Text>
@@ -98,20 +101,22 @@ function NewClass() {
                         </View>
                     </View>
                 </ScrollView>
-                <View style={modalStyle.bottomActions}>
-                    <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateClass({
-                        action: "create",
-                        name: className,
-                        description: classDescription,
-                        setLoading,
-                        create: classData.create,
-                        alert
-                    })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
-                        {loading 
-                            ? <ActivityIndicator size="small" />
-                            : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.class.create.confirm")}</Text>
-                        }
-                    </TouchableOpacity>
+                <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
+                    <BlurView>
+                        <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateClass({
+                            action: "create",
+                            name: className,
+                            description: classDescription,
+                            setLoading,
+                            create: classData.create,
+                            alert
+                        })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
+                            {loading 
+                                ? <ActivityIndicator size="small" />
+                                : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.class.create.confirm")}</Text>
+                            }
+                        </TouchableOpacity>
+                    </BlurView>
                 </View>
             </KeyboardShift>
         </>

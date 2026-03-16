@@ -14,6 +14,7 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
+import { Switch } from 'react-native-paper';
 
 interface updateLessonProps {
     action: string;
@@ -25,6 +26,7 @@ interface updateLessonProps {
     time: string;
     room?: string;
     isExam: boolean;
+    isScheduled: boolean;
     setLoading: (loading: boolean) => void;
     create: (data: Object) => Promise<any>;
     alert: {
@@ -33,7 +35,7 @@ interface updateLessonProps {
     }
 }
 
-async function updateLesson({action, classid, subjectid, title, description, date, time, isExam, setLoading, create, alert}: updateLessonProps) {
+async function updateLesson({action, classid, isScheduled, subjectid, title, description, date, time, isExam, setLoading, create, alert}: updateLessonProps) {
     setLoading(true);
     switch (action) {
         case "create":
@@ -42,6 +44,7 @@ async function updateLesson({action, classid, subjectid, title, description, dat
                 subjectid,
                 title,
                 description,
+                isScheduled,
                 date,
                 time,
                 isExam
@@ -73,11 +76,14 @@ function NewLesson() {
     const [lessonName, setLessonName] = useState("");
     const [subjectId, setSubjectId] = useState("");
     const [date, setDate] = useState(new Date());
+    const [isScheduled, setIsScheduled] = useState(false);
     const [isExam, setIsExam] = useState(false);
     const [subjectPickeriOSvisible, setSubjectPickeriOSvisible] = useState(false);
     const [lessonDescription, setLessonDescription] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
+
+    const [bottomHeight, setBottomHeight] = useState(0);
 
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
@@ -112,7 +118,7 @@ function NewLesson() {
             {
                 classData.loading ? <ActivityIndicator size="small" /> : 
                 <KeyboardShift>
-                    <ScrollView keyboardShouldPersistTaps="handled">
+                    <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomHeight}}>
                         <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
                             <View style={modalStyle.cardDetails}>
                                 <Text style={commonStyle.headerText}>{lessonName || i18n.t("modal.lesson.create.name.default")}</Text>
@@ -187,28 +193,39 @@ function NewLesson() {
                                         />
                                     }
                                 </View>
+                                <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.isexam.title")}</Text>
+                                    <Switch value={isExam} onValueChange={value => setIsExam(value)}/>
+                                </View>
+                                <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.isscheduled.title")}</Text>
+                                    <Switch value={isScheduled} onValueChange={value => setIsScheduled(value)}/>
+                                </View>
                             </View>
                         </View>
                     </ScrollView>
                     <View style={modalStyle.bottomActions}>
-                        <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateLesson({
-                            action: "create",
-                            title: lessonName,
-                            description: lessonDescription,
-                            date: date.toISOString().split("T")[0],
-                            time: date.toISOString().split("T")[1],
-                            isExam: isExam,
-                            classid: classId,
-                            subjectid: subjectId,
-                            setLoading,
-                            create: lessonData.create,
-                            alert
-                        })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
-                            {loading 
-                                ? <ActivityIndicator size="small" />
-                                : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.lesson.create.confirm")}</Text>
-                            }
-                        </TouchableOpacity>
+                        <BlurView onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
+                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateLesson({
+                                action: "create",
+                                title: lessonName,
+                                description: lessonDescription,
+                                date: date.toISOString().split("T")[0],
+                                time: date.toISOString().split("T")[1],
+                                isExam: isExam,
+                                classid: classId,
+                                subjectid: subjectId,
+                                isScheduled,
+                                setLoading,
+                                create: lessonData.create,
+                                alert
+                            })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
+                                {loading 
+                                    ? <ActivityIndicator size="small" />
+                                    : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.lesson.create.confirm")}</Text>
+                                }
+                            </TouchableOpacity>
+                        </BlurView>
                     </View>
                     {
                         Platform.OS === "ios" && 

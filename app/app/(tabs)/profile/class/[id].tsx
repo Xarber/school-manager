@@ -62,7 +62,7 @@ function AllClassList() {
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection}>
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <DashboardItem title={i18n.t("profile.class.header.title")} items={classes} />
             </ScrollView>
             <ActionButtons items={[
@@ -232,7 +232,7 @@ function AllClassSubjects() {
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection}>
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <DashboardItem title={i18n.t("profile.class.subjects.all.header.title", {class: classData.data.name})} items={subjects} />
             </ScrollView>
             <ActionButtons items={[

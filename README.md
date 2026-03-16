@@ -92,6 +92,7 @@ cd ./server/ && node .
 * ✧ Scheduled exams (important milestone)
     * Also add specific users only scheduled exams (health matters)
 * ✧ Second app optimization review (fix all warnings and optimize views)
+    * While reviewing, add custom themes & custom app icon
 * ✧ Request switching account to teacher in-app
 * ✧ In-app feedback and feature requests page
 * ✧ App animations (for alerts and custom made components)
@@ -194,7 +195,7 @@ cd ./app/ && eas build --platform <platform> --local
 ```
 * Valid platforms are `ios` and `android`.
 * Remove the `--local` flag to build on EAS Cloud.
-> ⚠️ You will need a MacOS device to build locally.
+> ⚠️ You will need a MacOS device to build locally for iOS.
 
 # 🤝 Contributing
 Contributions are welcome.

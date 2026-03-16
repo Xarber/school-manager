@@ -11,6 +11,7 @@ type DashboardItemBadge = {
 }
 type DashboardItem = {
     title: string;
+    subtitle?: string;
     description?: string;
     icon?: ImageSourcePropType;
     badge?: DashboardItemBadge;
@@ -21,6 +22,7 @@ type DashboardItemProps = {
     items: DashboardItem[];
     maxItems?: number;
     noItemsText?: string;
+    hideIfEmpty?: boolean;
     collapsed?: boolean;
     expand?: () => void;
 }
@@ -33,7 +35,7 @@ export default function DashboardItem(props: DashboardItemProps) {
     ).length;
 
     return (
-        <View style={[commonStyle.dashboardSection, {gap: 10}]}>
+        <View style={[commonStyle.dashboardSection, {gap: 10}, props.hideIfEmpty && renderedCount === 0 ? {display: "none"} : null]}>
             <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <View>
                     <Text style={commonStyle.dashboardSectionTitle}>{props.title}</Text>
@@ -53,6 +55,7 @@ export default function DashboardItem(props: DashboardItemProps) {
                                 <View style={commonStyle.dashboardSectionItemContent}>
                                     <View style={commonStyle.dashboardSectionItemTextContainer}>
                                         <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemText}}>{item.title}</Text>
+                                        {item.subtitle && <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemText, ...commonStyle.dashboardSectionItemTextSubtitle}}>{item.subtitle}</Text>}
                                         <Text style={commonStyle.text}>{item.description ?? i18n.t("components.dashboardItem.item.nodescription.text")}</Text>
                                     </View>
                                     {item.badge && <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemBadge, backgroundColor: item.badge.color}}>{item.badge.text}</Text>}

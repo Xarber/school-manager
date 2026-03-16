@@ -139,7 +139,7 @@ function LoginPage({alert}: AccountProps) {
 
     return (
         <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <View style={welcomeStyles.container}>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
@@ -210,7 +210,7 @@ function SignupPage({alert}: AccountProps) {
 
     return (
         <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                 <View style={welcomeStyles.container}>
                     <View style={welcomeStyles.bottomView}>
                         <View style={welcomeStyles.bottomViewHeader}>
@@ -295,6 +295,8 @@ function LoggedInPage({alert}: AccountProps) {
             ) : (
                 <ScrollView 
                     keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{ flexGrow: 1 }}
                 >
                     <View style={welcomeStyles.topView}>
@@ -341,6 +343,8 @@ function LogoutPage({alert}: AccountProps) {
         >
             <ScrollView 
                 keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ flexGrow: 1 }}
             >
                 <View style={welcomeStyles.topView}>

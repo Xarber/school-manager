@@ -3,6 +3,7 @@ import { useTheme } from '@/constants/useThemes';
 import {router, Stack, useLocalSearchParams} from "expo-router";
 import {useState} from "react";
 import { TextInput } from 'react-native';
+import { BlurView } from 'expo-blur';
 
 import createStyling from '@/constants/styling';
 import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
@@ -63,6 +64,8 @@ function NewSubject() {
     const params = useLocalSearchParams();
     const classId = params.classid as string;
 
+    const [bottomHeight, setBottomHeight] = useState(0);
+
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
@@ -81,7 +84,7 @@ function NewSubject() {
             {
                 classData.loading ? <ActivityIndicator size="small" /> : 
                 <KeyboardShift>
-                    <ScrollView keyboardShouldPersistTaps="handled">
+                    <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomHeight}}>
                         <View style={[commonStyle.dashboardSection, modalStyle.container]}>
                             <View style={modalStyle.cardDetails}>
                                 <Text style={commonStyle.headerText}>{subjectName || i18n.t("modal.subject.create.name.default")}</Text>
@@ -101,22 +104,24 @@ function NewSubject() {
                             </View>
                         </View>
                     </ScrollView>
-                    <View style={modalStyle.bottomActions}>
-                        <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateSubject({
-                            action: "create",
-                            name: subjectName,
-                            maxgrade: 100,
-                            gradeType: "points",
-                            classid: classId,
-                            setLoading,
-                            create: subjectData.create,
-                            alert
-                        })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
-                            {loading 
-                                ? <ActivityIndicator size="small" />
-                                : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.subject.create.confirm")}</Text>
-                            }
-                        </TouchableOpacity>
+                    <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
+                        <BlurView>
+                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateSubject({
+                                action: "create",
+                                name: subjectName,
+                                maxgrade: 100,
+                                gradeType: "points",
+                                classid: classId,
+                                setLoading,
+                                create: subjectData.create,
+                                alert
+                            })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
+                                {loading 
+                                    ? <ActivityIndicator size="small" />
+                                    : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.subject.create.confirm")}</Text>
+                                }
+                            </TouchableOpacity>
+                        </BlurView>
                     </View>
                 </KeyboardShift>
 

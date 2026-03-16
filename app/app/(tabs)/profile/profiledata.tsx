@@ -35,7 +35,7 @@ export default function ProfileData() {
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <KeyboardShift extraPadding={70}>
-                <ScrollView keyboardShouldPersistTaps="handled">
+                <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                     <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
                         <Text style={commonStyle.headerText}>{i18n.t("profile.data.title")}</Text>
                         <View style={[commonStyle.card, { gap: 10 }]}>
