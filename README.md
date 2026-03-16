@@ -85,6 +85,8 @@ cd ./server/ && node .
 * ✧ Resources (links to websites or files)
 * ✧ Confirmations for communications (accept, deny, message, read status)
 * ✧ Revise server code, check permissions (minor milestone)
+* ✧ Offline app usage
+* ✧ Local unsynced class (for not logged in users)
 * ✧ Add logout logic (invalid user token)
 * ✧ User grades
     * Find required grade (or grade pair) to reach a goal.
