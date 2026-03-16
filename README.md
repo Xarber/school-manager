@@ -2,8 +2,11 @@
 ![Expo](https://img.shields.io/badge/Expo-55-blue)
 ![React Native](https://img.shields.io/badge/React%20Native-0.76-green)
 ![License](https://img.shields.io/badge/license-MIT-purple)
+
 Welcome to the school manager repo!
+
 School Manager is a cross-platform app designed by a student to help you manage your school life better!
+
 Its goal is to facilitate finding homework, lessons, and planning your study sessions, for both students and teachers.
 
 # 📷 Screenshots
@@ -11,7 +14,9 @@ Its goal is to facilitate finding homework, lessons, and planning your study ses
 
 # 🪄 How it works
 This is an Expo 55 React Native app, built for mobile and web.
+
 School Manager uses Tauri to bundle the web version of the app into a desktop environment app.
+
 The web version is currently experimental and may contain glitches.
 
 # 🧱 Architecture
@@ -25,6 +30,7 @@ Node.js API server handling authentication, database access, and email OTP verif
 > ⚠️ The app's database __WILL BE CLEARED__ once the server is 100% complete and tested. Currently, many routes aren't fully complete and may have issues. This is a safety measure for data safety.
 
 You may test the latest release of the app through [this site](https://schoolmanager.expo.app/), or you can decide to build the app yourself with the instructions listed below, to install on your personal device.
+
 The app is planned to be posted on app stores, once a first complete build is ready.
 
 If you are building and running locally, you can start the app with:
@@ -97,14 +103,19 @@ cd ./server/ && node .
 
 # 💾 Data Usage
 School Manager does not share any user data outside of the app.
+
 App data is hosted with MongoDB Atlas, and as of right now, the actual API endpoint is hosted on Render, using Resend for mailing.
 App data is currently not encrypted. Avoid storing sensitive information.
+
 Accounts do not use passwords. The sole verification method is OTP codes, effectively dropping account security management to your mailing service.
+
 I do not take responsibility for DB data leaks;
+
 If you're going to host your own server, it is up to you to ensure updating the server to the latest version. If a data leak occurs because of an outdated server, the responsibility falls upon yourself.
 
 # 🛠️ Building
 You can build the web and mobile versions of the app with expo.
+
 If you want to build the tauri app, you will need the rust framework installed, and install the cargo-tauri package.
 
 ## 📖 Requirements
