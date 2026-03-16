@@ -108,6 +108,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
         await Promise.all([lessonData.load(), homeworkData.load()]);
+        loadMarkedDates(selectedDate);
         setRefreshing(false);
     };
 
@@ -172,7 +173,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
 
     useEffect(()=>{
         loadMarkedDates(selectedDate);
-    }, [selectedDate]);
+    }, [selectedDate, (!classData.loading && !lessonData.loading && !homeworkData.loading)]);
 
     let calendarTheme = {
         backgroundColor: theme.background,
