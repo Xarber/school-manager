@@ -31,6 +31,9 @@ export const colors = {
     action: "#c4c4c4",
     disabled: "rgba(0, 0, 0, 0.3)",
     surface: Platform.OS === "android" ? (Color.android.dynamic.surface ?? "rgba(0, 0, 0, 0.05)") : "rgba(255, 255, 255, 0.05)",
+    appThemeGradient: {
+      colors: ["rgb(137,188,250)", "rgb(101,17,234)"]
+    }
   } as Theme,
   dark: {
     type: "dark",
