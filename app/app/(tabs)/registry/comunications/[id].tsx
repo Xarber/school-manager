@@ -77,7 +77,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
             </View>
         ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection} refreshControl={
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={reload} />
             }>
                 <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text>

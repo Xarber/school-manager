@@ -92,6 +92,11 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         fontSize: 16,
         fontWeight: "900",
     },
+    dashboardSectionItemTextSubtitle: {
+        fontSize: 14,
+        fontWeight: "500",
+        color: theme.disabled,
+    },
     dashboardSectionItemContent: { flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between"},
     dashboardSectionItemTextContainer: { display: "flex", flexDirection: "column", gap: 2, flex: 1 },
     dashboardSectionItemBadge: {
@@ -455,6 +460,8 @@ const createModalStyles = (theme: Theme) => StyleSheet.create({
         position: "absolute",
         bottom: 40,
         right: 40,
+        borderRadius: 360,
+        overflow: "hidden",
         display: "flex",
         flexDirection: "row",
         gap: 10,

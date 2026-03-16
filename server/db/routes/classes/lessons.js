@@ -70,7 +70,7 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
     if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can create lessons' });
 
-    const { title, description, date, time, room, isExam } = req.body;
+    const { title, description, date, time, room, isExam, isScheduled } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
 
     const newLesson = new Lesson({
@@ -82,7 +82,7 @@ router.post(paths.dbCreate, async (req, res) => {
         date,
         time,
         teacher: userInfo._id,
-        scheduled: date && time && new Date(`${date}T${time}`).getTime() > Date.now() ? true : false,
+        scheduled: isScheduled || false,
         room: room || undefined,
         isExam: isExam || false,
         addedAt: new Date().toISOString(),

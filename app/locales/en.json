@@ -1,5 +1,27 @@
 {
     "components": {
+        "calendar": {
+            "localeconfig": {
+                "monthNames": [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December"
+                ],
+                "monthNamesShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                "dayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                "dayNamesShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                "today": "Today"
+            }
+        },
         "alert": {
             "close": {
                 "default": {
@@ -22,7 +44,7 @@
         },
         "gradeGrid": {
             "empty": {
-                "text": "Nothing to see here..."
+                "text": "You have no grades!"
             }
         },
         "gradesComponent": {
@@ -31,7 +53,7 @@
                 "text": "See All"
             },
             "empty": {
-                "text": "Nothing to see here..."
+                "text": "You have no grades!"
             }
         }
     },
@@ -332,6 +354,12 @@
                         "title": "Lesson Description"
                     }
                 },
+                "isexam": {
+                    "title": "Is this an exam?"
+                },
+                "isscheduled": {
+                    "title": "Schedule students?"
+                },
                 "merge": {
                     "text": "\"{{lessonName}}\" will be added to {{className}}"
                 },
@@ -517,13 +545,15 @@
             "title": "Calendar"
         },
         "homework": {
-            "title": "Homework"
+            "title": "Homework",
+            "due": "Due: {{date}} at {{time}}"
         },
         "lessons": {
             "title": "Lessons"
         },
         "exams": {
-            "title": "Exams"
+            "title": "Exams",
+            "scheduled": "Scheduled"
         }
     },
     "registry": {

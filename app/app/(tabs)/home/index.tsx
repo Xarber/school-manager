@@ -7,26 +7,44 @@ import UserGrades from "@/components/gradesComponent";
 import ClipboardText from "@/components/clipboardText";
 
 import { Stack, useRouter } from "expo-router";
-import { useAppDataSync, DataManager } from "@/data/datamanager";
+import { useAppDataSync, DataManager, UserData } from "@/data/datamanager";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
+import FindToday from "@/components/findToday";
+import { ActivityIndicator } from "react-native-paper";
+import { regroupHomework } from "../registry/homework";
+import { regroupLessonsByDate } from "../registry/lessons";
+import { FilterExamsDate, FilterLessonsFromExams } from "../calendar";
 
-export default function HomeScreen() {
+function HomeScreen({userData}: {userData: UserData}) {
     const theme = useTheme();
     const router = useRouter();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
     
-    const userData = useUserData();
-    const activeClassId = userData.data.settings.activeClassId;
-    const classData = useAppDataSync(null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
+    const activeClassId = userData.settings.activeClassId;
+    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
+        classid: activeClassId,
+        populate: ["subjects"]
+    });
+
+    let defaultLessonsData = [{subjectid: "", data: [DataManager.lessonData.default]}];
+    const lessonData = useAppDataSync(DataManager.lessonData.db, `${DataManager.lessonData.app}:${activeClassId}`, defaultLessonsData, {
+        classid: activeClassId
+    });
+
+    let defaultHomeworkData = [{subjectid: "", data: [DataManager.homeworkData.default]}];
+    const homeworkData = useAppDataSync(DataManager.homeworkData.db, `${DataManager.homeworkData.app}:${activeClassId}`, defaultHomeworkData, {
         classid: activeClassId
     });
     
-    const allClassHomework = [] as any[]; // todo
-    const allClassLessons = [] as any[]; // todo
-    const allClassSubjects = [] as any[]; // todo
-    const exams = [] as any[]; // todo; remember to check if the exam is passed or not
+    const allClassHomework = regroupHomework(homeworkData.data);
+    const allClassLessons = regroupLessonsByDate(lessonData.data);
+    const lessons = FilterLessonsFromExams(false, allClassLessons);
+    const exams = FilterLessonsFromExams(true, allClassLessons);
+
+    const upcomingExams = FilterExamsDate(3, exams);
+    //console.warn(upcomingExams);
 
     const tomorrowDay = new Date(new Date().getTime() + 86400000).toLocaleDateString("en-GB", {
         weekday: "long",
@@ -37,87 +55,15 @@ export default function HomeScreen() {
     
     let homescreenPageData = {
         homework: allClassHomework,
-        grades: userData.data.grades ?? [],
-        subjects: allClassSubjects,
+        grades: userData.grades ?? [],
+        subjects: classData.data.subjects,
         tomorrowSchedule: tomorrow,
         tomorrow: [] as any[],
         exams: exams,
         userdata: userData
     };
 
-    /*
-    homescreenPageData = {
-        homework: [{
-            title: "Homework",
-            description: "Homework for today",
-            items: homescreenPageData.homework
-        }, {
-            title: "Lessons",
-            description: "Lessons for today",
-            items: homescreenPageData.tomorrowSchedule
-        }, {
-            title: "Exams",
-            description: "Exams for today",
-            items: homescreenPageData.exams
-        }],
-        grades: [{
-            title: "Math",
-            grade: "93"
-        },{
-            title: "Science",
-            grade: "85"
-        },{
-            title: "History",
-            grade: "72"
-        }],
-        subjects: [{
-            title: "Subjects",
-            description: "Subjects for today",
-            items: homescreenPageData.subjects
-        }],
-        exams: [{
-            title: "Grammar",
-            description: "First chapter",
-            badge: {
-                text: "Oral",
-                color: "#FF0000"
-            }
-        }, {
-            title: "English",
-            description: "Second chapter",
-            badge: {
-                text: "Written",
-                color: "#FF8400"
-            }
-        }, {
-            title: "Math",
-            description: "Third chapter",
-            badge: {
-                text: "Written",
-                color: "#ff8400"
-            }
-        }],
-        tomorrowSchedule: {},
-        tomorrow: [{
-            title: "Math",
-            description: "Homework: Page 3, ex. 1-2-3",
-        }, {
-            title: "Science",
-            description: "No homework. Hooray!",
-        }, {
-            title: "History",
-            description: "Lesson about the Romans",
-        }],
-        userdata: userData
-    }
-    */
-    
-    const today = new Date().toLocaleDateString("en-GB", {
-        weekday: "long",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
+    const today = FindToday();
 
     return (
         <>
@@ -127,13 +73,13 @@ export default function HomeScreen() {
                     <Text style={HomeScreenStyle.welcomeText}>{today}</Text>
                 </BlurView>
                 <View style={HomeScreenStyle.dashboard}>
-                    <UserGrades items={homescreenPageData.grades} maxItems={3} expand={() => {
+                    <UserGrades items={[]} maxItems={3} expand={() => {
                         router.push("/registry");
                         setTimeout(()=>router.push("/registry/grades"), 36);
                     }}/>
                     {/* todo - Schedule, Exams, Quick Homework */}
                     <DashboardItem title={i18n.t("home.tomorrow.title")} items={homescreenPageData.tomorrow} />
-                    <DashboardItem title={i18n.t("home.upcoming.title")} items={homescreenPageData.exams} maxItems={2} expand={() => {
+                    <DashboardItem title={i18n.t("home.upcoming.title")} items={[]} maxItems={2} expand={() => {
                         router.push("/registry");
                         setTimeout(()=>router.push("/registry/exams"), 36);
                     }}/>
@@ -141,4 +87,22 @@ export default function HomeScreen() {
             </ScrollView>
         </>
     );
+}
+
+export default function HomeScreenHandler() {
+    const userData = useUserData();
+
+    return (
+        <>
+            {
+                userData.loading ? (
+                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                        <ActivityIndicator size="small" />
+                    </View>
+                ) : (
+                    <HomeScreen userData={userData.data} />
+                )
+            }
+        </>
+    )
 }

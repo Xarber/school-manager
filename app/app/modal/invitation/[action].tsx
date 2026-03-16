@@ -16,6 +16,7 @@ import ClipboardText from '@/components/clipboardText';
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
 import { ScrollView } from 'react-native';
+import { BlurView } from 'expo-blur';
 import i18n from '@/constants/i18n';
 
 function addDashes(str: string) {
@@ -85,6 +86,8 @@ function NewInvitation() {
     const targetType = params.for as string;
     const targetId = params.targetid as string;
 
+    const [bottomHeight, setBottomHeight] = useState(0);
+
     const userData = useUserData();
     const inviteData = useDBitem(DataManager.invitation.db);
     const [loading, setLoading] = useState(false);
@@ -96,43 +99,49 @@ function NewInvitation() {
     return (
         <>
             <Stack.Screen options={{headerTitle: i18n.t("modal.invitation.create.stack.title")}} />
-            <View style={[commonStyle.dashboardSection, modalStyle.container]}>
-                <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.preview.text")}</Text>
-                <View style={modalStyle.cardDetails}>
-                    <Text style={commonStyle.headerText}>{targetName}</Text>
-                    {
-                        userData.loading ? 
-                        <ActivityIndicator size="small" color={theme.primary} /> :
-                        <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.invited.text", {user: userData.data.name, target: i18n.t("modal.invitation.types." + targetType)})}</Text>
-                    }
-                    <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.createdate", {date: new Date().toDateString()})}</Text>
-                    <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.joinas", {joinAs: i18n.t("modal.invitation.types." + joinAs)})}</Text>
+            <KeyboardShift>
+                <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomHeight}}>
+                    <View style={[commonStyle.dashboardSection, modalStyle.container]}>
+                        <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.preview.text")}</Text>
+                        <View style={modalStyle.cardDetails}>
+                            <Text style={commonStyle.headerText}>{targetName}</Text>
+                            {
+                                userData.loading ? 
+                                <ActivityIndicator size="small" color={theme.primary} /> :
+                                <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.invited.text", {user: userData.data.name, target: i18n.t("modal.invitation.types." + targetType)})}</Text>
+                            }
+                            <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.createdate", {date: new Date().toDateString()})}</Text>
+                            <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.joinas", {joinAs: i18n.t("modal.invitation.types." + joinAs)})}</Text>
+                        </View>
+                        <View style={modalStyle.cardEdit}>
+                            <Text style={commonStyle.headerText}>{i18n.t("modal.invitation.create.type.title")}</Text>
+                            <RadioButton.Group onValueChange={((v) => {setJoinAs(v as any)})} value={joinAs}>
+                                <RadioButton.Item label={i18n.t("modal.invitation.create.type.student")} value="student" labelStyle={commonStyle.text} />
+                                <RadioButton.Item label={i18n.t("modal.invitation.create.type.teacher")} value="teacher" labelStyle={commonStyle.text} />
+                            </RadioButton.Group>
+                        </View>
+                    </View>
+                </ScrollView>
+                <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
+                    <BlurView>
+                        <TouchableOpacity disabled={loading} onPress={()=>updateInvite({
+                            action: "create",
+                            invitefor: targetType,
+                            targetid: targetId,
+                            joinAs: joinAs,
+                            styles: commonStyle,
+                            alert: alertContext,
+                            setLoading,
+                            create: inviteData.create
+                        })} style={[modalStyle.bottomActionButton]}>
+                            {loading 
+                                ? <ActivityIndicator size="small" color="white" />
+                                : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.invitation.create.confirm")}</Text>
+                            }
+                        </TouchableOpacity>
+                    </BlurView>
                 </View>
-                <View style={modalStyle.cardEdit}>
-                    <Text style={commonStyle.headerText}>{i18n.t("modal.invitation.create.type.title")}</Text>
-                    <RadioButton.Group onValueChange={((v) => {setJoinAs(v as any)})} value={joinAs}>
-                        <RadioButton.Item label={i18n.t("modal.invitation.create.type.student")} value="student" labelStyle={commonStyle.text} />
-                        <RadioButton.Item label={i18n.t("modal.invitation.create.type.teacher")} value="teacher" labelStyle={commonStyle.text} />
-                    </RadioButton.Group>
-                </View>
-                <View style={modalStyle.bottomActions}>
-                    <TouchableOpacity disabled={loading} onPress={()=>updateInvite({
-                        action: "create",
-                        invitefor: targetType,
-                        targetid: targetId,
-                        joinAs: joinAs,
-                        styles: commonStyle,
-                        alert: alertContext,
-                        setLoading,
-                        create: inviteData.create
-                    })} style={[modalStyle.bottomActionButton]}>
-                        {loading 
-                            ? <ActivityIndicator size="small" color="white" />
-                            : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.invitation.create.confirm")}</Text>
-                        }
-                    </TouchableOpacity>
-                </View>
-            </View>
+            </KeyboardShift>
         </>
     );
 }
