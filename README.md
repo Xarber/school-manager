@@ -1,5 +1,14 @@
 # 🎓 School Manager
 Welcome to the school manager repo!
+School Manager is a cross-platform app designed by a student to help you manage your school life better!
+It's goal is to facilitate finding homework, lessons, and planning your study sessions, for both students and teachers.
+
+# 📷 Screenshots
+| Profile | Class | Homework | Comunications |
+|---------|-------|----------|---------------|
+| ![Profile](https://github.com/Xarber/school-manager/blob/master/docs/screenshots/profile.PNG?raw=true) | ![Class](https://github.com/Xarber/school-manager/blob/master/docs/screenshots/class.PNG?raw=true) | ![Homework](https://github.com/Xarber/school-manager/blob/master/docs/screenshots/homework.PNG?raw=true) | ![Comunications](https://github.com/Xarber/school-manager/blob/master/docs/screenshots/comunications.PNG?raw=true)
+
+# 🪄 How it works
 This is an Expo 55 React Native app, built for mobile and web.
 School Manager uses Tauri to bundle the web version of the app into a desktop environment app.
 Currently, the web app is not the main focus, so there may be more glitches.
