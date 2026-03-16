@@ -51,7 +51,8 @@ cd ./server/ && node .
 * Sync your account's data between devices with passwordless accounts (receive an OTP code via email)
 
 # 📋 Roadmap
-### ✔️ Completed, ⚙️ In progress, ✧ Future, ? Idea, ❌ Dropped
+<details>
+<summary>✔️ Completed</summary>
 * ✔️ React native app project and layouts
 * ✔️ Database models
 * ✔️ Setup page
@@ -64,8 +65,16 @@ cd ./server/ && node .
 * ✔️ Communication creation + adding to subject
 * ✔️ Homework creation + adding to subject
 * ✔️ First app optimization review (fix all warnings and optimize views)
+</details>
+
+<details open>
+<summary>⚙️ In progress</summary>
 * ⚙️ Calendar page
 * ⚙️ Server updates for other components
+</details>
+
+<details>
+<summary>✧ Future</summary>
 * ✧ Setting for language switching
 * ✧ Setting for notification handling
 * ✧ Resources (links to websites or files)
@@ -99,7 +108,12 @@ cd ./server/ && node .
     * Use QR verification to check if a user is actually from the school (1 minute validity)
     * School events page
     * Documents & modules (for school purposes)
+</details>
+
+<details>
+<summary>? Ideas</summary>
 * ? Bridgefy / BLE integration for mesh network (upload and receive encrypted packets hotspot-like)
+</details>
 
 # 💾 Data Usage
 School Manager does not share any user data outside of the app.
