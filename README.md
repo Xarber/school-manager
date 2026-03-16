@@ -7,20 +7,30 @@ Feel free to submit pull requests for improvements, but if you do, run tests on 
 Huge changes or undescribed changes will NOT be accepted; all pull requests will be reviewed.
 
 # 🚀 Usage
+> ⚠️ The app's database __WILL BE CLEARED__ once the server is 100% complete and tested. Currently, many routes aren't fully complete and may have issues. This is a safety measure for data safety.
+
 You may test the latest release of the app through [this site](https://schoolmanager.expo.app/), or you can decide to build the app yourself with the instructions listed below, to install on your personal device.
 The app is planned to be posted on app stores, once a first complete build is ready.
-> ⚠️ The app's database __WILL BE CLEARED__ once the server is 100% complete and tested. Currently, many routes aren't 100% complete and may have issues. This is a safety measure for data safety.
+
+If you are building and running locally, you can start the app with:
+```js
+cd ./app/ && npx expo start
+```
+Remember to also start the development server on a separate terminal with:
+```js
+cd ./server/ && node .
+```
 
 # ⚙️ Features
+> ⚠️ An account required for creating and joining classes
 * Create multiple classes
 * Invite users to your class, or teachers to help manage lessons and homework
 * Create multiple subjects for more specific organization of the class
 * Add homework and lessons to a specific subject, or comunications to the whole class.
 * Sync your account's data between devices with passwordless accounts (receive an OTP code via email)
-> ⚠️ This is required for creating and joining classes
 
 # 📋 Roadmap
-## [✔️ Completed, ⚙️ In progress, ✧ Future, ? Idea, ❌ Dropped]
+### ✔️ Completed, ⚙️ In progress, ✧ Future, ? Idea, ❌ Dropped
 * ✔️ React native app project and layouts
 * ✔️ Database models
 * ✔️ Setup page
@@ -40,11 +50,12 @@ The app is planned to be posted on app stores, once a first complete build is re
 * ✧ Resources (links to websites or files)
 * ✧ Confirmations for comunications (accept, deny, message, read status)
 * ✧ Revise server code, check permissions (minor milestone)
+* ✧ Add logout logic (invalid user token)
 * ✧ User grades
-* * Find required grade (or grade pair) to reach a goal.
+    * Find required grade (or grade pair) to reach a goal.
 * ✧ Week schedule
 * ✧ Scheduled exams (important milestone)
-* * Also add specific users only scheduled exams (health matters)
+    * Also add specific users only scheduled exams (health matters)
 * ✧ Second app optimization review (fix all warnings and optimize views)
 * ✧ Request switching account to teacher in-app
 * ✧ In-app feedback and feature requests page
@@ -54,19 +65,19 @@ The app is planned to be posted on app stores, once a first complete build is re
 * ✧ Account token revocation
 * ✧ Search tab (crawl through the whole app data locally)
 * ✧ Local LLM integration with search tab 
-* * No results: find potential matches with LLM
-* * Found results: generate related content
-* * Manage study sessions + record progress
-* * Homework generator (exercises on topic -> pdf output) -> Include guided exercises, scaling to more difficult exercises.
-* * Topic summary from uploaded resources
+    * No results: find potential matches with LLM
+    * Found results: generate related content
+    * Manage study sessions + record progress
+    * Homework generator (exercises on topic -> pdf output) -> Include guided exercises, scaling to more difficult exercises.
+    * Topic summary from uploaded resources
 * ✧ Page filters (filter homework/lessons/... by subject, date, etc)
 * ✧ Integrate with personal assistant (Siri/Gemini/...)
 * ✧ Custom database hosting (huge milestone, manage your own servers through desktop tauri app, integrate with main app with server code)
 * ✧ Create schools
-* * Check school's institutional email address with OTP code (only one user per email for maximum security)
-* * Use QR verification to check if a user is actually from the school (1 minute validity)
-* * School events page
-* * Documents & modules (for school purposes)
+    * Check school's institutional email address with OTP code (only one user per email for maximum security)
+    * Use QR verification to check if a user is actually from the school (1 minute validity)
+    * School events page
+    * Documents & modules (for school purposes)
 * ? Bridgefy / BLE integration for mesh network (upload and receive encrypted packets hotspot-like)
 
 # 💾 Data Usage
@@ -75,24 +86,68 @@ App data is hosted with MongoDB Atlas, and as of right now, the actual API endpo
 App data is not encrypted yet, avoid storing sensitive data.
 Accounts do not use passwords, the sole verification method are OTP codes, effectively dropping account security management to your mailing service.
 I do not take responsability for DB data leaks;
-If you're going to be hosting your own server, it is up to you to ensure updating the server to the latest version. If a data leak occurs because of an outdated server, the responsability falls upon yourself.
+If you're going to host your own server, it is up to you to ensure updating the server to the latest version. If a data leak occurs because of an outdated server, the responsability falls upon yourself.
 
 # 🛠️ Building
 You can build the web and mobile versions of the app with expo.
 If you want to build the tauri app, you will need the rust framework installed, and install the cargo-tauri package.
 
+## 📖 Requirements
+* NodeJS and NPM (tested with Node v24.14, NPM v11.9)
+* To build for desktop, check out [Tauri's prerequisites](https://v2.tauri.app/start/prerequisites/)
+* To build for mobile locally, check out [Expo's prerequisites](https://docs.expo.dev/guides/local-app-overview/#prerequisites).
+    * For iOS you will need X-Code with the iOS runtime.
+    * For Android you will need Android Studio with SDK 35.
+* To build for web, you don't need anything extra. Hooray!
+
+> ⚙️ Remember to run `npm i` on both the `/app/` directories and the `/server/` directories.
+
+### 🔐 .env file
+> ⚠️ When running locally, remember to define the environment variables for your MongoDB, and nodemailer/resend transports.
+> It is reccomended to use resend instead of the local icloud transporter.
+```env
+BRANCH=test
+PORT=3000
+
+MONGODB_URI="mongodb+srv://..."
+JWT_SECRET="******************************"
+RESEND_API_KEY=******************************
+
+EMAIL_SEND_MODE=resend
+ICLOUD_NODEMAILER_USER=user@icloud.com
+# Also required for Resend
+```
+
 ## 🌎 Web
-> Readme in progress...
+After installing Node, NPM, and having runned `npm i`, you can build for web with this command:
+```sh
+cd ./app/ && npx expo export --platform web
+```
+You will find the output files in the `./app/dist/` folder.
 
 ## 🖥️ Desktop
-> Readme in progress...
+After installing Node, NPM, cargo-tauri, and runned `npm i`, you can build the app with:
+```sh
+cd ./app/ && npm run desktop
+```
+You will find the output files in the `./app/src-tauri/target/` folder.
 
-## 📱 Android
-> Readme in progress...
+## 📱 Android & iOS
+After installing Node, NPM and required SDKs, you can build a development build with:
+```sh
+cd ./app/ && npx expo run <platform>
+```
+This will launch the simulator with a development build.
 
-## 📱 iOS
-> You will need a MacOS device to build locally.
+If you have `eas-cli` installed (`npm i -g eas-cli`), you can also build locally with:
+```sh
+cd ./app/ && eas build --platform <platform> --local
+```
+* Valid platforms are `ios` and `android`.
+* Remove the `--local` flag to build on EAS Cloud.
+> ⚠️ You will need a MacOS device to build locally.
 
-# Contacts
+# ✉️ Contacts
 You can contact me at this email address, for questions, feedback, or any other matter.
+
 **xarber@xcenter.it**
