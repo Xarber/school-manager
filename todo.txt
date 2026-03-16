@@ -1,4 +1,0 @@
-- Input class data into registry
-- Data sync if creating an account after the first setup (debug glitches and doesn't sync first launch)
-- Add animations to alert screens (and to everything really)
-- Check login and setup pages
