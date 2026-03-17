@@ -115,7 +115,6 @@ function HomeScreen({userData}: {userData: UserData}) {
                             }}/>
                             {/* todo - Schedule, Exams, Quick Homework */}
                             <DashboardItem title={i18n.t("home.tomorrow.title")} items={homescreenPageData.tomorrow.map((e: any, i: number)=>{
-                                console.warn(e);
                                 return {
                                     title: e.title,
                                     description: e.description,
