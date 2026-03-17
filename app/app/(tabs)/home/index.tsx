@@ -1,4 +1,4 @@
-import { Text, View, ScrollView } from "react-native";
+import { Text, View, ScrollView, RefreshControl } from "react-native";
 import { BlurView } from "expo-blur";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
@@ -6,21 +6,27 @@ import DashboardItem from "@/components/dashboardItem";
 import UserGrades from "@/components/gradesComponent";
 import ClipboardText from "@/components/clipboardText";
 
-import { Stack, useRouter } from "expo-router";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useAppDataSync, DataManager, UserData } from "@/data/datamanager";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
-import FindToday from "@/components/findToday";
-import { ActivityIndicator } from "react-native-paper";
-import { regroupHomework } from "../registry/homework";
+import findToday from "@/components/findToday";
+import { ActivityIndicator } from "react-native";
+import { regroupHomework, stringToColor } from "../registry/homework";
 import { regroupLessonsByDate } from "../registry/lessons";
 import { FilterExamsDate, FilterLessonsFromExams } from "../calendar";
+import { useCallback, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function HomeScreen({userData}: {userData: UserData}) {
     const theme = useTheme();
     const router = useRouter();
+    const [refreshing, setRefreshing] = useState(false);
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
     
     const activeClassId = userData.settings.activeClassId;
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
@@ -37,14 +43,31 @@ function HomeScreen({userData}: {userData: UserData}) {
     const homeworkData = useAppDataSync(DataManager.homeworkData.db, `${DataManager.homeworkData.app}:${activeClassId}`, defaultHomeworkData, {
         classid: activeClassId
     });
+
+    const reload = async () => {
+        setRefreshing(true);
+        //await Promise.all([userData.load()]);
+        await Promise.all([lessonData.load(), homeworkData.load()]);
+        setRefreshing(false);
+    };
+    
+    useFocusEffect(
+        useCallback(()=>{
+            reload();
+        }, [])
+    )
     
     const allClassHomework = regroupHomework(homeworkData.data);
     const allClassLessons = regroupLessonsByDate(lessonData.data);
     const lessons = FilterLessonsFromExams(false, allClassLessons);
     const exams = FilterLessonsFromExams(true, allClassLessons);
 
-    const upcomingExams = FilterExamsDate(3, exams);
-    //console.warn(upcomingExams);
+    const upcomingExams = FilterExamsDate(3, exams).filter((e: any)=>{
+        return (e.date != new Date().toISOString().split("T")[0]) && (e.date != new Date(new Date().getTime() + 86400000).toISOString().split("T")[0])
+    });
+    const tomorrowExams = FilterExamsDate(1, exams).filter((e: any)=>e.date != new Date().toISOString().split("T")[0]);
+    const tomorrowLessons = FilterExamsDate(1, lessons).filter((e: any)=>e.date != new Date().toISOString().split("T")[0]);
+    const tomorrowHomework = allClassHomework.filter((e: any)=>e.dueDate.split(" ")[0] === new Date(new Date().getTime() + 86400000).toISOString().split("T")[0]);;
 
     const tomorrowDay = new Date(new Date().getTime() + 86400000).toLocaleDateString("en-GB", {
         weekday: "long",
@@ -53,38 +76,82 @@ function HomeScreen({userData}: {userData: UserData}) {
     let tomorrow = {};
     if (!classData.loading && classData.data) tomorrow = classData.data.schedule[tomorrowDay];
     
+    let tomorrowSection: any[] = [];
+    if (tomorrowExams.length > 0) tomorrowSection = [...tomorrowSection, ...tomorrowExams];
+    if (tomorrowLessons.length > 0) tomorrowSection = [...tomorrowSection, ...tomorrowLessons];
+    if (tomorrowHomework.length > 0) tomorrowSection = [...tomorrowSection, ...tomorrowHomework];
+
     let homescreenPageData = {
         homework: allClassHomework,
         grades: userData.grades ?? [],
         subjects: classData.data.subjects,
         tomorrowSchedule: tomorrow,
-        tomorrow: [] as any[],
+        tomorrow: tomorrowSection,
         exams: exams,
         userdata: userData
     };
 
-    const today = FindToday();
+    const today = findToday();
 
     return (
         <>
             <Stack.Screen options={{ headerTitle: today }} />
-            <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
-                <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
-                    <Text style={HomeScreenStyle.welcomeText}>{today}</Text>
-                </BlurView>
-                <View style={HomeScreenStyle.dashboard}>
-                    <UserGrades items={[]} maxItems={3} expand={() => {
-                        router.push("/registry");
-                        setTimeout(()=>router.push("/registry/grades"), 36);
-                    }}/>
-                    {/* todo - Schedule, Exams, Quick Homework */}
-                    <DashboardItem title={i18n.t("home.tomorrow.title")} items={homescreenPageData.tomorrow} />
-                    <DashboardItem title={i18n.t("home.upcoming.title")} items={[]} maxItems={2} expand={() => {
-                        router.push("/registry");
-                        setTimeout(()=>router.push("/registry/exams"), 36);
-                    }}/>
-                </View>
-            </ScrollView>
+            {
+                ((classData.loading || lessonData.loading || homeworkData.loading) && !refreshing) ? (
+                    <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+                        <ActivityIndicator size="small" />
+                    </View>
+                ) : (
+                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={reload}/>
+                    }>
+                        <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
+                            <Text style={HomeScreenStyle.welcomeText}>{today}</Text>
+                        </BlurView>
+                        <View style={HomeScreenStyle.dashboard}>
+                            <UserGrades items={[]} maxItems={3} expand={() => {
+                                router.push("/registry");
+                                setTimeout(()=>router.push("/registry/grades"), 36);
+                            }}/>
+                            {/* todo - Schedule, Exams, Quick Homework */}
+                            <DashboardItem title={i18n.t("home.tomorrow.title")} items={homescreenPageData.tomorrow.map((e: any, i: number)=>{
+                                console.warn(e);
+                                return {
+                                    title: e.title,
+                                    description: e.description,
+                                    subtitle: 
+                                        e.isExam ? i18n.t("home.tomorrow.exam") : 
+                                        (!!e.dueDate ? i18n.t("home.tomorrow.homework") : i18n.t("home.tomorrow.lesson")),
+                                    badge: {
+                                        text: classData.data.subjects.find((s: any)=>s._id === e.subjectid).name,
+                                        color: stringToColor(e.subjectid)
+                                    },
+                                    onPress: () => {
+                                        //router.push(`/calendar/${e.date}`);
+                                    }
+                                };
+                            })} />
+                            <DashboardItem title={i18n.t("home.upcoming.title")} items={upcomingExams.map((e: any, i: number)=>{
+                                return {
+                                    title: e.title,
+                                    description: e.description,
+                                    subtitle: e.date,
+                                    badge: {
+                                        text: classData.data.subjects.find((s: any)=>s._id === e.subjectid).name,
+                                        color: stringToColor(e.subjectid)
+                                    },
+                                    onPress: () => {
+                                        //router.push(`/calendar/${e.date}`);
+                                    }
+                                };
+                            })} maxItems={3} expand={() => {
+                                router.push("/registry");
+                                setTimeout(()=>router.push("/registry/lessons"), 36);
+                            }}/>
+                        </View>
+                    </ScrollView>
+                )
+            }
         </>
     );
 }

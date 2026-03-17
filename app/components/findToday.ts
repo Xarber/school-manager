@@ -6,7 +6,7 @@ function capitalizeFirst(str: string) {
     return str[0].toUpperCase() + str.slice(1);
 }
 
-export default function FindToday(day?: string) {
+export default function findToday(day?: string) {
     day ??= new Date().toISOString().split('T')[0];
     const language = useLanguage();
 
