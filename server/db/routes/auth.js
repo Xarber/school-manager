@@ -95,6 +95,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
         name: 'New', // Default; update later via profile
         surname: 'User',
         email,
+        role: "teacher", // TODO: REMOVE THIS AFTER STABLE RELEASE! (maybe)
         addedAt: new Date().toISOString(),
         editedAt: Date.now(),
       });
