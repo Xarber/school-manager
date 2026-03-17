@@ -3,7 +3,7 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useAppDataSync, DataManager, HomeworkData, UserData, ClassData, SubjectData } from "@/data/datamanager";
+import { useAppDataSync, DataManager, HomeworkData, UserData, ClassData, SubjectData, UserInfo } from "@/data/datamanager";
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -83,7 +83,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData) {
     ) : null;
 }
 
-function HomeworkComponent({mode, userData, classid}: {mode: 'all' | 'completed' | 'missed', userData: UserData, classid: string}) {
+function HomeworkComponent({mode, userData, classid, classData, reload, homeworkData}: {mode: 'all' | 'completed' | 'missed', classData: ClassData, userData: UserData, classid: string, reload: Function, homeworkData: any}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const [refreshing, setRefreshing] = useState(false);
@@ -99,6 +99,55 @@ function HomeworkComponent({mode, userData, classid}: {mode: 'all' | 'completed'
             year: "numeric",
         }));
     }
+    
+    const allClassHomework = regroupHomework(homeworkData || []);
+    
+    const homeworkPageData = {
+        homework: allClassHomework,
+        userdata: userData as UserData
+    }
+
+    const homework = Object.values(homeworkPageData.homework) as HomeworkData[];
+    const filteredItems = homework.filter((item) => {
+        if (mode === "all") return true;
+        // Filter user's completedhomework {classid, subjectid, homeworkid}, and check if the homework item has those same properties
+        if (mode === "completed") {
+            const completedhomework = userData.completedhomework.filter((homeworkid: String) => {
+                return homeworkid === item._id;
+            });
+            if (completedhomework.length > 0) return true;
+        }
+        if (new Date(item.dueDate).getTime() < new Date().getTime()) {
+            if (mode === "missed") return true;
+        }
+        return false;
+    })
+
+    return (
+        (classid == "") ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
+            </View>
+        ) : (filteredItems.length == 0 ? (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
+            </View>
+        ) : (
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={(reload as any)} />
+            }>
+                {renderHomework(filteredItems, classData)}
+            </ScrollView>
+        ))
+    );
+}
+
+const Tab = createMaterialTopTabNavigator();
+
+function HomeworkTab({userData}: {userData: UserData}) {
+    const router = useRouter();
+    const classid = userData.settings.activeClassId;
+    const [refreshing, setRefreshing] = useState(false);
 
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
         classid: classid,
@@ -122,73 +171,24 @@ function HomeworkComponent({mode, userData, classid}: {mode: 'all' | 'completed'
             reload();
         }, [])
     )
-    
-    const allClassHomework = regroupHomework(homeworkData.data || []);
-    
-    const homeworkPageData = {
-        homework: allClassHomework,
-        userdata: userData as UserData
-    }
-
-    const homework = Object.values(homeworkPageData.homework) as HomeworkData[];
-    const filteredItems = homework.filter((item) => {
-        if (mode === "all") return true;
-        // Filter user's completedhomework {classid, subjectid, homeworkid}, and check if the homework item has those same properties
-        if (mode === "completed") {
-            const completedhomework = userData.completedhomework.filter((homeworkid: String) => {
-                return homeworkid === item._id;
-            });
-            if (completedhomework.length > 0) return true;
-        }
-        if (new Date(item.dueDate).getTime() < new Date().getTime()) {
-            if (mode === "missed") return true;
-        }
-        return false;
-    })
-
-    return classData.loading || homeworkData.loading ? <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}><ActivityIndicator size="small" /></View> : (
-        (classid == "") ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
-            </View>
-        ) : (filteredItems.length == 0 ? (
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
-            </View>
-        ) : (
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={reload} />
-            }>
-                {renderHomework(filteredItems, classData.data)}
-            </ScrollView>
-        ))
-    );
-}
-
-const Tab = createMaterialTopTabNavigator();
-
-export default function HomeworkTab() {
-    const router = useRouter();
-    const userData = useUserData();
-    const classid = userData.data.settings.activeClassId;
-
-    if (userData.loading) return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
-        </View>
-    );
 
     function AllHomework() {
-        return <HomeworkComponent mode="all" userData={userData.data} classid={classid} />
+        return <HomeworkComponent mode="all" userData={userData} classData={classData.data} reload={reload} homeworkData={homeworkData.data} classid={classid} />
     }
 
     function CompletedHomework() {
-        return <HomeworkComponent mode="completed" userData={userData.data} classid={classid} />
+        return <HomeworkComponent mode="completed" userData={userData} classData={classData.data} reload={reload} homeworkData={homeworkData.data} classid={classid} />
     }
 
     function MissedHomework() {
-        return <HomeworkComponent mode="missed" userData={userData.data} classid={classid} />
+        return <HomeworkComponent mode="missed" userData={userData} classData={classData.data} reload={reload} homeworkData={homeworkData.data} classid={classid} />
     }
+
+    if (classData.loading || homeworkData.loading) return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator />
+        </View>
+    );
 
     return (
         <>
@@ -202,12 +202,23 @@ export default function HomeworkTab() {
                     title: i18n.t("registry.homework.create.title"),
                     iconName: "add",
                     onPress: () => {
-                        router.push({pathname: `/modal/homework/create` as any, params: {classid: userData.data.settings.activeClassId}});
+                        router.push({pathname: `/modal/homework/create` as any, params: {classid: userData.settings.activeClassId}});
                     },
-                    display: userData.data.settings.activeClassId != "" && userData.data.userInfo.role != "student",
+                    display: classData.data.teachers.find((teacher: UserInfo) => teacher._id === (userData as any).userInfo._id) ? true : false
                 }
             ]} align="right" styles={{ borderRadius: 360 }} />
         </>
 
+    )
+}
+
+export default function HomeworkWrap() {
+    const userData = useUserData();
+
+    return (userData.loading ? 
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" />
+        </View> : 
+        <HomeworkTab userData={userData.data} />
     )
 }

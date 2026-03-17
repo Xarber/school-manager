@@ -102,7 +102,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                     onPress: () => {
                         router.push({pathname: `/modal/comunication/create` as any, params: {classid: classid}});
                     },
-                    display: (userData.userInfo as any).role != "student",
+                    display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false
                 }
             ]} align="right" styles={{ borderRadius: 360 }} />
         </View>
