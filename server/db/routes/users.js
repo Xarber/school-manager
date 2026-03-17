@@ -15,15 +15,13 @@ router.get(paths.dbMe, auth, async (req, res) => {
 
     // Add user's classes (query separately if needed)
     const classes = await Class.find({ 
-      'students.userid': req.user.userid
+      'students.userid': req.user.userinfo_id
     }).populate('students.userid');
 
     res.json({ success: true, data: { user, classes } });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get user data", dbError: error });
   }
 });
-
-
 
 module.exports = router;

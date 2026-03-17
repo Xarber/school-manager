@@ -67,24 +67,24 @@ cd ./server/ && node .
 * ✔️ Homework creation + adding to subject
 * ✔️ First app optimization review (fix all warnings and optimize views)
 * ✔️ Calendar page
+* ✔️ Setting for language switching
+* ✔️ Setting for notification handling
+* ✔️ Server updates for other components
+* ✔️ Revise server code, check permissions (minor milestone)
 
 </details>
 
 <details open>
 <summary>⚙️ In progress</summary>
 
-* ⚙️ Server updates for other components
-* ⚙️ Setting for language switching
-* ⚙️ Setting for notification handling
+* ⚙️ Resources (links to websites or files)
+* ⚙️ Confirmations for communications (accept, deny, message)
 
 </details>
 
 <details>
 <summary>✧ Future</summary>
 
-* ✧ Resources (links to websites or files)
-* ✧ Confirmations for communications (accept, deny, message, read status)
-* ✧ Revise server code, check permissions (minor milestone)
 * ✧ Offline app usage
 * ✧ Local unsynced class (for not logged in users)
 * ✧ Add logout logic (invalid user token)
@@ -108,14 +108,23 @@ cd ./server/ && node .
     * Manage study sessions + record progress
     * Homework generator (exercises on topic -> pdf output) -> Include guided exercises, scaling to more difficult exercises.
     * Topic summary from uploaded resources
+* ✧ File Uploads
 * ✧ Page filters (filter homework/lessons/... by subject, date, etc)
 * ✧ Integrate with personal assistant (Siri/Gemini/...)
 * ✧ Custom database hosting (huge milestone, manage your own servers through desktop tauri app, integrate with main app with server code)
+* ✧ Add own homework & exams (for class & subject, save in user data). NOT GRADES!
+* ✧ Parent accounts
 * ✧ Create schools
     * Check school's institutional email address with OTP code (only one user per email for maximum security)
     * Use QR verification to check if a user is actually from the school (1 minute validity)
     * School events page
     * Documents & modules (for school purposes)
+    * Admin Dashboard
+* ✧ Presence register
+* ✧ App Admin Dashboard
+    * Find users, schools, classes (can't read data)
+    * Disable user accounts, delete schools, classes.
+* ✧ In-app class/school feed + DM chats
 
 </details>
 

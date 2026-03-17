@@ -11,23 +11,31 @@ const router = express.Router();
 
 router.post(paths.dbGet, async (req, res) => {
   try {
+    return res.status(400).json({ error: 'Not implemented, use populate instead.' });
     const user = req.user; // Assuming user is set by authentication middleware
-    const { classid, subjectid, materialid } = req.body;
+    const { schoolid, classid, comunicationid, subjectid, comunicationresponseid, homeworkid, lessonid, materialid } = req.body;
 
     if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
     if (!materialid) return res.status(400).json({ error: 'Material ID required' });
+    if (!classid && !comunicationid && !subjectid && !homeworkid && !lessonid) return res.status(400).json({ error: 'Class ID or Comunication ID or Subject ID or Homework ID or Lesson ID required' });
 
-    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
-    let searchData = { classid, materialid };
-    if (subjectid) searchData.subjectid = subjectid;
-    const materials = await Material.find(searchData).lean();
-    res.json({ success: true, data: materials });
+    //todo
+    if (schoolid) return res.status(500).json({ error: 'Not implemented' });
+
+    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+
+    if (
+      !classInfo.students.some(t => t.equals(user.userinfo_id))
+      && !classInfo.teachers.some(t => t.equals(user.userinfo_id))
+    ) return res.status(403).json({ error: 'Access denied to this class' });
+
+    return res.json({ success: true, data: result });
   } catch (error) {
-    console.error('Get materials error:', error);
-    res.status(500).json({ error: 'Failed to get materials' });
+    console.error('Get homework error:', error);
+    res.status(500).json({ error: 'Failed to get homework', dbError: error });
   }
 });
 
@@ -41,17 +49,17 @@ router.post(paths.dbCreate, async (req, res) => {
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create materials' });
+    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create material' });
 
     const classInfo = await Class.findOne({ _id: classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create materials' });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create material' });
 
     let subjectInfo = null;
     if (subjectid) {
       subjectInfo = await Subject.findOne({ subjectid, classid });
       if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
-      if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can create materials' });
+      //if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can create material' });
     }
 
     const { title, description, type, url } = req.body;
@@ -73,17 +81,17 @@ router.post(paths.dbCreate, async (req, res) => {
     await newMaterial.save();
 
     if (subjectInfo) {
-      subjectInfo.materials.push(newMaterial._id);
+      subjectInfo.material.push(newMaterial._id);
       await subjectInfo.save();
     }
 
-    classInfo.materials.push(newMaterial._id);
+    classInfo.material.push(newMaterial._id);
     await classInfo.save();
 
     res.json({ success: true, data: newMaterial._id });
   } catch (error) {
     console.error('Create material error:', error);
-    res.status(500).json({ error: 'Failed to create material' });
+    res.status(500).json({ error: 'Failed to create material', dbError: error });
   }
 });
 
@@ -97,24 +105,22 @@ router.post(paths.dbDelete, async (req, res) => {
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete materials' });
+    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete material' });
 
-    const classInfo = await Class.findOne({ materials: materialid });
+    const classInfo = await Class.findOne({ material: materialid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete materials' });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete material' });
 
-    const subjectInfo = await Subject.findOne({ materials: materialid });
-    if (subjectInfo && !subjectInfo.teacher.some(t => t.equals(userInfo._id))) {
-      return res.status(403).json({ error: 'Only teachers of this subject can delete materials' });
-    }
+    const subjectInfo = await Subject.findOne({ material: materialid });
+    //if (subjectInfo && !subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can delete material' });
 
     //remove material from class
-    classInfo.materials = classInfo.materials.filter(m => m.toString() !== materialid);
+    classInfo.material = classInfo.material.filter(m => m.toString() !== materialid);
     await classInfo.save();
     
     //remove material from subject if exists
     if (subjectInfo) {
-      subjectInfo.materials = subjectInfo.materials.filter(m => m.toString() !== materialid);
+      subjectInfo.material = subjectInfo.material.filter(m => m.toString() !== materialid);
       await subjectInfo.save();
     }
 
@@ -123,7 +129,7 @@ router.post(paths.dbDelete, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Delete material error:', error);
-    res.status(500).json({ error: 'Failed to delete material' });
+    res.status(500).json({ error: 'Failed to delete material', dbError: error });
   }
 });
 
@@ -137,7 +143,7 @@ router.post(paths.dbUpdate, async (req, res) => {
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update materials' });
+    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update material' });
 
     const material = await Material.findOne({ materialid });
     if (!material) return res.status(404).json({ error: 'Material not found' });
@@ -157,7 +163,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     res.json({ success: true, data: material });
   } catch (error) {
     console.error('Update material error:', error);
-    res.status(500).json({ error: 'Failed to update material' });
+    res.status(500).json({ error: 'Failed to update material', dbError: error });
   }
 });
 

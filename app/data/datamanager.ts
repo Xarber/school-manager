@@ -42,8 +42,8 @@ export type OutboxData = typeof defaultOutboxData;
 const defaultAccountData = {
     _id: "" as string,
     userid: "" as string,
-    userData: "" as string, // _id rel
-    userDebug: "" as string, // _id rel
+    userData: "" as string | UserData, // _id rel
+    userDebug: "" as string | DebugData, // _id rel
     token: "" as string,
     pushToken: null as string | null,
     locked: false as boolean,
@@ -73,6 +73,7 @@ const defaultUserInfo = {
     userid: "" as string,
     name: '' as string,
     surname: '' as string,
+    parentemail: [] as string[],
     email: '' as string,
     role: 'student' as 'student' | 'teacher',
     addedAt: '' as string,
@@ -100,11 +101,11 @@ const defaultUserData = {
     userid: "" as string,
     name: "User" as string,
     birthday: "" as string,
-    userInfo: "" as string, // _id rel
+    userInfo: "" as string | UserInfo, // _id rel
     settings: defaultUserSettings as UserSettings,
-    classes: [] as string[], // _id rel
-    grades: [] as string[], // _id rel
-    completedhomework: [] as string[], // _id rel
+    classes: [] as string[] | ClassData[], // _id rel
+    grades: [] as string[] | GradeData[], // _id rel
+    completedhomework: [] as string[] | HomeworkData[], // _id rel
     pushtokens: [] as string[],
     addedAt: "" as string,
     editedAt: 0 as number
@@ -114,14 +115,14 @@ export type UserData = typeof defaultUserData;
 const defaultClassData = {
     _id: "" as string,
     name: '' as string,
-    teachers: [] as string[], // _id rel
-    students: [] as string[], // _id rel
+    teachers: [] as string[] | UserInfo[], // _id rel
+    students: [] as string[] | UserInfo[], // _id rel
     schedule: [] as WeekSchedule[],
-    comunications: [] as string[], // _id rel
-    materials: [] as string[], // _id rel
-    homework: [] as string[], // _id rel
-    lessons: [] as string[], // _id rel
-    subjects: [] as string[], // _id rel
+    comunications: [] as string[] | ComunicationData[], // _id rel
+    material: [] as string[] | MaterialData[], // _id rel
+    homework: [] as string[] | HomeworkData[], // _id rel
+    lessons: [] as string[] | LessonData[], // _id rel
+    subjects: [] as string[] | SubjectData[], // _id rel
     notes: [] as string[],
     addedAt: '' as string,
     editedAt: 0 as number
@@ -129,7 +130,7 @@ const defaultClassData = {
 export type ClassData = typeof defaultClassData;
 
 const defaultScheduleHour = {
-    subject: '' as string, // _id rel
+    subject: '' as string | SubjectData, // _id rel
     startTime: '' as string,
     endTime: '' as string
 };
@@ -146,12 +147,13 @@ export type WeekSchedule = typeof defaultWeekSchedule;
 const defaultSubjectData = {
     _id: "" as string,
     name: '' as string,
-    teacher: [] as string[], // _id rel
+    teacher: [] as string[] | UserInfo[], // _id rel
     maxgrade: 100 as number,
     gradeType: 'percentage' as 'letter' | 'percentage' | 'points',
-    homework: [] as string[], // _id rel
-    lessons: [] as string[], // _id rel
-    material: [] as string[], // _id rel
+    allowOwnGrades: false as boolean,
+    homework: [] as string[] | HomeworkData[], // _id rel
+    lessons: [] as string[] | LessonData[], // _id rel
+    material: [] as string[] | MaterialData[], // _id rel
     addedAt: '' as string,
     editedAt: 0 as number
 };
@@ -159,11 +161,14 @@ export type SubjectData = typeof defaultSubjectData;
 
 const defaultGradeData = {
     _id: "" as string,
-    class: "" as string, // _id rel
-    subject: "" as string, // _id rel
-    homework: undefined as string | undefined, // _id rel
+    class: "" as string | ClassData, // _id rel
+    subject: "" as string | SubjectData, // _id rel
+    homework: undefined as string | HomeworkData | undefined, // _id rel
+    exam: undefined as string | LessonData | undefined, // _id rel
+    user: "" as string | UserInfo, // _id rel
     title: '' as string,
-    type: 'other' as 'oral' | 'written' | 'homework' | 'project' | 'other',
+    description: '' as string,
+    type: 'other' as 'oral' | 'written' | 'other',
     grade: 0 as number,
     gradeTitle: undefined as string | undefined,
     addedAt: '' as string,
@@ -177,6 +182,7 @@ const defaultMaterialData = {
     description: '' as string,
     type: 'file' as 'file' | 'link',
     url: '' as string,
+    downloadName: undefined as string | undefined,
     addedAt: '' as string,
     editedAt: 0 as number
 };
@@ -187,7 +193,7 @@ const defaultHomeworkData = {
     title: '' as string,
     description: '' as string,
     points: 0 as number | undefined,
-    material: [] as string[], // _id rel
+    material: [] as string[] | MaterialData[], // _id rel
     dueDate: '' as string,
     addedAt: '' as string,
     editedAt: 0 as number
@@ -200,15 +206,26 @@ const defaultLessonData = {
     description: '' as string,
     date: '' as string,
     time: '' as string,
-    teacher: "" as string, // _id rel
+    teacher: "" as string | UserInfo, // _id rel
     room: '' as string | undefined,
-    material: [] as string[], // _id rel
+    material: [] as string[] | MaterialData[], // _id rel
     scheduled: false as boolean,
     isExam: false as boolean,
     addedAt: '' as string,
     editedAt: 0 as number
 };
 export type LessonData = typeof defaultLessonData;
+
+const defaultComunicationResponse = {
+    _id: "" as string,
+    user: "" as string | UserInfo, // _id rel
+    state: false as boolean,
+    message: '' as string,
+    material: [] as string[] | MaterialData[], // _id rel
+    addedAt: '' as string,
+    editedAt: 0 as number
+};
+export type ComunicationResponse = typeof defaultComunicationResponse;
 
 const defaultComunicationData = {
     _id: "" as string,
@@ -218,7 +235,10 @@ const defaultComunicationData = {
     time: undefined as string | undefined,
     urgency: 'low' as 'low' | 'medium' | 'high',
     requiresConfirmation: false as boolean,
-    sender: "" as string, // _id rel
+    confirmationType: 'accept' as 'accept' | 'message',
+    responses: [] as string[] | ComunicationResponse[], // _id rel
+    material: [] as string[] | MaterialData[], // _id rel
+    sender: "" as string | UserInfo, // _id rel
     addedAt: '' as string,
     editedAt: 0 as number
 };
@@ -241,11 +261,12 @@ const defaultSchoolData = {
     about: '' as string | undefined,
     banner: '' as string | undefined,
 
-    comunications: [] as string[], // _id rel
-    classes: [] as string[], // _id rel
-    students: [] as string[], // _id rel
-    teachers: [] as string[], // _id rel
-    admins: [] as string[], // _id rel
+    comunications: [] as string[] | ComunicationData[], // _id rel
+    material: [] as string[] | MaterialData[], // _id rel
+    classes: [] as string[] | ClassData[], // _id rel
+    students: [] as string[] | UserInfo[], // _id rel
+    teachers: [] as string[] | UserInfo[], // _id rel
+    admins: [] as string[] | UserInfo[], // _id rel
 
     addedAt: '' as string,
     editedAt: 0 as number
@@ -254,8 +275,8 @@ export type SchoolData = typeof defaultSchoolData;
 
 const defaultInvitationData = {
     _id: "" as string,
-    author: "" as string, // _id rel
-    targetid: "" as string, // _id rel
+    author: "" as string | UserInfo, // _id rel
+    targetid: "" as string | ClassData | SchoolData, // _id rel
     for: "class" as "class" | "school",
     joinAs: "student" as "student" | "teacher",
     maxUsage: -1 as number,
@@ -547,6 +568,8 @@ export const DataManager = {
 
         authenticate: "/api/auth/send",
         authenticateOtp: "/api/auth/verify",
+        pushRegister: "/api/account/register-push",
+        pushUnregister: "/api/account/unregister-push",
     },
     outbox: {
         app: "@app:outbox",

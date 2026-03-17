@@ -20,7 +20,7 @@ router.post(paths.dbGet, async (req, res) => {
     res.json({ success: true, data: debugData });
   } catch (error) {
     console.error('Get debug data error:', error);
-    res.status(500).json({ error: 'Failed to get debug data' });
+    res.status(500).json({ error: 'Failed to get debug data', dbError: error});
   }
 });
 
@@ -84,7 +84,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Update debug data error:', error);
-    res.status(500).json({ error: 'Failed to update debug data' });
+    res.status(500).json({ error: 'Failed to update debug data', dbError: error });
   }
 });
 

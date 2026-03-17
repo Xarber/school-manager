@@ -65,7 +65,7 @@ router.post(paths.authenticate, async (req, res) => {
     res.json({ success: true, message: 'Verification code sent' });
   } catch (error) {
     console.error('Send error:', error);
-    res.status(500).json({ error: 'Failed to send code' });
+    res.status(500).json({ error: 'Failed to send code', dbError: error });
   }
 });
 
@@ -80,7 +80,12 @@ router.post(paths.authenticateOtp, async (req, res) => {
 
     // Check if user exists
     let isNewUser = false;
+    let isParent = false;
     let userInfo = await UserInfo.findOne({ email });
+    if (!userInfo) {
+      userInfo = await UserInfo.findOne({ parentemail: email });
+      if (userInfo) isParent = true;
+    }
     let userData = (userInfo && await UserData.findOne({ userid: userInfo.userid })) || null;
     let debugData = (userInfo && await Debug.findOne({ userid: userInfo.userid })) || null;
     let account = (userInfo && await Account.findOne({ userid: userInfo.userid })) || null;
@@ -94,6 +99,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
         userid: newUserid,
         name: 'New', // Default; update later via profile
         surname: 'User',
+        parentemail: [],
         email,
         role: "teacher", // TODO: REMOVE THIS AFTER STABLE RELEASE! (maybe)
         addedAt: new Date().toISOString(),
@@ -128,6 +134,13 @@ router.post(paths.authenticateOtp, async (req, res) => {
       // Create debug data
       debugData = new Debug({
         userid: newUserid,
+        firstLaunch: false,
+        firstLaunchDate: new Date().toString(),
+        lastLaunchDate: new Date().toString(),
+        launchCount: 1,
+        appVersion: "1.0.0",
+        errorLogs: [],
+        performanceMetrics: [],
         addedAt: new Date().toISOString(),
         editedAt: Date.now(),
       });
@@ -145,6 +158,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
         account_id: account._id,
         userid: userData.userid,
         debug_id: debugData._id,
+        parent: isParent,
         issued: Date.now()
       },
       process.env.JWT_SECRET,
@@ -158,7 +172,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
     });
   } catch (error) {
     console.error('Verify error:', error);
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: 'Login failed', dbError: error });
   }
 });
 
@@ -168,8 +182,8 @@ router.post(paths.dbMe, authenticateToken, async (req, res) => {
     const user = await UserInfo.findOne({ _id: req.user.userinfo_id }).lean();
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json({ success: true, data: user });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get user", dbError: error });
   }
 });
 
@@ -188,8 +202,8 @@ router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => 
     ).lean();
     
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update user", dbError: error });
   }
 });
 

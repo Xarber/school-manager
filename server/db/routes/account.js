@@ -19,7 +19,7 @@ router.post(paths.dbGet, async (req, res) => {
     res.json({ success: true, data: userData });
   } catch (error) {
     console.error('Get user error:', error);
-    res.status(500).json({ error: 'Failed to get user' });
+    res.status(500).json({ error: 'Failed to get user', dbError: error });
   }
 });
 
@@ -50,27 +50,25 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (name && surname) fullname = `${name} ${surname}`;
 
     // Update user data
-    const updateData = {};
-    if (birthday) updateData.birthday = birthday;
-    if (settings) updateData.settings = settings;
-    if (name) updateData.name = fullname;
-    updateData.editedAt = Date.now();
+    if (birthday) userData.birthday = birthday;
+    if (settings) userData.settings = {...userData.settings, ...settings};
+    if (name) userData.name = fullname;
+    userData.editedAt = Date.now();
 
-    await UserData.updateOne({ _id: userData._id }, { $set: updateData });
+    await userData.save();
 
     // Update user info
-    const updateInfo = {};
-    if (name) updateInfo.name = name;
-    if (surname) updateInfo.surname = surname;
-    if (email) updateInfo.email = email;
-    updateInfo.editedAt = Date.now();
+    if (name) userInfo.name = name;
+    if (surname) userInfo.surname = surname;
+    if (email) userInfo.email = email;
+    userInfo.editedAt = Date.now();
 
-    await UserInfo.updateOne({ _id: userInfo._id }, { $set: updateInfo });
+    await userInfo.save();
 
     res.json({ success: true });
   } catch (error) {
     console.error('Update user error:', error);
-    res.status(500).json({ error: 'Failed to update user' });
+    res.status(500).json({ error: 'Failed to update user', dbError: error });
   }
 });
 
@@ -96,7 +94,7 @@ router.post(paths.accountRegisterForPushNotifications, async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Register push token error:', error);
-        res.status(500).json({ error: 'Failed to register push token' });
+        res.status(500).json({ error: 'Failed to register push token', dbError: error });
     }
 });
 
@@ -118,7 +116,7 @@ router.post(paths.accountUnregisterForPushNotifications, async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Unregister push token error:', error);
-        res.status(500).json({ error: 'Failed to unregister push token' });
+        res.status(500).json({ error: 'Failed to unregister push token', dbError: error });
     }
 });
 
