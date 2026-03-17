@@ -14,9 +14,7 @@ import { regroupLessonsByDate } from '../registry/lessons';
 import { regroupHomework, stringToColor } from '../registry/homework';
 import FindToday from '@/components/findToday';
 import { UserData } from '@/data/datamanager';
-
-LocaleConfig.locales['lang'] = i18n.t("components.calendar.localeconfig");
-LocaleConfig.defaultLocale = 'lang';
+import { useLanguage } from '@/constants/LanguageContext';
 
 export function LoadHomeworkForDate(date: string, homework: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
@@ -76,10 +74,13 @@ export function FilterExamsDate(days: number, exams: any) {
 }
 
 function CalendarComponent({userData}: {userData: UserData}) {
+    LocaleConfig.locales['lang'] = i18n.t("components.calendar.localeconfig");
+    LocaleConfig.defaultLocale = 'lang';
     const theme = useTheme();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
     const [refreshing, setRefreshing] = useState(false);
+    const language = useLanguage();
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -141,7 +142,6 @@ function CalendarComponent({userData}: {userData: UserData}) {
             let mark = false;
             if (items.length > 0) {
                 items.forEach((item: any) => {
-                    console.warn(item);
                     if (item.data.isExam || item.data.scheduled) mark = true;
                     if (item.data.scheduled) dayDots.push({key: `scheduled:${item.data._id}`, color: theme.primary});
                     else if (item.data.isExam) dayDots.push({key: `exam:${item.data._id}`, color: theme.caution});
@@ -197,7 +197,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                 <View style={{ flex: 1, backgroundColor: theme.background }}>
                     <Calendar
                         markingType="multi-dot"
-                        key={theme.type}
+                        key={`${theme.type}-${language.locale}`}
                         hideExtraDays={true}
                         firstDay={1}
                         

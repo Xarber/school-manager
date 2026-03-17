@@ -1,4 +1,8 @@
 {
+    "languages": {
+        "en": "English",
+        "it": "Italian"
+    },
     "components": {
         "calendar": {
             "localeconfig": {
@@ -164,6 +168,7 @@
             "title": "Stay updated?",
             "description": "Do you want to enable notifications?",
             "next": "Continue",
+            "skip": "Skip for now",
             "error": {
                 "title": "Error",
                 "description": "Couldn't enable notifications.\nYou can try again later in settings.",
@@ -818,12 +823,20 @@
             "language": {
                 "stack": {
                     "title": "Language"
+                },
+                "header": {
+                    "text": "App Language"
+                },
+                "system": {
+                    "text": "System"
                 }
             },
             "notifications": {
                 "stack": {
                     "title": "Notifications"
-                }
+                },
+                "description": "School Manager uses notifications to keep you posted about the latest changes in your classes.\n\nWe won't send you spam, so don't worry about it.\n\nIt is reccomended to keep notifications for exams and homework updates.",
+                "switch": "Enable Notifications"
             },
             "appearance": {
                 "stack": {

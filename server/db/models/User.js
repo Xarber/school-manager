@@ -34,6 +34,7 @@ const UserDataSchema = new Schema({
     classes: [{type: Schema.Types.ObjectId, ref: 'Class'}],
     grades: [{type: Schema.Types.ObjectId, ref: 'Grade'}],
     completedhomework: [{type: Schema.Types.ObjectId, ref: 'Homework'}],
+    pushtokens: [{type: String, required: false}],
     addedAt: {type: String, required: true},
     editedAt: {type: Number, required: true},
 });
