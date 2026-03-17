@@ -11,7 +11,6 @@ export default function welcomeScreen() {
     const [debugDataSaved, setDebugDataSaved] = useState(false);
     let appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
 
-
     useEffect(() => {  
         // Save launch once
         if (!appDebugData.loading) {  

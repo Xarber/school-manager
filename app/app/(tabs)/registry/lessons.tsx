@@ -100,7 +100,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                     onPress: () => {
                         router.push({pathname: `/modal/lesson/create` as any, params: {classid}});
                     },
-                    display: (userData.userInfo as any).role != "student",
+                    display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false
                 }
             ]} align="right" styles={{ borderRadius: 360 }} />
         </View>

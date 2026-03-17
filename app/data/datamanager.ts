@@ -524,7 +524,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
 console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(__DEV__ && !isProductionBinary) ? "true" : "false"}\n`);
 export const DataManager = {
     db: {
-        connect: (__DEV__ && !isProductionBinary && !isWeb) ? "http://192.168.1.168:3000" : 'https://schoolmanager-api.xcenter.it',
+        connect: (__DEV__ && !isProductionBinary && !isWeb) ? "http://10.100.20.40:3000" : 'https://schoolmanager-api.xcenter.it',
         update: "/update",
         create: "/add",
         delete: "/delete",
