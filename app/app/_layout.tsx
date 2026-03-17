@@ -10,6 +10,7 @@ import { Scheme } from "@/constants/colors";
 import { AlertProvider } from "@/components/alert/AlertContext";
 import { UserDataProvider } from "@/data/UserDataContext";
 import { AccountDataProvider } from "@/data/AccountDataContext";
+import { LanguageProvider } from "@/constants/LanguageContext";
 
 function AppLayout() {
   const scheme: Scheme = useThemeContext();
@@ -38,9 +39,11 @@ export default function RootLayout() {
     <AccountDataProvider>
       <UserDataProvider>
         <ContextThemeProvider>
-          <AlertProvider>
-            <AppLayout />
-          </AlertProvider>
+          <LanguageProvider>
+            <AlertProvider>
+              <AppLayout />
+            </AlertProvider>
+          </LanguageProvider>
         </ContextThemeProvider>
       </UserDataProvider>
     </AccountDataProvider>

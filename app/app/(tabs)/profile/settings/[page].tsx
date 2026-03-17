@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Switch, ActivityIndicator } from "react-native";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
@@ -9,20 +9,25 @@ import { Stack } from "expo-router";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { RadioButton } from "react-native-paper";
 import { useAlert } from "@/components/alert/AlertContext";
-import i18n from "@/constants/i18n";
+import i18n, { setLocale, translations } from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
+import { useLanguage } from "@/constants/LanguageContext";
+import { useAccountData } from "@/data/AccountDataContext";
+import { turnOffNotifications, turnOnNotifications } from "@/data/notifications";
+import { useState } from "react";
 
 export default function settingsPage() {
     const params = useLocalSearchParams();
     const action = params.page as string;
+    const commonStyle = createStyling.createCommonStyles(useTheme());
 
     switch (action) {
         case "appearance": 
-            return <AppearanceTab />;
+            return <View style={commonStyle.dashboardSection}><AppearanceTab /></View>;
         case "language":
-            return <LanguageTab />;
+            return <View style={commonStyle.dashboardSection}><LanguageTab /></View>;
         case "notifications":
-            return <NotificationsTab />;
+            return <View style={commonStyle.dashboardSection}><NotificationsTab /></View>;
         default: 
             return <AllSettingsTab />
     }
@@ -31,11 +36,22 @@ export default function settingsPage() {
 function LanguageTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    
+    const language = useLanguage();
+    const userData = useUserData();
+
+    const languages = Object.keys(translations).map(locale=>({locale, name: i18n.t(`languages.${locale}`)}));
 
     return (
-        <View>
+        <View style={commonStyle.dashboardSection}>
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.language.stack.title")}} />
-            <Text style={commonStyle.text}>Language</Text>
+            <Text style={commonStyle.headerText}>{i18n.t("profile.settings.language.header.text")}</Text>
+            <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, language: v}})}} value={userData.data.settings?.language ?? "system"}>
+                <RadioButton.Item label={i18n.t("profile.settings.language.system.text")} value="system" labelStyle={commonStyle.text} />
+                {languages.map((l, i)=>
+                    <RadioButton.Item key={i} label={l.name} value={l.locale} labelStyle={commonStyle.text} />
+                )}
+            </RadioButton.Group>
         </View>
     )
 }
@@ -43,11 +59,44 @@ function LanguageTab() {
 function NotificationsTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const modalStyle = createStyling.createModalStyles(theme);
+
+    const accountData = useAccountData();
+    const userData = useUserData();
+    const alert = useAlert();
+    const [loading, setLoading] = useState(false);
+
+    const notificationsEnabled = (userData.data.pushtokens ?? []).find((token: string) => token === accountData.data.pushToken) !== undefined;
+    console.log(userData.data.pushtokens, accountData.data.pushToken);
 
     return (
-        <View>
+        <View style={commonStyle.dashboardSection}>
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.notifications.stack.title")}} />
-            <Text style={commonStyle.text}>Notifications</Text>
+            <Text style={commonStyle.headerText}>Notifications</Text>
+            <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
+                <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.settings.notifications.switch")}</Text>
+                {loading ? <ActivityIndicator size="small" /> : (
+                    <Switch value={notificationsEnabled} onValueChange={(value)=>{
+                        setLoading(true);
+                        if (value === true) turnOnNotifications({accountData, userData}).finally(()=>setLoading(false)).catch(e=>{
+                            alert.show({
+                                title: i18n.t("welcome.notifications.error.title"),
+                                message: i18n.t("welcome.notifications.error.description"),
+                                actions: [
+                                    {
+                                        title: i18n.t("welcome.notifications.error.ok"),
+                                        onPress: ()=>{
+                                            alert.hide();
+                                        }
+                                    }
+                                ]
+                            });
+                        });
+                        else turnOffNotifications({accountData, userData}).finally(()=>setLoading(false))
+                    }}/>
+                )}
+            </View>
+            <Text style={[commonStyle.card, commonStyle.text]}>{i18n.t("profile.settings.notifications.description")}</Text>
         </View>
     )
 }
@@ -86,12 +135,12 @@ function AllSettingsTab() {
                 { title: i18n.t("profile.settings.general.appearance.title"), description: i18n.t("profile.settings.general.appearance.description"), onPress: () => {
                     router.push("/profile/settings/appearance");
                 } },
-                // { title: {i18n.t("profile.settings.general.language.title")}, onPress: () => {
-                //     router.push("/profile/settings/language");
-                // } },
-                // { title: i18n.t("profile.settings.general.notifications.title"), description: i18n.t("profile.settings.general.notifications.description"), onPress: () => {
-                //     router.push("/profile/settings/notifications");
-                // } },
+                { title: i18n.t("profile.settings.general.language.title"), description: i18n.t("profile.settings.general.language.description"), onPress: () => {
+                    router.push("/profile/settings/language");
+                } },
+                { title: i18n.t("profile.settings.general.notifications.title"), description: i18n.t("profile.settings.general.notifications.description"), onPress: () => {
+                    router.push("/profile/settings/notifications");
+                } },
             ]} noItemsText={i18n.t("profile.settings.general.noitems.text")} />
             <DashboardItem title={i18n.t("profile.settings.data.title")} items={[
                 { title: i18n.t("profile.settings.data.clear.title"), description: i18n.t("profile.settings.data.clear.description"), onPress: () => {

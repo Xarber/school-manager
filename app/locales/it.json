@@ -1,4 +1,8 @@
 {
+    "languages": {
+        "en": "Inglese",
+        "it": "Italiano"
+    },
     "components": {
         "calendar": {
             "localeconfig": {
@@ -16,9 +20,38 @@
                     "Novembre",
                     "Dicembre"
                 ],
-                "monthNamesShort": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
-                "dayNames": ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
-                "dayNamesShort": ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"],
+                "monthNamesShort": [
+                    "Gen",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "Mag",
+                    "Giu",
+                    "Lug",
+                    "Ago",
+                    "Set",
+                    "Ott",
+                    "Nov",
+                    "Dic"
+                ],
+                "dayNames": [
+                    "Domenica",
+                    "Lunedì",
+                    "Martedì",
+                    "Mercoledì",
+                    "Giovedì",
+                    "Venerdì",
+                    "Sabato"
+                ],
+                "dayNamesShort": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mer",
+                    "Gio",
+                    "Ven",
+                    "Sab"
+                ],
                 "today": "Oggi"
             }
         },
@@ -164,6 +197,7 @@
             "title": "Vuoi stare al passo?",
             "description": "Vuoi attivare le notifiche?",
             "next": "Continua",
+            "skip": "Non ora",
             "error": {
                 "title": "Errore",
                 "description": "Impossibile attivare le notifiche.\nPuoi riprovare più tardi nelle impostazioni.",
@@ -545,7 +579,8 @@
             "title": "Calendario"
         },
         "homework": {
-            "title": "Compiti"
+            "title": "Compiti",
+            "due": "Scadenza: {{date}} alle {{time}}"
         },
         "lessons": {
             "title": "Lezioni"
@@ -817,12 +852,20 @@
             "language": {
                 "stack": {
                     "title": "Lingua"
+                },
+                "header": {
+                    "text": "Lingua dell'app"
+                },
+                "system": {
+                    "text": "Sistema"
                 }
             },
             "notifications": {
                 "stack": {
                     "title": "Notifiche"
-                }
+                },
+                "description": "School Manager usa le notifiche per tenerti aggiornato riguardo gli ultimi cambiamenti nelle tue classi.\n\nNon ti manderemo spam, perciò non preoccuparti.\n\nÈ consigliato attivare le notifiche per ricevere aggiornamenti riguardo verifiche e compiti.",
+                "switch": "Attiva le notifiche"
             },
             "appearance": {
                 "stack": {

@@ -6,7 +6,8 @@ import {
     TextInput,
     ScrollView,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Platform
 } from "react-native";
 import { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "expo-router";
@@ -17,7 +18,7 @@ import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 
-import { registerForPushNotificationsAsync } from "@/data/notifications";
+import { registerForPushNotificationsAsync, turnOnNotifications } from "@/data/notifications";
 import { KeyboardShift } from "@/components/keyboardShift";
 import { useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";
@@ -25,6 +26,7 @@ import { useUserData } from "@/data/UserDataContext";
 import { useAccountData } from "@/data/AccountDataContext";
 
 import welcomeImage from "@/assets/images/welcome.png";
+import { isDevice } from "expo-device";
 
 function StartPage() {
     const router = useRouter();
@@ -237,6 +239,7 @@ function NotificationsPage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const accountData = useAccountData();
+    const userData = useUserData();
 
     const alert = useAlert();
 
@@ -244,6 +247,7 @@ function NotificationsPage() {
         <View
             style={welcomeStyles.container}
         >
+            {(!isDevice || Platform.OS === "web") && <Redirect href="/welcome/complete" />}
             <View style={welcomeStyles.topView}>
                 <Image source={welcomeImage} style={welcomeStyles.topViewImage} />
             </View>
@@ -258,10 +262,9 @@ function NotificationsPage() {
             <View style={welcomeStyles.actions}>
                 <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => {
                     // Ask for notifications permission
-                    registerForPushNotificationsAsync().then(token => {
-                        accountData.save({...accountData.data, pushToken: token});
-                        return router.replace("/welcome/complete");
-                    }).catch(e=>{
+                    turnOnNotifications({accountData, userData}).then((status)=>{
+                        if (status === true) return router.push("/welcome/complete");
+                    }).catch((err) => {
                         alert.show({
                             title: i18n.t("welcome.notifications.error.title"),
                             message: i18n.t("welcome.notifications.error.description"),
@@ -275,9 +278,12 @@ function NotificationsPage() {
                                 }
                             ]
                         });
-                    });
+                    })
                 }}>
                     <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.notifications.next")}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{...welcomeStyles.actionsButton, backgroundColor: theme.secondary}} onPress={() => router.replace("/welcome/complete")}>
+                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.notifications.skip")}</Text>
                 </TouchableOpacity>
             </View>
         </View>

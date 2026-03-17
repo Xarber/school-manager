@@ -3,12 +3,14 @@ import { View } from "react-native";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { useEffect, useState } from "react";
 import { useGlobalStore } from "@/data/store";
+import { useUserData } from "@/data/UserDataContext";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function welcomeScreen() {
     const [isReady, setIsReady] = useState(false);
     const [debugDataSaved, setDebugDataSaved] = useState(false);
+    const userData = useUserData();
     let appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
 
     useEffect(() => {  
@@ -25,11 +27,11 @@ export default function welcomeScreen() {
     }, [appDebugData.loading]);
 
     useEffect(() => {  
-        if (!appDebugData.loading && debugDataSaved) {
+        if (!appDebugData.loading && !userData.loading && debugDataSaved) {
             setIsReady(true);  
             SplashScreen.hideAsync();  // Hide native splash  
         }
-    }, [appDebugData.loading, debugDataSaved]);  
+    }, [(!appDebugData.loading && !userData.loading), debugDataSaved]);  
     
     // appDebugData.data.firstLaunch = true; // Temporarily hide setup screen
 
