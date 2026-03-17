@@ -67,7 +67,6 @@ function NotificationsTab() {
     const [loading, setLoading] = useState(false);
 
     const notificationsEnabled = (userData.data.pushtokens ?? []).find((token: string) => token === accountData.data.pushToken) !== undefined;
-    console.log(userData.data.pushtokens, accountData.data.pushToken);
 
     return (
         <View style={commonStyle.dashboardSection}>

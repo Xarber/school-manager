@@ -528,7 +528,10 @@
             "title": "Home"
         },
         "tomorrow": {
-            "title": "Tomorrow"
+            "title": "Tomorrow",
+            "exam": "Exam",
+            "lesson": "Lesson",
+            "homework": "Homework"
         },
         "upcoming": {
             "title": "Upcoming Exams"

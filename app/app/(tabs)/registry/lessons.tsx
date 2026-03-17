@@ -9,6 +9,7 @@ import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
 import DashboardItem from '@/components/dashboardItem';
 import { useUserData } from '@/data/UserDataContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
     let dateIndex = {};
@@ -40,6 +41,9 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
         classid: classid,
         populate: ["subjects"]
@@ -65,7 +69,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
 
     const lessons = regroupLessonsByDate(lessonData.data) as any[];
 
-    return (classData.loading) ? ( 
+    return (classData.loading && !refreshing) ? ( 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" />
         </View>
@@ -75,7 +79,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
             </View>
         ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={reload} />
             }>
                 <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.header.text", {class: classData.data.name})}</Text>

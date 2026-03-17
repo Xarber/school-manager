@@ -10,6 +10,7 @@ import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { Stack } from "expo-router";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function RegistryTab() {
     const theme = useTheme();
@@ -18,13 +19,16 @@ export default function RegistryTab() {
     const RegistryStyle = createStyling.createRegistryStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     const userData = useUserData();
     let registryPageData = {grades: userData.data.grades};
     
     return (
         <>
             <Stack.Screen options={{ headerTitle: i18n.t("registry.stack.title") }} />
-            <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]}>
+            <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom}} stickyHeaderIndices={[0]}>
                 <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                     <Text style={HomeScreenStyle.welcomeText}>{i18n.t("registry.customheader.title")}</Text>
                 </BlurView>

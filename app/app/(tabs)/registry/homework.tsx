@@ -10,6 +10,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { ActivityIndicator } from 'react-native';
 import { useCallback, useState } from 'react';
 import { useUserData } from '@/data/UserDataContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -83,10 +84,9 @@ function renderHomework(homework: HomeworkData[], classData: ClassData) {
     ) : null;
 }
 
-function HomeworkComponent({mode, userData, classid, classData, reload, homeworkData}: {mode: 'all' | 'completed' | 'missed', classData: ClassData, userData: UserData, classid: string, reload: Function, homeworkData: any}) {
+function HomeworkComponent({mode, userData, classid, classData, reload, refreshing, homeworkData}: {mode: 'all' | 'completed' | 'missed', classData: ClassData, userData: UserData, classid: string, refreshing: boolean, reload: Function, homeworkData: any}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
-    const [refreshing, setRefreshing] = useState(false);
     const datePoolLength = 5;
     const datePool = [];
     for (let i = 0; i < datePoolLength; i++) {
@@ -99,6 +99,9 @@ function HomeworkComponent({mode, userData, classid, classData, reload, homework
             year: "numeric",
         }));
     }
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
     
     const allClassHomework = regroupHomework(homeworkData || []);
     
@@ -112,7 +115,7 @@ function HomeworkComponent({mode, userData, classid, classData, reload, homework
         if (mode === "all") return true;
         // Filter user's completedhomework {classid, subjectid, homeworkid}, and check if the homework item has those same properties
         if (mode === "completed") {
-            const completedhomework = userData.completedhomework.filter((homeworkid: String) => {
+            const completedhomework = userData.completedhomework.filter((homeworkid: any) => {
                 return homeworkid === item._id;
             });
             if (completedhomework.length > 0) return true;
@@ -133,7 +136,7 @@ function HomeworkComponent({mode, userData, classid, classData, reload, homework
                 <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
             </View>
         ) : (
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={(reload as any)} />
             }>
                 {renderHomework(filteredItems, classData)}
@@ -173,18 +176,18 @@ function HomeworkTab({userData}: {userData: UserData}) {
     )
 
     function AllHomework() {
-        return <HomeworkComponent mode="all" userData={userData} classData={classData.data} reload={reload} homeworkData={homeworkData.data} classid={classid} />
+        return <HomeworkComponent mode="all" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData.data} classid={classid} />
     }
 
     function CompletedHomework() {
-        return <HomeworkComponent mode="completed" userData={userData} classData={classData.data} reload={reload} homeworkData={homeworkData.data} classid={classid} />
+        return <HomeworkComponent mode="completed" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData.data} classid={classid} />
     }
 
     function MissedHomework() {
-        return <HomeworkComponent mode="missed" userData={userData} classData={classData.data} reload={reload} homeworkData={homeworkData.data} classid={classid} />
+        return <HomeworkComponent mode="missed" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData.data} classid={classid} />
     }
 
-    if (classData.loading || homeworkData.loading) return (
+    if ((classData.loading || homeworkData.loading) && !refreshing) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator />
         </View>

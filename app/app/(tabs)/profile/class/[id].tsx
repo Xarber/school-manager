@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import { Icon, Link, Stack, useFocusEffect } from "expo-router";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
@@ -10,12 +10,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import ActionButtons from "@/components/actionButtons";
 import i18n from "@/constants/i18n";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useUserData } from "@/data/UserDataContext";
 
 function AllClassList() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const [refreshing, setRefreshing] = useState(false);
     const router = useRouter();
     const insets = useSafeAreaInsets();
 
@@ -27,11 +28,14 @@ function AllClassList() {
         }});
     }
 
+    const reload = async () => {
+        setRefreshing(true);
+        await Promise.all([userData.load()]);
+        setRefreshing(false);
+    };
+
     useFocusEffect(
         useCallback(() => {
-            const reload = async () => {
-                await Promise.all([userData.load()]);
-            };
             reload();
         }, [])
     );
@@ -55,14 +59,16 @@ function AllClassList() {
         classes.unshift(item);
     }
 
-    return userData.loading ? 
+    return (userData.loading && !refreshing) ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" />
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+            }>
                 <DashboardItem title={i18n.t("profile.class.header.title")} items={classes} />
             </ScrollView>
             <ActionButtons items={[
@@ -89,6 +95,7 @@ function AllClassList() {
 function Class(props: { classId: string }) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const [refreshing, setRefreshing] = useState(false);
     const router = useRouter();
     const classId = props.classId;
 
@@ -100,89 +107,97 @@ function Class(props: { classId: string }) {
         classid: classId
     });
 
+    const reload = async () => {
+        setRefreshing(true);
+        await Promise.all([userData.load()]);
+        await Promise.all([classData.load()]);
+        setRefreshing(false);
+    };
+
     useFocusEffect(
         useCallback(() => {
-            const reload = async () => {
-                await Promise.all([userData.load()]);
-                await Promise.all([classData.load()]);
-            };
             reload();
         }, [])
     );
 
-    return classData.loading ? 
+    return (userData.loading || classData.loading && !refreshing) ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" />
         </View>
     ) : (
-        <View style={commonStyle.dashboardSection}>
-            {/* CLASS INFO */}
-            <View style={{...commonStyle.card, gap: 10}}>
-                <View>
-                    <Text style={commonStyle.headerText}>{classData.data.name}</Text>
-                    <Text style={commonStyle.text}>{classData.data.notes.join("\n")}</Text>
+        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={reload} />
+        }>
+            <View style={commonStyle.dashboardSection}>
+                {/* CLASS INFO */}
+                <View style={{...commonStyle.card, gap: 10}}>
+                    <View>
+                        <Text style={commonStyle.headerText}>{classData.data.name}</Text>
+                        <Text style={commonStyle.text}>{classData.data.notes.join("\n")}</Text>
+                    </View>
+                    <View style={{display: "flex", flexDirection: "row", gap: 10}}>
+                        <TouchableOpacity disabled={userData.loading} onPress={() => {
+                            userData.save({...userData.data, settings: {...userData.data.settings, activeClassId: classId}});
+                        }} style={{...commonStyle.button, flexGrow: 1, backgroundColor: isActiveClass ? "#7d7d7d7d" : theme.primary}}>
+                            {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.buttonText}>{isActiveClass ? i18n.t("profile.class.active.title") : i18n.t("profile.class.active.set.title")}</Text>}
+                        </TouchableOpacity>
+                        {classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid) && (
+                            <Link href={{ pathname: "/modal/invitation/create" as any, params: { for: "class", targetid: classId, name: classData.data.name }}} style={{...commonStyle.button}}>
+                                {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : (
+                                    <View style={commonStyle.listUserElement}>
+                                        <Ionicons style={commonStyle.listUserElementIcon} name="person-add" size={30} color={theme.text} key="icon" />
+                                        <Text style={[commonStyle.text, commonStyle.listUserElementText, { fontWeight: "normal"}]}>{i18n.t("profile.class.invite.text")}</Text>
+                                    </View>
+                                )}
+                            </Link>
+                        )}
+                    </View>
                 </View>
-                <View style={{display: "flex", flexDirection: "row", gap: 10}}>
-                    <TouchableOpacity disabled={userData.loading} onPress={() => {
-                        userData.save({...userData.data, settings: {...userData.data.settings, activeClassId: classId}});
-                    }} style={{...commonStyle.button, flexGrow: 1, backgroundColor: isActiveClass ? "#7d7d7d7d" : theme.primary}}>
-                        {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.buttonText}>{isActiveClass ? i18n.t("profile.class.active.title") : i18n.t("profile.class.active.set.title")}</Text>}
-                    </TouchableOpacity>
-                    {classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid) && (
-                        <Link href={{ pathname: "/modal/invitation/create" as any, params: { for: "class", targetid: classId, name: classData.data.name }}} style={{...commonStyle.button}}>
-                            {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : (
-                                <View style={commonStyle.listUserElement}>
-                                    <Ionicons style={commonStyle.listUserElementIcon} name="person-add" size={30} color={theme.text} key="icon" />
-                                    <Text style={[commonStyle.text, commonStyle.listUserElementText, { fontWeight: "normal"}]}>{i18n.t("profile.class.invite.text")}</Text>
+                {/* CLASS SUBJECTS */}
+                <View style={{...commonStyle.card, gap: 10}}>
+                    <DashboardItem title={i18n.t("profile.class.subjects.header.title")} items={[]} collapsed={true} expand={()=>{
+                        router.push({ pathname: `/profile/class/${classId}` as any, params: { page: "subjects" } });
+                    }} />
+                </View>
+                {/* CLASS USERS */}
+                <View style={{gap: 10}}>
+                    {/* CLASS TEACHERS */}
+                    <View style={{...commonStyle.card, gap: 10}}>
+                        <Text style={commonStyle.headerText}>{i18n.t("profile.class.users.teachers.title")}</Text>
+                        <View style={{...commonStyle.card, gap: 10}}>
+                            {classData.data.teachers.length === 0 && <Text style={commonStyle.text}>{i18n.t("profile.class.users.teachers.noteachers.text")}</Text>}
+                            {classData.data.teachers.map((teacher: UserInfo) => (
+                                <View key={teacher.userid} style={commonStyle.listUserElement}>
+                                    <Ionicons style={commonStyle.listUserElementIcon} name="id-card" size={30} color={theme.text} />
+                                    <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{teacher.name} {teacher.surname}</Text>
                                 </View>
-                            )}
-                        </Link>
-                    )}
-                </View>
-            </View>
-            {/* CLASS SUBJECTS */}
-            <View style={{...commonStyle.card, gap: 10}}>
-                <DashboardItem title={i18n.t("profile.class.subjects.header.title")} items={[]} collapsed={true} expand={()=>{
-                    router.push({ pathname: `/profile/class/${classId}` as any, params: { page: "subjects" } });
-                }} />
-            </View>
-            {/* CLASS USERS */}
-            <View style={{gap: 10}}>
-                {/* CLASS TEACHERS */}
-                <View style={{...commonStyle.card, gap: 10}}>
-                    <Text style={commonStyle.headerText}>{i18n.t("profile.class.users.teachers.title")}</Text>
-                    <View style={{...commonStyle.card, gap: 10}}>
-                        {classData.data.teachers.length === 0 && <Text style={commonStyle.text}>{i18n.t("profile.class.users.teachers.noteachers.text")}</Text>}
-                        {classData.data.teachers.map((teacher: UserInfo) => (
-                            <View key={teacher.userid} style={commonStyle.listUserElement}>
-                                <Ionicons style={commonStyle.listUserElementIcon} name="id-card" size={30} color={theme.text} />
-                                <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{teacher.name} {teacher.surname}</Text>
-                            </View>
-                        ))}
+                            ))}
+                        </View>
                     </View>
-                </View>
-                {/* CLASS STUDENTS */}
-                <View style={{...commonStyle.card, gap: 10}}>
-                    <Text style={commonStyle.headerText}>{i18n.t("profile.class.users.students.title")}</Text>
+                    {/* CLASS STUDENTS */}
                     <View style={{...commonStyle.card, gap: 10}}>
-                        {classData.data.students.length === 0 && <Text style={commonStyle.text}>{i18n.t("profile.class.users.students.nostudents.text")}</Text>}
-                        {classData.data.students.map((student: UserInfo) => (
-                            <View key={student.userid} style={commonStyle.listUserElement}>
-                                <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
-                                <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{student.name} {student.surname}</Text>
-                            </View>
-                        ))}
+                        <Text style={commonStyle.headerText}>{i18n.t("profile.class.users.students.title")}</Text>
+                        <View style={{...commonStyle.card, gap: 10}}>
+                            {classData.data.students.length === 0 && <Text style={commonStyle.text}>{i18n.t("profile.class.users.students.nostudents.text")}</Text>}
+                            {classData.data.students.map((student: UserInfo) => (
+                                <View key={student.userid} style={commonStyle.listUserElement}>
+                                    <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
+                                    <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{student.name} {student.surname}</Text>
+                                </View>
+                            ))}
+                        </View>
                     </View>
                 </View>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
 function AllClassSubjects() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const [refreshing, setRefreshing] = useState(false);
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const params = useLocalSearchParams();
@@ -194,12 +209,15 @@ function AllClassSubjects() {
         classid: classId
     });
 
+    const reload = async () => {
+        setRefreshing(true);
+        await Promise.all([userData.load()]);
+        await Promise.all([classData.load()]);
+        setRefreshing(false);
+    };
+
     useFocusEffect(
         useCallback(() => {
-            const reload = async () => {
-                await Promise.all([userData.load()]);
-                await Promise.all([classData.load()]);
-            };
             reload();
         }, [])
     );
@@ -225,14 +243,16 @@ function AllClassSubjects() {
         }
     }) : [];
 
-    return (classData.loading || userData.loading) ? 
+    return ((classData.loading || userData.loading) && !refreshing) ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" />
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+            }>
                 <DashboardItem title={i18n.t("profile.class.subjects.all.header.title", {class: classData.data.name})} items={subjects} />
             </ScrollView>
             <ActionButtons items={[

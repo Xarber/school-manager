@@ -67,12 +67,13 @@ function RestorePage() {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const accountData = useAccountData();
+    
+    const reload = async () => {
+        await Promise.all([accountData.load()]);
+    };
 
     useFocusEffect(
         useCallback(() => {
-            const reload = async () => {
-                await Promise.all([accountData.load()]);
-            };
             reload();
         }, [])
     );

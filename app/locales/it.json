@@ -557,7 +557,10 @@
             "title": "Home"
         },
         "tomorrow": {
-            "title": "Domani"
+            "title": "Domani",
+            "exam": "Verifica",
+            "lesson": "Lezione",
+            "homework": "Compito"
         },
         "upcoming": {
             "title": "Prossime verifiche"

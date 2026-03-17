@@ -67,7 +67,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
 
     let comunications: ComunicationData[] = classData.data.comunications;
 
-    return (classData.loading) ? ( 
+    return (classData.loading && !refreshing) ? ( 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" />
         </View>

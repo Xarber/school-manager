@@ -12,7 +12,7 @@ import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
 import { regroupLessonsByDate } from '../registry/lessons';
 import { regroupHomework, stringToColor } from '../registry/homework';
-import FindToday from '@/components/findToday';
+import findToday from '@/components/findToday';
 import { UserData } from '@/data/datamanager';
 import { useLanguage } from '@/constants/LanguageContext';
 
@@ -54,14 +54,15 @@ export function LoadExamsForDate(date: string, exams: any) {
 }
 
 export function FilterExamsDate(days: number, exams: any) {
-    const today = new Date();
-    const maxDate = new Date();
-    maxDate.setDate(today.getDate() + days);
+    const now = Date.now();
+    const maxDiff = days * 24 * 60 * 60 * 1000;
 
     const filtered = exams
         .filter((e: any) => {
-            const date = new Date(e[0]);
-            return date >= today && date <= maxDate;
+            if (e[1].length === 0) return false;
+            const examTime = new Date(e[0]).getTime();
+            const diff = examTime - now;
+            return diff >= 0 && diff <= maxDiff;
         })
         .flatMap((e: any) => e[1] ?? []);
 
@@ -188,66 +189,74 @@ function CalendarComponent({userData}: {userData: UserData}) {
     return (
         <>
             <Stack.Screen options={{ headerTitle: i18n.t("calendar.stack.title") }} />
-            <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={reload} />
-            }>
-                <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
-                    <Text style={HomeScreenStyle.welcomeText}>{i18n.t("calendar.customheader.title")}</Text>
-                </BlurView>
-                <View style={{ flex: 1, backgroundColor: theme.background }}>
-                    <Calendar
-                        markingType="multi-dot"
-                        key={`${theme.type}-${language.locale}`}
-                        hideExtraDays={true}
-                        firstDay={1}
-                        
-                        theme={calendarTheme}
+            {
+                ((classData.loading || lessonData.loading || homeworkData.loading) && !refreshing) ? (
+                    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                        <ActivityIndicator size="small" />
+                    </View>
+                ) : (
+                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={reload} />
+                    }>
+                        <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
+                            <Text style={HomeScreenStyle.welcomeText}>{i18n.t("calendar.customheader.title")}</Text>
+                        </BlurView>
+                        <View style={{ flex: 1, backgroundColor: theme.background }}>
+                            <Calendar
+                                markingType="multi-dot"
+                                key={`${theme.type}-${language.locale}`}
+                                hideExtraDays={true}
+                                firstDay={1}
+                                
+                                theme={calendarTheme}
 
-                        onDayPress={(day) => setSelectedDate(day.dateString)}
-                        markedDates={markedDates}
-                    />
-                </View>
-                <View style={HomeScreenStyle.dashboard}>
-                    <DashboardItem title={FindToday(selectedDate)} items={[]} collapsed={true} noItemsText='' />
-                    {/* todo */}
-                    <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.homework.title")} items={LoadHomeworkForDate(selectedDate, calendarPageData.homework).map((e: any)=>{
-                        return {
-                            title: e.title,
-                            description: e.description,
-                            badge: {
-                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
-                                color: stringToColor(e.subjectid)
-                            },
-                            onPress: () => {}
-                        };
-                    })} />
-                    {/* todo */}
-                    <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.lessons.title")} items={LoadLessonsForDate(selectedDate, calendarPageData.lessons).map((e: any)=>{
-                        return {
-                            title: e.title,
-                            description: e.description,
-                            badge: {
-                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
-                                color: stringToColor(e.subjectid)
-                            },
-                            onPress: () => {}
-                        };
-                    })} />
-                    {/* todo */}
-                    <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.exams.title")} items={LoadExamsForDate(selectedDate, calendarPageData.exams).map((e: any)=>{
-                        return {
-                            title: e.title,
-                            subtitle: e.scheduled ? i18n.t("calendar.exams.scheduled") : undefined,
-                            description: e.description,
-                            badge: {
-                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
-                                color: stringToColor(e.subjectid)
-                            },
-                            onPress: () => {}
-                        };
-                    })} />
-                </View>
-            </ScrollView>
+                                onDayPress={(day) => setSelectedDate(day.dateString)}
+                                markedDates={markedDates}
+                            />
+                        </View>
+                        <View style={HomeScreenStyle.dashboard}>
+                            <DashboardItem title={findToday(selectedDate)} items={[]} collapsed={true} noItemsText='' />
+                            {/* todo */}
+                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.homework.title")} items={LoadHomeworkForDate(selectedDate, calendarPageData.homework).map((e: any)=>{
+                                return {
+                                    title: e.title,
+                                    description: e.description,
+                                    badge: {
+                                        text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                        color: stringToColor(e.subjectid)
+                                    },
+                                    onPress: () => {}
+                                };
+                            })} />
+                            {/* todo */}
+                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.lessons.title")} items={LoadLessonsForDate(selectedDate, calendarPageData.lessons).map((e: any)=>{
+                                return {
+                                    title: e.title,
+                                    description: e.description,
+                                    badge: {
+                                        text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                        color: stringToColor(e.subjectid)
+                                    },
+                                    onPress: () => {}
+                                };
+                            })} />
+                            {/* todo */}
+                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.exams.title")} items={LoadExamsForDate(selectedDate, calendarPageData.exams).map((e: any)=>{
+                                return {
+                                    title: e.title,
+                                    subtitle: e.scheduled ? i18n.t("calendar.exams.scheduled") : undefined,
+                                    description: e.description,
+                                    badge: {
+                                        text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                        color: stringToColor(e.subjectid)
+                                    },
+                                    onPress: () => {}
+                                };
+                            })} />
+                        </View>
+                    </ScrollView>
+                )
+            }
         </>
     );
 }
