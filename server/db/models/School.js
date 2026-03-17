@@ -17,6 +17,7 @@ const SchoolSchema = new Schema({
     banner: {type: String, required: false},
 
     comunications: [{type: Schema.Types.ObjectId, ref: 'Comunication'}],
+    material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
     classes: [{type: Schema.Types.ObjectId, ref: 'Class'}],
     students: [{type: Schema.Types.ObjectId, ref: 'UserInfo'}],
     teachers: [{type: Schema.Types.ObjectId, ref: 'UserInfo'}],

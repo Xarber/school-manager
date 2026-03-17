@@ -32,7 +32,7 @@ router.post(paths.dbGet, async (req, res) => {
     res.json({ success: true, data: classInfo });
   } catch (error) {
     console.error('Get class error:', error);
-    res.status(500).json({ error: 'Failed to get class' });
+    res.status(500).json({ error: 'Failed to get class', dbError: error });
   }
 });
 
@@ -47,7 +47,7 @@ router.post(paths.dbCreate, async (req, res) => {
     const userData = await UserData.findOne({ _id: user.userdata_id });
     if (!userData) return res.status(404).json({ error: 'User data not found' });
 
-    const userInfo = await UserInfo.findOne({ _id: userData.userInfo });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create classes' });
 
@@ -87,7 +87,7 @@ router.post(paths.dbCreate, async (req, res) => {
     res.json({ success: true, data: newClass._id });
   } catch (error) {
     console.error('Create class error:', error);
-    res.status(500).json({ error: 'Failed to create class' });
+    res.status(500).json({ error: 'Failed to create class', dbError: error });
   }
 });
 
@@ -98,9 +98,9 @@ router.post(paths.dbDelete, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID required' });  
 
-    const userData = await UserData.findOne({ _id: user.userdata_id });
-    if (!userData) return res.status(404).json({ error: 'User data not found' });
-    if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete classes' });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
+    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete classes' });
 
     const classInfo = await Class.findOne({ _id: classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
@@ -112,38 +112,38 @@ router.post(paths.dbDelete, async (req, res) => {
     res.json({ success: true });    
   } catch (error) {
     console.error('Delete class error:', error);
-    res.status(500).json({ error: 'Failed to delete class' });
+    res.status(500).json({ error: 'Failed to delete class', dbError: error });
   }
 });
 
 router.post(paths.dbUpdate, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
-    const { classid, name, schedule, notes } = req.body;
+    const { classid,  } = req.body;
     if (!user) return res.status(401).json({ error: 'User authentication required' });
     if (!classid) return res.status(400).json({ error: 'Class ID required' });
 
-    const userData = await UserData.findOne({ _id: user.userdata_id });
-    if (!userData) return res.status(404).json({ error: 'User data not found' });
-    if (userData.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update classes' });
+    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
+    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update classes' });
 
     const classInfo = await Class.findOne({ _id: classid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can update classes' });
 
     // Update class (replace with actual Class model)
-    const updateData = {};
-    if (name) updateData.name = name;
-    if (schedule) updateData.schedule = schedule;
-    if (notes) updateData.notes = notes;
-    updateData.editedAt = Date.now();
+    const { name, schedule, notes } = req.body;
+    if (name) classInfo.name = name;
+    if (schedule) classInfo.schedule = schedule;
+    if (notes) classInfo.notes = notes;
+    classInfo.editedAt = Date.now();
 
-    await Class.updateOne({ _id: classid }, { $set: updateData });
+    await classInfo.save();
 
     res.json({ success: true });
   } catch (error) {
     console.error('Update class error:', error);
-    res.status(500).json({ error: 'Failed to update class' });
+    res.status(500).json({ error: 'Failed to update class', dbError: error });
   }
 });
 

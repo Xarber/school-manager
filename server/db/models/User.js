@@ -5,8 +5,9 @@ const UserInfoSchema = new Schema({
     userid: {type: String, required: true, unique: true},
     name: {type: String, required: true, maxlength: [30, "Name cannot exceed 30 characters"]},
     surname: {type: String, required: true, maxlength: [40, "Surname cannot exceed 40 characters"]},
+    parentemail: [{type: String, required: false}],
     email: {type: String, required: true, unique: true},
-    role: {type: String, required: false, enum: ['student', 'teacher'], default: 'student'},
+    role: {type: String, required: false, enum: ['student', 'teacher', 'admin'], default: 'student'},
     addedAt: {type: String, required: true},
     editedAt: {type: Number, required: true},
 });
@@ -26,13 +27,13 @@ const UserSettingsSchema = new Schema({
 });
 
 const UserDataSchema = new Schema({
-    userid: {type: String, required: true, unique: true},
+    userid: {type: String, required: true, unique: true}, // only in auth
     name: {type: String, required: false, default: "User", maxlength: [70, "Full name cannot exceed 70 characters"]},
-    birthday: {type: String, required: false, default: ""},
+    birthday: {type: String, required: false, default: ""}, // unused
     userInfo: {type: Schema.Types.ObjectId, ref: 'UserInfo'},
     settings: {type: UserSettingsSchema, required: true},
     classes: [{type: Schema.Types.ObjectId, ref: 'Class'}],
-    grades: [{type: Schema.Types.ObjectId, ref: 'Grade'}],
+    grades: [{type: Schema.Types.ObjectId, ref: 'Grade'}], // unused
     completedhomework: [{type: Schema.Types.ObjectId, ref: 'Homework'}],
     pushtokens: [{type: String, required: false}],
     addedAt: {type: String, required: true},

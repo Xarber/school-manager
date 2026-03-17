@@ -6,6 +6,7 @@ const SubjectSchema = new Schema({
     teacher: [{type: Schema.Types.ObjectId, ref: 'UserInfo', required: true}],
     maxgrade: {type: Number, required: true},
     gradeType: {type: String, required: false, enum: ['letter', 'percentage', 'points'], default: 'percentage'},
+    allowOwnGrades: {type: Boolean, required: false, default: false},
     homework: [{type: Schema.Types.ObjectId, ref: 'Homework'}],
     lessons: [{type: Schema.Types.ObjectId, ref: 'Lesson'}],
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],

@@ -35,7 +35,7 @@ router.post(paths.dbGet, async (req, res) => {
         }
     } catch (error) {
         console.error('Get invitation error:', error);
-        res.status(500).json({ error: 'Failed to get invitation' });
+        res.status(500).json({ error: 'Failed to get invitation', dbError: error });
     }
 });
 
@@ -77,7 +77,7 @@ router.post(paths.dbCreate, async (req, res) => {
         res.json({ success: true, data: code });
     } catch (error) {
         console.error('Create invitation error:', error);
-        res.status(500).json({ error: 'Failed to create invitation' });
+        res.status(500).json({ error: 'Failed to create invitation', dbError: error });
     }
 });
 
@@ -103,7 +103,7 @@ router.post(paths.dbDelete, async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Delete invitation error:', error);
-        res.status(500).json({ error: 'Failed to delete invitation' });
+        res.status(500).json({ error: 'Failed to delete invitation', dbError: error });
     }
 });
 
@@ -151,7 +151,7 @@ router.post(paths.dbUpdate, async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Use invitation error:', error);
-        res.status(500).json({ error: 'Failed to use invitation' });
+        res.status(500).json({ error: 'Failed to use invitation', dbError: error });
     }
 });
 
