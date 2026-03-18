@@ -197,7 +197,7 @@ function NewLesson() {
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.isexam.title")}</Text>
                                     <Switch value={isExam} onValueChange={value => setIsExam(value)}/>
                                 </View>
-                                <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
+                                <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between", display: isExam ? "flex" : "none"}]}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.lesson.create.isscheduled.title")}</Text>
                                     <Switch value={isScheduled} onValueChange={value => setIsScheduled(value)}/>
                                 </View>
@@ -215,7 +215,7 @@ function NewLesson() {
                                 isExam: isExam,
                                 classid: classId,
                                 subjectid: subjectId,
-                                isScheduled,
+                                isScheduled: isScheduled && isExam,
                                 setLoading,
                                 create: lessonData.create,
                                 alert

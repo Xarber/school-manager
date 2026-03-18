@@ -425,6 +425,9 @@
                 "requiresconfirmation": {
                     "title": "Requires confirmation?"
                 },
+                "confirmationmessage": {
+                    "title": "Requires a message?"
+                },
                 "datetime": {
                     "title": "Date & Time",
                     "description": "{{date}} at {{time}}"

@@ -454,6 +454,9 @@
                 "requiresconfirmation": {
                     "title": "Richiede conferma?"
                 },
+                "confirmationmessage": {
+                    "title": "Richiede un messaggio?"
+                },
                 "datetime": {
                     "title": "Data e ora",
                     "description": "{{date}} alle {{time}}"

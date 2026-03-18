@@ -155,7 +155,7 @@ function AppLockTab() {
                             {persistLoading ? <ActivityIndicator size="small" color={theme.text} /> : (
                                 <Switch value={appLockPersist} onValueChange={(value)=>{
                                     setPersistLoading(true);
-                                    setRestartRequired(true);
+                                    //setRestartRequired(true);
                                     userData.save({...userData.data, settings: {...userData.data.settings, appLockPersist: value}}).finally(()=>{setPersistLoading(false)});
                                 }}/>
                             )}
