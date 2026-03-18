@@ -114,7 +114,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                     },
                     display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false
                 }
-            ]} align="right" styles={{ borderRadius: 360 }} />
+            ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </View>
     );
 }

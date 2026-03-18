@@ -22,7 +22,7 @@ function AppLayout() {
 
   return (
     <ThemeProvider value={navTheme}>
-        <StatusBar style={theme.type} />
+        <StatusBar style={theme.type === "dark" ? "light" : "dark"} />
         <SyncBootstrap />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.background } }} />
     </ThemeProvider>
