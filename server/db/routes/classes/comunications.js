@@ -57,7 +57,7 @@ router.post(paths.dbCreate, async (req, res) => {
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
     if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create comunications' });
 
-    const { title, content, date, time, urgency, requiresConfirmation } = req.body;
+    const { title, content, date, time, urgency, requiresConfirmation, confirmationType } = req.body;
     if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
     const { subjectid } = req.body;
 
@@ -71,6 +71,7 @@ router.post(paths.dbCreate, async (req, res) => {
       time: time || undefined,
       urgency: urgency || 'low',
       requiresConfirmation: requiresConfirmation || false,
+      confirmationType: confirmationType || "accept",
       sender: userInfo._id,
       addedAt: new Date().toISOString(),
       editedAt: Date.now(),

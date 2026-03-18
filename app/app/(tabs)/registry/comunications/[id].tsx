@@ -46,8 +46,11 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                         {(comunication.confirmationType ?? "accept") === "accept" && (
                             <ActionButtons containerStyles={{
                                 position: undefined,
-                                bottom: undefined
-                            }} itemStyles={{borderRadius: 360}} items={[
+                                flex: 1,
+                                bottom: undefined,
+                                left: undefined,
+                                right: undefined
+                            }} itemStyles={{borderRadius: 360, flex: 1}} items={[
                                 {
                                     title: i18n.t("registry.comunications.reply.accept"),
                                     styles: {
@@ -104,6 +107,9 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
         populate: ["comunications"]
     });
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     const reload = async () => {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
@@ -129,7 +135,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
             </View>
         ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
             }>
                 <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text>

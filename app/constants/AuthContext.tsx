@@ -54,9 +54,8 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
     // 👉 re-auth quando app torna foreground
     useEffect(() => {
         const sub = AppState.addEventListener("change", (state) => {
-            if (!isAppLockPersistOn) return;
             if (state === "active") {
-                // authenticate();
+                // if (!isAuthenticated) authenticate();
             } else if (state === "background") {
                 // opzionale: blocca sempre quando esci
                 if (isAppLockPersistOn) lock();
@@ -64,11 +63,33 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
         });
 
         return () => sub.remove();
-    }, []);
+    }, [isAuthenticated, isAppLockPersistOn]);
 
     return (
         <AppLockContext.Provider value={{ firstUnlock, setFirstUnlock, isAuthenticated, setIsAuthenticated, authenticate, lock }}>
-            {isAuthenticated ? children : <AppLockScreen authenticate={authenticate} isAuthenticated={isAuthenticated} />}
+            <View style={{ flex: 1 }}>
+                <View
+                    style={{ flex: 1, opacity: isAuthenticated ? 1 : 0 }}
+                    pointerEvents={isAuthenticated ? "auto" : "none"}
+                >
+                    {children}
+                </View>
+
+                {!isAuthenticated && (
+                    <View
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 9998,
+                        }}
+                    >
+                        <AppLockScreen authenticate={authenticate} isAuthenticated={isAuthenticated} />
+                    </View>
+                )}
+            </View>
         </AppLockContext.Provider>
     );
 }

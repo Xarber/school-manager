@@ -26,6 +26,7 @@ interface updateComunicationProps {
     time: string;
     urgency: "low" | "medium" | "high";
     requiresConfirmation: boolean;
+    confirmationType: "accept" | "message";
     setLoading: (loading: boolean) => void;
     create: (data: Object) => Promise<any>;
     alert: {
@@ -34,7 +35,7 @@ interface updateComunicationProps {
     }
 }
 
-async function updateComunication({action, classid, title, content, date, time, urgency, requiresConfirmation, setLoading, create, alert}: updateComunicationProps) {
+async function updateComunication({action, classid, title, content, date, time, urgency, requiresConfirmation, confirmationType, setLoading, create, alert}: updateComunicationProps) {
     setLoading(true);
     switch (action) {
         case "create":
@@ -45,7 +46,8 @@ async function updateComunication({action, classid, title, content, date, time, 
                 date,
                 time,
                 urgency,
-                requiresConfirmation
+                requiresConfirmation,
+                confirmationType
             }).then(data => {
                 alert.show({title: i18n.t("modal.comunication.create.success.title"), message: i18n.t("modal.comunication.create.success.description"), actions: [
                     {
@@ -75,6 +77,7 @@ function NewComunication() {
     const [date, setDate] = useState(new Date());
     const [urgency, setUrgency] = useState("low" as "low" | "medium" | "high");
     const [requiresConfirmation, setRequiresConfirmation] = useState(false);
+    const [confirmationMessage, setConfirmationMessage] = useState(false);
     const [comunicationDescription, setComunicationDescription] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
@@ -187,6 +190,10 @@ function NewComunication() {
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.requiresconfirmation.title")}</Text>
                                     <Switch value={requiresConfirmation} onValueChange={setRequiresConfirmation} />
                                 </View>
+                                <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between", display: requiresConfirmation ? "flex" : "none"}]}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.confirmationmessage.title")}</Text>
+                                    <Switch value={confirmationMessage} onValueChange={setConfirmationMessage} />
+                                </View>
                             </View>
                         </View>
                     </ScrollView>
@@ -201,6 +208,7 @@ function NewComunication() {
                                 time: date.toISOString().split("T")[1],
                                 urgency,
                                 requiresConfirmation,
+                                confirmationType: confirmationMessage ? "message" : "accept",
                                 setLoading,
                                 create: comunicationData.create,
                                 alert
