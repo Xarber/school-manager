@@ -51,7 +51,7 @@ export default function ActionButtons({ items, align, containerStyles, itemStyle
                         itemStyles,
                         e.styles
                     ]} onPress={e.onPress}>
-                    {e.buffering ? <ActivityIndicator size="small" color="white" /> : null}
+                    {e.buffering ? <ActivityIndicator size="small" color={theme.text} /> : null}
                     {!e.buffering && <Ionicons name={e.iconName} size={e.iconSize ?? 30} color={theme.text}></Ionicons>}
                     {!e.buffering && (e.title && <Text style={{ color: theme.text, fontSize: 12, paddingRight: 10 }}>{e.title}</Text>)}
                 </TouchableOpacity>

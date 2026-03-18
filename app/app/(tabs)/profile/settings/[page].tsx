@@ -16,6 +16,8 @@ import { useAccountData } from "@/data/AccountDataContext";
 import { turnOffNotifications, turnOnNotifications } from "@/data/notifications";
 import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { themeList } from "@/constants/colors";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function settingsPage() {
     const params = useLocalSearchParams();
@@ -25,11 +27,13 @@ export default function settingsPage() {
 
     switch (action) {
         case "appearance": 
-            return <View style={commonStyle.dashboardSection}><AppearanceTab /></View>;
+            return <View style={[commonStyle.dashboardSection, {flex: 1}]}><AppearanceTab /></View>;
         case "language":
-            return <View style={commonStyle.dashboardSection}><LanguageTab /></View>;
+            return <View style={[commonStyle.dashboardSection, {flex: 1}]}><LanguageTab /></View>;
         case "notifications":
-            return <View style={commonStyle.dashboardSection}><NotificationsTab /></View>;
+            return <View style={[commonStyle.dashboardSection, {flex: 1}]}><NotificationsTab /></View>;
+        case "applock":
+            return <View style={[commonStyle.dashboardSection, {flex: 1}]}><AppLockTab /></View>;
         default: 
             return <AllSettingsTab />
     }
@@ -85,7 +89,7 @@ function NotificationsTab() {
                 <Text style={commonStyle.headerText}>Notifications</Text>
                 <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.settings.notifications.switch")}</Text>
-                    {loading ? <ActivityIndicator size="small" /> : (
+                    {loading ? <ActivityIndicator size="small" color={theme.text} /> : (
                         <Switch value={notificationsEnabled} onValueChange={(value)=>{
                             setLoading(true);
                             if (value === true) turnOnNotifications({accountData, userData}).finally(()=>setLoading(false)).catch(e=>{
@@ -112,6 +116,66 @@ function NotificationsTab() {
     )
 }
 
+function AppLockTab() {
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+    const modalStyle = createStyling.createModalStyles(theme);
+
+    const accountData = useAccountData();
+    const userData = useUserData();
+    const alert = useAlert();
+    const [loading, setLoading] = useState(false);
+    const [persistLoading, setPersistLoading] = useState(false);
+    const [restartRequired, setRestartRequired] = useState(false);
+
+    const appLockEnabled = userData.data.settings?.appLock ?? false;
+    const appLockPersist = userData.data.settings?.appLockPersist ?? false;
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
+    return (
+        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+            <View style={commonStyle.dashboardSection}>
+                <Stack.Screen options={{headerTitle: i18n.t("profile.settings.applock.stack.title")}} />
+                <Text style={commonStyle.headerText}>App Lock</Text>
+                <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
+                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.settings.applock.switch")}</Text>
+                    {loading ? <ActivityIndicator size="small" color={theme.text} /> : (
+                        <Switch value={appLockEnabled} onValueChange={(value)=>{
+                            setLoading(true);
+                            userData.save({...userData.data, settings: {...userData.data.settings, appLock: value}}).finally(()=>{setLoading(false)});
+                        }}/>
+                    )}
+                </View>
+                {
+                    appLockEnabled && (
+                        <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
+                            <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.settings.applock.persistswitch")}</Text>
+                            {persistLoading ? <ActivityIndicator size="small" color={theme.text} /> : (
+                                <Switch value={appLockPersist} onValueChange={(value)=>{
+                                    setPersistLoading(true);
+                                    setRestartRequired(true);
+                                    userData.save({...userData.data, settings: {...userData.data.settings, appLockPersist: value}}).finally(()=>{setPersistLoading(false)});
+                                }}/>
+                            )}
+                        </View>
+                    )
+                }
+                <Text style={[commonStyle.card, commonStyle.text]}>{i18n.t("profile.settings.applock.description")}</Text>
+                {restartRequired && (
+                    <View style={modalStyle.cardWarn}>
+                        <View style={modalStyle.cardWarnIcon}>
+                            <Ionicons name="warning-outline" size={30} color={theme.text} />
+                        </View>
+                        <Text style={modalStyle.cardWarnText}>{i18n.t("profile.settings.restartrequired")}</Text>
+                    </View>
+                )}
+            </View>
+        </ScrollView>
+    )
+}
+
 function AppearanceTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
@@ -120,16 +184,32 @@ function AppearanceTab() {
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
+    let themes = themeList.all;
+    const hiddenthemes = themeList.hidden;
+    const specialthemes = themeList.special;
+
+    let contrastPaletteValues = Object.values(theme.contrastPalette);
+    let contrastColor = contrastPaletteValues[Math.floor(Math.random() * contrastPaletteValues.length)];
+
+    if (!themes.includes(userData.data.settings.theme) && !hiddenthemes.includes(userData.data.settings.theme) && !specialthemes.includes(userData.data.settings.theme)) userData.save({...userData.data, settings: {...userData.data.settings, theme: "system"}});
+    else if (hiddenthemes.includes(userData.data.settings.theme)) return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+            <ActivityIndicator size="small" color={contrastColor} />
+        </View>
+    )
+
     return (
         <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
             <View style={commonStyle.dashboardSection}>
                 <Stack.Screen options={{headerTitle: i18n.t("profile.settings.appearance.stack.title")}} />
                 <Text style={commonStyle.headerText}>{i18n.t("profile.settings.appearance.header.text")}</Text>
                 <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, theme: v}})}} value={userData.data.settings.theme}>
-                    <RadioButton.Item style={{ display: "flex" }} label={i18n.t("profile.settings.appearance.system.text")} value="system" labelStyle={commonStyle.text} />
-                    <RadioButton.Item style={{ display: "flex" }} label={i18n.t("profile.settings.appearance.light.text")} value="light" labelStyle={commonStyle.text} />
-                    <RadioButton.Item style={{ display: "flex" }} label={i18n.t("profile.settings.appearance.dark.text")} value="dark" labelStyle={commonStyle.text} />
-                    <RadioButton.Item style={{ display: "none" }} label={i18n.t("profile.settings.appearance.schoolmanager.text")} value="schoolmanager" labelStyle={commonStyle.text} />
+                    {themes.map((t, i)=>
+                        <RadioButton.Item key={t} style={{ display: "flex" }} label={i18n.t(`profile.settings.appearance.${t}.text`)} value={t} labelStyle={commonStyle.text} />
+                    )}
+                    {specialthemes.map((t, i)=>t === userData.data.settings.theme &&
+                        <RadioButton.Item key={t} style={{ display: "flex" }} label={i18n.t(`profile.settings.appearance.${t}.text`)} value={t} labelStyle={commonStyle.text} />
+                    )}
                 </RadioButton.Group>
             </View>
         </ScrollView>
@@ -152,6 +232,9 @@ function AllSettingsTab() {
                 <DashboardItem title={i18n.t("profile.settings.general.title")} items={[
                     { title: i18n.t("profile.settings.general.profile.title"), description: i18n.t("profile.settings.general.profile.description"), onPress: () => {
                         router.push("/profile/profiledata");
+                    } },
+                    { title: i18n.t("profile.settings.general.applock.title"), description: i18n.t("profile.settings.general.applock.description"), onPress: () => {
+                        router.push("/profile/settings/applock");
                     } },
                     { title: i18n.t("profile.settings.general.appearance.title"), description: i18n.t("profile.settings.general.appearance.description"), onPress: () => {
                         router.push("/profile/settings/appearance");

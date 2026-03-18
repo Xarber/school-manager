@@ -4,6 +4,14 @@
         "it": "Italian"
     },
     "components": {
+        "applock": {
+            "unlock": "Unlock app",
+            "fallback": "Try another way",
+            "screen": {
+                "locked": "Locked",
+                "unlock": "Unlock"
+            }
+        },
         "calendar": {
             "localeconfig": {
                 "monthNames": [
@@ -791,6 +799,7 @@
             }
         },
         "settings": {
+            "restartrequired": "App restart is required to apply changes.",
             "stack": {
                 "title": "Settings",
                 "stacktitle": "Settings"
@@ -812,6 +821,10 @@
                 "notifications": {
                     "title": "Notifications",
                     "description": "Manage your notifications"
+                },
+                "applock": {
+                    "title": "App Lock",
+                    "description": "Secure your app"
                 },
                 "noitems": {
                     "text": "Settings"
@@ -849,6 +862,14 @@
                 "description": "School Manager uses notifications to keep you posted about the latest changes in your classes.\n\nWe won't send you spam, so don't worry about it.\n\nIt is reccomended to keep notifications for exams and homework updates.",
                 "switch": "Enable Notifications"
             },
+            "applock": {
+                "stack": {
+                    "title": "App Lock"
+                },
+                "description": "You can decide to lock the app with your biometric data.\nThis is managed by your system, and passcode access may be allowed as a backup method.\nYou won't be able to access the app without unlocking it first.\nIf you enable 'Always reauthenticate', you will be asked to reauthenticate every time the app is opened.",
+                "switch": "Enable App Lock",
+                "persistswitch": "Always reauthenticate"
+            },
             "appearance": {
                 "stack": {
                     "title": "Appearance"
@@ -867,6 +888,12 @@
                 },
                 "schoolmanager": {
                     "text": "App Gradient"
+                },
+                "rainbow": {
+                    "text": "RAINBOW!!"
+                },
+                "exams": {
+                    "text": "Exams"
                 }
             }
         },

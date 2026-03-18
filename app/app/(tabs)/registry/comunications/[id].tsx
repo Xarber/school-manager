@@ -31,7 +31,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     return classData.loading ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     ) : !!comunication ? (
         <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
@@ -121,7 +121,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
 
     return (classData.loading && !refreshing) ? ( 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     ) : (classid == "") ? (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -130,7 +130,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
         ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+                <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
             }>
                 <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text>
                 <View>
@@ -172,7 +172,7 @@ export default function ComunicationsTab() {
 
     if (userData.loading) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     );
 

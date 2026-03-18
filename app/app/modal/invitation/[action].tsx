@@ -107,7 +107,7 @@ function NewInvitation() {
                             <Text style={commonStyle.headerText}>{targetName}</Text>
                             {
                                 userData.loading ? 
-                                <ActivityIndicator size="small" color={theme.primary} /> :
+                                <ActivityIndicator size="small" color={theme.text} /> :
                                 <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.invited.text", {user: userData.data.name, target: i18n.t("modal.invitation.types." + targetType)})}</Text>
                             }
                             <Text style={commonStyle.text}>{i18n.t("modal.invitation.create.createdate", {date: new Date().toDateString()})}</Text>
@@ -135,7 +135,7 @@ function NewInvitation() {
                             create: inviteData.create
                         })} style={[modalStyle.bottomActionButton]}>
                             {loading 
-                                ? <ActivityIndicator size="small" color="white" />
+                                ? <ActivityIndicator size="small" color={theme.text} />
                                 : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.invitation.create.confirm")}</Text>
                             }
                         </TouchableOpacity>
@@ -200,7 +200,7 @@ function ReadInvitation() {
             <View style={modalStyle.cardDetails}>
                 {
                     inviteData.loading ? 
-                    <ActivityIndicator size="small" color={theme.primary} /> : (
+                    <ActivityIndicator size="small" color={theme.text} /> : (
                         <>
                             <Text style={commonStyle.headerText}>{inviteData.data.name}</Text>
                             <Text style={commonStyle.text}>{i18n.t("modal.invitation.read.title", {author: `${inviteData.data.author?.name} ${inviteData.data.author?.surname}`, type: i18n.t("modal.invitation.types." + inviteData.data.for)})}</Text>
@@ -216,7 +216,7 @@ function ReadInvitation() {
                     router.dismissAll();
                 })
             })} style={modalStyle.bottomActionButton}>
-                {inviteData.loading ? <ActivityIndicator size="small" color={theme.primary} /> : <Text style={commonStyle.text}>{i18n.t("modal.invitation.read.accept")}</Text>}
+                {inviteData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.text}>{i18n.t("modal.invitation.read.accept")}</Text>}
             </TouchableOpacity>
         </View>
 

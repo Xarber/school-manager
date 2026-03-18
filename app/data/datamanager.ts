@@ -86,6 +86,8 @@ const defaultUserSettings = {
     notifications: false as boolean,
     language: 'en' as string,
     activeClassId: '' as string,
+    appLock: false as boolean,
+    appLockPersist: false as boolean,
     calendarSync: {
         enabled: false as boolean,
         homework: false as boolean,
@@ -544,7 +546,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
 console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(__DEV__ && !isProductionBinary) ? "true" : "false"}\n`);
 export const DataManager = {
     db: {
-        connect: (__DEV__ && !isProductionBinary && !isWeb) ? "http://10.100.19.45:3000" : 'https://schoolmanager-api.xcenter.it',
+        connect: (__DEV__ && !isProductionBinary && !isWeb) ? "http://192.168.1.168:3000" : 'https://schoolmanager-api.xcenter.it',
         update: "/update",
         create: "/add",
         delete: "/delete",

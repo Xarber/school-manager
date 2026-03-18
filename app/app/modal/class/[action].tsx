@@ -82,7 +82,7 @@ function NewClass() {
                             <Text style={commonStyle.headerText}>{className || i18n.t("modal.class.create.name.default")}</Text>
                             {
                                 userData.loading ? 
-                                <ActivityIndicator size="small" color={theme.primary} /> :
+                                <ActivityIndicator size="small" color={theme.text} /> :
                                 <Text style={commonStyle.text}>{i18n.t("modal.class.create.teacher.text", {teacher: userData.data.name})}</Text>
                             }
                             <Text style={commonStyle.text}>{i18n.t("modal.class.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
@@ -112,7 +112,7 @@ function NewClass() {
                             alert
                         })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
                             {loading 
-                                ? <ActivityIndicator size="small" />
+                                ? <ActivityIndicator size="small" color={theme.text} />
                                 : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.class.create.confirm")}</Text>
                             }
                         </TouchableOpacity>

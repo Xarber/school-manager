@@ -31,7 +31,7 @@ export default function TabLayout() {
         colors={theme.appThemeGradient.colors}
         start={theme.appThemeGradient.start}
         end={theme.appThemeGradient.end}
-        style={{ flex: 1, opacity: theme.appThemeGradient.opacity }}
+        style={{ flex: 1, opacity: theme.appThemeGradient.opacity ?? 1 }}
     >
       <BlurView style={{ flex: 1 }} intensity={60} tint={theme.type}>
         <SafeAreaView
