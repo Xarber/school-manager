@@ -1,19 +1,25 @@
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import { DataManager, ComunicationData, SubjectData, useAppDataSync, UserInfo, UserData } from '@/data/datamanager';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
 import DashboardItem from '@/components/dashboardItem';
 import { useUserData } from '@/data/UserDataContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ComunicationTab({classid, comunicationid}: {classid: string, comunicationid: string}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const modalStyle = createStyling.createModalStyles(theme);
     const id = comunicationid;
+    const [reply, setReply] = useState("");
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
         classid: classid,
@@ -28,12 +34,58 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
             <ActivityIndicator size="small" />
         </View>
     ) : !!comunication ? (
-        <View style={[commonStyle.dashboardSection]}>
-            <Text style={commonStyle.headerText}>{comunication.title}</Text>
-            <View style={[commonStyle.card]}>
-                <Text style={[commonStyle.text, { fontSize: 15 }]}>{comunication.content}</Text>
+        <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+            <Stack.Screen options={{ headerTitle: comunication.title }} />
+            <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
+                <Text style={commonStyle.headerText}>{comunication.title}</Text>
+                <View style={[commonStyle.card]}>
+                    <Text style={[commonStyle.text, { fontSize: 15 }]}>{comunication.content}</Text>
+                </View>
+                {comunication.requiresConfirmation == true && (
+                    <View>
+                        {(comunication.confirmationType ?? "accept") === "accept" && (
+                            <ActionButtons containerStyles={{
+                                position: undefined,
+                                bottom: undefined
+                            }} itemStyles={{borderRadius: 360}} items={[
+                                {
+                                    title: i18n.t("registry.comunications.reply.accept"),
+                                    styles: {
+                                        backgroundColor: theme.primary
+                                    },
+                                    iconName: "checkmark",
+                                    onPress: () => {
+
+                                    }
+                                }, {
+                                    title: i18n.t("registry.comunications.reply.reject"),
+                                    styles: {
+                                        backgroundColor: theme.caution
+                                    },
+                                    iconName: "ban",
+                                    onPress: () => {
+
+                                    }
+                                }
+                            ]} />
+                        )}
+                        {(comunication.confirmationType ?? "accept") === "message" && (
+                            <View style={[modalStyle.cardEdit]}>
+                                <View style={modalStyle.cardEditField}>
+                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("registry.comunications.reply.message")}</Text>
+                                    <TextInput maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
+                                </View>
+                                <TouchableOpacity style={commonStyle.wideButton} onPress={() => {
+
+                                }}>
+                                    <Text style={commonStyle.buttonText}>{i18n.t("registry.comunications.reply.send")}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </View>
+                )}
             </View>
-        </View>
+        </ScrollView>
     ) : (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.notfound.text")}</Text>
@@ -104,7 +156,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                     },
                     display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false
                 }
-            ]} align="right" styles={{ borderRadius: 360 }} />
+            ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </View>
     );
 }
@@ -112,6 +164,8 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
 export default function ComunicationsTab() {
     const params = useLocalSearchParams();
     const id = params.id;
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
 
     const userData = useUserData();
     const activeClassId = userData.data.settings.activeClassId;
@@ -126,6 +180,6 @@ export default function ComunicationsTab() {
         case 'all': 
             return <AllComunications classid={activeClassId} userData={userData.data} />;
         default:
-            return <ComunicationTab classid={activeClassId} comunicationid={id as string}/>
+            return <View style={[commonStyle.dashboardSection, { flex: 1 }]}><ComunicationTab classid={activeClassId} comunicationid={id as string}/></View>
     }
 }
