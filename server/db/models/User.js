@@ -13,7 +13,7 @@ const UserInfoSchema = new Schema({
 });
 
 const UserSettingsSchema = new Schema({
-    theme: {type: String, required: false, enum: ['light', 'dark', 'system'], default: 'system'},
+    theme: {type: String, required: false, enum: ['light', 'dark', 'schoolmanager', 'system'], default: 'system'},
     notifications: {type: Boolean, required: false, default: false},
     language: {type: String, required: false, default: 'en'},
     activeClassId: {type: String, required: false, default: ''},

@@ -71,6 +71,8 @@ cd ./server/ && node .
 * ✔️ Setting for notification handling
 * ✔️ Server updates for other components
 * ✔️ Revise server code, check permissions (minor milestone)
+* ✔️ Tomorrow page
+* ✔️ Tested complex app themes (alpha, only static colors will be allowed for now)
 
 </details>
 
@@ -98,6 +100,7 @@ cd ./server/ && node .
 * ✧ Request switching account to teacher in-app
 * ✧ In-app feedback and feature requests page
 * ✧ App animations (for alerts and custom made components)
+* ✧ System calendar integration
 * ✧ Get platform licenses (important milestone, publish to testflight and distribute beta apks)
 * ✧ Push notifications
 * ✧ Account token revocation

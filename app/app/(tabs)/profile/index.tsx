@@ -12,6 +12,7 @@ import Toast from "react-native-toast-message";
 import createToastConfig from "@/constants/toast";
 import i18n from "@/constants/i18n";
 import { useAccountData } from "@/data/AccountDataContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ProfileTab() {
     const theme = useTheme();
@@ -21,6 +22,9 @@ export default function ProfileTab() {
 
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, {populate: ["classes"]});
     const accountData = useAccountData();
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     if (userData.data.classes.length === 1 && userData.data.settings.activeClassId != (userData.data.classes[0]._id ?? userData.data.classes[0])) {
         userData.save({...userData.data, settings: {...userData.data.settings,
@@ -75,7 +79,7 @@ export default function ProfileTab() {
                         <ActivityIndicator size="small" />
                     </View>
                 ) : (
-                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} refreshControl={
+                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={reload}/>
                     }>
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>

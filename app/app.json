@@ -56,12 +56,22 @@
       "expo-web-browser",
       "expo-sqlite",
       "expo-background-task",
-      ["expo-localization", {
-        "supportedLocales": {
-          "ios": ["en", "it"],
-          "android": ["en", "it"]
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": [
+              "en",
+              "it"
+            ],
+            "android": [
+              "en",
+              "it"
+            ]
+          }
         }
-      }]
+      ],
+      "expo-llm-mediapipe"
     ],
     "experiments": {
       "typedRoutes": true,

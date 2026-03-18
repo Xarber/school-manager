@@ -15,6 +15,7 @@ import { regroupHomework, stringToColor } from '../registry/homework';
 import findToday from '@/components/findToday';
 import { UserData } from '@/data/datamanager';
 import { useLanguage } from '@/constants/LanguageContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function LoadHomeworkForDate(date: string, homework: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
@@ -82,6 +83,9 @@ function CalendarComponent({userData}: {userData: UserData}) {
     const commonStyle = createStyling.createCommonStyles(theme);
     const [refreshing, setRefreshing] = useState(false);
     const language = useLanguage();
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -195,7 +199,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                         <ActivityIndicator size="small" />
                     </View>
                 ) : (
-                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} refreshControl={
+                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom}} refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={reload} />
                     }>
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>

@@ -89,9 +89,11 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                     ) : null}
                     {lessons.map((e, i) => (
                         <DashboardItem key={e[0]} title={e[0]} items={e[1].map((e: any) => {
+                            let teacher = classData.data.teachers.find((t: UserInfo) => t._id == e.data.teacher) ?? {};
                             return {
                                 title: classData.data.subjects.find((s: SubjectData) => s._id == e.subjectid)?.name,
-                                description: `${e.data.description}\n\n${classData.data.teachers.find((t: UserInfo) => t._id == e.data.teacher)?.name}\n${new Date(`${e.data.date}T${e.data.time}`).toLocaleTimeString()}`,
+                                subtitle: `${teacher?.surname} ${teacher?.name}`,
+                                description: `${e.data.description}\n${new Date(`${e.data.date}T${e.data.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"})}`,
                             }
                         })} />
                     ))}

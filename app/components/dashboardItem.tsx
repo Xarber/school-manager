@@ -53,12 +53,14 @@ export default function DashboardItem(props: DashboardItemProps) {
                             <Pressable onPress={item.onPress} key={index} style={commonStyle.dashboardSectionItem}>
                                 {item.icon && <Image style={commonStyle.dashboardSectionItemIcon} source={item.icon} />}
                                 <View style={commonStyle.dashboardSectionItemContent}>
-                                    <View style={commonStyle.dashboardSectionItemTextContainer}>
-                                        <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemText}}>{item.title}</Text>
-                                        {item.subtitle && <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemText, ...commonStyle.dashboardSectionItemTextSubtitle}}>{item.subtitle}</Text>}
-                                        <Text style={commonStyle.text}>{item.description ?? i18n.t("components.dashboardItem.item.nodescription.text")}</Text>
+                                    <View style={commonStyle.dashboardSectionItemHeader}>
+                                        <View style={commonStyle.dashboardSectionItemTextContainer}>
+                                            <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemText}}>{item.title}</Text>
+                                            {item.subtitle && <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemText, ...commonStyle.dashboardSectionItemTextSubtitle}}>{item.subtitle}</Text>}
+                                        </View>
+                                        {item.badge && <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemBadge, backgroundColor: item.badge.color}}>{item.badge.text}</Text>}
                                     </View>
-                                    {item.badge && <Text style={{...commonStyle.text, ...commonStyle.dashboardSectionItemBadge, backgroundColor: item.badge.color}}>{item.badge.text}</Text>}
+                                    <Text style={commonStyle.text}>{item.description ?? i18n.t("components.dashboardItem.item.nodescription.text")}</Text>
                                 </View>
                             </Pressable>
                         );
