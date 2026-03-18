@@ -89,7 +89,7 @@ function AllClassList() {
                         router.push(`/modal/invitation/enter`);
                     },
                 }
-            ]} align="right" styles={{ borderRadius: 360 }} />
+            ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </View>
     );
 }
@@ -273,7 +273,7 @@ function AllClassSubjects() {
                     },
                     display: classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid),
                 }
-            ]} align="right" styles={{ borderRadius: 360 }} />
+            ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </View>
     );
 }

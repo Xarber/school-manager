@@ -102,7 +102,7 @@ export default function ProfileData() {
                     },
                     display: mode === "write",
                 },
-            ]} align="right" styles={{ borderRadius: 360 }} />
+            ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </View>
     );
 }
