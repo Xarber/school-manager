@@ -856,6 +856,9 @@
                 },
                 "dark": {
                     "text": "Dark"
+                },
+                "schoolmanager": {
+                    "text": "App Gradient"
                 }
             }
         },

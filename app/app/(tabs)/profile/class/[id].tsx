@@ -18,7 +18,9 @@ function AllClassList() {
     const commonStyle = createStyling.createCommonStyles(theme);
     const [refreshing, setRefreshing] = useState(false);
     const router = useRouter();
+
     const insets = useSafeAreaInsets();
+    if (insets.bottom == 0) insets.bottom = 20;
 
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, {populate: ["classes"]});
     
@@ -66,7 +68,7 @@ function AllClassList() {
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={reload} />
             }>
                 <DashboardItem title={i18n.t("profile.class.header.title")} items={classes} />
@@ -99,6 +101,9 @@ function Class(props: { classId: string }) {
     const router = useRouter();
     const classId = props.classId;
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     const userData = useUserData();
     let activeClass = userData.loading === false ? userData.data.settings.activeClassId : 0;
     let isActiveClass = activeClass === classId;
@@ -126,7 +131,7 @@ function Class(props: { classId: string }) {
             <ActivityIndicator size="small" />
         </View>
     ) : (
-        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={reload} />
         }>
             <View style={commonStyle.dashboardSection}>
@@ -203,6 +208,9 @@ function AllClassSubjects() {
     const params = useLocalSearchParams();
     const classId = params.id as string;
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     const userData = useUserData();
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
         populate: ["subjects"],
@@ -250,7 +258,7 @@ function AllClassSubjects() {
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} refreshControl={
+            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom}} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={reload} />
             }>
                 <DashboardItem title={i18n.t("profile.class.subjects.all.header.title", {class: classData.data.name})} items={subjects} />

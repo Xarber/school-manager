@@ -159,7 +159,7 @@ router.post(paths.dbUpdate, async (req, res) => {
 });
 
 // Custom routes for comunications
-router.post('/reply', async (req, res) => {
+router.post('/responses' + paths.dbCreate, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
     const { comunicationid } = req.body;
@@ -201,6 +201,14 @@ router.post('/reply', async (req, res) => {
     console.error('Reply to comunication error:', error);
     res.status(500).json({ error: 'Failed to reply to comunication', dbError: error });
   }
+});
+
+router.post('/responses' + paths.dbDelete, async (req, res) => {
+  return res.status(400).json({ error: 'Can\'t delete or update responses.' });
+});
+
+router.post('/responses' + paths.dbUpdate, async (req, res) => {
+  return res.status(400).json({ error: 'Can\'t delete or update responses.' });
 });
 
 module.exports = router;

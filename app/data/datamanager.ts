@@ -82,7 +82,7 @@ const defaultUserInfo = {
 export type UserInfo = typeof defaultUserInfo;
 
 const defaultUserSettings = {
-    theme: 'system' as 'light' | 'dark' | 'system',
+    theme: 'system' as 'light' | 'dark' | 'schoolmanager' | 'system',
     notifications: false as boolean,
     language: 'en' as string,
     activeClassId: '' as string,
@@ -216,7 +216,7 @@ const defaultLessonData = {
 };
 export type LessonData = typeof defaultLessonData;
 
-const defaultComunicationResponse = {
+const defaultComunicationResponseData = {
     _id: "" as string,
     user: "" as string | UserInfo, // _id rel
     state: false as boolean,
@@ -225,7 +225,7 @@ const defaultComunicationResponse = {
     addedAt: '' as string,
     editedAt: 0 as number
 };
-export type ComunicationResponse = typeof defaultComunicationResponse;
+export type ComunicationResponse = typeof defaultComunicationResponseData;
 
 const defaultComunicationData = {
     _id: "" as string,
@@ -546,7 +546,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
 console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(__DEV__ && !isProductionBinary) ? "true" : "false"}\n`);
 export const DataManager = {
     db: {
-        connect: (__DEV__ && !isProductionBinary && !isWeb) ? "http://192.168.1.168:3000" : 'https://schoolmanager-api.xcenter.it',
+        connect: (__DEV__ && !isProductionBinary && !isWeb) ? "http://10.100.19.45:3000" : 'https://schoolmanager-api.xcenter.it',
         update: "/update",
         create: "/add",
         delete: "/delete",
@@ -650,6 +650,11 @@ export const DataManager = {
         app: "@app:comunicationData",
         db: "/api/classes/comunications",
         default: defaultComunicationData
+    },
+    comunicationResponseData: {
+        app: "@app:comunicationResponseData",
+        db: "/api/classes/comunications/responses",
+        default: defaultComunicationResponseData
     },
     invitation: {
         app: null,

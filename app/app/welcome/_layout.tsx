@@ -3,20 +3,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/constants/useThemes";
 import { colors } from "@/constants/colors";
 import i18n from "@/constants/i18n";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function AccountLayout() {
     const theme = useTheme();
     return (
-        <SafeAreaView
-            style={{ flex: 1, backgroundColor: theme.background }}
-            edges={["top"]}
+        <LinearGradient
+            colors={theme.appThemeGradient.colors}
+            start={theme.appThemeGradient.start}
+            end={theme.appThemeGradient.end}
+            style={{ flex: 1, opacity: theme.appThemeGradient.opacity }}
         >
-                <Stack screenOptions={{ headerStyle: { 
-                    //backgroundColor: colors.light.surface.toString() 
-                } }}>
-                    <Stack.Screen name="[page]" options={{ title: i18n.t("welcome.stack.title"), headerBackVisible: false,headerShown: false,headerTransparent: true,headerTitle: "" }} />
-                    <Stack.Screen name="account/[action]" options={{ presentation: "modal", headerShown: true, title: i18n.t("welcome.account.stack.title"), headerStyle: { backgroundColor: "" } }} />
-                </Stack>
-        </SafeAreaView>
+            <BlurView style={{ flex: 1 }} intensity={60} tint={theme.type}>
+                <SafeAreaView
+                    style={{ flex: 1, backgroundColor: theme.background }}
+                    edges={["top"]}
+                >
+                    <Stack screenOptions={{ headerStyle: { backgroundColor: theme.surface.toString() }, contentStyle: { backgroundColor: "transparent" } }}>
+                        <Stack.Screen name="[page]" options={{ title: i18n.t("welcome.stack.title"), headerBackVisible: false,headerShown: false,headerTransparent: true,headerTitle: "" }} />
+                        <Stack.Screen name="account/[action]" options={{ presentation: "modal", headerShown: true, title: i18n.t("welcome.account.stack.title"), headerStyle: { backgroundColor: theme.opaqueBackground }, contentStyle: { backgroundColor: theme.opaqueBackground } }} />
+                    </Stack>
+                </SafeAreaView>
+            </BlurView>
+        </LinearGradient>
     );
 }

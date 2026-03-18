@@ -6,20 +6,25 @@ import { syncNow, ensureBackgroundSyncRegistered, startForegroundSync } from "@/
 import { useEffect } from "react";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { ThemeProvider as ContextThemeProvider, useThemeContext } from "@/constants/ThemeContext";
-import { Scheme } from "@/constants/colors";
+import { createNavigationTheme, Scheme } from "@/constants/colors";
 import { AlertProvider } from "@/components/alert/AlertContext";
 import { UserDataProvider } from "@/data/UserDataContext";
 import { AccountDataProvider } from "@/data/AccountDataContext";
 import { LanguageProvider } from "@/constants/LanguageContext";
+import { colors } from "@/constants/colors";
+import { useTheme } from "@/constants/useThemes";
+import { LinearGradient } from "expo-linear-gradient";
+import { BlurView } from "expo-blur";
 
 function AppLayout() {
-  const scheme: Scheme = useThemeContext();
+  const theme = useTheme();
+  const navTheme = createNavigationTheme(theme);
 
   return (
-    <ThemeProvider value={scheme === "dark" ? DarkTheme : DefaultTheme}>
-        <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+    <ThemeProvider value={navTheme}>
+        <StatusBar style={theme.type} />
         <SyncBootstrap />
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.background } }} />
     </ThemeProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Switch, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, Switch, ActivityIndicator, ScrollView } from "react-native";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
@@ -15,11 +15,15 @@ import { useLanguage } from "@/constants/LanguageContext";
 import { useAccountData } from "@/data/AccountDataContext";
 import { turnOffNotifications, turnOnNotifications } from "@/data/notifications";
 import { useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function settingsPage() {
     const params = useLocalSearchParams();
     const action = params.page as string;
-    const commonStyle = createStyling.createCommonStyles(useTheme());
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+
+    console.warn(JSON.stringify(commonStyle.dashboardSection, null, 2))
 
     switch (action) {
         case "appearance": 
@@ -42,17 +46,22 @@ function LanguageTab() {
 
     const languages = Object.keys(translations).map(locale=>({locale, name: i18n.t(`languages.${locale}`)}));
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     return (
-        <View style={commonStyle.dashboardSection}>
-            <Stack.Screen options={{headerTitle: i18n.t("profile.settings.language.stack.title")}} />
-            <Text style={commonStyle.headerText}>{i18n.t("profile.settings.language.header.text")}</Text>
-            <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, language: v}})}} value={userData.data.settings?.language ?? "system"}>
-                <RadioButton.Item label={i18n.t("profile.settings.language.system.text")} value="system" labelStyle={commonStyle.text} />
-                {languages.map((l, i)=>
-                    <RadioButton.Item key={i} label={l.name} value={l.locale} labelStyle={commonStyle.text} />
-                )}
-            </RadioButton.Group>
-        </View>
+        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+            <View style={commonStyle.dashboardSection}>
+                <Stack.Screen options={{headerTitle: i18n.t("profile.settings.language.stack.title")}} />
+                <Text style={commonStyle.headerText}>{i18n.t("profile.settings.language.header.text")}</Text>
+                <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, language: v}})}} value={userData.data.settings?.language ?? "system"}>
+                    <RadioButton.Item label={i18n.t("profile.settings.language.system.text")} value="system" labelStyle={commonStyle.text} />
+                    {languages.map((l, i)=>
+                        <RadioButton.Item key={i} label={l.name} value={l.locale} labelStyle={commonStyle.text} />
+                    )}
+                </RadioButton.Group>
+            </View>
+        </ScrollView>
     )
 }
 
@@ -68,35 +77,40 @@ function NotificationsTab() {
 
     const notificationsEnabled = (userData.data.pushtokens ?? []).find((token: string) => token === accountData.data.pushToken) !== undefined;
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     return (
-        <View style={commonStyle.dashboardSection}>
-            <Stack.Screen options={{headerTitle: i18n.t("profile.settings.notifications.stack.title")}} />
-            <Text style={commonStyle.headerText}>Notifications</Text>
-            <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
-                <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.settings.notifications.switch")}</Text>
-                {loading ? <ActivityIndicator size="small" /> : (
-                    <Switch value={notificationsEnabled} onValueChange={(value)=>{
-                        setLoading(true);
-                        if (value === true) turnOnNotifications({accountData, userData}).finally(()=>setLoading(false)).catch(e=>{
-                            alert.show({
-                                title: i18n.t("welcome.notifications.error.title"),
-                                message: i18n.t("welcome.notifications.error.description"),
-                                actions: [
-                                    {
-                                        title: i18n.t("welcome.notifications.error.ok"),
-                                        onPress: ()=>{
-                                            alert.hide();
+        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+            <View style={commonStyle.dashboardSection}>
+                <Stack.Screen options={{headerTitle: i18n.t("profile.settings.notifications.stack.title")}} />
+                <Text style={commonStyle.headerText}>Notifications</Text>
+                <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
+                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("profile.settings.notifications.switch")}</Text>
+                    {loading ? <ActivityIndicator size="small" /> : (
+                        <Switch value={notificationsEnabled} onValueChange={(value)=>{
+                            setLoading(true);
+                            if (value === true) turnOnNotifications({accountData, userData}).finally(()=>setLoading(false)).catch(e=>{
+                                alert.show({
+                                    title: i18n.t("welcome.notifications.error.title"),
+                                    message: i18n.t("welcome.notifications.error.description"),
+                                    actions: [
+                                        {
+                                            title: i18n.t("welcome.notifications.error.ok"),
+                                            onPress: ()=>{
+                                                alert.hide();
+                                            }
                                         }
-                                    }
-                                ]
+                                    ]
+                                });
                             });
-                        });
-                        else turnOffNotifications({accountData, userData}).finally(()=>setLoading(false))
-                    }}/>
-                )}
+                            else turnOffNotifications({accountData, userData}).finally(()=>setLoading(false))
+                        }}/>
+                    )}
+                </View>
+                <Text style={[commonStyle.card, commonStyle.text]}>{i18n.t("profile.settings.notifications.description")}</Text>
             </View>
-            <Text style={[commonStyle.card, commonStyle.text]}>{i18n.t("profile.settings.notifications.description")}</Text>
-        </View>
+        </ScrollView>
     )
 }
 
@@ -105,16 +119,22 @@ function AppearanceTab() {
     const commonStyle = createStyling.createCommonStyles(theme);
     const userData = useUserData();
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     return (
-        <View style={commonStyle.dashboardSection}>
-            <Stack.Screen options={{headerTitle: i18n.t("profile.settings.appearance.stack.title")}} />
-            <Text style={commonStyle.headerText}>{i18n.t("profile.settings.appearance.header.text")}</Text>
-            <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, theme: v}})}} value={userData.data.settings.theme}>
-                <RadioButton.Item label={i18n.t("profile.settings.appearance.system.text")} value="system" labelStyle={commonStyle.text} />
-                <RadioButton.Item label={i18n.t("profile.settings.appearance.light.text")} value="light" labelStyle={commonStyle.text} />
-                <RadioButton.Item label={i18n.t("profile.settings.appearance.dark.text")} value="dark" labelStyle={commonStyle.text} />
-            </RadioButton.Group>
-        </View>
+        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+            <View style={commonStyle.dashboardSection}>
+                <Stack.Screen options={{headerTitle: i18n.t("profile.settings.appearance.stack.title")}} />
+                <Text style={commonStyle.headerText}>{i18n.t("profile.settings.appearance.header.text")}</Text>
+                <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, theme: v}})}} value={userData.data.settings.theme}>
+                    <RadioButton.Item style={{ display: "flex" }} label={i18n.t("profile.settings.appearance.system.text")} value="system" labelStyle={commonStyle.text} />
+                    <RadioButton.Item style={{ display: "flex" }} label={i18n.t("profile.settings.appearance.light.text")} value="light" labelStyle={commonStyle.text} />
+                    <RadioButton.Item style={{ display: "flex" }} label={i18n.t("profile.settings.appearance.dark.text")} value="dark" labelStyle={commonStyle.text} />
+                    <RadioButton.Item style={{ display: "none" }} label={i18n.t("profile.settings.appearance.schoolmanager.text")} value="schoolmanager" labelStyle={commonStyle.text} />
+                </RadioButton.Group>
+            </View>
+        </ScrollView>
     )
 }
 
@@ -124,28 +144,33 @@ function AllSettingsTab() {
     const router = useRouter();
     const alert = useAlert();
 
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
     return (
-        <View style={commonStyle.dashboardSection}>
-            <Stack.Screen options={{headerTitle: i18n.t("profile.settings.stack.title")}} />
-            <DashboardItem title={i18n.t("profile.settings.general.title")} items={[
-                { title: i18n.t("profile.settings.general.profile.title"), description: i18n.t("profile.settings.general.profile.description"), onPress: () => {
-                    router.push("/profile/profiledata");
-                } },
-                { title: i18n.t("profile.settings.general.appearance.title"), description: i18n.t("profile.settings.general.appearance.description"), onPress: () => {
-                    router.push("/profile/settings/appearance");
-                } },
-                { title: i18n.t("profile.settings.general.language.title"), description: i18n.t("profile.settings.general.language.description"), onPress: () => {
-                    router.push("/profile/settings/language");
-                } },
-                { title: i18n.t("profile.settings.general.notifications.title"), description: i18n.t("profile.settings.general.notifications.description"), onPress: () => {
-                    router.push("/profile/settings/notifications");
-                } },
-            ]} noItemsText={i18n.t("profile.settings.general.noitems.text")} />
-            <DashboardItem title={i18n.t("profile.settings.data.title")} items={[
-                { title: i18n.t("profile.settings.data.clear.title"), description: i18n.t("profile.settings.data.clear.description"), onPress: () => {
-                    AsyncStorage.clear().then(()=>alert.show({title: i18n.t("profile.settings.data.clear.success.title"), message: i18n.t("profile.settings.data.clear.success.description")}));
-                } },
-            ]} noItemsText={i18n.t("profile.settings.data.noitems.text")} />
-        </View>
+        <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+            <View style={commonStyle.dashboardSection}>
+                <Stack.Screen options={{headerTitle: i18n.t("profile.settings.stack.title")}} />
+                <DashboardItem title={i18n.t("profile.settings.general.title")} items={[
+                    { title: i18n.t("profile.settings.general.profile.title"), description: i18n.t("profile.settings.general.profile.description"), onPress: () => {
+                        router.push("/profile/profiledata");
+                    } },
+                    { title: i18n.t("profile.settings.general.appearance.title"), description: i18n.t("profile.settings.general.appearance.description"), onPress: () => {
+                        router.push("/profile/settings/appearance");
+                    } },
+                    { title: i18n.t("profile.settings.general.language.title"), description: i18n.t("profile.settings.general.language.description"), onPress: () => {
+                        router.push("/profile/settings/language");
+                    } },
+                    { title: i18n.t("profile.settings.general.notifications.title"), description: i18n.t("profile.settings.general.notifications.description"), onPress: () => {
+                        router.push("/profile/settings/notifications");
+                    } },
+                ]} noItemsText={i18n.t("profile.settings.general.noitems.text")} />
+                <DashboardItem title={i18n.t("profile.settings.data.title")} items={[
+                    { title: i18n.t("profile.settings.data.clear.title"), description: i18n.t("profile.settings.data.clear.description"), onPress: () => {
+                        AsyncStorage.clear().then(()=>alert.show({title: i18n.t("profile.settings.data.clear.success.title"), message: i18n.t("profile.settings.data.clear.success.description")}));
+                    } },
+                ]} noItemsText={i18n.t("profile.settings.data.noitems.text")} />
+            </View>
+        </ScrollView>
     );
 }
