@@ -8,8 +8,6 @@ export type Scheme = 'light' | 'dark' | 'schoolmanager';
 export function createNavigationTheme(theme: Theme): NavTheme {
   const base = theme.type === "dark" ? DarkTheme : DefaultTheme;
 
-  console.warn(theme.background);
-
   return {
     ...base,
     colors: {

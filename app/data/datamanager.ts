@@ -377,11 +377,9 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
                 })
                 .then(async response => {
                     let responseData = await response.json() as any;
-                    //console.log(response, responseData);
                     if (response.ok) return responseData;
                     else throw new Error(responseData.error || response.statusText);
                 });
-                //console.log(response, dbkey + DataManager.db.update, newValue);
                 if (!response.success) throw new Error(response.error || response.message || 'Save failed');
             } else if (dbkey != null && !!userToken) {
                 // Save operation to outbox

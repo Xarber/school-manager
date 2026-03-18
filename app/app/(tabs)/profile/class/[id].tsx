@@ -134,6 +134,7 @@ function Class(props: { classId: string }) {
         <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={reload} />
         }>
+                <Stack.Screen options={{ headerTitle: classData.data.name }} />
             <View style={commonStyle.dashboardSection}>
                 {/* CLASS INFO */}
                 <View style={{...commonStyle.card, gap: 10}}>

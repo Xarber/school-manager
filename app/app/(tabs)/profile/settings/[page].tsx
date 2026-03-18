@@ -23,8 +23,6 @@ export default function settingsPage() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
 
-    console.warn(JSON.stringify(commonStyle.dashboardSection, null, 2))
-
     switch (action) {
         case "appearance": 
             return <View style={commonStyle.dashboardSection}><AppearanceTab /></View>;

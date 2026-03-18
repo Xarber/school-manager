@@ -692,6 +692,13 @@
             },
             "create": {
                 "title": "Crea"
+            },
+            "reply": {
+                "accept": "Accetta",
+                "reject": "Rifiuta",
+                "message": "Inserisci una risposta",
+                "messagePlaceholder": "La tua risposta",
+                "send": "Invia"
             }
         },
         "lessons": {
@@ -711,7 +718,8 @@
             },
             "create": {
                 "title": "Crea"
-            }
+            },
+            "exam": "Verifica"
         }
     },
     "profile": {

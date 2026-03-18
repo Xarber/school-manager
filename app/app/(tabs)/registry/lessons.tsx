@@ -90,11 +90,17 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                     {lessons.map((e, i) => (
                         <DashboardItem key={e[0]} title={e[0]} items={e[1].map((e: any) => {
                             let teacher = classData.data.teachers.find((t: UserInfo) => t._id == e.data.teacher) ?? {};
-                            return {
+                            let data = {
                                 title: classData.data.subjects.find((s: SubjectData) => s._id == e.subjectid)?.name,
                                 subtitle: `${teacher?.surname} ${teacher?.name}`,
                                 description: `${e.data.description}\n${new Date(`${e.data.date}T${e.data.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"})}`,
+                            } as any;
+                            if (e.data.isExam == true) data.badge = {
+                                text: i18n.t("registry.lessons.exam"),
+                                color: theme.caution
                             }
+                            if (e.data.scheduled == true) data.subtitle = `${i18n.t("calendar.exams.scheduled")}, ${data.subtitle}`;
+                            return data;
                         })} />
                     ))}
                 </View>

@@ -663,6 +663,13 @@
             },
             "create": {
                 "title": "Create"
+            },
+            "reply": {
+                "accept": "Accept",
+                "reject": "Reject",
+                "message": "Insert an answer",
+                "messagePlaceholder": "Your answer",
+                "send": "Send"
             }
         },
         "lessons": {
@@ -682,7 +689,8 @@
             },
             "create": {
                 "title": "Create"
-            }
+            },
+            "exam": "Exam"
         }
     },
     "profile": {

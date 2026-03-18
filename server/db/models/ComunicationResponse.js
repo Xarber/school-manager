@@ -3,7 +3,7 @@ const { Schema, model, models } = require("mongoose");
 const ComunicationResponseSchema = new Schema({
     user: {type: Schema.Types.ObjectId, ref: 'UserInfo', required: true},
     state: {type: Boolean, required: false},
-    message: {type: String, required: false},
+    message: {type: String, required: false, maxlength: [300, "Message cannot exceed 300 characters"]},
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
     addedAt: {type: String, required: true},
     editedAt: {type: Number, required: true},
