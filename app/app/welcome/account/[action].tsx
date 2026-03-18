@@ -182,7 +182,7 @@ function LoginPage({alert}: AccountProps) {
                     }
                 }}>
                     {loading ? (
-                        <ActivityIndicator size="small" />
+                        <ActivityIndicator size="small" color={theme.text} />
                     ) : (
                         <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.auth.continue")}</Text>
                     )}
@@ -259,7 +259,7 @@ function SignupPage({alert}: AccountProps) {
                     });
                 }}>
                     {loading ? (
-                        <ActivityIndicator size="small" />
+                        <ActivityIndicator size="small" color={theme.text} />
                     ) : (
                         <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.signup.continue")}</Text>
                     )}
@@ -290,7 +290,7 @@ function LoggedInPage({alert}: AccountProps) {
         >
             {userData.loading ? (
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                    <ActivityIndicator size="small" />
+                    <ActivityIndicator size="small" color={theme.text} />
                 </View>
             ) : (
                 <ScrollView 

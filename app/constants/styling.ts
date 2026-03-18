@@ -353,6 +353,25 @@ const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
 });
 
 const createModalStyles = (theme: Theme) => StyleSheet.create({
+    cardWarn: {
+        display: "flex",
+        flexDirection: "row",
+        padding: 20,
+        backgroundColor: theme.card,
+        borderRadius: 10,
+        gap: 20
+    },
+    cardWarnText: {
+        flex: 1,
+        color: theme.text,
+        fontSize: 18
+    }, 
+    cardWarnIcon: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+
     container: {
         display: "flex",
         flex: 1,

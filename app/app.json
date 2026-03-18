@@ -71,7 +71,8 @@
           }
         }
       ],
-      "expo-llm-mediapipe"
+      "expo-llm-mediapipe",
+      "./plugins/withAlternateIcons"
     ],
     "experiments": {
       "typedRoutes": true,

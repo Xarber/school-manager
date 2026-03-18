@@ -64,12 +64,12 @@ function AllClassList() {
     return (userData.loading && !refreshing) ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom }} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+                <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
             }>
                 <DashboardItem title={i18n.t("profile.class.header.title")} items={classes} />
             </ScrollView>
@@ -128,11 +128,11 @@ function Class(props: { classId: string }) {
     return (userData.loading || classData.loading && !refreshing) ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     ) : (
         <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={reload} />
+            <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
         }>
                 <Stack.Screen options={{ headerTitle: classData.data.name }} />
             <View style={commonStyle.dashboardSection}>
@@ -255,12 +255,12 @@ function AllClassSubjects() {
     return ((classData.loading || userData.loading) && !refreshing) ? 
     (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom}} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+                <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
             }>
                 <DashboardItem title={i18n.t("profile.class.subjects.all.header.title", {class: classData.data.name})} items={subjects} />
             </ScrollView>

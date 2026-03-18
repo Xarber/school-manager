@@ -71,7 +71,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
 
     return (classData.loading && !refreshing) ? ( 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     ) : (classid == "") ? (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -80,7 +80,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
         ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
             <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+                <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
             }>
                 <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.header.text", {class: classData.data.name})}</Text>
                 <View>
@@ -122,10 +122,11 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
 export default function LessonsWrapper() {
     const userData = useUserData();
     const classid = userData.data.settings.activeClassId;
+    const theme = useTheme();
 
     if (userData.loading) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     );
 

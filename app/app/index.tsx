@@ -1,15 +1,19 @@
 import { Redirect, SplashScreen } from "expo-router";
-import { View } from "react-native";
+import { Button, Text, View } from "react-native";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { useEffect, useState } from "react";
 import { useGlobalStore } from "@/data/store";
 import { useUserData } from "@/data/UserDataContext";
+import i18n from "@/constants/i18n";
+import AppLockScreen from "@/components/appLockScreen";
+import { useAppLockContext } from "@/constants/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function welcomeScreen() {
     const [isReady, setIsReady] = useState(false);
     const [debugDataSaved, setDebugDataSaved] = useState(false);
+    const { setIsAuthenticated, firstUnlock } = useAppLockContext();
     const userData = useUserData();
     let appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
 
@@ -35,7 +39,14 @@ export default function welcomeScreen() {
     
     // appDebugData.data.firstLaunch = true; // Temporarily hide setup screen
 
+    useEffect(()=>{
+        if (isReady && isAppLockOn && !firstUnlock) setIsAuthenticated(false);
+    }, [isReady]);
+
     if (!isReady) return null;
+
+    const isAppLockOn = userData.data.settings?.appLock ?? false;
+
 
     return (
         <View>

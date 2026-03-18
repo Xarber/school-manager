@@ -1,14 +1,12 @@
 import { localeMap } from "@/constants/i18n";
-import { useLanguage } from "@/constants/LanguageContext";
 
 function capitalizeFirst(str: string) {
     if (!str) return str;
     return str[0].toUpperCase() + str.slice(1);
 }
 
-export default function findToday(day?: string) {
+export default function findToday(language: any, day?: string) {
     day ??= new Date().toISOString().split('T')[0];
-    const language = useLanguage();
 
     const locale = language.locale;
     const dateLocale = localeMap[locale];

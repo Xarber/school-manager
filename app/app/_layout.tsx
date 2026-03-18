@@ -1,6 +1,6 @@
-import { ThemeProvider, DarkTheme, DefaultTheme } from "@react-navigation/native";
+import { NavigationContainer, ThemeProvider, DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { Stack } from "expo-router";
-import { useColorScheme } from "react-native";
+import { Button, Text, useColorScheme, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { syncNow, ensureBackgroundSyncRegistered, startForegroundSync } from "@/data/sync";
 import { useEffect } from "react";
@@ -15,17 +15,29 @@ import { colors } from "@/constants/colors";
 import { useTheme } from "@/constants/useThemes";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
+import { AppLockProvider } from "@/constants/AuthContext";
 
 function AppLayout() {
   const theme = useTheme();
   const navTheme = createNavigationTheme(theme);
 
   return (
-    <ThemeProvider value={navTheme}>
-        <StatusBar style={theme.type === "dark" ? "light" : "dark"} />
-        <SyncBootstrap />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.background } }} />
-    </ThemeProvider>
+    <LinearGradient
+      colors={theme.appThemeGradient.colors}
+      start={theme.appThemeGradient.start}
+      end={theme.appThemeGradient.end}
+      style={{ flex: 1, opacity: theme.appThemeGradient.opacity ?? 1 }}
+    >
+      <BlurView style={{ flex: 1 }} intensity={60} tint={theme.type}>
+        <ThemeProvider value={navTheme}>
+          <AppLockProvider>
+            <StatusBar style={theme.type === "dark" ? "light" : "dark"} />
+            <SyncBootstrap />
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />
+          </AppLockProvider>
+        </ThemeProvider>
+      </BlurView>
+    </LinearGradient>
   );
 }
 

@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Platform, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
@@ -84,7 +84,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData) {
     ) : null;
 }
 
-function HomeworkComponent({mode, userData, classid, classData, reload, refreshing, homeworkData}: {mode: 'all' | 'completed' | 'missed', classData: ClassData, userData: UserData, classid: string, refreshing: boolean, reload: Function, homeworkData: any}) {
+function HomeworkComponent({mode, userData, classid, classData, reload, refreshing, homeworkData}: {mode: 'all' | 'completed' | 'missed', classData: ClassData, userData: UserData, classid: string, refreshing: boolean, reload: any, homeworkData: any}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const datePoolLength = 5;
@@ -137,7 +137,7 @@ function HomeworkComponent({mode, userData, classid, classData, reload, refreshi
             </View>
         ) : (
             <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={(reload as any)} />
+                <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
             }>
                 {renderHomework(filteredItems, classData)}
             </ScrollView>
@@ -149,6 +149,7 @@ const Tab = createMaterialTopTabNavigator();
 
 function HomeworkTab({userData}: {userData: UserData}) {
     const router = useRouter();
+    const theme = useTheme();
     const classid = userData.settings.activeClassId;
     const [refreshing, setRefreshing] = useState(false);
 
@@ -189,13 +190,17 @@ function HomeworkTab({userData}: {userData: UserData}) {
 
     if ((classData.loading || homeworkData.loading) && !refreshing) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator />
+            <ActivityIndicator size="small" color={theme.text} />
         </View>
     );
 
     return (
         <>
-            <Tab.Navigator>
+            <Tab.Navigator screenOptions={()=>({
+                tabBarActiveTintColor: theme.text,
+                tabBarIndicatorStyle: { backgroundColor: theme.primary },
+                // tabBarContentContainerStyle: { backgroundColor: theme.background },
+            })}>
                 <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={AllHomework} />
                 <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={CompletedHomework} />
                 <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={MissedHomework} />
@@ -217,10 +222,11 @@ function HomeworkTab({userData}: {userData: UserData}) {
 
 export default function HomeworkWrap() {
     const userData = useUserData();
+    const theme = useTheme();
 
     return (userData.loading ? 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.text} />
         </View> : 
         <HomeworkTab userData={userData.data} />
     )

@@ -110,7 +110,7 @@ function NewHomework() {
         <>
             <Stack.Screen options={{headerTitle: i18n.t("modal.homework.create.stack.title")}} />
             {
-                classData.loading ? <ActivityIndicator size="small" /> : 
+                classData.loading ? <ActivityIndicator size="small" color={theme.text} /> : 
                 <KeyboardShift>
                     <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomHeight}}>
                         <View style={[commonStyle.dashboardSection, modalStyle.container, {flex: 1}]}>
@@ -120,7 +120,7 @@ function NewHomework() {
                                 <Text style={commonStyle.text}>{i18n.t("modal.homework.create.datetime.description", {date: date.toLocaleDateString(), time: date.toLocaleTimeString()})}</Text>
                                 {
                                     userData.loading ? 
-                                    <ActivityIndicator size="small" color={theme.primary} /> :
+                                    <ActivityIndicator size="small" color={theme.text} /> :
                                     <Text style={commonStyle.text}>{i18n.t("modal.homework.create.teacher.text", { teacher: userData.data.name })}</Text>
                                 }
                                 <Text style={[commonStyle.text, {display: "none"}]}>{i18n.t("modal.homework.create.createdon.text", {createdOn: new Date().toDateString()})}</Text>
@@ -206,7 +206,7 @@ function NewHomework() {
                                 alert
                             })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
                                 {loading 
-                                    ? <ActivityIndicator size="small" />
+                                    ? <ActivityIndicator size="small" color={theme.text} />
                                     : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.homework.create.confirm")}</Text>
                                 }
                             </TouchableOpacity>

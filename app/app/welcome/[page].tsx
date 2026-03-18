@@ -329,7 +329,7 @@ function CompletePage() {
                 <TouchableOpacity disabled={appDebugData.loading} style={(appDebugData.loading ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : {...welcomeStyles.actionsButton})} onPress={() => {
                     router.replace("/(tabs)");
                 }}>
-                    {appDebugData.loading ? <ActivityIndicator color="white" /> : <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.complete.finish")}</Text>}
+                    {appDebugData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.complete.finish")}</Text>}
                 </TouchableOpacity>
             </View>
         </View>

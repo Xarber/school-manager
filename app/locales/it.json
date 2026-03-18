@@ -4,6 +4,14 @@
         "it": "Italiano"
     },
     "components": {
+        "applock": {
+            "unlock": "Sblocca app",
+            "fallback": "Prova un altro modo",
+            "screen": {
+                "locked": "Locked",
+                "unlock": "Unlock"
+            }
+        },
         "calendar": {
             "localeconfig": {
                 "monthNames": [
@@ -820,6 +828,7 @@
             }
         },
         "settings": {
+            "restartrequired": "È richiesto il riavvio dell'app per applicare le modifiche.",
             "stack": {
                 "title": "Impostazioni",
                 "stacktitle": "Impostazioni"
@@ -841,6 +850,10 @@
                 "notifications": {
                     "title": "Notifiche",
                     "description": "Gestisci le notifiche"
+                },
+                "applock": {
+                    "title": "Blocco app",
+                    "description": "Proteggi la tua app"
                 },
                 "noitems": {
                     "text": "Impostazioni"
@@ -878,6 +891,14 @@
                 "description": "School Manager usa le notifiche per tenerti aggiornato riguardo gli ultimi cambiamenti nelle tue classi.\n\nNon ti manderemo spam, perciò non preoccuparti.\n\nÈ consigliato attivare le notifiche per ricevere aggiornamenti riguardo verifiche e compiti.",
                 "switch": "Attiva le notifiche"
             },
+            "applock": {
+                "stack": {
+                    "title": "Blocco App"
+                },
+                "description": "Puoi decidere di bloccare l'app con i tuoi dati biometrici.\nIl blocco è gestito dal tuo sistema, e l'accesso con codice potrebbe essere consentito come metodo alternativo.\nNon sarà possibile accedere all'app senza prima sbloccarla.\nSe attivi 'Richiedi sempre l'accesso', il tuo codice verrà richiesto ogni volta che accederai all'app.",
+                "switch": "Attiva il blocco",
+                "persistswitch": "Richiedi sempre l'accesso"
+            },
             "appearance": {
                 "stack": {
                     "title": "Tema"
@@ -896,6 +917,12 @@
                 },
                 "schoolmanager": {
                     "text": "Colore App"
+                },
+                "rainbow": {
+                    "text": "ACROBALENO!!"
+                },
+                "exams": {
+                    "text": "Interrogazioni"
                 }
             }
         },

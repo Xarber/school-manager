@@ -76,11 +76,11 @@ export default function ProfileTab() {
             {
                 ((userData.loading || accountData.loading) && !refreshing) ? (
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                        <ActivityIndicator size="small" />
+                        <ActivityIndicator size="small" color={theme.text} />
                     </View>
                 ) : (
                     <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={reload}/>
+                        <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                     }>
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                             <Text style={HomeScreenStyle.welcomeText}>{isUserLoggedIn ? i18n.t("profile.customheader.loggedin.title", {user: profilePageData.userdata.userInfo.name}) : i18n.t("profile.customheader.loggedout.title")}</Text>

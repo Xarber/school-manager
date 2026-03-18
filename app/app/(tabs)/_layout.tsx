@@ -76,7 +76,6 @@ function renderTabs() {
 }
 
 export default function TabLayout() {
-
   const isWeb = Platform.OS === "web";
   const renderMode = !isWeb ? "native" : "standard";
 

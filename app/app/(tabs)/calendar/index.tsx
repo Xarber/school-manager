@@ -17,13 +17,13 @@ import { UserData } from '@/data/datamanager';
 import { useLanguage } from '@/constants/LanguageContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export function LoadHomeworkForDate(date: string, homework: any) {
+export function loadHomeworkForDate(date: string, homework: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
     const filtered = homework.filter((e: any)=>e.dueDate.split(" ")[0] === selectedDate);
     return filtered;
 }
 
-export function LoadLessonsForDate(date: string, lessons: any) {
+export function loadLessonsForDate(date: string, lessons: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
     const filtered = lessons.find((e: any)=>e[0] === selectedDate)?.[1] ?? [];
     const mapped = filtered?.map((e: any)=>{
@@ -35,14 +35,14 @@ export function LoadLessonsForDate(date: string, lessons: any) {
     return mapped;
 }
 
-export function FilterLessonsFromExams(exam: boolean, allClassLessons: any) {
+export function filterLessonsFromExams(exam: boolean, allClassLessons: any) {
     return (allClassLessons as any[]).map(([date, items]: [string, LessonData[]]) => [
         date,
         items.filter((item: any) => item.data.isExam === exam)
     ]);
 }
 
-export function LoadExamsForDate(date: string, exams: any) {
+export function loadExamsForDate(date: string, exams: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
     const filtered = exams.find((e: any)=>e[0] === selectedDate)?.[1] ?? [];
     const mapped = filtered?.map((e: any)=>{
@@ -54,7 +54,7 @@ export function LoadExamsForDate(date: string, exams: any) {
     return mapped;
 }
 
-export function FilterExamsDate(days: number, exams: any) {
+export function filterExamsDate(days: number, exams: any) {
     const now = Date.now();
     const maxDiff = days * 24 * 60 * 60 * 1000;
 
@@ -127,8 +127,8 @@ function CalendarComponent({userData}: {userData: UserData}) {
     const allClassHomework = regroupHomework(homeworkData.data);
     const allClassLessons = regroupLessonsByDate(lessonData.data);
     
-    const lessons = FilterLessonsFromExams(false, allClassLessons);
-    const exams = FilterLessonsFromExams(true, allClassLessons);
+    const lessons = filterLessonsFromExams(false, allClassLessons);
+    const exams = filterLessonsFromExams(true, allClassLessons);
     
     const calendarPageData = {
         homework: allClassHomework,
@@ -138,6 +138,9 @@ function CalendarComponent({userData}: {userData: UserData}) {
     };
 
     const loadMarkedDates = (selectedDay?: string) => {
+        // theme.disabled = Homework
+        // theme.caution = Exams
+        // theme.primary = Scheduled
         const now = new Date();
         const today = now.toISOString().split('T')[0];
         let markedDates = {} as any;
@@ -145,11 +148,19 @@ function CalendarComponent({userData}: {userData: UserData}) {
         exams.forEach(([day, items]: any) => {
             let dayDots = [] as any[];
             let mark = false;
+            let dayHasExam = false;
+            let dayHasScheduled = false;
             if (items.length > 0) {
                 items.forEach((item: any) => {
-                    if (item.data.isExam || item.data.scheduled) mark = true;
-                    if (item.data.scheduled) dayDots.push({key: `scheduled:${item.data._id}`, color: theme.primary});
-                    else if (item.data.isExam) dayDots.push({key: `exam:${item.data._id}`, color: theme.caution});
+                    if (item.data.isExam || item.data.scheduled) {mark = true;}
+                    if (item.data.scheduled && !dayHasScheduled) {
+                        dayHasScheduled = true;
+                        dayDots.push({key: `scheduled:${item.data._id}`, color: theme.primary});
+                    }
+                    else if (item.data.isExam && !dayHasExam) {
+                        dayHasExam = true;
+                        dayDots.push({key: `exam:${item.data._id}`, color: theme.caution});
+                    }
                 });
             }
 
@@ -196,11 +207,11 @@ function CalendarComponent({userData}: {userData: UserData}) {
             {
                 ((classData.loading || lessonData.loading || homeworkData.loading) && !refreshing) ? (
                     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-                        <ActivityIndicator size="small" />
+                        <ActivityIndicator size="small" color={theme.text} />
                     </View>
                 ) : (
                     <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom}} refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={reload} />
+                        <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                     }>
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                             <Text style={HomeScreenStyle.welcomeText}>{i18n.t("calendar.customheader.title")}</Text>
@@ -219,9 +230,9 @@ function CalendarComponent({userData}: {userData: UserData}) {
                             />
                         </View>
                         <View style={HomeScreenStyle.dashboard}>
-                            <DashboardItem title={findToday(selectedDate)} items={[]} collapsed={true} noItemsText='' />
+                            <DashboardItem title={findToday(language, selectedDate)} items={[]} collapsed={true} noItemsText='' />
                             {/* todo */}
-                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.homework.title")} items={LoadHomeworkForDate(selectedDate, calendarPageData.homework).map((e: any)=>{
+                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.homework.title")} items={loadHomeworkForDate(selectedDate, calendarPageData.homework).map((e: any)=>{
                                 return {
                                     title: e.title,
                                     description: e.description,
@@ -233,7 +244,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                                 };
                             })} />
                             {/* todo */}
-                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.lessons.title")} items={LoadLessonsForDate(selectedDate, calendarPageData.lessons).map((e: any)=>{
+                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.lessons.title")} items={loadLessonsForDate(selectedDate, calendarPageData.lessons).map((e: any)=>{
                                 return {
                                     title: e.title,
                                     description: e.description,
@@ -245,7 +256,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                                 };
                             })} />
                             {/* todo */}
-                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.exams.title")} items={LoadExamsForDate(selectedDate, calendarPageData.exams).map((e: any)=>{
+                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.exams.title")} items={loadExamsForDate(selectedDate, calendarPageData.exams).map((e: any)=>{
                                 return {
                                     title: e.title,
                                     subtitle: e.scheduled ? i18n.t("calendar.exams.scheduled") : undefined,
@@ -267,13 +278,14 @@ function CalendarComponent({userData}: {userData: UserData}) {
 
 export default function CalendarScreen() {
     const userData = useUserData();
+    const theme = useTheme();
 
     return (
         <>
             {
                 userData.loading ? (
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                        <ActivityIndicator size="small" />
+                        <ActivityIndicator size="small" color={theme.text} />
                     </View>
                 ) : (
                     <CalendarComponent userData={userData.data} />

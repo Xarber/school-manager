@@ -72,7 +72,8 @@ cd ./server/ && node .
 * ✔️ Server updates for other components
 * ✔️ Revise server code, check permissions (minor milestone)
 * ✔️ Tomorrow page
-* ✔️ Tested complex app themes (alpha, only static colors will be allowed for now)
+* ✔️ App themes!
+* ✔️ App lock
 
 </details>
 
@@ -111,6 +112,7 @@ cd ./server/ && node .
     * Manage study sessions + record progress
     * Homework generator (exercises on topic -> pdf output) -> Include guided exercises, scaling to more difficult exercises.
     * Topic summary from uploaded resources
+    * Summarize arguments where user is less prepared (based on grades)
 * ✧ File Uploads
 * ✧ Page filters (filter homework/lessons/... by subject, date, etc)
 * ✧ Integrate with personal assistant (Siri/Gemini/...)

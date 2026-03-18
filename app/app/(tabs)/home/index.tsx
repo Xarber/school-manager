@@ -14,9 +14,10 @@ import findToday from "@/components/findToday";
 import { ActivityIndicator } from "react-native";
 import { regroupHomework, stringToColor } from "../registry/homework";
 import { regroupLessonsByDate } from "../registry/lessons";
-import { FilterExamsDate, FilterLessonsFromExams } from "../calendar";
+import { filterExamsDate, filterLessonsFromExams } from "../calendar";
 import { useCallback, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLanguage } from "@/constants/LanguageContext";
 
 function HomeScreen({userData}: {userData: UserData}) {
     const theme = useTheme();
@@ -59,14 +60,14 @@ function HomeScreen({userData}: {userData: UserData}) {
     
     const allClassHomework = regroupHomework(homeworkData.data);
     const allClassLessons = regroupLessonsByDate(lessonData.data);
-    const lessons = FilterLessonsFromExams(false, allClassLessons);
-    const exams = FilterLessonsFromExams(true, allClassLessons);
+    const lessons = filterLessonsFromExams(false, allClassLessons);
+    const exams = filterLessonsFromExams(true, allClassLessons);
 
-    const upcomingExams = FilterExamsDate(3, exams).filter((e: any)=>{
+    const upcomingExams = filterExamsDate(3, exams).filter((e: any)=>{
         return (e.date != new Date().toISOString().split("T")[0]) && (e.date != new Date(new Date().getTime() + 86400000).toISOString().split("T")[0])
     });
-    const tomorrowExams = FilterExamsDate(1, exams).filter((e: any)=>e.date != new Date().toISOString().split("T")[0]);
-    const tomorrowLessons = FilterExamsDate(1, lessons).filter((e: any)=>e.date != new Date().toISOString().split("T")[0]);
+    const tomorrowExams = filterExamsDate(1, exams).filter((e: any)=>e.date != new Date().toISOString().split("T")[0]);
+    const tomorrowLessons = filterExamsDate(1, lessons).filter((e: any)=>e.date != new Date().toISOString().split("T")[0]);
     const tomorrowHomework = allClassHomework.filter((e: any)=>e.dueDate.split(" ")[0] === new Date(new Date().getTime() + 86400000).toISOString().split("T")[0]);;
 
     const tomorrowDay = new Date(new Date().getTime() + 86400000).toLocaleDateString("en-GB", {
@@ -91,7 +92,7 @@ function HomeScreen({userData}: {userData: UserData}) {
         userdata: userData
     };
 
-    const today = findToday();
+    const today = findToday(useLanguage());
 
     return (
         <>
@@ -99,11 +100,11 @@ function HomeScreen({userData}: {userData: UserData}) {
             {
                 ((classData.loading || lessonData.loading || homeworkData.loading) && !refreshing) ? (
                     <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                        <ActivityIndicator size="small" />
+                        <ActivityIndicator size="small" color={theme.text} />
                     </View>
                 ) : (
                     <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={reload}/>
+                        <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                     }>
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                             <Text style={HomeScreenStyle.welcomeText}>{today}</Text>
@@ -115,34 +116,38 @@ function HomeScreen({userData}: {userData: UserData}) {
                             }}/>
                             {/* todo - Schedule, Exams, Quick Homework */}
                             <DashboardItem title={i18n.t("home.tomorrow.title")} items={homescreenPageData.tomorrow.map((e: any, i: number)=>{
-                                return {
+                                let subject = classData.data.subjects.find((s: any)=>s._id === e.subjectid)?.name;
+                                let data = {
                                     title: e.title,
                                     description: e.description,
                                     subtitle: 
                                         e.isExam ? i18n.t("home.tomorrow.exam") : 
                                         (!!e.dueDate ? i18n.t("home.tomorrow.homework") : i18n.t("home.tomorrow.lesson")),
-                                    badge: {
-                                        text: classData.data.subjects.find((s: any)=>s._id === e.subjectid).name,
-                                        color: stringToColor(e.subjectid)
-                                    },
                                     onPress: () => {
                                         //router.push(`/calendar/${e.date}`);
                                     }
+                                } as any;
+                                if (subject) data.badge = {
+                                    text: subject,
+                                    color: stringToColor(e.subjectid)
                                 };
+                                return data;
                             })} />
                             <DashboardItem title={i18n.t("home.upcoming.title")} items={upcomingExams.map((e: any, i: number)=>{
-                                return {
+                                let subject = classData.data.subjects.find((s: any)=>s._id === e.subjectid)?.name;
+                                let data = {
                                     title: e.title,
                                     description: e.description,
                                     subtitle: e.date,
-                                    badge: {
-                                        text: classData.data.subjects.find((s: any)=>s._id === e.subjectid).name,
-                                        color: stringToColor(e.subjectid)
-                                    },
                                     onPress: () => {
                                         //router.push(`/calendar/${e.date}`);
                                     }
-                                };
+                                } as any;
+                                if (subject) data.badge = {
+                                    text: subject,
+                                    color: stringToColor(e.subjectid)
+                                }
+                                return data;
                             })} maxItems={3} expand={() => {
                                 router.push("/registry");
                                 setTimeout(()=>router.push("/registry/lessons"), 36);
@@ -157,13 +162,14 @@ function HomeScreen({userData}: {userData: UserData}) {
 
 export default function HomeScreenHandler() {
     const userData = useUserData();
+    const theme = useTheme();
 
     return (
         <>
             {
                 userData.loading ? (
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                        <ActivityIndicator size="small" />
+                        <ActivityIndicator size="small" color={theme.text} />
                     </View>
                 ) : (
                     <HomeScreen userData={userData.data} />
