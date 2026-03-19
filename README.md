@@ -73,6 +73,7 @@ cd ./server/ && node .
 * ✔️ Revise server code, check permissions (minor milestone)
 * ✔️ Tomorrow page
 * ✔️ App themes!
+* ✔️ Custom app icons!
 * ✔️ App lock
 
 </details>
