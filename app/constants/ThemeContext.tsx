@@ -34,18 +34,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         useEffect(() => {
             const userTheme = userData.data.settings?.theme;
 
+            if (!userTheme || userData.loading === true) return;
             if (themeList.special.includes(userTheme) || themeList.hidden.includes(userTheme)) {
                 let specialIconName = pascalCase(`icon-${userTheme}`);
                 if (getAppIconName() != specialIconName) {
+                    console.warn(`[THEMES] Special theme detected, setting alternate icon: `, specialIconName);
                     setAlternateAppIcon(specialIconName);
                 }
             } else {
                 // let defaultIconName = pascalCase(`icon-default`);
                 if (getAppIconName() != null) {
+                    console.warn(`[THEMES] Default theme detected, resetting app icon: `, getAppIconName());
                     resetAppIcon();
                 }
             }
-        }, [userData.data.settings?.theme]);
+        }, [userData.data.settings?.theme, userData.loading]);
     }
 
     return (
