@@ -19,20 +19,27 @@ router.post(paths.dbGet, async (req, res) => {
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     
-    const isUserTeacher = classInfo.teachers.some(t => t.equals(user.userinfo_id));
     const classInfo = await Class.findOne({ _id: classid }).populate({
       path: 'comunications',
-      populate: ["sender", {path: "responses", populate: ["sender"]}]
+      populate: ["sender", {path: "responses", populate: ["user"]}]
     }).lean();
 
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+    const isUserTeacher = classInfo.teachers.some(t => t.equals(user.userinfo_id));
     if (
         !classInfo.students.some(t => t.equals(userInfo._id))
         && !classInfo.teachers.some(t => t.equals(userInfo._id))
     ) return res.status(403).json({ error: 'Access denied to this class' });
 
     if (!isUserTeacher) {
-      classInfo.comunications = classInfo.comunications.filter(c => !c.requiresConfirmation || c.responses.some(r => r.sender._id.equals(user.userinfo_id)));
+      classInfo.comunications = classInfo.comunications.map(c => {
+        const filteredResponses = c.responses.filter(r => r.sender._id.equals(user.userinfo_id));
+        if (!c.requiresConfirmation || filteredResponses.length) {
+          c.responses = filteredResponses;
+          return c;
+        }
+        return null;
+      }).filter(Boolean);
     }
 
     res.json({ success: true, data: classInfo.comunications });
@@ -173,6 +180,11 @@ router.post('/responses' + paths.dbCreate, async (req, res) => {
 
     const classInfo = await Class.findOne({ comunications: comunicationid });
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+
+    if (
+      !classInfo.teachers.some(t => t.equals(user.userinfo_id))
+      && !classInfo.students.some(t => t.equals(user.userinfo_id))
+    ) return res.status(403).json({ error: 'Access denied to this class' });
     //todo: school logic
 
     const comunicationInfo = await Comunication.findOne({ _id: comunicationid });
@@ -180,8 +192,8 @@ router.post('/responses' + paths.dbCreate, async (req, res) => {
 
     // Update comunication (replace with actual Comunication model)
     const { state, message } = req.body;
-    if (!state && (comunicationInfo.confirmationType ?? "accept") === "accept") return res.status(400).json({ error: 'State required.' });
-    if (!message && (comunicationInfo.confirmationType ?? "message") === "accept") return res.status(400).json({ error: 'Message required.' });
+    if (typeof state === "undefined" && (comunicationInfo.confirmationType ?? "accept") === "accept") return res.status(400).json({ error: 'State required.' });
+    if (typeof message === "undefined" && (comunicationInfo.confirmationType ?? "message") === "message") return res.status(400).json({ error: 'Message required.' });
 
     const newResponse = new ComunicationResponse({
       user: user.userinfo_id,
