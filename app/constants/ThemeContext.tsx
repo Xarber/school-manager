@@ -4,7 +4,7 @@ import { Scheme } from "./colors";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { useUserData } from "@/data/UserDataContext";
 import { themeList } from "./colors";
-import { setAlternateAppIcon, getAppIconName, resetAppIcon } from "expo-alternate-app-icons";
+import { setAlternateAppIcon, getAppIconName, resetAppIcon, supportsAlternateIcons } from "expo-alternate-app-icons";
 
 const ThemeContext = createContext<Scheme>("light");
 
@@ -29,15 +29,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             setScheme(userTheme);
         }
 
-        if (themeList.special.includes(userTheme) || themeList.hidden.includes(userTheme)) {
-            let specialIconName = pascalCase(`icon-${userTheme}`);
-            if (getAppIconName() !== specialIconName) {
-                setAlternateAppIcon(specialIconName);
-            }
-        } else {
-            // let defaultIconName = pascalCase(`icon-default`);
-            if (getAppIconName() != null) {
-                resetAppIcon();
+        if (supportsAlternateIcons) {
+            if (themeList.special.includes(userTheme) || themeList.hidden.includes(userTheme)) {
+                let specialIconName = pascalCase(`icon-${userTheme}`);
+                if (getAppIconName() !== specialIconName) {
+                    setAlternateAppIcon(specialIconName);
+                }
+            } else {
+                // let defaultIconName = pascalCase(`icon-default`);
+                if (getAppIconName() != null) {
+                    resetAppIcon();
+                }
             }
         }
     }, [userData.data.settings?.theme, systemScheme]);
