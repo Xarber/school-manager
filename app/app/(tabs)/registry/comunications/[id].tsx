@@ -1,7 +1,7 @@
 import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
-import { DataManager, ComunicationData, SubjectData, useAppDataSync, UserInfo, UserData } from '@/data/datamanager';
+import { DataManager, ComunicationData, SubjectData, useAppDataSync, UserInfo, UserData, useDBitem } from '@/data/datamanager';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import i18n from '@/constants/i18n';
@@ -17,23 +17,40 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     const modalStyle = createStyling.createModalStyles(theme);
     const id = comunicationid;
     const [reply, setReply] = useState("");
+    const [accept, setAccept] = useState(false);
+    const [responseSent, setResponseSent] = useState(false);
+    const userData = useUserData();
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const comunicationResponse = useDBitem(DataManager.comunicationResponseData.db);
 
-    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
-        classid: classid,
-        populate: ["comunications"]
+    const comunicationData = useAppDataSync(DataManager.comunicationData.db, `${DataManager.comunicationData.app}:${classid}`, [DataManager.comunicationData.default], {
+        classid: classid
     });
 
-    let comunication = classData.loading ? null : classData.data.comunications.find((e: ComunicationData) => e._id === id);
+    if (comunicationData.loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator size="small" color={theme.text} />
+            </View>
+        );
+    }
 
-    return classData.loading ? 
-    (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator size="small" color={theme.text} />
-        </View>
-    ) : !!comunication ? (
+    let comunication = comunicationData.data.find((e: ComunicationData) => e._id === id);
+
+    let userResponse = comunication?.responses ? comunication.responses.find((e: any) => e.user._id === userData.data.userInfo._id) : null;
+    if (!responseSent && userResponse) {
+        setReply(userResponse.message);
+        setAccept(userResponse.state);
+        setResponseSent(true);
+    }
+
+    const canSend = comunication && ((comunication.confirmationType ?? "accept") === "message") ?
+        (!responseSent && reply.trim().length > 0) : 
+        (!responseSent);
+
+    return !!comunication ? (
         <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
             <Stack.Screen options={{ headerTitle: comunication.title }} />
             <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
@@ -54,20 +71,32 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                 {
                                     title: i18n.t("registry.comunications.reply.accept"),
                                     styles: {
-                                        backgroundColor: theme.primary
+                                        backgroundColor: (canSend || (!canSend && accept)) ? theme.primary : theme.disabled,
+                                        opacity: canSend ? 1 : 0.5
                                     },
                                     iconName: "checkmark",
                                     onPress: () => {
-
+                                        comunicationResponse.create({
+                                            comunicationid: comunication._id,
+                                            state: true
+                                        }).then(() => {
+                                            comunicationData.load();
+                                        });
                                     }
                                 }, {
                                     title: i18n.t("registry.comunications.reply.reject"),
                                     styles: {
-                                        backgroundColor: theme.caution
+                                        backgroundColor: (canSend || (!canSend && !accept)) ? theme.caution : theme.disabled,
+                                        opacity: canSend ? 1 : 0.5
                                     },
                                     iconName: "ban",
                                     onPress: () => {
-
+                                        comunicationResponse.create({
+                                            comunicationid: comunication._id,
+                                            state: false
+                                        }).then(() => {
+                                            comunicationData.load();
+                                        });
                                     }
                                 }
                             ]} />
@@ -78,8 +107,13 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("registry.comunications.reply.message")}</Text>
                                     <TextInput maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
                                 </View>
-                                <TouchableOpacity style={commonStyle.wideButton} onPress={() => {
-
+                                <TouchableOpacity disabled={!canSend} style={[commonStyle.wideButton, (!canSend ? { backgroundColor: theme.disabled } : null)]} onPress={() => {
+                                    comunicationResponse.create({
+                                        comunicationid: comunication._id,
+                                        message: reply
+                                    }).then(() => {
+                                        comunicationData.load();
+                                    });
                                 }}>
                                     <Text style={commonStyle.buttonText}>{i18n.t("registry.comunications.reply.send")}</Text>
                                 </TouchableOpacity>

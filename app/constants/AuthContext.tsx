@@ -53,7 +53,9 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
 
     // 👉 re-auth quando app torna foreground
     useEffect(() => {
-        const sub = AppState.addEventListener("change", (state) => {
+        let sub = null;
+        if (userData.data.settings?.appLock) 
+        sub = AppState.addEventListener("change", (state) => {
             if (state === "active") {
                 // if (!isAuthenticated) authenticate();
             } else if (state === "background") {
@@ -62,8 +64,8 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
             }
         });
 
-        return () => sub.remove();
-    }, [isAuthenticated, isAppLockPersistOn]);
+        return sub ? () => sub.remove() : () => {};
+    }, [isAuthenticated, isAppLockPersistOn, userData.data.settings?.appLock]);
 
     return (
         <AppLockContext.Provider value={{ firstUnlock, setFirstUnlock, isAuthenticated, setIsAuthenticated, authenticate, lock }}>

@@ -10,9 +10,9 @@ export default function AppLockScreen({authenticate, isAuthenticated}: {authenti
     const theme = useTheme();
     const commonStyles = createStyling.createCommonStyles(theme);
 
-    useEffect(()=>{
-      if (!isAuthenticated) authenticate();
-    }, [isAuthenticated]);
+    // useEffect(()=>{
+    //   if (!isAuthenticated) authenticate();
+    // }, [isAuthenticated]);
 
     return (
       <View style={{flex: 1, justifyContent: "center", alignItems: "center", gap: 10 }}>
