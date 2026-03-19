@@ -28,11 +28,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         } else if (userTheme) {
             setScheme(userTheme);
         }
+    }, [userData.data.settings?.theme, systemScheme]);
 
-        if (supportsAlternateIcons) {
+    if (supportsAlternateIcons == true) {
+        useEffect(() => {
+            const userTheme = userData.data.settings?.theme;
+
             if (themeList.special.includes(userTheme) || themeList.hidden.includes(userTheme)) {
                 let specialIconName = pascalCase(`icon-${userTheme}`);
-                if (getAppIconName() !== specialIconName) {
+                if (getAppIconName() != specialIconName) {
                     setAlternateAppIcon(specialIconName);
                 }
             } else {
@@ -41,8 +45,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
                     resetAppIcon();
                 }
             }
-        }
-    }, [userData.data.settings?.theme, systemScheme]);
+        }, [userData.data.settings?.theme]);
+    }
 
     return (
         <ThemeContext.Provider value={scheme}>
