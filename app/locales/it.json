@@ -925,7 +925,9 @@
                     "text": "ACROBALENO!!"
                 },
                 "exams": {
-                    "text": "Interrogazioni"
+                    "text": "Interrogazioni",
+                    "title": "Evviva!",
+                    "message": "Hai sbloccato il tema speciale per Interrogazioni :>"
                 }
             }
         },

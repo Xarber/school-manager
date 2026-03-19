@@ -185,6 +185,7 @@ function AppearanceTab() {
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     let themes = themeList.all;
+    const alert = useAlert();
     const hiddenthemes = themeList.hidden;
     const specialthemes = themeList.special;
 
@@ -200,6 +201,14 @@ function AppearanceTab() {
 
     return (
         <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+            {(specialthemes.includes("exams") && userData.data.settings.theme != "exams") && <TouchableOpacity style={{ position: "absolute", top: 0, left: 0, width: 30, height: 30, zIndex: 999 }} onPress={()=>{
+                userData.save({...userData.data, settings: {...userData.data.settings, theme: "exams"}}).then(()=>{
+                    alert.show({
+                        title: i18n.t("profile.settings.appearance.exams.title"),
+                        message: i18n.t("profile.settings.appearance.exams.message"),
+                    });
+                })
+            }}></TouchableOpacity>}
             <View style={commonStyle.dashboardSection}>
                 <Stack.Screen options={{headerTitle: i18n.t("profile.settings.appearance.stack.title")}} />
                 <Text style={commonStyle.headerText}>{i18n.t("profile.settings.appearance.header.text")}</Text>
