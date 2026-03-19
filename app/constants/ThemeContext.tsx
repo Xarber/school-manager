@@ -33,21 +33,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (supportsAlternateIcons == true) {
         useEffect(() => {
             const userTheme = userData.data.settings?.theme;
-
             if (!userTheme || userData.loading === true) return;
-            if (themeList.special.includes(userTheme) || themeList.hidden.includes(userTheme)) {
-                let specialIconName = pascalCase(`icon-${userTheme}`);
-                if (getAppIconName() != specialIconName) {
-                    console.warn(`[THEMES] Special theme detected, setting alternate icon: `, specialIconName);
-                    setAlternateAppIcon(specialIconName);
+
+            const updateIcon = async () => {
+                const currentAppIcon = getAppIconName();
+                await new Promise(r => setTimeout(r, 500));
+                try {
+                    if (themeList.special.includes(userTheme) || themeList.hidden.includes(userTheme)) {
+                        let specialIconName = pascalCase(`icon-${userTheme}`);
+                        if (currentAppIcon != specialIconName) {
+                            console.warn(`[THEMES] ${currentAppIcon ?? "Default"} -> ${specialIconName}`);
+                            await setAlternateAppIcon(specialIconName);
+                        }
+                    } else {
+                        if (currentAppIcon != null) {
+                            console.warn(`[THEMES] ${currentAppIcon} -> Default`);
+                            await setAlternateAppIcon(null);
+                        }
+                    }
+                } catch (e) {
+                    console.warn("[THEMES]", e);
                 }
-            } else {
-                // let defaultIconName = pascalCase(`icon-default`);
-                if (getAppIconName() != null) {
-                    console.warn(`[THEMES] Default theme detected, resetting app icon: `, getAppIconName());
-                    resetAppIcon();
-                }
-            }
+            };
+
+            updateIcon();
         }, [userData.data.settings?.theme, userData.loading]);
     }
 

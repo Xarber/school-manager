@@ -896,7 +896,9 @@
                     "text": "RAINBOW!!"
                 },
                 "exams": {
-                    "text": "Exams"
+                    "text": "Exams",
+                    "title": "Hooray!",
+                    "message": "You have unlocked the Exams theme :>"
                 }
             }
         },
