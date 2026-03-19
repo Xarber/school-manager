@@ -11,12 +11,12 @@
     },
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/appicon/SchoolManager-universal-monochrome-1024x1024@1x.png",
+    "icon": "./assets/icons/icon-monochrome.png",
     "scheme": "schoolmanager",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/images/appicon/SchoolManager.icon",
+      "icon": "./assets/icons/icon-default/icon-default.icon",
       "bundleIdentifier": "com.xarber.schoolmanager",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -25,23 +25,23 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#7088fa",
-        "foregroundImage": "./assets/images/appicon/SchoolManager-android-foreground-1024x1024@1x.png",
-        "backgroundImage": "./assets/images/appicon/SchoolManager-android-background-1024x1024@1x.png",
-        "monochromeImage": "./assets/images/appicon/SchoolManager-android-foreground-1024x1024@1x.png"
+        "foregroundImage": "./assets/icons/icon-default/icon-default-foreground.png",
+        "backgroundImage": "./assets/icons/icon-default/icon-default-background.png",
+        "monochromeImage": "./assets/icons/icon-default/icon-default-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.xarber.schoolmanager"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/appicon/SchoolManager-universal-splash-1024x1024@1x.png"
+      "favicon": "./assets/icons/icon-default/icon-default-splash.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/appicon/SchoolManager-universal-splash-1024x1024@1x.png",
+          "image": "./assets/icons/icon-default/icon-default-splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -72,7 +72,53 @@
         }
       ],
       "expo-llm-mediapipe",
-      "./plugins/withAlternateIcons"
+      ["expo-alternate-app-icons", [
+        {
+          "name": "IconDefault",
+          "iosNew": "./assets/icons/icon-default/icon-default.icon",
+          "ios": {
+            "light": "./assets/icons/icon-default/icon-default-light.png",
+            "dark": "./assets/icons/icon-default/icon-default-dark.png",
+            "tinted": "./assets/icons/icon-default/icon-default-dark.png"
+          },
+          "android": {
+            "backgroundColor": "#7088fa",
+            "foregroundImage": "./assets/icons/icon-default/icon-default-foreground.png",
+            "backgroundImage": "./assets/icons/icon-default/icon-default-background.png",
+            "monochromeImage": "./assets/icons/icon-default/icon-default-foreground.png"
+          }
+        },
+        {
+          "name": "IconExams",
+          "iosNew": "./assets/icons/icon-exams/icon-exams.icon",
+          "ios": {
+            "light": "./assets/icons/icon-exams/icon-exams-light.png",
+            "dark": "./assets/icons/icon-exams/icon-exams-dark.png",
+            "tinted": "./assets/icons/icon-exams/icon-exams-dark.png"
+          },
+          "android": {
+            "backgroundColor": "#725130",
+            "foregroundImage": "./assets/icons/icon-exams/icon-exams-foreground.png",
+            "backgroundImage": "./assets/icons/icon-exams/icon-exams-background.png",
+            "monochromeImage": "./assets/icons/icon-exams/icon-exams-foreground.png"
+          }
+        },
+        {
+          "name": "IconRainbow",
+          "iosNew": "./assets/icons/icon-rainbow/icon-rainbow.icon",
+          "ios": {
+            "light": "./assets/icons/icon-rainbow/icon-rainbow-light.png",
+            "dark": "./assets/icons/icon-rainbow/icon-rainbow-dark.png",
+            "tinted": "./assets/icons/icon-rainbow/icon-rainbow-dark.png"
+          },
+          "android": {
+            "backgroundColor": "#725130",
+            "foregroundImage": "./assets/icons/icon-rainbow/icon-rainbow-foreground.png",
+            "backgroundImage": "./assets/icons/icon-rainbow/icon-rainbow-background.png",
+            "monochromeImage": "./assets/icons/icon-rainbow/icon-rainbow-foreground.png"
+          }
+        }
+      ]]
     ],
     "experiments": {
       "typedRoutes": true,
