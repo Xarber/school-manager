@@ -3,6 +3,12 @@
         "en": "English",
         "it": "Italian"
     },
+    "beta": {
+        "undeveloped": {
+            "title": "Still Cooking",
+            "message": "This feature is still under development.\nCome back another time!"
+        }
+    },
     "components": {
         "applock": {
             "unlock": "Unlock app",
