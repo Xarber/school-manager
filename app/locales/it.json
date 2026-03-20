@@ -114,6 +114,7 @@
             "stack": {
                 "title": "Account"
             },
+            "networkunavailable": "Nessuna connessione",
             "title": "Ci conosciamo?",
             "description": "Vuoi accedere ad un account?",
             "login": "Continua",
@@ -621,7 +622,7 @@
             }
         },
         "class": {
-            "title": "Le tue classi",
+            "title": "La tua classe",
             "homework": {
                 "title": "Compiti"
             },
@@ -787,6 +788,10 @@
                     "title": "Imposta come attiva"
                 }
             },
+            "offlineclass": {
+                "name": "Classe Offline",
+                "description": "Questa è la classe offline, puoi usarla senza internet e senza un account. Non puoi sincronizzarla con altri dispositivi o invitare persone."
+            },
             "header": {
                 "title": "Le tue classi"
             },
@@ -945,6 +950,9 @@
                 "schoolmanager": {
                     "text": "Colore App"
                 },
+                "redgradient": {
+                    "text": "Sfumatura Rossa"
+                },
                 "rainbow": {
                     "text": "ACROBALENO!!"
                 },
@@ -972,7 +980,8 @@
             "role": "Ruolo",
             "roles": {
                 "student": "Studente",
-                "teacher": "Insegnante"
+                "teacher": "Insegnante",
+                "undefined": "Nessun ruolo"
             },
             "joindate": "Data di iscrizione",
             "classes": "Numero di classi"

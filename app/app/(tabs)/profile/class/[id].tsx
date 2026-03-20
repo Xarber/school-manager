@@ -54,6 +54,14 @@ function AllClassList() {
         }
     } : null)));
 
+    classes.push({
+        title: i18n.t("profile.class.offlineclass.name"),
+        description: i18n.t("profile.class.offlineclass.description"),
+        onPress: () => {
+            router.push(`/profile/class/${DataManager.classData.offline}`);
+        }
+    });
+
     let activeClassIndex = classes.findIndex((cls: ClassData) => cls._id === userData.data.settings.activeClassId);
 
     if (activeClassIndex > 0) {
@@ -259,6 +267,7 @@ function AllClassSubjects() {
         </View>
     ) : (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
+            <Stack.Screen options={{ headerTitle: i18n.t("profile.class.subjects.all.header.title", {class: ""}).trim() }} />
             <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom}} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
             }>

@@ -3,7 +3,7 @@ import { Color } from 'expo-router';
 import { ColorValue, Platform } from 'react-native';
 import { DarkTheme, DefaultTheme, Theme as NavTheme } from "@react-navigation/native";
 
-export type Scheme = 'light' | 'dark' | 'schoolmanager' | 'rainbow' | 'exams';
+export type Scheme = 'light' | 'dark' | 'schoolmanager' | 'rainbow' | 'exams' | 'redgradient';
 
 export function createNavigationTheme(theme: Theme): NavTheme {
   const base = theme.type === "dark" ? DarkTheme : DefaultTheme;
@@ -25,7 +25,7 @@ export function createNavigationTheme(theme: Theme): NavTheme {
 export const themeList = {
   all: ["system", "light", "dark", "schoolmanager"] as string[],
   hidden: ["rainbow"] as string[],
-  special: ["exams"]
+  special: ["exams", "redgradient"] as string[]
 }
 
 export type Theme = {
@@ -122,7 +122,7 @@ export const colors = {
     },
     surface: Platform.OS === "android" ? (Color.android.dynamic.surface ?? "rgba(0, 0, 0, 0.05)") : "rgba(0, 0, 0, 0.3)",
     appThemeGradient: {
-      colors: ["rgba(137,188,250, 0.3)", "rgba(101,17,234, 0.3)"],
+      colors: ["rgb(56, 78, 104)", "rgb(32, 5, 75)"],
       start: { x: 0, y: 0 },
       end: { x: 1, y: 1 },
     }
@@ -173,6 +173,31 @@ export const colors = {
     surface: Platform.OS === "android" ? (Color.android.dynamic.surface ?? "rgba(255, 255, 255, 0.05)") : "rgba(255, 255, 255, 0.3)",
     appThemeGradient: {
       colors: ["rgb(29,29,29)", "rgb(55,39,23)"],
+      start: { x: 0.5, y: 0 },
+      end: { x: 0.5, y: 1 },
+    }
+  } as Theme,
+  redgradient: {
+    type: "dark",
+    background: "rgb(0, 0, 0)",
+    overlayBackground: "rgba(255, 255, 255, 0.05)",
+    text: "#fff",
+    card: "rgba(255, 255, 255, 0.05)",
+    opaqueCard: "rgb(47, 0, 0)",
+    primary: "#ec2b00",
+    secondary: "#5900ff",
+    caution: "#FF0000",
+    action: "#404040",
+    disabled: "rgba(255, 255, 255, 0.3)",
+    contrastPalette: {
+      one: "#005eff",
+      two: "#95ff00",
+      three: "#bf00ff",
+      four: "#fff700",
+    },
+    surface: Platform.OS === "android" ? (Color.android.dynamic.surface ?? "rgba(255, 255, 255, 0.05)") : "rgba(255, 255, 255, 0.3)",
+    appThemeGradient: {
+      colors: ["#901623", "#5d0000"],
       start: { x: 0.5, y: 0 },
       end: { x: 0.5, y: 1 },
     }

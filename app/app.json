@@ -25,23 +25,23 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#7088fa",
-        "foregroundImage": "./assets/icons/icon-default/icon-default-foreground.png",
-        "backgroundImage": "./assets/icons/icon-default/icon-default-background.png",
-        "monochromeImage": "./assets/icons/icon-default/icon-default-foreground.png"
+        "foregroundImage": "./assets/icons/icon-default/icon-default-light-foreground.png",
+        "backgroundImage": "./assets/icons/icon-default/icon-default-light-background.png",
+        "monochromeImage": "./assets/icons/icon-default/icon-default-light-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.xarber.schoolmanager"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/icons/icon-default/icon-default-splash.png"
+      "favicon": "./assets/icons/icon-splash.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/icons/icon-default/icon-default-splash.png",
+          "image": "./assets/icons/icon-splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -81,13 +81,13 @@
             "ios": {
               "light": "./assets/icons/icon-default/icon-default-light.png",
               "dark": "./assets/icons/icon-default/icon-default-dark.png",
-              "tinted": "./assets/icons/icon-default/icon-default-dark.png"
+              "tinted": "./assets/icons/icon-tinted.png"
             },
             "android": {
               "backgroundColor": "#7088fa",
-              "foregroundImage": "./assets/icons/icon-default/icon-default-foreground.png",
-              "backgroundImage": "./assets/icons/icon-default/icon-default-background.png",
-              "monochromeImage": "./assets/icons/icon-default/icon-default-foreground.png"
+              "foregroundImage": "./assets/icons/icon-default/icon-default-light-foreground.png",
+              "backgroundImage": "./assets/icons/icon-default/icon-default-light-background.png",
+              "monochromeImage": "./assets/icons/icon-default/icon-default-light-foreground.png"
             }
           },
           {
@@ -96,13 +96,13 @@
             "ios": {
               "light": "./assets/icons/icon-exams/icon-exams-light.png",
               "dark": "./assets/icons/icon-exams/icon-exams-dark.png",
-              "tinted": "./assets/icons/icon-exams/icon-exams-dark.png"
+              "tinted": "./assets/icons/icon-tinted.png"
             },
             "android": {
-              "backgroundColor": "#725130",
-              "foregroundImage": "./assets/icons/icon-exams/icon-exams-foreground.png",
-              "backgroundImage": "./assets/icons/icon-exams/icon-exams-background.png",
-              "monochromeImage": "./assets/icons/icon-exams/icon-exams-foreground.png"
+              "backgroundColor": "#3D1F00",
+              "foregroundImage": "./assets/icons/icon-exams/icon-exams-light-foreground.png",
+              "backgroundImage": "./assets/icons/icon-exams/icon-exams-light-background.png",
+              "monochromeImage": "./assets/icons/icon-exams/icon-exams-light-foreground.png"
             }
           },
           {
@@ -111,13 +111,28 @@
             "ios": {
               "light": "./assets/icons/icon-rainbow/icon-rainbow-light.png",
               "dark": "./assets/icons/icon-rainbow/icon-rainbow-dark.png",
-              "tinted": "./assets/icons/icon-rainbow/icon-rainbow-dark.png"
+              "tinted": "./assets/icons/icon-tinted.png"
             },
             "android": {
-              "backgroundColor": "#725130",
-              "foregroundImage": "./assets/icons/icon-rainbow/icon-rainbow-foreground.png",
-              "backgroundImage": "./assets/icons/icon-rainbow/icon-rainbow-background.png",
-              "monochromeImage": "./assets/icons/icon-rainbow/icon-rainbow-foreground.png"
+              "backgroundColor": "#FFFF00",
+              "foregroundImage": "./assets/icons/icon-rainbow/icon-rainbow-light-foreground.png",
+              "backgroundImage": "./assets/icons/icon-rainbow/icon-rainbow-light-background.png",
+              "monochromeImage": "./assets/icons/icon-rainbow/icon-rainbow-light-foreground.png"
+            }
+          },
+          {
+            "name": "IconRedgradient",
+            "iosNew": "./assets/icons/icon-redgradient/icon-redgradient.icon",
+            "ios": {
+              "light": "./assets/icons/icon-redgradient/icon-redgradient-light.png",
+              "dark": "./assets/icons/icon-redgradient/icon-redgradient-dark.png",
+              "tinted": "./assets/icons/icon-tinted.png"
+            },
+            "android": {
+              "backgroundColor": "#E65658",
+              "foregroundImage": "./assets/icons/icon-redgradient/icon-redgradient-light-foreground.png",
+              "backgroundImage": "./assets/icons/icon-redgradient/icon-redgradient-light-background.png",
+              "monochromeImage": "./assets/icons/icon-redgradient/icon-redgradient-light-foreground.png"
             }
           }
         ]

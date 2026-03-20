@@ -16,6 +16,7 @@ import { useTheme } from "@/constants/useThemes";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import { AppLockProvider } from "@/constants/AuthContext";
+import { NetworkProvider } from "@/constants/NetworkContext";
 
 function AppLayout() {
   const theme = useTheme();
@@ -53,16 +54,18 @@ function SyncBootstrap() {
 
 export default function RootLayout() {
   return (
-    <AccountDataProvider>
-      <UserDataProvider>
-        <ContextThemeProvider>
-          <LanguageProvider>
-            <AlertProvider>
-              <AppLayout />
-            </AlertProvider>
-          </LanguageProvider>
-        </ContextThemeProvider>
-      </UserDataProvider>
-    </AccountDataProvider>
+    <NetworkProvider>
+      <AccountDataProvider>
+        <UserDataProvider>
+          <ContextThemeProvider>
+            <LanguageProvider>
+              <AlertProvider>
+                <AppLayout />
+              </AlertProvider>
+            </LanguageProvider>
+          </ContextThemeProvider>
+        </UserDataProvider>
+      </AccountDataProvider>
+    </NetworkProvider>
   );
 }

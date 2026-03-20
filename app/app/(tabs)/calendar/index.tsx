@@ -219,7 +219,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                         </BlurView>
                         <View style={optimizationStyle.container}>
                             <View style={optimizationStyle.item}>
-                                <View style={{ flex: 1 }}>
+                                <View style={{ flex: 1, paddingTop: 15 }}>
                                     <Calendar
                                         markingType="multi-dot"
                                         key={`${theme.type}-${language.locale}`}
