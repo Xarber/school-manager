@@ -16,6 +16,8 @@ export const isDevClient = isStoreClient && !Constants.expoVersion;
 
 export const isWeb = Platform.OS === "web";
 
+export const devMode = (__DEV__ && !isProductionBinary && !isWeb);
+
 const defaultIndexData = {
     accountId: "" as string,
     debugId: "" as string,

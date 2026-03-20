@@ -128,7 +128,8 @@ function HomeworkComponent({mode, userData, classid, classData, reload, refreshi
     })
 
     return (filteredItems.length == 0 ? (
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 10 }}>
+                <Ionicons name="albums-outline" size={40} color={theme.text} />
                 <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
             </View>
         ) : (

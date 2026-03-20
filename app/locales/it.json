@@ -3,6 +3,12 @@
         "en": "Inglese",
         "it": "Italiano"
     },
+    "beta": {
+        "undeveloped": {
+            "title": "In cottura",
+            "message": "Questa funzione non è ancora pronta.\nTorna un altra volta!"
+        }
+    },
     "components": {
         "applock": {
             "unlock": "Sblocca app",
