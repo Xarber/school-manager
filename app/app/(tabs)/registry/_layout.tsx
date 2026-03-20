@@ -19,7 +19,7 @@ export default function RegistryLayout() {
                     <Stack.Screen name="index" options={{ title: i18n.t("registry.stack.title") }} />
                     <Stack.Screen name="grades" options={{ headerShown: true, title: i18n.t("registry.grades.stack.title") }} />
                     <Stack.Screen name="exams" options={{ headerShown: true, title: i18n.t("registry.exams.stack.title") }} />
-                    <Stack.Screen name="resources" options={{ headerShown: true, title: i18n.t("registry.resources.stack.title") }} />
+                    <Stack.Screen name="resources/[id]" options={{ headerShown: true, title: i18n.t("registry.resources.stack.title") }} />
                     <Stack.Screen name="schedule" options={{ headerShown: true, title: i18n.t("registry.schedule.stack.title") }} />
                     <Stack.Screen name="homework" options={{ headerShown: true, title: i18n.t("registry.homework.stack.title") }} />
                     <Stack.Screen name="comunications/[id]" options={{ headerShown: true, title: i18n.t("registry.comunications.stack.title") }} />
