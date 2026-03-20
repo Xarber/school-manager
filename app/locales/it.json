@@ -839,12 +839,16 @@
             },
             "general": {
                 "title": "Generali",
+                "header": {
+                    "title": "App Settings",
+                    "description": "Manage your preferences"
+                },
                 "profile": {
                     "title": "Il tuo profilo",
                     "description": "Gestisci il profilo"
                 },
                 "appearance": {
-                    "title": "Tema",
+                    "title": "Aspetto",
                     "description": "Stile dell'app"
                 },
                 "language": {
@@ -882,6 +886,8 @@
                     "title": "Lingua"
                 },
                 "header": {
+                    "title": "Lingua dell'app",
+                    "description": "Cambia la lingua",
                     "text": "Lingua dell'app"
                 },
                 "system": {
@@ -892,12 +898,22 @@
                 "stack": {
                     "title": "Notifiche"
                 },
+                "header": {
+                    "title": "Notifiche",
+                    "description": "Ricevi subito gli ultimi aggiornamenti",
+                    "text": "Notifiche"
+                },
                 "description": "School Manager usa le notifiche per tenerti aggiornato riguardo gli ultimi cambiamenti nelle tue classi.\n\nNon ti manderemo spam, perciò non preoccuparti.\n\nÈ consigliato attivare le notifiche per ricevere aggiornamenti riguardo verifiche e compiti.",
                 "switch": "Attiva le notifiche"
             },
             "applock": {
                 "stack": {
                     "title": "Blocco App"
+                },
+                "header": {
+                    "title": "Blocco App",
+                    "description": "Proteggi i tuoi dati",
+                    "text": "Blocco App"
                 },
                 "description": "Puoi decidere di bloccare l'app con i tuoi dati biometrici.\nIl blocco è gestito dal tuo sistema, e l'accesso con codice potrebbe essere consentito come metodo alternativo.\nNon sarà possibile accedere all'app senza prima sbloccarla.\nSe attivi 'Richiedi sempre l'accesso', il tuo codice verrà richiesto ogni volta che accederai all'app.",
                 "switch": "Attiva il blocco",
@@ -908,6 +924,8 @@
                     "title": "Tema"
                 },
                 "header": {
+                    "title": "Aspetto",
+                    "description": "Rendi l'app tua",
                     "text": "Tema dell'app"
                 },
                 "system": {

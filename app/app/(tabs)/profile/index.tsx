@@ -19,6 +19,7 @@ export default function ProfileTab() {
     const [refreshing, setRefreshing] = useState(false);
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
+    const optimizationStyle = createStyling.createOptimizationStyles(theme);
 
     const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, {populate: ["classes"]});
     const accountData = useAccountData();
@@ -85,32 +86,36 @@ export default function ProfileTab() {
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                             <Text style={HomeScreenStyle.welcomeText}>{isUserLoggedIn ? i18n.t("profile.customheader.loggedin.title", {user: profilePageData.userdata.userInfo.name}) : i18n.t("profile.customheader.loggedout.title")}</Text>
                         </BlurView>
-                        <View style={HomeScreenStyle.dashboard}>
-                            <DashboardItem title={isUserLoggedIn ? i18n.t("profile.panel.loggedin.title", {user: profilePageData.userdata.userInfo.name}) : i18n.t("profile.panel.loggedout.title")} items={(()=>{
-                                let items = [
-                                    { title: i18n.t("profile.panel.name.title"), description: profilePageData.userdata.name, onPress: () => {
-                                        router.push("/profile/profiledata");
-                                    }},
-                                    { title: i18n.t("profile.panel.settings.title"), description: i18n.t("profile.panel.settings.description"), onPress: () => {
-                                        router.push("/profile/settings/all");
-                                    }}
-                                ];
-                                if (!isUserLoggedIn) {
-                                    items.push({ title: i18n.t("profile.panel.login.title"), description: i18n.t("profile.panel.login.description"), onPress: () => {
-                                        router.push("/welcome/account/login");
-                                    }});
-                                } else {
-                                    items.push({ title: i18n.t("profile.panel.logout.title"), description: i18n.t("profile.panel.logout.description"), onPress: () => {
-                                        router.push("/welcome/account/logout");
-                                    }});
-                                }
-                                return items;
-                            })()} />
-                            {isUserLoggedIn ? (
-                                <DashboardItem title={i18n.t("profile.class.header.title")} items={profilePageData.classes.slice(0, 5)} expand={()=>{
-                                    router.push("/profile/class/all");
-                                }}/>
-                            ) : null}
+                        <View style={[HomeScreenStyle.dashboard, optimizationStyle.container]}>
+                            <View style={optimizationStyle.item}>
+                                <DashboardItem title={isUserLoggedIn ? i18n.t("profile.panel.loggedin.title", {user: profilePageData.userdata.userInfo.name}) : i18n.t("profile.panel.loggedout.title")} items={(()=>{
+                                    let items = [
+                                        { title: i18n.t("profile.panel.name.title"), description: profilePageData.userdata.name, onPress: () => {
+                                            router.push("/profile/profiledata");
+                                        }},
+                                        { title: i18n.t("profile.panel.settings.title"), description: i18n.t("profile.panel.settings.description"), onPress: () => {
+                                            router.push("/profile/settings/all");
+                                        }}
+                                    ];
+                                    if (!isUserLoggedIn) {
+                                        items.push({ title: i18n.t("profile.panel.login.title"), description: i18n.t("profile.panel.login.description"), onPress: () => {
+                                            router.push("/welcome/account/login");
+                                        }});
+                                    } else {
+                                        items.push({ title: i18n.t("profile.panel.logout.title"), description: i18n.t("profile.panel.logout.description"), onPress: () => {
+                                            router.push("/welcome/account/logout");
+                                        }});
+                                    }
+                                    return items;
+                                })()} />
+                            </View>
+                            <View style={optimizationStyle.item}>
+                                {isUserLoggedIn ? (
+                                    <DashboardItem title={i18n.t("profile.class.header.title")} items={profilePageData.classes.slice(0, 5)} expand={()=>{
+                                        router.push("/profile/class/all");
+                                    }}/>
+                                ) : null}
+                            </View>
                         </View>
                     </ScrollView>
                 )

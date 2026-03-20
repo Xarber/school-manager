@@ -11,16 +11,18 @@ type Action = {
 type ActionMenuProps = {
     title?: string;
     items: Action[];
+    itemsPerRow?: number;
 }
 
 export default function ActionMenu(props: ActionMenuProps) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    let itemsPerRow = props.itemsPerRow ?? 3;
 
     return (
         <View style={commonStyle.dashboardSection}>
             <Text style={commonStyle.dashboardSectionTitle}>{props.title}</Text>
-            <View style={commonStyle.actionMenuContainer}>
+            <View style={[commonStyle.actionMenuContainer, { gridTemplateColumns: `repeat(${itemsPerRow}, 1fr)` }]}>
                 {props.items.map((item, index) => (
                     <Pressable key={index} style={({ pressed }) => [
                         commonStyle.actionMenuItemContainer,

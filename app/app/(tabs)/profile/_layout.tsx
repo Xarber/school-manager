@@ -19,7 +19,7 @@ export default function ProfileLayout() {
           <Stack.Screen name="index" options={{ title: i18n.t("profile.stack.title")}} />
           <Stack.Screen name="settings/[page]" options={{ title: i18n.t("profile.settings.stack.title"), headerShown: true }} />
           <Stack.Screen name="class/[id]" options={{ headerShown: true, title: i18n.t("profile.class.stack.stacktitle"), headerTitle: i18n.t("profile.class.stack.title") }} />
-          <Stack.Screen name="profiledata" options={{ presentation: "modal", headerShown: true, title: i18n.t("profile.stack.title"), headerStyle: { backgroundColor: "" } }} />
+          <Stack.Screen name="profiledata" options={{ presentation: "modal", headerShown: true, title: i18n.t("profile.stack.title"), headerStyle: { backgroundColor: "" }, contentStyle: { backgroundColor: theme.opaqueCard } }} />
         </Stack>
       </BlurView>
     </LinearGradient>

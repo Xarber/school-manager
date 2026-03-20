@@ -17,6 +17,7 @@ export default function RegistryTab() {
     const router = useRouter();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const RegistryStyle = createStyling.createRegistryStyles(theme);
+    const optimizationStyle = createStyling.createOptimizationStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
 
     const safeAreaInsets = useSafeAreaInsets();
@@ -32,28 +33,32 @@ export default function RegistryTab() {
                 <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                     <Text style={HomeScreenStyle.welcomeText}>{i18n.t("registry.customheader.title")}</Text>
                 </BlurView>
-                <View style={HomeScreenStyle.dashboard}>
-                    <GradeGrid title={i18n.t("registry.grades.title")} maxValue={10.1} items={registryPageData.grades} />
-                    <ActionMenu title={i18n.t("registry.class.title")} items={[
-                        { title: i18n.t("registry.class.homework.title"), onPress: () => {
-                            router.push("/registry/homework");
-                        } },
-                        { title: i18n.t("registry.class.comunications.title"), onPress: () => {
-                            router.push("/registry/comunications/all");
-                        } },
-                        { title: i18n.t("registry.class.schedule.title"), onPress: () => {
-                            router.push("/registry/schedule");
-                        } },
-                        { title: i18n.t("registry.class.grades.title"), onPress: () => {
-                            router.push("/registry/grades");
-                        } },
-                        { title: i18n.t("registry.class.resources.title"), onPress: () => {
-                            router.push("/registry/resources/all");
-                        } },
-                        { title: i18n.t("registry.class.lessons.title"), onPress: () => {
-                            router.push("/registry/lessons");
-                        } },
-                    ]} />
+                <View style={[HomeScreenStyle.dashboard, optimizationStyle.container]}>
+                    <View style={optimizationStyle.item}>
+                        <GradeGrid title={i18n.t("registry.grades.title")} maxValue={10.1} items={registryPageData.grades} />
+                    </View>
+                    <View style={optimizationStyle.item}>
+                        <ActionMenu title={i18n.t("registry.class.title")} items={[
+                            { title: i18n.t("registry.class.homework.title"), onPress: () => {
+                                router.push("/registry/homework");
+                            } },
+                            { title: i18n.t("registry.class.lessons.title"), onPress: () => {
+                                router.push("/registry/lessons");
+                            } },
+                            { title: i18n.t("registry.class.grades.title"), onPress: () => {
+                                router.push("/registry/grades");
+                            } },
+                            { title: i18n.t("registry.class.comunications.title"), onPress: () => {
+                                router.push("/registry/comunications/all");
+                            } },
+                            { title: i18n.t("registry.class.schedule.title"), onPress: () => {
+                                router.push("/registry/schedule");
+                            } },
+                            { title: i18n.t("registry.class.resources.title"), onPress: () => {
+                                router.push("/registry/resources/all");
+                            } },
+                        ]} />
+                    </View>
                 </View>
             </ScrollView>
         </>

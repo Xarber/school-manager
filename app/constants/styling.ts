@@ -1,6 +1,21 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from './colors';
 
+export const defaultScreenSizes = {
+    phone: {
+        width: 375,
+        height: 667,
+    },
+    tablet: {
+        width: 768,
+        height: 1024,
+    },
+    desktop: {
+        width: 1920,
+        height: 1080,
+    },
+};
+
 const createCommonStyles = (theme: Theme) => StyleSheet.create({
     /* General Styles */
     mainView: {
@@ -125,10 +140,10 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         padding: 10,
         borderRadius: 8,
         gap: 10,
-        alignItems: "flex-start",  // Key fix: prevents row height stretching to tallest item
+        alignItems: "stretch",
     },
     actionMenuItemContainer: {
-        flexBasis: 0,  // Targets 3 per row (33.333%), minus ~gap/3 (10px gap / 3 rows)
+        flexBasis: "33.333%",  // Targets 3 per row (33.333%), minus ~gap/3 (10px gap / 3 rows)
         flexGrow: 1,
         flex: 3,
         minWidth: 120,
@@ -145,7 +160,7 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         color: theme.text,
         fontWeight: "bold",
         textAlign: "center",
-        flexShrink: 1,  // Allows text to wrap if very long
+        flexShrink: 2,  // Allows text to wrap if very long
     },
 
     clipboardTextContainer: {
@@ -562,6 +577,23 @@ const createAlertStyles = (theme: Theme) => StyleSheet.create({
     }
 });
 
+const createOptimizationStyles = (theme: Theme) => StyleSheet.create({
+    container: {
+        display: "flex",
+        flexDirection: "row",
+        gap: 10,
+        flexWrap: "wrap",
+        alignItems: "stretch",
+        // backgroundColor: "blue",
+    },
+    item: {
+        width: defaultScreenSizes.phone.width,
+        flexShrink: 1,
+        flexGrow: 1,
+        // backgroundColor: "red",
+    }
+});
+
 export default {
     createCommonStyles,
     createAlertStyles,
@@ -571,5 +603,6 @@ export default {
     createCalendarStyles,
     createRegistryStyles,
     createWelcomescreenStyles,
-    createModalStyles
+    createModalStyles,
+    createOptimizationStyles
 }

@@ -326,7 +326,7 @@ function LoggedInPage({alert}: AccountProps) {
 function LogoutPage({alert}: AccountProps) {
     const router = useRouter();
 
-    const theme = useTheme();
+    const theme = useTheme(); // "dark"
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
