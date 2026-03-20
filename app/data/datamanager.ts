@@ -552,6 +552,7 @@ export const DataManager = {
         delete: "/delete",
         get: "/get",
         me: "/me",
+        uploadEnabled: false,
 
         testConnect: async () => {
             try {

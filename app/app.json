@@ -72,53 +72,57 @@
         }
       ],
       "expo-llm-mediapipe",
-      ["expo-alternate-app-icons", [
-        {
-          "name": "IconDefault",
-          "iosNew": "./assets/icons/icon-default/icon-default.icon",
-          "ios": {
-            "light": "./assets/icons/icon-default/icon-default-light.png",
-            "dark": "./assets/icons/icon-default/icon-default-dark.png",
-            "tinted": "./assets/icons/icon-default/icon-default-dark.png"
+      [
+        "expo-alternate-app-icons",
+        [
+          {
+            "name": "IconDefault",
+            "iosNew": "./assets/icons/icon-default/icon-default.icon",
+            "ios": {
+              "light": "./assets/icons/icon-default/icon-default-light.png",
+              "dark": "./assets/icons/icon-default/icon-default-dark.png",
+              "tinted": "./assets/icons/icon-default/icon-default-dark.png"
+            },
+            "android": {
+              "backgroundColor": "#7088fa",
+              "foregroundImage": "./assets/icons/icon-default/icon-default-foreground.png",
+              "backgroundImage": "./assets/icons/icon-default/icon-default-background.png",
+              "monochromeImage": "./assets/icons/icon-default/icon-default-foreground.png"
+            }
           },
-          "android": {
-            "backgroundColor": "#7088fa",
-            "foregroundImage": "./assets/icons/icon-default/icon-default-foreground.png",
-            "backgroundImage": "./assets/icons/icon-default/icon-default-background.png",
-            "monochromeImage": "./assets/icons/icon-default/icon-default-foreground.png"
-          }
-        },
-        {
-          "name": "IconExams",
-          "iosNew": "./assets/icons/icon-exams/icon-exams.icon",
-          "ios": {
-            "light": "./assets/icons/icon-exams/icon-exams-light.png",
-            "dark": "./assets/icons/icon-exams/icon-exams-dark.png",
-            "tinted": "./assets/icons/icon-exams/icon-exams-dark.png"
+          {
+            "name": "IconExams",
+            "iosNew": "./assets/icons/icon-exams/icon-exams.icon",
+            "ios": {
+              "light": "./assets/icons/icon-exams/icon-exams-light.png",
+              "dark": "./assets/icons/icon-exams/icon-exams-dark.png",
+              "tinted": "./assets/icons/icon-exams/icon-exams-dark.png"
+            },
+            "android": {
+              "backgroundColor": "#725130",
+              "foregroundImage": "./assets/icons/icon-exams/icon-exams-foreground.png",
+              "backgroundImage": "./assets/icons/icon-exams/icon-exams-background.png",
+              "monochromeImage": "./assets/icons/icon-exams/icon-exams-foreground.png"
+            }
           },
-          "android": {
-            "backgroundColor": "#725130",
-            "foregroundImage": "./assets/icons/icon-exams/icon-exams-foreground.png",
-            "backgroundImage": "./assets/icons/icon-exams/icon-exams-background.png",
-            "monochromeImage": "./assets/icons/icon-exams/icon-exams-foreground.png"
+          {
+            "name": "IconRainbow",
+            "iosNew": "./assets/icons/icon-rainbow/icon-rainbow.icon",
+            "ios": {
+              "light": "./assets/icons/icon-rainbow/icon-rainbow-light.png",
+              "dark": "./assets/icons/icon-rainbow/icon-rainbow-dark.png",
+              "tinted": "./assets/icons/icon-rainbow/icon-rainbow-dark.png"
+            },
+            "android": {
+              "backgroundColor": "#725130",
+              "foregroundImage": "./assets/icons/icon-rainbow/icon-rainbow-foreground.png",
+              "backgroundImage": "./assets/icons/icon-rainbow/icon-rainbow-background.png",
+              "monochromeImage": "./assets/icons/icon-rainbow/icon-rainbow-foreground.png"
+            }
           }
-        },
-        {
-          "name": "IconRainbow",
-          "iosNew": "./assets/icons/icon-rainbow/icon-rainbow.icon",
-          "ios": {
-            "light": "./assets/icons/icon-rainbow/icon-rainbow-light.png",
-            "dark": "./assets/icons/icon-rainbow/icon-rainbow-dark.png",
-            "tinted": "./assets/icons/icon-rainbow/icon-rainbow-dark.png"
-          },
-          "android": {
-            "backgroundColor": "#725130",
-            "foregroundImage": "./assets/icons/icon-rainbow/icon-rainbow-foreground.png",
-            "backgroundImage": "./assets/icons/icon-rainbow/icon-rainbow-background.png",
-            "monochromeImage": "./assets/icons/icon-rainbow/icon-rainbow-foreground.png"
-          }
-        }
-      ]]
+        ]
+      ],
+      "expo-quick-actions"
     ],
     "experiments": {
       "typedRoutes": true,

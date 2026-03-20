@@ -705,6 +705,7 @@
                 "title": "Crea"
             },
             "reply": {
+                "title": "La tua risposta",
                 "accept": "Accetta",
                 "reject": "Rifiuta",
                 "message": "Inserisci una risposta",

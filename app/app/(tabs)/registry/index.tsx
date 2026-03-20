@@ -48,7 +48,7 @@ export default function RegistryTab() {
                             router.push("/registry/grades");
                         } },
                         { title: i18n.t("registry.class.resources.title"), onPress: () => {
-                            router.push("/registry/resources");
+                            router.push("/registry/resources/all");
                         } },
                         { title: i18n.t("registry.class.lessons.title"), onPress: () => {
                             router.push("/registry/lessons");

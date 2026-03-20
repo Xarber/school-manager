@@ -676,6 +676,7 @@
                 "title": "Create"
             },
             "reply": {
+                "title": "Your response",
                 "accept": "Accept",
                 "reject": "Reject",
                 "message": "Insert an answer",

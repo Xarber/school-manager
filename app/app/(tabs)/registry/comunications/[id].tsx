@@ -59,7 +59,8 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                     <Text style={[commonStyle.text, { fontSize: 15 }]}>{comunication.content}</Text>
                 </View>
                 {comunication.requiresConfirmation == true && (
-                    <View>
+                    <View style={{gap: 10}}>
+                        <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.reply.title")}</Text>
                         {(comunication.confirmationType ?? "accept") === "accept" && (
                             <ActionButtons containerStyles={{
                                 position: undefined,
@@ -105,7 +106,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                             <View style={[modalStyle.cardEdit]}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("registry.comunications.reply.message")}</Text>
-                                    <TextInput maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
+                                    <TextInput readOnly={!canSend} maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
                                 </View>
                                 <TouchableOpacity disabled={!canSend} style={[commonStyle.wideButton, (!canSend ? { backgroundColor: theme.disabled } : null)]} onPress={() => {
                                     comunicationResponse.create({

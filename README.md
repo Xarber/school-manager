@@ -75,14 +75,16 @@ cd ./server/ && node .
 * ✔️ App themes!
 * ✔️ Custom app icons!
 * ✔️ App lock
+* ✔️ Confirmations for communications (accept, deny, message)
 
 </details>
 
 <details open>
 <summary>⚙️ In progress</summary>
 
+* ⚙️ iPad/PC (big screen) optimizations
 * ⚙️ Resources (links to websites or files)
-* ⚙️ Confirmations for communications (accept, deny, message)
+* ⏸️ (Teacher) List comunication responses
 
 </details>
 
@@ -116,7 +118,6 @@ cd ./server/ && node .
     * Summarize arguments where user is less prepared (based on grades)
 * ✧ File Uploads
 * ✧ Page filters (filter homework/lessons/... by subject, date, etc)
-* ✧ Integrate with personal assistant (Siri/Gemini/...)
 * ✧ Custom database hosting (huge milestone, manage your own servers through desktop tauri app, integrate with main app with server code)
 * ✧ Add own homework & exams (for class & subject, save in user data). NOT GRADES!
 * ✧ Parent accounts
@@ -131,12 +132,14 @@ cd ./server/ && node .
     * Find users, schools, classes (can't read data)
     * Disable user accounts, delete schools, classes.
 * ✧ In-app class/school feed + DM chats
+* ✧ App home screen quick actions (hold app icon)
 
 </details>
 
 <details>
 <summary>? Ideas</summary>
 
+* ? Integrate with personal assistant (Siri/Gemini/...) (Not supported with standard Expo)
 * ? Bridgefy / BLE integration for mesh network (upload and receive encrypted packets hotspot-like)
 
 </details>
