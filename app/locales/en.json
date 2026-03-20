@@ -810,6 +810,10 @@
             },
             "general": {
                 "title": "General",
+                "header": {
+                    "title": "App Settings",
+                    "description": "Manage your preferences"
+                },
                 "profile": {
                     "title": "Your Profile",
                     "description": "Manage your profile"
@@ -853,6 +857,8 @@
                     "title": "Language"
                 },
                 "header": {
+                    "title": "App Language",
+                    "description": "Change the language",
                     "text": "App Language"
                 },
                 "system": {
@@ -863,12 +869,22 @@
                 "stack": {
                     "title": "Notifications"
                 },
+                "header": {
+                    "title": "Notifications",
+                    "description": "Get updates right away",
+                    "text": "Notifications"
+                },
                 "description": "School Manager uses notifications to keep you posted about the latest changes in your classes.\n\nWe won't send you spam, so don't worry about it.\n\nIt is reccomended to keep notifications for exams and homework updates.",
                 "switch": "Enable Notifications"
             },
             "applock": {
                 "stack": {
                     "title": "App Lock"
+                },
+                "header": {
+                    "title": "App Lock",
+                    "description": "Protect your data",
+                    "text": "App Lock"
                 },
                 "description": "You can decide to lock the app with your biometric data.\nThis is managed by your system, and passcode access may be allowed as a backup method.\nYou won't be able to access the app without unlocking it first.\nIf you enable 'Always reauthenticate', you will be asked to reauthenticate every time the app is opened.",
                 "switch": "Enable App Lock",
@@ -879,6 +895,8 @@
                     "title": "Appearance"
                 },
                 "header": {
+                    "title": "Appearance",
+                    "description": "Make the app your own",
                     "text": "App Theme"
                 },
                 "system": {

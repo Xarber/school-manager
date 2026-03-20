@@ -81,6 +81,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
     const theme = useTheme();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
+    const optimizationStyle = createStyling.createOptimizationStyles(theme);
     const [refreshing, setRefreshing] = useState(false);
     const language = useLanguage();
 
@@ -216,58 +217,64 @@ function CalendarComponent({userData}: {userData: UserData}) {
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                             <Text style={HomeScreenStyle.welcomeText}>{i18n.t("calendar.customheader.title")}</Text>
                         </BlurView>
-                        <View style={{ flex: 1, backgroundColor: theme.background }}>
-                            <Calendar
-                                markingType="multi-dot"
-                                key={`${theme.type}-${language.locale}`}
-                                hideExtraDays={true}
-                                firstDay={1}
-                                
-                                theme={calendarTheme}
+                        <View style={optimizationStyle.container}>
+                            <View style={optimizationStyle.item}>
+                                <View style={{ flex: 1, backgroundColor: theme.background }}>
+                                    <Calendar
+                                        markingType="multi-dot"
+                                        key={`${theme.type}-${language.locale}`}
+                                        hideExtraDays={true}
+                                        firstDay={1}
+                                        
+                                        theme={calendarTheme}
 
-                                onDayPress={(day) => setSelectedDate(day.dateString)}
-                                markedDates={markedDates}
-                            />
-                        </View>
-                        <View style={HomeScreenStyle.dashboard}>
-                            <DashboardItem title={findToday(language, selectedDate)} items={[]} collapsed={true} noItemsText='' />
-                            {/* todo */}
-                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.homework.title")} items={loadHomeworkForDate(selectedDate, calendarPageData.homework).map((e: any)=>{
-                                return {
-                                    title: e.title,
-                                    description: e.description,
-                                    badge: {
-                                        text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
-                                        color: stringToColor(e.subjectid)
-                                    },
-                                    onPress: () => {}
-                                };
-                            })} />
-                            {/* todo */}
-                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.lessons.title")} items={loadLessonsForDate(selectedDate, calendarPageData.lessons).map((e: any)=>{
-                                return {
-                                    title: e.title,
-                                    description: e.description,
-                                    badge: {
-                                        text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
-                                        color: stringToColor(e.subjectid)
-                                    },
-                                    onPress: () => {}
-                                };
-                            })} />
-                            {/* todo */}
-                            <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.exams.title")} items={loadExamsForDate(selectedDate, calendarPageData.exams).map((e: any)=>{
-                                return {
-                                    title: e.title,
-                                    subtitle: e.scheduled ? i18n.t("calendar.exams.scheduled") : undefined,
-                                    description: e.description,
-                                    badge: {
-                                        text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
-                                        color: stringToColor(e.subjectid)
-                                    },
-                                    onPress: () => {}
-                                };
-                            })} />
+                                        onDayPress={(day) => setSelectedDate(day.dateString)}
+                                        markedDates={markedDates}
+                                    />
+                                </View>
+                            </View>
+                            <View style={optimizationStyle.item}>
+                                <View style={HomeScreenStyle.dashboard}>
+                                    <DashboardItem title={findToday(language, selectedDate)} items={[]} collapsed={true} noItemsText='' />
+                                    {/* todo */}
+                                    <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.homework.title")} items={loadHomeworkForDate(selectedDate, calendarPageData.homework).map((e: any)=>{
+                                        return {
+                                            title: e.title,
+                                            description: e.description,
+                                            badge: {
+                                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                                color: stringToColor(e.subjectid)
+                                            },
+                                            onPress: () => {}
+                                        };
+                                    })} />
+                                    {/* todo */}
+                                    <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.lessons.title")} items={loadLessonsForDate(selectedDate, calendarPageData.lessons).map((e: any)=>{
+                                        return {
+                                            title: e.title,
+                                            description: e.description,
+                                            badge: {
+                                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                                color: stringToColor(e.subjectid)
+                                            },
+                                            onPress: () => {}
+                                        };
+                                    })} />
+                                    {/* todo */}
+                                    <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.exams.title")} items={loadExamsForDate(selectedDate, calendarPageData.exams).map((e: any)=>{
+                                        return {
+                                            title: e.title,
+                                            subtitle: e.scheduled ? i18n.t("calendar.exams.scheduled") : undefined,
+                                            description: e.description,
+                                            badge: {
+                                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                                color: stringToColor(e.subjectid)
+                                            },
+                                            onPress: () => {}
+                                        };
+                                    })} />
+                                </View>
+                            </View>
                         </View>
                     </ScrollView>
                 )

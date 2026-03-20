@@ -25,6 +25,7 @@ function HomeScreen({userData}: {userData: UserData}) {
     const [refreshing, setRefreshing] = useState(false);
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
+    const optimizationStyle = createStyling.createOptimizationStyles(theme);
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -109,49 +110,53 @@ function HomeScreen({userData}: {userData: UserData}) {
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                             <Text style={HomeScreenStyle.welcomeText}>{today}</Text>
                         </BlurView>
-                        <View style={HomeScreenStyle.dashboard}>
-                            <UserGrades items={[]} maxItems={3} expand={() => {
-                                router.push("/registry");
-                                setTimeout(()=>router.push("/registry/grades"), 36);
-                            }}/>
+                        <View style={[HomeScreenStyle.dashboard, optimizationStyle.container]}>
                             {/* todo - Schedule, Exams, Quick Homework */}
-                            <DashboardItem title={i18n.t("home.tomorrow.title")} items={homescreenPageData.tomorrow.map((e: any, i: number)=>{
-                                let subject = classData.data.subjects.find((s: any)=>s._id === e.subjectid)?.name;
-                                let data = {
-                                    title: e.title,
-                                    description: e.description,
-                                    subtitle: 
-                                        e.isExam ? i18n.t("home.tomorrow.exam") : 
-                                        (!!e.dueDate ? i18n.t("home.tomorrow.homework") : i18n.t("home.tomorrow.lesson")),
-                                    onPress: () => {
-                                        //router.push(`/calendar/${e.date}`);
+                            <View style={optimizationStyle.item}>
+                                <DashboardItem title={i18n.t("home.tomorrow.title")} items={homescreenPageData.tomorrow.map((e: any, i: number)=>{
+                                    let subject = classData.data.subjects.find((s: any)=>s._id === e.subjectid)?.name;
+                                    let data = {
+                                        title: e.title,
+                                        description: e.description,
+                                        subtitle: 
+                                            e.isExam ? i18n.t("home.tomorrow.exam") : 
+                                            (!!e.dueDate ? i18n.t("home.tomorrow.homework") : i18n.t("home.tomorrow.lesson")),
+                                        onPress: () => {
+                                            //router.push(`/calendar/${e.date}`);
+                                        }
+                                    } as any;
+                                    if (subject) data.badge = {
+                                        text: subject,
+                                        color: stringToColor(e.subjectid)
+                                    };
+                                    return data;
+                                })} />
+                            </View>
+                            <View style={optimizationStyle.item}>
+                                <UserGrades items={[]} maxItems={3} expand={() => {
+                                    router.push("/registry");
+                                    setTimeout(()=>router.push("/registry/grades"), 36);
+                                }}/>
+                                <DashboardItem title={i18n.t("home.upcoming.title")} items={upcomingExams.map((e: any, i: number)=>{
+                                    let subject = classData.data.subjects.find((s: any)=>s._id === e.subjectid)?.name;
+                                    let data = {
+                                        title: e.title,
+                                        description: e.description,
+                                        subtitle: e.date,
+                                        onPress: () => {
+                                            //router.push(`/calendar/${e.date}`);
+                                        }
+                                    } as any;
+                                    if (subject) data.badge = {
+                                        text: subject,
+                                        color: stringToColor(e.subjectid)
                                     }
-                                } as any;
-                                if (subject) data.badge = {
-                                    text: subject,
-                                    color: stringToColor(e.subjectid)
-                                };
-                                return data;
-                            })} />
-                            <DashboardItem title={i18n.t("home.upcoming.title")} items={upcomingExams.map((e: any, i: number)=>{
-                                let subject = classData.data.subjects.find((s: any)=>s._id === e.subjectid)?.name;
-                                let data = {
-                                    title: e.title,
-                                    description: e.description,
-                                    subtitle: e.date,
-                                    onPress: () => {
-                                        //router.push(`/calendar/${e.date}`);
-                                    }
-                                } as any;
-                                if (subject) data.badge = {
-                                    text: subject,
-                                    color: stringToColor(e.subjectid)
-                                }
-                                return data;
-                            })} maxItems={3} expand={() => {
-                                router.push("/registry");
-                                setTimeout(()=>router.push("/registry/lessons"), 36);
-                            }}/>
+                                    return data;
+                                })} maxItems={3} expand={() => {
+                                    router.push("/registry");
+                                    setTimeout(()=>router.push("/registry/lessons"), 36);
+                                }}/>
+                            </View>
                         </View>
                     </ScrollView>
                 )
