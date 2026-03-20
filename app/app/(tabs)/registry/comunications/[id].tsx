@@ -1,6 +1,6 @@
-import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
-import createStyling from '@/constants/styling';
+import createStyling, { defaultScreenSizes } from '@/constants/styling';
 import { DataManager, ComunicationData, SubjectData, useAppDataSync, UserInfo, UserData, useDBitem } from '@/data/datamanager';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,6 +10,7 @@ import { ActivityIndicator } from 'react-native';
 import DashboardItem from '@/components/dashboardItem';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 function ComunicationTab({classid, comunicationid}: {classid: string, comunicationid: string}) {
     const theme = useTheme();
@@ -134,6 +135,9 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
 function AllComunications({classid, userData}: {classid: string, userData: UserData}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const optimizationStyle = createStyling.createOptimizationStyles(theme);
+    const { width, height } = useWindowDimensions();
+    const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
 
@@ -165,29 +169,39 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
             <ActivityIndicator size="small" color={theme.text} />
         </View>
     ) : (classid == "") ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
-            </View>
-        ) : (
-        <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
-            }>
-                <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text>
-                <View>
-                    <DashboardItem title={""} items={comunications.map((e: ComunicationData) => {
-                        let description = `${e.content.split("\n").slice(0, 2).join("\n")}`;
-                        if (description.length > 100) description = description.slice(0, 100) + "...";
-                        return {
-                            title: e.title,
-                            description,
-                            onPress: () => {
-                                router.push({pathname: `/(tabs)/registry/comunications/${e._id}` as any, params: {classid: classid}});
-                            }
-                        }
-                    })} noItemsText={i18n.t("registry.comunications.warn.nocomunications.text")} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+            <Ionicons name="alert-circle" size={40} color={theme.text} />
+            <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
+        </View>
+    ) : (
+        <>
+            <View style={[commonStyle.dashboardSection, optimizationStyle.container, { flex: 1 }]}>
+                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, { justifyContent: "center", gap: 5, alignItems: "center", height: "100%" }]}>
+                    <Ionicons name="school" size={40} color={theme.text} />
+                    <Text style={commonStyle.headerText}>{classData.data.name}</Text>
+                    <Text style={commonStyle.text}>{i18n.t("registry.comunications.header.description")}</Text>
+                </View>}
+                <View style={optimizationStyle.item}>
+                    <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
+                    }>
+                        <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text>
+                        <View>
+                            <DashboardItem title={""} items={comunications.map((e: ComunicationData) => {
+                                let description = `${e.content.split("\n").slice(0, 2).join("\n")}`;
+                                if (description.length > 100) description = description.slice(0, 100) + "...";
+                                return {
+                                    title: e.title,
+                                    description,
+                                    onPress: () => {
+                                        router.push({pathname: `/(tabs)/registry/comunications/${e._id}` as any, params: {classid: classid}});
+                                    }
+                                }
+                            })} noItemsText={i18n.t("registry.comunications.warn.nocomunications.text")} />
+                        </View>
+                    </ScrollView>
                 </View>
-            </ScrollView>
+            </View>
             <ActionButtons items={[
                 {
                     title: i18n.t("registry.comunications.create.title"),
@@ -198,7 +212,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                     display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false
                 }
             ]} align="right" itemStyles={{ borderRadius: 360 }} />
-        </View>
+        </>
     );
 }
 

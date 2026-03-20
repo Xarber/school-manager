@@ -597,7 +597,7 @@
                 "title": "Homework"
             },
             "comunications": {
-                "title": "Comunications"
+                "title": "Communications"
             },
             "schedule": {
                 "title": "Schedule"
@@ -631,6 +631,9 @@
             "stack": {
                 "title": "Homework"
             },
+            "header": {
+                "description": "View the homework for your class"
+            },
             "warn": {
                 "noclass": {
                     "text": "No active class."
@@ -656,21 +659,22 @@
         },
         "comunications": {
             "stack": {
-                "title": "Comunications"
+                "title": "Communications"
             },
             "warn": {
                 "noclass": {
                     "text": "No active class."
                 },
                 "nocomunications": {
-                    "text": "There are no comunications for this class."
+                    "text": "There are no communications for this class."
                 },
                 "notfound": {
                     "text": "Can't find this comunication."
                 }
             },
             "header": {
-                "text": "{{class}}'s comunications"
+                "text": "{{class}}'s communications",
+                "description": "View the communications for your class"
             },
             "create": {
                 "title": "Create"
@@ -697,7 +701,8 @@
                 }
             },
             "header": {
-                "text": "{{class}}'s lessons"
+                "text": "{{class}}'s lessons",
+                "description": "View the lessons for your class"
             },
             "create": {
                 "title": "Create"

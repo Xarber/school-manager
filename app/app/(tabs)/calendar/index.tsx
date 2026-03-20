@@ -193,8 +193,8 @@ function CalendarComponent({userData}: {userData: UserData}) {
     }, [selectedDate, (!classData.loading && !lessonData.loading && !homeworkData.loading)]);
 
     let calendarTheme = {
-        backgroundColor: theme.background,
-        calendarBackground: theme.background,
+        backgroundColor: "transparent",
+        calendarBackground: "transparent",
         selectedDayTextColor: theme.text,
         todayTextColor: theme.secondary,
         dayTextColor: theme.text,
@@ -219,7 +219,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                         </BlurView>
                         <View style={optimizationStyle.container}>
                             <View style={optimizationStyle.item}>
-                                <View style={{ flex: 1, backgroundColor: theme.background }}>
+                                <View style={{ flex: 1 }}>
                                     <Calendar
                                         markingType="multi-dot"
                                         key={`${theme.type}-${language.locale}`}
