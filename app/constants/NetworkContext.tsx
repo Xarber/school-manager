@@ -31,7 +31,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         const state = await NetInfo.fetch();
         let data = {
             ...state,
-            isOnline: false // (state.isInternetReachable || state.isConnected)
+            isOnline: (state.isInternetReachable || state.isConnected)
         };
 
         const isServerReachable = await fetch(dbpaths.use).then(async r=>(r.ok) ? (await r.json()).success : false).catch(e=>false);
