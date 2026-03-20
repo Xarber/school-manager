@@ -58,7 +58,7 @@ function LanguageTab() {
         <>
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.language.stack.title")}} />
             <View style={[commonStyle.dashboardSection, optimizationStyle.container, { flex: 1 }]}>
-                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", alignItems: "center", height: "100%"}]}>
+                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", gap: 5, alignItems: "center", height: "100%"}]}>
                     <Ionicons name="chatbox-outline" size={50} color={theme.text} />
                     <Text style={commonStyle.headerText}>{i18n.t("profile.settings.language.header.title")}</Text>
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.language.header.description")}</Text>
@@ -103,7 +103,7 @@ function NotificationsTab() {
         <>
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.notifications.stack.title")}} />
             <View style={[commonStyle.dashboardSection, optimizationStyle.container, { flex: 1 }]}>
-                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", alignItems: "center", height: "100%"}]}>
+                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", gap: 5, alignItems: "center", height: "100%"}]}>
                     <Ionicons name="chatbox-outline" size={50} color={theme.text} />
                     <Text style={commonStyle.headerText}>{i18n.t("profile.settings.notifications.header.title")}</Text>
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.notifications.header.description")}</Text>
@@ -169,7 +169,7 @@ function AppLockTab() {
         <>
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.applock.stack.title")}} />
             <View style={[commonStyle.dashboardSection, optimizationStyle.container, { flex: 1 }]}>
-                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", alignItems: "center", height: "100%"}]}>
+                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", gap: 5, alignItems: "center", height: "100%"}]}>
                     <Ionicons name="lock-closed" size={50} color={theme.text} />
                     <Text style={commonStyle.headerText}>{i18n.t("profile.settings.applock.header.title")}</Text>
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.applock.header.description")}</Text>
@@ -256,7 +256,7 @@ function AppearanceTab() {
                 })
             }}></TouchableOpacity>}
             <View style={[commonStyle.dashboardSection, optimizationStyle.container, { flex: 1 }]}>
-                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", alignItems: "center", height: "100%"}]}>
+                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", gap: 5, alignItems: "center", height: "100%"}]}>
                     <Ionicons name="color-palette-outline" size={50} color={theme.text} />
                     <Text style={commonStyle.headerText}>{i18n.t("profile.settings.appearance.header.title")}</Text>
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.appearance.header.description")}</Text>
@@ -297,7 +297,7 @@ function AllSettingsTab() {
         <>
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.stack.title")}} />
             <View style={[commonStyle.dashboardSection, optimizationStyle.container, { flex: 1 }]}>
-                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", alignItems: "center", height: "100%"}]}>
+                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", gap: 5, alignItems: "center", height: "100%"}]}>
                     <Ionicons name="settings-outline" size={50} color={theme.text} />
                     <Text style={commonStyle.headerText}>{i18n.t("profile.settings.general.header.title")}</Text>
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.general.header.description")}</Text>
