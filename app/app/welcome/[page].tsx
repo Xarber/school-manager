@@ -27,6 +27,8 @@ import { useAccountData } from "@/data/AccountDataContext";
 
 import welcomeImage from "@/assets/images/welcome.png";
 import { isDevice } from "expo-device";
+import { useNetworkContext } from "@/constants/NetworkContext";
+import { Ionicons } from "@expo/vector-icons";
 
 function StartPage() {
     const router = useRouter();
@@ -66,6 +68,8 @@ function RestorePage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
+    const network = useNetworkContext();
+
     const accountData = useAccountData();
     
     const reload = async () => {
@@ -91,10 +95,14 @@ function RestorePage() {
                 </View>
                 <View style={welcomeStyles.bottomViewBody}>
                     <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.description")}</Text>
+                    {network.ready && !network.isOnline && <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                        <Ionicons name="alert-circle" size={40} color={theme.text} />
+                        <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.networkunavailable")}</Text>
+                    </View>}
                 </View>
             </View>
             <View style={welcomeStyles.actions}>
-                <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => router.push("/welcome/account/login")}>
+                <TouchableOpacity disabled={!network.ready || !network.isOnline} style={[welcomeStyles.actionsButton, (!network.ready || !network.isOnline) ? { backgroundColor: theme.disabled } : null]} onPress={() => router.push("/welcome/account/login")}>
                     <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.login")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={{...welcomeStyles.actionsButton, backgroundColor: theme.secondary}} onPress={() => router.replace("/welcome/setname")}>

@@ -49,6 +49,14 @@ export default function ProfileTab() {
         accountdata: accountData
     };
 
+    profilePageData.classes.push({
+        title: i18n.t("profile.class.offlineclass.name"),
+        description: i18n.t("profile.class.offlineclass.description"),
+        onPress: () => {
+            router.push(`/profile/class/${DataManager.classData.offline}`);
+        }
+    });
+
     let activeClassIndex = profilePageData.userdata.classes.findIndex((cls: ClassData) => cls._id === profilePageData.userdata.settings.activeClassId);
 
     if (activeClassIndex > 0) {
@@ -110,11 +118,9 @@ export default function ProfileTab() {
                                 })()} />
                             </View>
                             <View style={optimizationStyle.item}>
-                                {isUserLoggedIn ? (
-                                    <DashboardItem title={i18n.t("profile.class.header.title")} items={profilePageData.classes.slice(0, 5)} expand={()=>{
-                                        router.push("/profile/class/all");
-                                    }}/>
-                                ) : null}
+                                <DashboardItem title={i18n.t("profile.class.header.title")} items={profilePageData.classes.slice(0, 5)} expand={()=>{
+                                    router.push("/profile/class/all");
+                                }}/>
                             </View>
                         </View>
                     </ScrollView>

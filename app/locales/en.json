@@ -85,6 +85,7 @@
             "stack": {
                 "title": "Account"
             },
+            "networkunavailable": "No internet",
             "title": "Have we met before?",
             "description": "Do you want to log into an account?",
             "login": "Continue",
@@ -758,6 +759,10 @@
                     "title": "Set as active"
                 }
             },
+            "offlineclass": {
+                "name": "Offline Class",
+                "description": "This is the offline class. You can use it with no internet and without an account. You can't syncronize it or invite other users."
+            },
             "header": {
                 "title": "Your Classes"
             },
@@ -916,6 +921,9 @@
                 "schoolmanager": {
                     "text": "App Gradient"
                 },
+                "redgradient": {
+                    "text": "Red Gradient"
+                },
                 "rainbow": {
                     "text": "RAINBOW!!"
                 },
@@ -943,7 +951,8 @@
             "role": "Role",
             "roles": {
                 "student": "Student",
-                "teacher": "Teacher"
+                "teacher": "Teacher",
+                "undefined": "No role"
             },
             "joindate": "Join Date",
             "classes": "Class Count"

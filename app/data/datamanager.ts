@@ -3,6 +3,8 @@ import NetInfo from "@react-native-community/netinfo";
 import { useEffect, useState } from 'react';
 import Constants from "expo-constants";
 import { Platform } from 'react-native';
+import { useNetworkContext } from '@/constants/NetworkContext';
+import { dbpaths } from './db';
 
 export const env = Constants.executionEnvironment;
 export const isProductionBinary = env === "standalone"; // release build created with/without EAS Build
@@ -11,9 +13,6 @@ export const isStoreClient = env === "storeClient";     // Expo Go OR a dev buil
 // Expo Go specific: expoVersion is the Expo Go version string when running in Expo Go
 export const isExpoGo = isStoreClient && !!Constants.expoVersion;
 export const isDevClient = isStoreClient && !Constants.expoVersion;
-
-export const isOnline = NetInfo.fetch().then(state => (state.isInternetReachable || state.isConnected));
-export const connectionMode = NetInfo.fetch().then(state => state.type);
 
 export const isWeb = Platform.OS === "web";
 
@@ -305,6 +304,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
     const [data, setData]: any = useState(defaultValue);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const network = useNetworkContext();
 
     const load = async () => {
         const userToken = JSON.parse((await AsyncStorage.getItem(DataManager.accountData.app)) ?? "{}").token;
@@ -317,8 +317,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
         try {
             setLoading(true);
             const localstored = appkey ? (await AsyncStorage.getItem(appkey)) : null;
-            const netState = await NetInfo.fetch();
-            if (dbkey != null && !!userToken && (netState.isInternetReachable || netState.isConnected)) {
+            if (dbkey != null && !!userToken && network.serverReachable) {
                 loadDebug.mode = "database";
                 const stored = await fetch(DataManager.db.connect + dbkey + DataManager.db.get, {
                     method: 'POST',
@@ -366,8 +365,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
         }
         try {
             let updated = { data: newValue };
-            const netState = await NetInfo.fetch();
-            if (dbkey != null && !!userToken && (netState.isInternetReachable || netState.isConnected)) {
+            if (dbkey != null && !!userToken && network.serverReachable) {
                 loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.update, {
                     method: 'POST',
@@ -450,6 +448,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
     const [data, setData]: any = useState({ _id: null });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const network = useNetworkContext();
 
     const create = async (itemdata: Object) => {
         setLoading(true);
@@ -461,8 +460,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
             body
         }
         try {
-            const netState = await NetInfo.fetch();
-            if (!!userToken && (netState.isInternetReachable || netState.isConnected)) {
+            if (!!userToken && network.serverReachable) {
                 loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.create, {
                     method: 'POST',
@@ -506,8 +504,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
             body
         }
         try {
-            const netState = await NetInfo.fetch();
-            if (!!userToken && (netState.isInternetReachable || netState.isConnected)) {
+            if (!!userToken && network.serverReachable) {
                 loadDebug.mode = "database";
                 const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.delete, {
                     method: 'POST',
@@ -546,7 +543,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
 console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(__DEV__ && !isProductionBinary) ? "true" : "false"}\n`);
 export const DataManager = {
     db: {
-        connect: (__DEV__ && !isProductionBinary && !isWeb) ? "http://10.100.22.23:3000" : 'https://schoolmanager-api.xcenter.it',
+        connect: dbpaths.use,
         update: "/update",
         create: "/add",
         delete: "/delete",
@@ -610,7 +607,8 @@ export const DataManager = {
     classData: {
         app: "@app:classData",
         db: "/api/classes",
-        default: defaultClassData
+        default: defaultClassData,
+        offline: "oflclsid"
     },
     hourSchedule: {
         app: null,

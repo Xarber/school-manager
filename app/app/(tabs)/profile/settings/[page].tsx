@@ -233,6 +233,13 @@ function AppearanceTab() {
     const alert = useAlert();
     const hiddenthemes = themeList.hidden;
     const specialthemes = themeList.special;
+    let displayedSpecialThemes = themeList.special.filter(theme => {
+        if (userData.data.settings.theme == theme) return true;
+        switch (theme) {
+            case 'redgradient':
+                return userData.data.name == "Angelica Polidoro"
+        }
+    });
 
     let contrastPaletteValues = Object.values(theme.contrastPalette);
     let contrastColor = contrastPaletteValues[Math.floor(Math.random() * contrastPaletteValues.length)];
@@ -269,7 +276,7 @@ function AppearanceTab() {
                                 {themes.map((t, i)=>
                                     <RadioButton.Item key={t} style={{ display: "flex" }} label={i18n.t(`profile.settings.appearance.${t}.text`)} value={t} labelStyle={commonStyle.text} />
                                 )}
-                                {specialthemes.map((t, i)=>t === userData.data.settings.theme &&
+                                {displayedSpecialThemes.map((t, i)=>
                                     <RadioButton.Item key={t} style={{ display: "flex" }} label={i18n.t(`profile.settings.appearance.${t}.text`)} value={t} labelStyle={commonStyle.text} />
                                 )}
                             </RadioButton.Group>
