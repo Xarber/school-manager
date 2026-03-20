@@ -1,6 +1,6 @@
-import { Platform, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Platform, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
-import createStyling from '@/constants/styling';
+import createStyling, { defaultScreenSizes } from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useAppDataSync, DataManager, HomeworkData, UserData, ClassData, SubjectData, UserInfo } from "@/data/datamanager";
@@ -11,6 +11,7 @@ import { ActivityIndicator } from 'react-native';
 import { useCallback, useState } from 'react';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -126,12 +127,7 @@ function HomeworkComponent({mode, userData, classid, classData, reload, refreshi
         return false;
     })
 
-    return (
-        (classid == "") ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
-            </View>
-        ) : (filteredItems.length == 0 ? (
+    return (filteredItems.length == 0 ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
             </View>
@@ -141,7 +137,7 @@ function HomeworkComponent({mode, userData, classid, classData, reload, refreshi
             }>
                 {renderHomework(filteredItems, classData)}
             </ScrollView>
-        ))
+        )
     );
 }
 
@@ -152,6 +148,10 @@ function HomeworkTab({userData}: {userData: UserData}) {
     const theme = useTheme();
     const classid = userData.settings.activeClassId;
     const [refreshing, setRefreshing] = useState(false);
+    const optimizationStyle = createStyling.createOptimizationStyles(theme);
+    const commonStyle = createStyling.createCommonStyles(theme);
+    const { width, height } = useWindowDimensions();
+    const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
 
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
         classid: classid,
@@ -188,6 +188,13 @@ function HomeworkTab({userData}: {userData: UserData}) {
         return <HomeworkComponent mode="missed" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData.data} classid={classid} />
     }
 
+    if (classid == "") return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+            <Ionicons name="alert-circle" size={40} color={theme.text} />
+            <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
+        </View>
+    )
+
     if ((classData.loading || homeworkData.loading) && !refreshing) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color={theme.text} />
@@ -196,15 +203,24 @@ function HomeworkTab({userData}: {userData: UserData}) {
 
     return (
         <>
-            <Tab.Navigator screenOptions={()=>({
-                tabBarActiveTintColor: theme.text,
-                tabBarIndicatorStyle: { backgroundColor: theme.primary },
-                // tabBarContentContainerStyle: { backgroundColor: theme.background },
-            })}>
-                <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={AllHomework} />
-                <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={CompletedHomework} />
-                <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={MissedHomework} />
-            </Tab.Navigator>
+            <View style={[optimizationStyle.container, { flex: 1 }]}>
+                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, { justifyContent: "center", gap: 5, alignItems: "center", height: "100%" }]}>
+                    <Ionicons name="school" size={40} color={theme.text} />
+                    <Text style={commonStyle.headerText}>{classData.data.name}</Text>
+                    <Text style={commonStyle.text}>{i18n.t("registry.homework.header.description")}</Text>
+                </View>}
+                <View style={optimizationStyle.item}>
+                    <Tab.Navigator screenOptions={()=>({
+                        tabBarActiveTintColor: theme.text,
+                        tabBarIndicatorStyle: { backgroundColor: theme.primary },
+                        // tabBarContentContainerStyle: { backgroundColor: theme.background },
+                    })}>
+                        <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={AllHomework} />
+                        <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={CompletedHomework} />
+                        <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={MissedHomework} />
+                    </Tab.Navigator>
+                </View>
+            </View>
             <ActionButtons items={[
                 {
                     title: i18n.t("registry.homework.create.title"),

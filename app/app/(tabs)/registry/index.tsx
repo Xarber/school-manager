@@ -33,11 +33,11 @@ export default function RegistryTab() {
                 <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                     <Text style={HomeScreenStyle.welcomeText}>{i18n.t("registry.customheader.title")}</Text>
                 </BlurView>
-                <View style={[HomeScreenStyle.dashboard, optimizationStyle.container]}>
+                <View style={[HomeScreenStyle.dashboard, optimizationStyle.container, {flex: 1}]}>
                     <View style={optimizationStyle.item}>
                         <GradeGrid title={i18n.t("registry.grades.title")} maxValue={10.1} items={registryPageData.grades} />
                     </View>
-                    <View style={optimizationStyle.item}>
+                    <View style={[optimizationStyle.item]}>
                         <ActionMenu title={i18n.t("registry.class.title")} items={[
                             { title: i18n.t("registry.class.homework.title"), onPress: () => {
                                 router.push("/registry/homework");

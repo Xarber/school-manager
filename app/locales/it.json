@@ -660,6 +660,9 @@
             "stack": {
                 "title": "Compiti"
             },
+            "header": {
+                "description": "Visualizza i compiti per la classe"
+            },
             "tab": {
                 "all": {
                     "title": "Tutti"
@@ -699,7 +702,8 @@
                 }
             },
             "header": {
-                "text": "Comunicazioni per {{class}}"
+                "text": "Comunicazioni per {{class}}",
+                "description": "Visualizza le comunicazioni per la classe"
             },
             "create": {
                 "title": "Crea"
@@ -726,7 +730,8 @@
                 }
             },
             "header": {
-                "text": "Lezioni per {{class}}"
+                "text": "Lezioni per {{class}}",
+                "description": "Visualizza le lezioni per la classe"
             },
             "create": {
                 "title": "Crea"

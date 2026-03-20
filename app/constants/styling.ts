@@ -19,7 +19,7 @@ export const defaultScreenSizes = {
 const createCommonStyles = (theme: Theme) => StyleSheet.create({
     /* General Styles */
     mainView: {
-        backgroundColor: theme.background,
+        //backgroundColor: theme.background,
     },
     text: {
         color: theme.text,
