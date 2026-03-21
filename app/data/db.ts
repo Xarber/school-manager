@@ -9,6 +9,7 @@ const isWeb = Platform.OS === "web";
 
 let dbpathstmp = {
     development: "http://127.0.0.1:3000",
+    allDevPaths: ["http://127.0.0.1:3000", "http://192.168.1.168:3000", "http://10.94.102.4:3000"],
     release: 'https://schoolmanager-api.xcenter.it',
     use: ""
 };

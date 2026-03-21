@@ -45,10 +45,11 @@ async function updateSubject({action, classid, maxgrade, gradeType, name, setLoa
                         }
                     }
                 ]});
+                setLoading(false);
             }).catch(err => {
                 alert.show({title: i18n.t("modal.subject.create.error.title"), message: err});
+                setLoading(false);
             })
-            setLoading(false);
             break;
         default:
             setLoading(false);
@@ -116,7 +117,7 @@ function NewSubject() {
                                 create: subjectData.create,
                                 alert
                             })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
-                                {loading 
+                                {loading
                                     ? <ActivityIndicator size="small" color={theme.text} />
                                     : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.subject.create.confirm")}</Text>
                                 }
@@ -124,7 +125,6 @@ function NewSubject() {
                         </BlurView>
                     </View>
                 </KeyboardShift>
-
             }
         </>
     );

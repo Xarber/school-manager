@@ -65,6 +65,18 @@ function AllClassList() {
         })
     });
 
+    let unloadedClasses = (classIds as string[])
+    .filter((cls: any) => typeof classMap[cls] === "undefined")
+    .map((cls: any) => {
+        return ({
+            _id: cls,
+            title: `${i18n.t("profile.class.unloaded.class.title")}`,
+            description: `${i18n.t("profile.class.unloaded.class.description")}`,
+            badge: null,
+            onPress: () => {}
+        })
+    });
+
     classes.push({
         _id: DataManager.classData.offline,
         title: i18n.t("profile.class.offlineclass.name"),
@@ -74,6 +86,8 @@ function AllClassList() {
             router.push(`/profile/class/${DataManager.classData.offline}`);
         }
     });
+
+    classes = [...classes, ...unloadedClasses];
 
     let activeClassIndex = classes.findIndex((cls) => cls._id === userData.data.settings.activeClassId);
 
@@ -286,8 +300,21 @@ function AllClassSubjects() {
         classid: classId
     });
     let subjectIds = classData.data.subjects;
+
     let subjects = (Object.values(subjectMap) as SubjectData[])
     .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
+
+    let unloadedSubjects = (subjectIds as string[])
+    .filter((sbj: any) => typeof subjectMap[sbj] === "undefined")
+    .map((sbj: any) => {
+        return ({
+            _id: sbj,
+            title: `${i18n.t("profile.class.unloaded.subject.title")}`,
+            description: `${i18n.t("profile.class.unloaded.subject.description")}`,
+            badge: null,
+            onPress: () => {}
+        })
+    });
 
     const reload = async () => {
         setRefreshing(true);
@@ -322,6 +349,8 @@ function AllClassSubjects() {
             }
         }
     });
+
+    subjectItems = [...subjectItems, ...unloadedSubjects];
 
     return (
         <>

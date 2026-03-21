@@ -22,6 +22,9 @@ import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
 import { useAccountData } from "@/data/AccountDataContext";
 import welcomeImage from "@/assets/images/welcome.png";
+import { useNetworkContext } from "@/constants/NetworkContext";
+import { useNetInfo } from "@react-native-community/netinfo";
+import { Ionicons } from "@expo/vector-icons";
 
 interface AlertProps {
     title: string;
@@ -117,6 +120,7 @@ async function verifyOtp(email: string, otpcode: string, reset: Function, alert:
 
 function LoginPage({alert}: AccountProps) {
     const router = useRouter();
+    const network = useNetworkContext();
 
     const theme = useTheme();
     const styles = createStyling.createCommonStyles(theme);
@@ -158,11 +162,24 @@ function LoginPage({alert}: AccountProps) {
                                 </View>
                             </View>
                         </View>
+                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                            {network.ready && !network.isOnline ? (
+                                <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                                    <Ionicons name="alert-circle" size={40} color={theme.text} />
+                                    <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.networkunavailable")}</Text>
+                                </View>
+                            ) : (network.ready && !network.serverReachable && (
+                                <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                                    <Ionicons name="alert-circle" size={40} color={theme.text} />
+                                    <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.serverunreachable")}</Text>
+                                </View>
+                            ))}
+                        </View>
                     </View>
                 </View>
             </ScrollView>
             <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
-                <TouchableOpacity disabled={!validateEmail(email) || loading} style={!validateEmail(email) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
+                <TouchableOpacity disabled={!validateEmail(email) || loading || !network.ready || !network.serverReachable} style={(!validateEmail(email) || !network.serverReachable) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                     if (!otpsent) {
                         sendOtp(email, setOtpsent, setLoading, alert as any);
                     } else {

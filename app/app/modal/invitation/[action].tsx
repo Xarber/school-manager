@@ -62,13 +62,14 @@ function updateInvite({action, invitefor, targetid, joinAs, setLoading, create, 
                         }
                     ]
                 });
+                setLoading(false);
             }).catch(err => {
                 alert.show({
                     title: i18n.t("modal.invitation.create.alert.error.title"),
                     message: err.message
                 });
+                setLoading(false);
             })
-            setLoading(false);
             break;
         default:
             setLoading(false);
