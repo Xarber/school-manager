@@ -92,6 +92,7 @@
                 "title": "Account"
             },
             "networkunavailable": "No internet",
+            "serverunreachable": "Server is unreachable",
             "title": "Have we met before?",
             "description": "Do you want to log into an account?",
             "login": "Continue",
@@ -770,7 +771,8 @@
                 "description": "This is the offline class. You can use it with no internet and without an account. You can't syncronize it or invite other users."
             },
             "header": {
-                "title": "Your Classes"
+                "title": "Your Classes",
+                "classdescription": "Info about your class"
             },
             "stack": {
                 "stacktitle": "Class Details",
@@ -796,7 +798,8 @@
                 },
                 "all": {
                     "header": {
-                        "title": "{{class}} Subjects"
+                        "title": "{{class}} Subjects",
+                        "description": "View all subjects for your class"
                     },
                     "create": {
                         "title": "Create"

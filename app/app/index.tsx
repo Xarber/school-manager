@@ -7,6 +7,7 @@ import { useUserData } from "@/data/UserDataContext";
 import i18n from "@/constants/i18n";
 import AppLockScreen from "@/components/appLockScreen";
 import { useAppLockContext } from "@/constants/AuthContext";
+import { useDebugData } from "@/data/DebugDataContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -15,7 +16,7 @@ export default function welcomeScreen() {
     const [debugDataSaved, setDebugDataSaved] = useState(false);
     const { setIsAuthenticated, firstUnlock } = useAppLockContext();
     const userData = useUserData();
-    let appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
+    let appDebugData = useDebugData();
 
     useEffect(() => {  
         // Save launch once

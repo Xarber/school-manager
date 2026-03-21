@@ -189,7 +189,7 @@ function ReadInvitation() {
     const params = useLocalSearchParams();
     const inviteCode = params.invitecode as string;
 
-    const inviteData = useAppDataSync(DataManager.invitation.db, DataManager.invitation.app, DataManager.invitation.default, {
+    const inviteData = useAppDataSync(DataManager.invitation.db, `${DataManager.invitation.app}:${inviteCode.replaceAll('-', '')}`, DataManager.invitation.default, {
         code: inviteCode
     });
 

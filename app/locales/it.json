@@ -121,6 +121,7 @@
                 "title": "Account"
             },
             "networkunavailable": "Nessuna connessione",
+            "serverunreachable": "Server non disponibile",
             "title": "Ci conosciamo?",
             "description": "Vuoi accedere ad un account?",
             "login": "Continua",
@@ -799,7 +800,8 @@
                 "description": "Questa è la classe offline, puoi usarla senza internet e senza un account. Non puoi sincronizzarla con altri dispositivi o invitare persone."
             },
             "header": {
-                "title": "Le tue classi"
+                "title": "Le tue classi",
+                "classdescription": "Informazioni della tua classe"
             },
             "stack": {
                 "stacktitle": "Dettagli della classe",
@@ -825,7 +827,8 @@
                 },
                 "all": {
                     "header": {
-                        "title": "Materie per {{class}}"
+                        "title": "Materie per {{class}}",
+                        "description": "Visualizza le materie della classe"
                     },
                     "create": {
                         "title": "Crea"
