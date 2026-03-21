@@ -183,7 +183,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                         <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text>
                         <View>
                             <DashboardItem title={""} items={comunications.map((e: ComunicationData) => {
-                                let description = `${e.content.split("\n").slice(0, 2).join("\n")}`;
+                                let description = `${e.content?.split("\n").slice(0, 2).join("\n")}`;
                                 if (description.length > 100) description = description.slice(0, 100) + "...";
                                 return {
                                     title: e.title,
