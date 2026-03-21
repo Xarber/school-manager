@@ -12,6 +12,7 @@ import ActionButtons from "@/components/actionButtons";
 import i18n from "@/constants/i18n";
 import { useCallback, useState } from "react";
 import { useUserData } from "@/data/UserDataContext";
+import { useNetworkContext } from "@/constants/NetworkContext";
 
 function AllClassList() {
     const theme = useTheme();
@@ -22,6 +23,7 @@ function AllClassList() {
     const [refreshing, setRefreshing] = useState(false);
     const router = useRouter();
     const [classMap, setClassMap] = useState(({} as {[key: string]: ClassData}));
+    const network = useNetworkContext();
 
     const insets = useSafeAreaInsets();
     if (insets.bottom == 0) insets.bottom = 20;
@@ -142,6 +144,9 @@ function AllClassList() {
                         {
                             title: i18n.t("profile.class.create.title"),
                             iconName: "add",
+                            styles: !network.serverReachable ? { backgroundColor: theme.disabled } : null,
+                            enabled: network.serverReachable === true,
+                            buffering: !network.ready,
                             onPress: () => {
                                 router.push(`/modal/class/create`);
                             },
@@ -150,6 +155,9 @@ function AllClassList() {
                         {
                             title: i18n.t("profile.class.join.title"),
                             iconName: "log-in",
+                            styles: !network.serverReachable ? { backgroundColor: theme.disabled } : null,
+                            enabled: network.serverReachable === true,
+                            buffering: !network.ready,
                             onPress: () => {
                                 router.push(`/modal/invitation/enter`);
                             },
@@ -170,6 +178,7 @@ function Class(props: { classId: string }) {
     const [refreshing, setRefreshing] = useState(false);
     const router = useRouter();
     const classId = props.classId;
+    const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -225,9 +234,9 @@ function Class(props: { classId: string }) {
                                 }} style={{...commonStyle.button, flexGrow: 1, backgroundColor: isActiveClass ? "#7d7d7d7d" : theme.primary}}>
                                     {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.buttonText}>{isActiveClass ? i18n.t("profile.class.active.title") : i18n.t("profile.class.active.set.title")}</Text>}
                                 </TouchableOpacity>
-                                {classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid) && (
+                                {classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid) && (network.serverReachable === true) && (
                                     <Link href={{ pathname: "/modal/invitation/create" as any, params: { for: "class", targetid: classId, name: classData.data.name }}} style={{...commonStyle.button}}>
-                                        {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : (
+                                        {(userData.loading) ? <ActivityIndicator size="small" color={theme.text} /> : (
                                             <View style={commonStyle.listUserElement}>
                                                 <Ionicons style={commonStyle.listUserElementIcon} name="person-add" size={30} color={theme.text} key="icon" />
                                                 <Text style={[commonStyle.text, commonStyle.listUserElementText, { fontWeight: "normal"}]}>{i18n.t("profile.class.invite.text")}</Text>
@@ -291,6 +300,7 @@ function AllClassSubjects() {
     const insets = useSafeAreaInsets();
     const params = useLocalSearchParams();
     const classId = params.id as string;
+    const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -390,7 +400,7 @@ function AllClassSubjects() {
                             <Text style={commonStyle.text}>{i18n.t("profile.class.subjects.all.header.description")}</Text>
                         </View>}
                         <View style={optimizationStyle.item}>
-                            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom}} refreshControl={
+                            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
                                 <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                             }>
                                 <DashboardItem title={i18n.t("profile.class.subjects.all.header.title", {class: classData.data.name})} items={subjectItems} />
@@ -401,6 +411,9 @@ function AllClassSubjects() {
                         {
                             title: i18n.t("profile.class.subjects.all.create.title"),
                             iconName: "add",
+                            styles: !network.serverReachable ? { backgroundColor: theme.disabled } : null,
+                            enabled: network.serverReachable === true,
+                            buffering: !network.ready,
                             onPress: () => {
                                 router.push({pathname: `/modal/subject/create` as any, params: { classid: classId }});
                             },

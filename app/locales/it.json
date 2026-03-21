@@ -595,7 +595,8 @@
         "dayview": {
             "stack": {
                 "title": "Vista giornaliera"
-            }
+            },
+            "free": "Giornata libera. Evviva!"
         },
         "customheader": {
             "title": "Calendario"
@@ -811,6 +812,7 @@
             },
             "header": {
                 "title": "Le tue classi",
+                "description": "Visualizza le tue classi",
                 "classdescription": "Informazioni della tua classe"
             },
             "stack": {

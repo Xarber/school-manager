@@ -177,12 +177,18 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                     <Text style={commonStyle.text}>{i18n.t("registry.comunications.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
+                    <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{ paddingBottom: safeAreaInsets.bottom + 70 }, (comunications.length == 0 ? { flex: 1 } : {})]} refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                     }>
                         <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text>
-                        <View>
-                            <DashboardItem title={""} items={comunications.map((e: ComunicationData) => {
+                        <View style={(comunications.length == 0 ? { flex: 1 } : {})}>
+                            {comunications.length == 0 && (
+                                <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 10 }}>
+                                    <Ionicons name="albums-outline" size={40} color={theme.text} />
+                                    <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.nocomunications.text")}</Text>
+                                </View>
+                            )}
+                            <DashboardItem title={""} hideIfEmpty={true} items={comunications.map((e: ComunicationData) => {
                                 let description = `${e.content?.split("\n").slice(0, 2).join("\n")}`;
                                 if (description.length > 100) description = description.slice(0, 100) + "...";
                                 return {
@@ -192,7 +198,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                                         router.push({pathname: `/(tabs)/registry/comunications/${e._id}` as any, params: {classid: classid}});
                                     }
                                 }
-                            })} noItemsText={i18n.t("registry.comunications.warn.nocomunications.text")} />
+                            })} />
                         </View>
                     </ScrollView>
                 </View>

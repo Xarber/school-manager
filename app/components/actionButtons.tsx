@@ -4,6 +4,7 @@ import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BlurView } from "expo-blur";
 
 interface ActionButtonsProps {
     items: {
@@ -46,14 +47,16 @@ export default function ActionButtons({ items, align, containerStyles, itemStyle
                 e.enabled ??= !e.buffering;
                 return <TouchableOpacity disabled={!e.enabled} key={i} style={[
                         commonStyle.button, 
-                        {display: "flex", flexDirection: "row", alignItems: "center", gap: 5},
+                        {display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 0, overflow: "hidden"},
                         (!e.enabled ? { backgroundColor: theme.disabled} : null),
                         itemStyles,
                         e.styles
                     ]} onPress={e.onPress}>
-                    {e.buffering ? <ActivityIndicator size="small" color={theme.text} /> : null}
-                    {!e.buffering && <Ionicons name={e.iconName} size={e.iconSize ?? 30} color={theme.text}></Ionicons>}
-                    {!e.buffering && (e.title && <Text style={{ color: theme.text, fontSize: 12, paddingRight: 10 }}>{e.title}</Text>)}
+                        <BlurView style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 10 }}>
+                            {e.buffering ? <ActivityIndicator size="small" color={theme.text} /> : null}
+                            {!e.buffering && <Ionicons name={e.iconName} size={e.iconSize ?? 30} color={theme.text}></Ionicons>}
+                            {!e.buffering && (e.title && <Text style={{ color: theme.text, fontSize: 12, paddingRight: 10 }}>{e.title}</Text>)}
+                        </BlurView>
                 </TouchableOpacity>
             })}
         </View>

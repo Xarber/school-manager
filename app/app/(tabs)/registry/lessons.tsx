@@ -121,13 +121,16 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                                 <Text style={commonStyle.text}>{i18n.t("registry.lessons.header.description")}</Text>
                             </View>}
                             <View style={optimizationStyle.item}>
-                                <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
+                                <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{paddingBottom: safeAreaInsets.bottom + 70}, (lessons.length === 0 ? { flex: 1} : null)]} refreshControl={
                                     <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                                 }>
                                     <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.header.text", {class: classData.data.name})}</Text>
-                                    <View>
+                                    <View style={(lessons.length === 0 ? { flex: 1} : {})}>
                                         {lessons.length === 0 ? (
-                                            <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.nolessons.text")}</Text>
+                                            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 10 }}>
+                                                <Ionicons name="albums-outline" size={40} color={theme.text} />
+                                                <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.nolessons.text")}</Text>
+                                            </View>
                                         ) : null}
                                         {lessons.map((e, i) => (
                                             <DashboardItem key={e[0]} title={e[0]} items={e[1].map((e: any) => {
