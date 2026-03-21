@@ -11,7 +11,8 @@ const router = express.Router();
 
 router.post(paths.dbGet, async (req, res) => {
   try {
-    return res.status(400).json({ error: 'Not implemented, use populate instead.' });
+    //TODO
+    return res.status(400).json({ error: 'Not implemented yet.' });
     const user = req.user; // Assuming user is set by authentication middleware
     const { schoolid, classid, comunicationid, subjectid, comunicationresponseid, homeworkid, lessonid, materialid } = req.body;
 
