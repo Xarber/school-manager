@@ -324,7 +324,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
                 ?.some(id => DataManager.offline.ids.includes(id));
             if (dbkey != null && !!userToken && network.serverReachable && !isOfflineId) {
                 loadDebug.mode = "database";
-                const stored = await fetch(DataManager.db.connect + dbkey + DataManager.db.get, {
+                const stored = await fetch(network.serverPath + dbkey + DataManager.db.get, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -372,7 +372,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
             let updated = { data: newValue };
             if (dbkey != null && !!userToken && network.serverReachable) {
                 loadDebug.mode = "database";
-                const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.update, {
+                const response = await fetch(network.serverPath + dbkey + DataManager.db.update, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -492,7 +492,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
         try {
             if (!!userToken && network.serverReachable) {
                 loadDebug.mode = "database";
-                const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.create, {
+                const response = await fetch(network.serverPath + dbkey + DataManager.db.create, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -536,7 +536,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
         try {
             if (!!userToken && network.serverReachable) {
                 loadDebug.mode = "database";
-                const response = await fetch(DataManager.db.connect + dbkey + DataManager.db.delete, {
+                const response = await fetch(network.serverPath + dbkey + DataManager.db.delete, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -573,7 +573,7 @@ export function useDBitem(dbkey: string, body: Object = {}) {
 console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(__DEV__ && !isProductionBinary) ? "true" : "false"}\n`);
 export const DataManager = {
     db: {
-        connect: dbpaths.use,
+        // connect: dbpaths.use, // use useNetworkContext().serverPath
         update: "/update",
         create: "/add",
         delete: "/delete",
@@ -582,16 +582,20 @@ export const DataManager = {
         uploadEnabled: false,
 
         testConnect: async () => {
-            try {
-                const res = await fetch(DataManager.db.connect);
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
-                console.log(data);
-                return !!data.success;
-            } catch (err) {
-                console.error('Fetch failed:', err);
-                return false;
-            }
+            return;
+            // Use Network Context
+            /*
+                try {
+                    const res = await fetch(DataManager.db.connect);
+                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                    const data = await res.json();
+                    console.log(data);
+                    return !!data.success;
+                } catch (err) {
+                    console.error('Fetch failed:', err);
+                    return false;
+                }
+            */
         },
 
         authenticate: "/api/auth/send",

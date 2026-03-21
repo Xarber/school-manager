@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import AppLockScreen from "@/components/appLockScreen";
 import { useUserData } from "@/data/UserDataContext";
@@ -13,6 +13,7 @@ type NetworkContextType = {
     ready: boolean;
     isOnline: boolean | null;
     serverReachable: boolean | null;
+    serverPath: string | null;
     type: NetInfoStateType | null;
     refresh: () => void;
 };
@@ -23,33 +24,66 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     const [ready, setReady] = useState(false);
     const [isOnline, setIsOnline] = useState<boolean | null>(null);
     const [serverReachable, setIsServerReachable] = useState<boolean | null>(null);
+    const [serverPath, setServerPath] = useState<string | null>(null);
     const [type, setType] = useState<NetInfoStateType | null>(null);
+    const refreshingRef = useRef(false);
+
+    const findWorkingServer = async () => {
+        const allServerPaths = dbpaths.useArray;
+
+        const checks = allServerPaths.map(path =>
+            fetch(path)
+                .then(async r => ((r.ok && (await r.json()).success) ? path : null))
+                .catch(() => null)
+        );
+
+        const first = await Promise.race(checks);
+
+        if (first) {
+            // console.warn("[Network] Server reachable:", first);
+            setServerPath(first);
+            setIsServerReachable(true);
+            return first;
+        }
+
+        // console.warn("[Network] No servers are reachable.");
+        setServerPath(null);
+        setIsServerReachable(false);
+        return null;
+    }
 
     const refresh = async () => {
-        // setReady(false);
-        
-        const state = await NetInfo.fetch();
-        let data = {
-            ...state,
-            isOnline: (state.isInternetReachable || state.isConnected)
-        };
+        if (refreshingRef.current) return;
+        refreshingRef.current = true;
 
-        const isServerReachable = await fetch(dbpaths.use).then(async r=>(r.ok) ? (await r.json()).success : false).catch(e=>false);
+        try {
+            const state = await NetInfo.fetch();
+            let data = {
+                ...state,
+                isOnline: (state.isInternetReachable || state.isConnected)
+            };
 
-        setIsOnline(data.isOnline);
-        setIsServerReachable(isServerReachable);
-        setType(data.type);
-        if (ready != true) setReady(true);
+            await findWorkingServer();
+            setIsOnline(data.isOnline);
+            setType(data.type);
+            if (ready != true) setReady(true);
+        } finally {
+            refreshingRef.current = false;
+        }
     };
 
     useEffect(()=>{
-        const int = setInterval(refresh, 3000);
+        const int = setInterval(refresh, 7000);
 
         return () => clearInterval(int);
     }, []);
 
+    useEffect(()=>{
+        refresh();
+    }, []);
+
     return (
-        <NetworkContext.Provider value={{ ready, serverReachable, isOnline, type, refresh }}>
+        <NetworkContext.Provider value={{ ready, serverReachable, isOnline, type, serverPath, refresh }}>
             {children}
         </NetworkContext.Provider>
     );

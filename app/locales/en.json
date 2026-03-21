@@ -566,7 +566,8 @@
         "dayview": {
             "stack": {
                 "title": "Day View"
-            }
+            },
+            "free": "Free day. Hooray!"
         },
         "customheader": {
             "title": "Calendar"
@@ -782,6 +783,7 @@
             },
             "header": {
                 "title": "Your Classes",
+                "description": "View your classes",
                 "classdescription": "Info about your class"
             },
             "stack": {

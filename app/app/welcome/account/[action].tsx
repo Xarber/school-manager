@@ -64,10 +64,10 @@ export function validateEmail(email: string) {
       );
 }
 
-async function sendOtp(email: string, setotpsent: Function, setloading: Function, alert: {show: (props: AlertProps)=>void, hide: Function}) {
+async function sendOtp(email: string, setotpsent: Function, setloading: Function, alert: {show: (props: AlertProps)=>void, hide: Function}, serverpath: string) {
     setloading(true);
 
-    const status = await fetch(DataManager.db.connect + DataManager.db.authenticate, {
+    const status = await fetch(serverpath + DataManager.db.authenticate, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -87,9 +87,9 @@ async function sendOtp(email: string, setotpsent: Function, setloading: Function
     }
 }
 
-async function verifyOtp(email: string, otpcode: string, reset: Function, alert: {show: (props: AlertProps)=>void, hide: Function}) {
+async function verifyOtp(email: string, otpcode: string, reset: Function, alert: {show: (props: AlertProps)=>void, hide: Function}, serverpath: string) {
 
-    const status = await fetch(DataManager.db.connect + DataManager.db.authenticateOtp, {
+    const status = await fetch(serverpath + DataManager.db.authenticateOtp, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -181,10 +181,10 @@ function LoginPage({alert}: AccountProps) {
             <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
                 <TouchableOpacity disabled={!validateEmail(email) || loading || !network.ready || !network.serverReachable} style={(!validateEmail(email) || !network.serverReachable) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                     if (!otpsent) {
-                        sendOtp(email, setOtpsent, setLoading, alert as any);
+                        sendOtp(email, setOtpsent, setLoading, alert as any, (network.serverPath as string));
                     } else {
                         setLoading(true);
-                        verifyOtp(email, otpcode, reset, alert as any).then(status => {
+                        verifyOtp(email, otpcode, reset, alert as any, (network.serverPath as string)).then(status => {
                             setLoading(false);
                             if (!status.success) return;
                             accountData.save({

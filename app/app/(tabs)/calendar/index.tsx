@@ -267,8 +267,18 @@ function CalendarComponent({userData}: {userData: UserData}) {
                                 </View>
                             </View>
                             <View style={optimizationStyle.item}>
-                                <View style={HomeScreenStyle.dashboard}>
+                                <View style={[HomeScreenStyle.dashboard, {flex: 1}]}>
                                     <DashboardItem title={findToday(language, selectedDate)} items={[]} collapsed={true} noItemsText='' />
+                                    {(
+                                        loadHomeworkForDate(selectedDate, calendarPageData.homework).length == 0 &&
+                                        loadLessonsForDate(selectedDate, calendarPageData.lessons).length == 0 &&
+                                        loadExamsForDate(selectedDate, calendarPageData.exams) == 0
+                                    ) && (
+                                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 10 }}>
+                                            <Ionicons name="albums-outline" size={40} color={theme.text} />
+                                            <Text style={commonStyle.text}>{i18n.t("calendar.dayview.free")}</Text>
+                                        </View>
+                                    )}
                                     <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.homework.title")} items={loadHomeworkForDate(selectedDate, calendarPageData.homework).map((e: any)=>{
                                         return {
                                             title: e.title,
