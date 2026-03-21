@@ -6,7 +6,7 @@ import { BlurView } from "expo-blur";
 import DashboardItem from "@/components/dashboardItem";
 import createStyling from "@/constants/styling";
 import { router } from "expo-router";
-import { DataManager, ClassData, DataLoader } from "@/data/datamanager";
+import { DataManager, ClassData, DataLoader, prepareOfflineData } from "@/data/datamanager";
 import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
 import createToastConfig from "@/constants/toast";
@@ -105,6 +105,10 @@ export default function ProfileTab() {
     );
 
     const isUserLoggedIn = profilePageData.accountdata.data.active;
+
+    useEffect(()=>{
+        prepareOfflineData({userInfo: userData.data.userInfo, keys: DataManager.classData});
+    }, []);
     
     return (
         <>

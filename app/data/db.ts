@@ -10,7 +10,7 @@ const isWeb = Platform.OS === "web";
 let dbpathstmp = {
     development: "",
     release: "",
-    allDevPaths: ["http://127.0.0.1:3000", "http://172.20.10.13:3000", "http://192.168.1.168:3000", "http://10.94.102.4:3000"],
+    allDevPaths: ["http://127.0.0.1:3000", "http://100.94.102.4:3000", "http://172.20.10.13:3000", "http://192.168.1.168:3000"],
     allReleasePaths: ["https://schoolmanager-api.xcenter.it"],
     use: "",
     useArray: [] as string[]
