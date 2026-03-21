@@ -58,7 +58,7 @@ router.post(paths.dbCreate, async (req, res) => {
 
     let subjectInfo = null;
     if (subjectid) {
-      subjectInfo = await Subject.findOne({ subjectid, classid });
+      subjectInfo = await Subject.findOne({ _id: subjectid });
       if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
       //if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can create material' });
     }
@@ -125,7 +125,7 @@ router.post(paths.dbDelete, async (req, res) => {
       await subjectInfo.save();
     }
 
-    await Material.deleteOne({ materialid });
+    await Material.deleteOne({ _id: materialid });
 
     res.json({ success: true });
   } catch (error) {
@@ -146,7 +146,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update material' });
 
-    const material = await Material.findOne({ materialid });
+    const material = await Material.findOne({ _id: materialid });
     if (!material) return res.status(404).json({ error: 'Material not found' });
 
     if (title !== undefined) material.title = title;

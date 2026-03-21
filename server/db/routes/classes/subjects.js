@@ -19,7 +19,7 @@ router.post(paths.dbGet, async (req, res) => {
         const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
         if (!userInfo) return res.status(404).json({ error: 'User info not found' });
 
-        const subject = await Subject.findOne({ subjectid }).lean();
+        const subject = await Subject.findOne({ _id: subjectid }).lean();
         if (!subject) return res.status(404).json({ error: 'Subject not found' });
 
         const classInfo = await Class.findOne({ subjects: subjectid });
@@ -97,7 +97,7 @@ router.post(paths.dbDelete, async (req, res) => {
         if (!classInfo) return res.status(404).json({ error: 'Class not found' });
         if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete subjects' });
 
-        const subjectInfo = await Subject.findOne({ subjectid });
+        const subjectInfo = await Subject.findOne({ _id: subjectid });
         if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
         //if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can delete it' });
 
