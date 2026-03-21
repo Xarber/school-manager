@@ -101,7 +101,7 @@ function RestorePage() {
                             <Ionicons name="alert-circle" size={40} color={theme.text} />
                             <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.networkunavailable")}</Text>
                         </View>
-                    ) : (!network.serverReachable && (
+                    ) : (network.ready && !network.serverReachable && (
                         <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
                             <Ionicons name="alert-circle" size={40} color={theme.text} />
                             <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.serverunreachable")}</Text>
@@ -111,7 +111,11 @@ function RestorePage() {
             </View>
             <View style={welcomeStyles.actions}>
                 <TouchableOpacity disabled={!network.ready || !network.isOnline || !network.serverReachable} style={[welcomeStyles.actionsButton, (!network.ready || !network.isOnline || !network.serverReachable) ? { backgroundColor: theme.disabled } : null]} onPress={() => router.push("/welcome/account/login")}>
-                    <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.login")}</Text>
+                    {network.ready ? 
+                        <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.login")}</Text>
+                        : <ActivityIndicator size="small" color={theme.text} />
+                    }
+                    
                 </TouchableOpacity>
                 <TouchableOpacity style={{...welcomeStyles.actionsButton, backgroundColor: theme.secondary}} onPress={() => router.replace("/welcome/setname")}>
                     <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.skip")}</Text>
