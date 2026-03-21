@@ -269,7 +269,6 @@ function CalendarComponent({userData}: {userData: UserData}) {
                             <View style={optimizationStyle.item}>
                                 <View style={HomeScreenStyle.dashboard}>
                                     <DashboardItem title={findToday(language, selectedDate)} items={[]} collapsed={true} noItemsText='' />
-                                    {/* todo */}
                                     <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.homework.title")} items={loadHomeworkForDate(selectedDate, calendarPageData.homework).map((e: any)=>{
                                         return {
                                             title: e.title,
@@ -281,7 +280,6 @@ function CalendarComponent({userData}: {userData: UserData}) {
                                             onPress: () => {}
                                         };
                                     })} />
-                                    {/* todo */}
                                     <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.lessons.title")} items={loadLessonsForDate(selectedDate, calendarPageData.lessons).map((e: any)=>{
                                         return {
                                             title: e.title,
@@ -293,7 +291,6 @@ function CalendarComponent({userData}: {userData: UserData}) {
                                             onPress: () => {}
                                         };
                                     })} />
-                                    {/* todo */}
                                     <DashboardItem hideIfEmpty={true} title={i18n.t("calendar.exams.title")} items={loadExamsForDate(selectedDate, calendarPageData.exams).map((e: any)=>{
                                         return {
                                             title: e.title,
