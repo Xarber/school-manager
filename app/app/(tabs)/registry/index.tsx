@@ -1,4 +1,4 @@
-import { Text, View, ScrollView } from "react-native";
+import { Text, View, ScrollView, ActivityIndicator } from "react-native";
 import { BlurView } from "expo-blur";
 import { useTheme } from "@/constants/useThemes";
 import ActionMenu from "@/components/actionMenu";
@@ -11,6 +11,7 @@ import { Stack } from "expo-router";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function RegistryTab() {
     const theme = useTheme();
@@ -24,6 +25,21 @@ export default function RegistryTab() {
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const userData = useUserData();
+    const activeClassId = userData.data.settings?.activeClassId;
+    
+    if (userData.loading) return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" color={theme.text} />
+        </View>
+    )
+
+    if (activeClassId == "") return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+            <Ionicons name="alert-circle" size={40} color={theme.text} />
+            <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
+        </View>
+    );
+
     let registryPageData = {grades: userData.data.grades};
     
     return (

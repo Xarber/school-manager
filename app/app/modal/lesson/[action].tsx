@@ -7,7 +7,7 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 
 import createStyling from '@/constants/styling';
-import { useAppDataSync, DataManager, useDBitem, SubjectData } from '@/data/datamanager';
+import { useAppDataSync, DataManager, useDBitem, SubjectData, DataLoader } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { BlurView } from 'expo-blur';
@@ -73,6 +73,7 @@ function NewLesson() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
+    const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const [lessonName, setLessonName] = useState("");
     const [subjectId, setSubjectId] = useState("");
     const [date, setDate] = useState(new Date());
@@ -91,9 +92,13 @@ function NewLesson() {
     const canProceed = (lessonName.length > 0) && (subjectId.length > 0);
 
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
-        classid: classId,
-        populate: ["subjects"]
+        classid: classId
     });
+
+    const subjectIds = classData.data.subjects;
+
+    let subjects = (Object.values(subjectMap) as SubjectData[])
+    .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
 
     const lessonData = useDBitem(DataManager.lessonData.db);
 
@@ -115,6 +120,27 @@ function NewLesson() {
     return (
         <>
             <Stack.Screen options={{headerTitle: i18n.t("modal.lesson.create.stack.title")}} />
+            {subjectIds.map((id: string) => {
+                return (
+                    <DataLoader
+                        key={id}
+                        id={id}
+                        keys={DataManager.subjectData}
+                        body={{ subjectid: id }}
+                        onLoad={(id, subjectdata) =>
+                            setSubjectMap(prev => {
+                                if (prev[id]?._id === subjectdata.data?._id) {
+                                    return prev;
+                                }
+                                return {
+                                    ...prev,
+                                    [id]: subjectdata.data
+                                };
+                            })
+                        }
+                    />
+                )
+            })}
             {
                 classData.loading ? <ActivityIndicator size="small" color={theme.text} /> : 
                 <KeyboardShift>
@@ -147,7 +173,7 @@ function NewLesson() {
                                         Platform.OS === "ios" && (
                                             <>
                                                 <TouchableOpacity style={modalStyle.cardEditFieldSelect} onPress={()=>setSubjectPickeriOSvisible(true)}>
-                                                    <Text style={modalStyle.cardEditFieldSelectText}>{classData.data.subjects.find((subject: SubjectData) => subject._id === subjectId)?.name ?? i18n.t("modal.lesson.create.subject.select")}</Text>
+                                                    <Text style={modalStyle.cardEditFieldSelectText}>{subjects.find((subject: SubjectData) => subject._id === subjectId)?.name ?? i18n.t("modal.lesson.create.subject.select")}</Text>
                                                     <Ionicons style={modalStyle.cardEditFieldSelectChevron} name="chevron-down" size={18} color={theme.text} />
                                                 </TouchableOpacity>
                                             </>
@@ -164,7 +190,7 @@ function NewLesson() {
                                             >
                                                 <Picker.Item style={modalStyle.cardEditFieldSelectItem} label={i18n.t("modal.lesson.create.subject.select")} value="" enabled={subjectId.length === 0} />
                                                 {
-                                                    classData.data.subjects.map((subject: SubjectData) => <Picker.Item style={modalStyle.cardEditFieldSelectItem} key={subject._id} label={subject.name} value={subject._id} />)
+                                                    subjects.map((subject: SubjectData) => <Picker.Item style={modalStyle.cardEditFieldSelectItem} key={subject._id} label={subject.name} value={subject._id} />)
                                                 }
                                             </Picker>
                                         )
@@ -235,7 +261,7 @@ function NewLesson() {
                                     <Picker style={modalStyle.cardEditFieldPicker} selectedValue={subjectId} onValueChange={value => {if (value.length > 0) setSubjectId(value)}}>
                                         <Picker.Item label={i18n.t("modal.lesson.create.subject.select")} value="" enabled={subjectId.length === 0}/>
                                         {
-                                            classData.data.subjects.map((subject: SubjectData) => <Picker.Item key={subject._id} label={subject.name} value={subject._id} />)
+                                            subjects.map((subject: SubjectData) => <Picker.Item key={subject._id} label={subject.name} value={subject._id} />)
                                         }
                                     </Picker>
                                 </BlurView>

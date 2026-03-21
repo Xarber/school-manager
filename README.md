@@ -82,8 +82,8 @@ cd ./server/ && node .
 <details open>
 <summary>⚙️ In progress</summary>
 
-* ⚙️ iPad/PC (big screen) optimizations
 * ⚙️ Resources (links to websites or files)
+* 🛠️ Offline app usage
 * ⏸️ (Teacher) List comunication responses
 
 </details>
@@ -91,7 +91,6 @@ cd ./server/ && node .
 <details>
 <summary>✧ Future</summary>
 
-* ✧ Offline app usage
 * ✧ Local unsynced class (for not logged in users)
 * ✧ Add logout logic (invalid user token)
 * ✧ User grades

@@ -6,13 +6,14 @@ import { BlurView } from "expo-blur";
 import DashboardItem from "@/components/dashboardItem";
 import createStyling from "@/constants/styling";
 import { router } from "expo-router";
-import { useAppDataSync, DataManager, ClassData } from "@/data/datamanager";
+import { DataManager, ClassData, DataLoader } from "@/data/datamanager";
 import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
 import createToastConfig from "@/constants/toast";
 import i18n from "@/constants/i18n";
 import { useAccountData } from "@/data/AccountDataContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useUserData } from "@/data/UserDataContext";
 
 export default function ProfileTab() {
     const theme = useTheme();
@@ -21,8 +22,9 @@ export default function ProfileTab() {
     const commonStyle = createStyling.createCommonStyles(theme);
     const optimizationStyle = createStyling.createOptimizationStyles(theme);
 
-    const userData = useAppDataSync(DataManager.userData.db, DataManager.userData.app, DataManager.userData.default, {populate: ["classes"]});
+    const userData = useUserData();
     const accountData = useAccountData();
+    const [classMap, setClassMap] = useState(({} as {[key: string]: ClassData}));
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -33,9 +35,13 @@ export default function ProfileTab() {
         }});
     }
 
-    let profilePageData = {
-        userdata: userData.data,
-        classes: userData.data.classes.map((cls: ClassData) => (typeof cls === "object" ? {
+    const classIds = userData.data.classes;
+
+    let classes = (Object.values(classMap) as ClassData[])
+    .filter((cls: ClassData) => typeof cls === "object" && cls)
+    .map((cls: ClassData) => {
+        return ({
+            _id: cls._id,
             title: cls.name,
             description: cls.notes.slice(0, 2).join("\n"),
             badge: (cls._id === userData.data.settings.activeClassId ? {
@@ -45,17 +51,24 @@ export default function ProfileTab() {
             onPress: () => {
                 router.push(`/profile/class/${cls._id}`);
             }
-        } : null)),
-        accountdata: accountData
-    };
+        })
+    });
 
-    profilePageData.classes.push({
+    classes.push({
+        _id: DataManager.classData.offline,
         title: i18n.t("profile.class.offlineclass.name"),
         description: i18n.t("profile.class.offlineclass.description"),
+        badge: null,
         onPress: () => {
             router.push(`/profile/class/${DataManager.classData.offline}`);
         }
     });
+
+    let profilePageData = {
+        userdata: userData.data,
+        classes,
+        accountdata: accountData
+    };
 
     let activeClassIndex = profilePageData.userdata.classes.findIndex((cls: ClassData) => cls._id === profilePageData.userdata.settings.activeClassId);
 
@@ -82,6 +95,27 @@ export default function ProfileTab() {
     return (
         <>
             <Stack.Screen options={{ headerTitle: i18n.t("profile.stack.title") }} />
+            {classIds.map((id: string) => {
+                return (
+                    <DataLoader
+                        key={id}
+                        id={id}
+                        keys={DataManager.classData}
+                        body={{ classid: id }}
+                        onLoad={(id, classdata) =>
+                            setClassMap(prev => {
+                                if (prev[id]?._id === classdata.data?._id) {
+                                    return prev;
+                                }
+                                return {
+                                    ...prev,
+                                    [id]: classdata.data
+                                };
+                            })
+                        }
+                    />
+                )
+            })}
             {
                 ((userData.loading || accountData.loading) && !refreshing) ? (
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -118,7 +152,7 @@ export default function ProfileTab() {
                                 })()} />
                             </View>
                             <View style={optimizationStyle.item}>
-                                <DashboardItem title={i18n.t("profile.class.header.title")} items={profilePageData.classes.slice(0, 5)} expand={()=>{
+                                <DashboardItem title={i18n.t("profile.class.header.title")} items={(profilePageData.classes.slice(0, 5)) as any} expand={()=>{
                                     router.push("/profile/class/all");
                                 }}/>
                             </View>

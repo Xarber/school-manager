@@ -29,6 +29,7 @@ import welcomeImage from "@/assets/images/welcome.png";
 import { isDevice } from "expo-device";
 import { useNetworkContext } from "@/constants/NetworkContext";
 import { Ionicons } from "@expo/vector-icons";
+import { useDebugData } from "@/data/DebugDataContext";
 
 function StartPage() {
     const router = useRouter();
@@ -95,14 +96,21 @@ function RestorePage() {
                 </View>
                 <View style={welcomeStyles.bottomViewBody}>
                     <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.description")}</Text>
-                    {network.ready && !network.isOnline && <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
-                        <Ionicons name="alert-circle" size={40} color={theme.text} />
-                        <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.networkunavailable")}</Text>
-                    </View>}
+                    {network.ready && !network.isOnline ? (
+                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                            <Ionicons name="alert-circle" size={40} color={theme.text} />
+                            <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.networkunavailable")}</Text>
+                        </View>
+                    ) : (!network.serverReachable && (
+                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                            <Ionicons name="alert-circle" size={40} color={theme.text} />
+                            <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.serverunreachable")}</Text>
+                        </View>
+                    ))}
                 </View>
             </View>
             <View style={welcomeStyles.actions}>
-                <TouchableOpacity disabled={!network.ready || !network.isOnline} style={[welcomeStyles.actionsButton, (!network.ready || !network.isOnline) ? { backgroundColor: theme.disabled } : null]} onPress={() => router.push("/welcome/account/login")}>
+                <TouchableOpacity disabled={!network.ready || !network.isOnline || !network.serverReachable} style={[welcomeStyles.actionsButton, (!network.ready || !network.isOnline || !network.serverReachable) ? { backgroundColor: theme.disabled } : null]} onPress={() => router.push("/welcome/account/login")}>
                     <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.login")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={{...welcomeStyles.actionsButton, backgroundColor: theme.secondary}} onPress={() => router.replace("/welcome/setname")}>
@@ -306,7 +314,7 @@ function CompletePage() {
     const styles = createStyling.createCommonStyles(theme);
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
-    const appDebugData = useAppDataSync(DataManager.debugData.db, DataManager.debugData.app, DataManager.debugData.default);
+    const appDebugData = useDebugData();
 
     useEffect(() => { 
         if (appDebugData.loading === false && appDebugData.data.firstLaunch != true) {

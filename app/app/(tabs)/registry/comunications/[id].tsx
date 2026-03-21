@@ -168,11 +168,6 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color={theme.text} />
         </View>
-    ) : (classid == "") ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
-            <Ionicons name="alert-circle" size={40} color={theme.text} />
-            <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
-        </View>
     ) : (
         <>
             <View style={[commonStyle.dashboardSection, optimizationStyle.container, { flex: 1 }]}>
@@ -228,6 +223,13 @@ export default function ComunicationsTab() {
     if (userData.loading) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color={theme.text} />
+        </View>
+    );
+
+    if (activeClassId == "") return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+            <Ionicons name="alert-circle" size={40} color={theme.text} />
+            <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
         </View>
     );
 

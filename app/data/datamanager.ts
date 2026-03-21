@@ -319,7 +319,10 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
         try {
             setLoading(true);
             const localstored = appkey ? (await AsyncStorage.getItem(appkey)) : null;
-            if (dbkey != null && !!userToken && network.serverReachable) {
+            let isOfflineId = appkey
+                ?.split(":")
+                ?.some(id => DataManager.offline.ids.includes(id));
+            if (dbkey != null && !!userToken && network.serverReachable && !isOfflineId) {
                 loadDebug.mode = "database";
                 const stored = await fetch(DataManager.db.connect + dbkey + DataManager.db.get, {
                     method: 'POST',
@@ -446,6 +449,31 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
     return { data, loading, error, load, save, remove, clear };
 }
 
+export function DataLoader({ id, keys, body, onLoad }: { id: string, keys: { db: string, app: string, default: any }, body: Object, onLoad: (id: string, data: any) => void }) {
+    const item = useAppDataSync(
+        keys.db,
+        `${keys.app}:${id}`,
+        keys.default,
+        body
+    );
+
+    useEffect(() => {
+        if (!item.loading && item.data._loaded != false) {
+            onLoad(id, {
+                data: item.data,
+                save: item.save,
+                reload: item.load
+            });
+        }
+    }, [item.loading, item.data, id, onLoad]);
+
+    useEffect(() => {
+        item.load();
+    }, [JSON.stringify(body)]);
+
+    return null;
+}
+
 export function useDBitem(dbkey: string, body: Object = {}) {
     const [data, setData]: any = useState({ _id: null });
     const [loading, setLoading] = useState(true);
@@ -570,6 +598,9 @@ export const DataManager = {
         authenticateOtp: "/api/auth/verify",
         pushRegister: "/api/account/register-push",
         pushUnregister: "/api/account/unregister-push",
+    },
+    offline: {
+        ids: ["oflclsid"]
     },
     outbox: {
         app: "@app:outbox",

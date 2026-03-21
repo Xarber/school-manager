@@ -17,6 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import { AppLockProvider } from "@/constants/AuthContext";
 import { NetworkProvider } from "@/constants/NetworkContext";
+import { DebugDataProvider } from "@/data/DebugDataContext";
 
 function AppLayout() {
   const theme = useTheme();
@@ -56,15 +57,17 @@ export default function RootLayout() {
   return (
     <NetworkProvider>
       <AccountDataProvider>
-        <UserDataProvider>
-          <ContextThemeProvider>
-            <LanguageProvider>
-              <AlertProvider>
-                <AppLayout />
-              </AlertProvider>
-            </LanguageProvider>
-          </ContextThemeProvider>
-        </UserDataProvider>
+        <DebugDataProvider>
+          <UserDataProvider>
+            <ContextThemeProvider>
+              <LanguageProvider>
+                <AlertProvider>
+                  <AppLayout />
+                </AlertProvider>
+              </LanguageProvider>
+            </ContextThemeProvider>
+          </UserDataProvider>
+        </DebugDataProvider>
       </AccountDataProvider>
     </NetworkProvider>
   );

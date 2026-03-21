@@ -26,7 +26,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     const [type, setType] = useState<NetInfoStateType | null>(null);
 
     const refresh = async () => {
-        setReady(false);
+        // setReady(false);
         
         const state = await NetInfo.fetch();
         let data = {
@@ -39,11 +39,13 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         setIsOnline(data.isOnline);
         setIsServerReachable(isServerReachable);
         setType(data.type);
-        setReady(true);
+        if (ready != true) setReady(true);
     };
 
     useEffect(()=>{
-        refresh();
+        const int = setInterval(refresh, 3000);
+
+        return () => clearInterval(int);
     }, []);
 
     return (

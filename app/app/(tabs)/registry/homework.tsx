@@ -3,7 +3,7 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useAppDataSync, DataManager, HomeworkData, UserData, ClassData, SubjectData, UserInfo } from "@/data/datamanager";
+import { useAppDataSync, DataManager, HomeworkData, UserData, ClassData, SubjectData, UserInfo, DataLoader } from "@/data/datamanager";
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -40,8 +40,13 @@ export function stringToColor(str: string) {
 }
 
 function renderHomework(homework: HomeworkData[], classData: ClassData) {
+    const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const dateIndex: { [date: string]: HomeworkData[] } = {};
     const allDates: string[] = [];
+
+    let subjectIds = classData.subjects as string[];
+    let subjects = (Object.values(subjectMap) as SubjectData[])
+    .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
 
     for (let i = 0; i < homework.length; i++) {
         const date = new Date(homework[i].dueDate).toLocaleDateString("en-GB", {
@@ -60,6 +65,27 @@ function renderHomework(homework: HomeworkData[], classData: ClassData) {
 
     return allDates.length > 0 ? (
         <View>
+            {subjectIds.map((id: string) => {
+                return (
+                    <DataLoader
+                        key={id}
+                        id={id}
+                        keys={DataManager.subjectData}
+                        body={{ subjectid: id }}
+                        onLoad={(id, subjectdata) =>
+                            setSubjectMap(prev => {
+                                if (prev[id]?._id === subjectdata.data?._id) {
+                                    return prev;
+                                }
+                                return {
+                                    ...prev,
+                                    [id]: subjectdata.data
+                                };
+                            })
+                        }
+                    />
+                )
+            })}
             {
                 allDates.map((date) => {
                     return (
@@ -71,7 +97,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData) {
                                     title: e.title,
                                     description: e.description,
                                     badge: {
-                                        text: (classData.subjects.find((s: any) => s._id == (e as any).subjectid) as any)?.name,
+                                        text: (subjects.find((s: any) => s._id == (e as any).subjectid) as any)?.name,
                                         color: stringToColor((e as any).subjectid)
                                     },
                                     onPress: () => {}
@@ -154,13 +180,12 @@ function HomeworkTab({userData}: {userData: UserData}) {
     const { width, height } = useWindowDimensions();
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
 
-    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
-        classid: classid,
-        populate: ["subjects"]
+    const classData = useAppDataSync(classid != "" ? DataManager.classData.db : null, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
+        classid: classid
     });
 
     let defaultHomeworkData = [{subjectid: "", data: [DataManager.homeworkData.default]}];
-    const homeworkData = useAppDataSync(DataManager.homeworkData.db, `${DataManager.homeworkData.app}:${classid}`, defaultHomeworkData, {
+    const homeworkData = useAppDataSync(classid != "" ? DataManager.homeworkData.db : null, `${DataManager.homeworkData.app}:${classid}`, defaultHomeworkData, {
         classid: classid
     });
 

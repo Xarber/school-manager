@@ -7,7 +7,7 @@ import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
 import { Stack, useFocusEffect } from 'expo-router';
 
-import { useAppDataSync, DataManager, LessonData, SubjectData } from "@/data/datamanager";
+import { useAppDataSync, DataManager, LessonData, SubjectData, DataLoader } from "@/data/datamanager";
 import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
 import { regroupLessonsByDate } from '../registry/lessons';
@@ -16,6 +16,7 @@ import findToday from '@/components/findToday';
 import { UserData } from '@/data/datamanager';
 import { useLanguage } from '@/constants/LanguageContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 export function loadHomeworkForDate(date: string, homework: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
@@ -78,6 +79,7 @@ export function filterExamsDate(days: number, exams: any) {
 function CalendarComponent({userData}: {userData: UserData}) {
     LocaleConfig.locales['lang'] = i18n.t("components.calendar.localeconfig");
     LocaleConfig.defaultLocale = 'lang';
+    const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const theme = useTheme();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
@@ -96,18 +98,21 @@ function CalendarComponent({userData}: {userData: UserData}) {
     const [selectedDate, setSelectedDate] = useState(tomorrowStr);
 
     const activeClassId = userData.settings.activeClassId;
-    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
-        classid: activeClassId,
-        populate: ["subjects"]
+
+    const classData = useAppDataSync(activeClassId != "" ? DataManager.classData.db : null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
+        classid: activeClassId
     });
+    let subjectIds = classData.data.subjects;
+    let subjects = (Object.values(subjectMap) as SubjectData[])
+    .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
 
     let defaultLessonsData = [{subjectid: "", data: [DataManager.lessonData.default]}];
-    const lessonData = useAppDataSync(DataManager.lessonData.db, `${DataManager.lessonData.app}:${activeClassId}`, defaultLessonsData, {
+    const lessonData = useAppDataSync(activeClassId != "" ? DataManager.lessonData.db : null, `${DataManager.lessonData.app}:${activeClassId}`, defaultLessonsData, {
         classid: activeClassId
     });
 
     let defaultHomeworkData = [{subjectid: "", data: [DataManager.homeworkData.default]}];
-    const homeworkData = useAppDataSync(DataManager.homeworkData.db, `${DataManager.homeworkData.app}:${activeClassId}`, defaultHomeworkData, {
+    const homeworkData = useAppDataSync(activeClassId != "" ? DataManager.homeworkData.db : null, `${DataManager.homeworkData.app}:${activeClassId}`, defaultHomeworkData, {
         classid: activeClassId
     });
 
@@ -124,6 +129,13 @@ function CalendarComponent({userData}: {userData: UserData}) {
             reload();
         }, [])
     )
+
+    if (activeClassId == "") return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+            <Ionicons name="alert-circle" size={40} color={theme.text} />
+            <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
+        </View>
+    );;
 
     const allClassHomework = regroupHomework(homeworkData.data);
     const allClassLessons = regroupLessonsByDate(lessonData.data);
@@ -204,6 +216,27 @@ function CalendarComponent({userData}: {userData: UserData}) {
 
     return (
         <>
+            {subjectIds.map((id: string) => {
+                return (
+                    <DataLoader
+                        key={id}
+                        id={id}
+                        keys={DataManager.subjectData}
+                        body={{ subjectid: id }}
+                        onLoad={(id, subjectdata) =>
+                            setSubjectMap(prev => {
+                                if (prev[id]?._id === subjectdata.data?._id) {
+                                    return prev;
+                                }
+                                return {
+                                    ...prev,
+                                    [id]: subjectdata.data
+                                };
+                            })
+                        }
+                    />
+                )
+            })}
             <Stack.Screen options={{ headerTitle: i18n.t("calendar.stack.title") }} />
             {
                 ((classData.loading || lessonData.loading || homeworkData.loading) && !refreshing) ? (
@@ -242,7 +275,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                                             title: e.title,
                                             description: e.description,
                                             badge: {
-                                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                                text: subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
                                                 color: stringToColor(e.subjectid)
                                             },
                                             onPress: () => {}
@@ -254,7 +287,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                                             title: e.title,
                                             description: e.description,
                                             badge: {
-                                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                                text: subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
                                                 color: stringToColor(e.subjectid)
                                             },
                                             onPress: () => {}
@@ -267,7 +300,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                                             subtitle: e.scheduled ? i18n.t("calendar.exams.scheduled") : undefined,
                                             description: e.description,
                                             badge: {
-                                                text: classData.data.subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
+                                                text: subjects.find((subject: SubjectData) => subject._id === e.subjectid)?.name,
                                                 color: stringToColor(e.subjectid)
                                             },
                                             onPress: () => {}
