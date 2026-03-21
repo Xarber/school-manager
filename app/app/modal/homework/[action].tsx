@@ -53,10 +53,11 @@ async function updateHomework({action, classid, subjectid, title, description, d
                         }
                     }
                 ]});
+                setLoading(false);
             }).catch(err => {
                 alert.show({title: i18n.t("modal.homework.create.error.title"), message: err});
+                setLoading(false);
             })
-            setLoading(false);
             break;
         default:
             setLoading(false);

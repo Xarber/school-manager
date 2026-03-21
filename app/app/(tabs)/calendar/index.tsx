@@ -130,13 +130,6 @@ function CalendarComponent({userData}: {userData: UserData}) {
         }, [])
     )
 
-    if (activeClassId == "") return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
-            <Ionicons name="alert-circle" size={40} color={theme.text} />
-            <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
-        </View>
-    );;
-
     const allClassHomework = regroupHomework(homeworkData.data);
     const allClassLessons = regroupLessonsByDate(lessonData.data);
     
@@ -213,6 +206,13 @@ function CalendarComponent({userData}: {userData: UserData}) {
         textDisabledColor: theme.disabled,
         monthTextColor: theme.text,
     };
+
+    if (activeClassId == "") return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+            <Ionicons name="alert-circle" size={40} color={theme.text} />
+            <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
+        </View>
+    );;
 
     return (
         <>

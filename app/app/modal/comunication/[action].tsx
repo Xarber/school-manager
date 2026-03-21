@@ -58,10 +58,11 @@ async function updateComunication({action, classid, title, content, date, time, 
                         }
                     }
                 ]});
+                setLoading(false);
             }).catch(err => {
                 alert.show({title: i18n.t("modal.comunication.create.error.title"), message: err});
+                setLoading(false);
             })
-            setLoading(false);
             break;
         default:
             setLoading(false);

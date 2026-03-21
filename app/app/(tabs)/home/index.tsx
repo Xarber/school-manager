@@ -37,6 +37,7 @@ function HomeScreen({userData}: {userData: UserData}) {
     const classData = useAppDataSync(activeClassId != "" ? DataManager.classData.db : null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
         classid: activeClassId
     });
+
     let subjectIds = classData.data.subjects;
     let subjects = (Object.values(subjectMap) as SubjectData[])
     .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);

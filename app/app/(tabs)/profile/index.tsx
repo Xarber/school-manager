@@ -54,6 +54,18 @@ export default function ProfileTab() {
         })
     });
 
+    let unloadedClasses = (classIds as string[])
+    .filter((cls: any) => typeof classMap[cls] === "undefined")
+    .map((cls: any) => {
+        return ({
+            _id: cls,
+            title: `${i18n.t("profile.class.unloaded.class.title")}`,
+            description: `${i18n.t("profile.class.unloaded.class.description")}`,
+            badge: null,
+            onPress: () => {}
+        })
+    });
+
     classes.push({
         _id: DataManager.classData.offline,
         title: i18n.t("profile.class.offlineclass.name"),
@@ -63,6 +75,8 @@ export default function ProfileTab() {
             router.push(`/profile/class/${DataManager.classData.offline}`);
         }
     });
+
+    classes = [...classes, ...unloadedClasses];
 
     let profilePageData = {
         userdata: userData.data,

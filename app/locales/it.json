@@ -799,6 +799,16 @@
                 "name": "Classe Offline",
                 "description": "Questa è la classe offline, puoi usarla senza internet e senza un account. Non puoi sincronizzarla con altri dispositivi o invitare persone."
             },
+            "unloaded": {
+                "class": {
+                    "title": "Carico...",
+                    "description": "Questa classe si sta ancora caricando."
+                },
+                "subject": {
+                    "title": "Carico...",
+                    "description": "Questa materia si sta ancora caricando."
+                }
+            },
             "header": {
                 "title": "Le tue classi",
                 "classdescription": "Informazioni della tua classe"

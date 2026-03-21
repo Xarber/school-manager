@@ -58,10 +58,11 @@ async function updateLesson({action, classid, isScheduled, subjectid, title, des
                         }
                     }
                 ]});
+                setLoading(false);
             }).catch(err => {
                 alert.show({title: i18n.t("modal.lesson.create.error.title"), message: err});
+                setLoading(false);
             })
-            setLoading(false);
             break;
         default:
             setLoading(false);
