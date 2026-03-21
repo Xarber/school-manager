@@ -143,9 +143,9 @@ function LoginPage({alert}: AccountProps) {
 
     return (
         <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
-            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-                <View style={welcomeStyles.container}>
-                    <View style={welcomeStyles.bottomView}>
+            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ flex: 1 }}>
+                <View style={[welcomeStyles.container, { flex: 1 }]}>
+                    <View style={[welcomeStyles.bottomView, { flex: 1 }]}>
                         <View style={welcomeStyles.bottomViewHeader}>
                             <Text style={welcomeStyles.bottomViewHeaderTitle}>{i18n.t("welcome.account.auth.title")}</Text>
                         </View>
@@ -156,24 +156,24 @@ function LoginPage({alert}: AccountProps) {
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.email.title")}</Text>
                                     <TextInput autoCapitalize="none" keyboardType="email-address" style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{reset(); setEmail(text);}} placeholder={i18n.t("welcome.account.auth.input.email.placeholder")} />
                                 </View>
-                                <View style={!otpsent ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
+                                <View style={(!otpsent || !network.serverReachable) ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.otp.title")}</Text>
                                     <TextInput autoFocus autoCapitalize="none" maxLength={6} keyboardType="number-pad" style={welcomeStyles.bottomViewBodyFormFieldInput} value={otpcode} onChangeText={setOtpcode} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
                                 </View>
                             </View>
-                        </View>
-                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
-                            {network.ready && !network.isOnline ? (
-                                <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
-                                    <Ionicons name="alert-circle" size={40} color={theme.text} />
-                                    <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.networkunavailable")}</Text>
-                                </View>
-                            ) : (network.ready && !network.serverReachable && (
-                                <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
-                                    <Ionicons name="alert-circle" size={40} color={theme.text} />
-                                    <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.serverunreachable")}</Text>
-                                </View>
-                            ))}
+                            <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                                {network.ready && !network.isOnline ? (
+                                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                                        <Ionicons name="alert-circle" size={40} color={theme.text} />
+                                        <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.networkunavailable")}</Text>
+                                    </View>
+                                ) : (network.ready && !network.serverReachable && (
+                                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
+                                        <Ionicons name="alert-circle" size={40} color={theme.text} />
+                                        <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.account.serverunreachable")}</Text>
+                                    </View>
+                                ))}
+                            </View>
                         </View>
                     </View>
                 </View>

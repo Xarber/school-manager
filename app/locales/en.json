@@ -399,7 +399,7 @@
         },
         "comunication": {
             "stack": {
-                "title": "Communication"
+                "title": "Notice"
             },
             "create": {
                 "stack": {
@@ -414,10 +414,10 @@
                     "title": "Error"
                 },
                 "name": {
-                    "default": "New Comunication"
+                    "default": "New Notice"
                 },
                 "description": {
-                    "default": "This is a new comunication"
+                    "default": "This is a new notice"
                 },
                 "teacher": {
                     "text": "Created by: {{teacher}}"
@@ -606,7 +606,7 @@
                 "title": "Homework"
             },
             "comunications": {
-                "title": "Communications"
+                "title": "Noticeboard"
             },
             "schedule": {
                 "title": "Schedule"
@@ -668,22 +668,22 @@
         },
         "comunications": {
             "stack": {
-                "title": "Communications"
+                "title": "Noticeboard"
             },
             "warn": {
                 "noclass": {
                     "text": "No active class."
                 },
                 "nocomunications": {
-                    "text": "There are no communications for this class."
+                    "text": "There are no notices for this class."
                 },
                 "notfound": {
-                    "text": "Can't find this comunication."
+                    "text": "Can't find this notice."
                 }
             },
             "header": {
-                "text": "{{class}}'s communications",
-                "description": "View the communications for your class"
+                "text": "{{class}}'s notices",
+                "description": "View the notices for your class"
             },
             "create": {
                 "title": "Create"
