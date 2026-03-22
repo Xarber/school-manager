@@ -3,7 +3,7 @@ import { Icon, Link, Stack, useFocusEffect } from "expo-router";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling, { defaultScreenSizes } from "@/constants/styling";
-import DashboardItem from "@/components/dashboardItem";
+import DashboardItem, { getTextColor } from "@/components/dashboardItem";
 import { useAppDataSync, DataManager, ClassData, UserInfo, SubjectData, DataLoader } from "@/data/datamanager";
 import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -245,8 +245,8 @@ function Class(props: { classId: string }) {
                                     <Link href={{ pathname: "/modal/invitation/create" as any, params: { for: "class", targetid: classId, name: classData.data.name }}} style={{...commonStyle.button}}>
                                         {(userData.loading) ? <ActivityIndicator size="small" color={theme.text} /> : (
                                             <View style={commonStyle.listUserElement}>
-                                                <Ionicons style={commonStyle.listUserElementIcon} name="person-add" size={30} color={theme.text} key="icon" />
-                                                <Text style={[commonStyle.text, commonStyle.listUserElementText, { fontWeight: "normal"}]}>{i18n.t("profile.class.invite.text")}</Text>
+                                                <Ionicons style={[commonStyle.listUserElementIcon, { color: getTextColor(commonStyle.button.backgroundColor) }]} name="person-add" size={30} color={getTextColor(commonStyle.button.backgroundColor)} key="icon" />
+                                                <Text style={[commonStyle.text, commonStyle.listUserElementText, { fontWeight: "normal", color: getTextColor(commonStyle.button.backgroundColor) }]}>{i18n.t("profile.class.invite.text")}</Text>
                                             </View>
                                         )}
                                     </Link>

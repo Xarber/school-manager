@@ -5,6 +5,7 @@ import createStyling from "@/constants/styling";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
+import { getTextColor } from "./dashboardItem";
 
 interface ActionButtonsProps {
     items: {
@@ -45,17 +46,19 @@ export default function ActionButtons({ items, align, containerStyles, itemStyle
                 if (e.display === false) return null;
                 e.buffering ??= false;
                 e.enabled ??= !e.buffering;
+                let backgroundColor = e.styles?.backgroundColor ?? itemStyles?.backgroundColor ?? (!e.enabled ? theme.disabled : undefined) ?? commonStyle.button.backgroundColor;
+                let textColor = getTextColor(backgroundColor);
                 return <TouchableOpacity disabled={!e.enabled} key={i} style={[
                         commonStyle.button, 
                         {display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 0, overflow: "hidden"},
-                        (!e.enabled ? { backgroundColor: theme.disabled} : null),
                         itemStyles,
-                        e.styles
+                        e.styles,
+                        backgroundColor
                     ]} onPress={e.onPress}>
                         <BlurView style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 10 }}>
                             {e.buffering ? <ActivityIndicator size="small" color={theme.text} /> : null}
-                            {!e.buffering && <Ionicons name={e.iconName} size={e.iconSize ?? 30} color={theme.text}></Ionicons>}
-                            {!e.buffering && (e.title && <Text style={{ color: theme.text, fontSize: 12, paddingRight: 10 }}>{e.title}</Text>)}
+                            {!e.buffering && <Ionicons name={e.iconName} size={e.iconSize ?? 30} color={textColor}></Ionicons>}
+                            {!e.buffering && (e.title && <Text style={{ color: textColor, fontSize: 12, paddingRight: 10 }}>{e.title}</Text>)}
                         </BlurView>
                 </TouchableOpacity>
             })}
