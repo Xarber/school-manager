@@ -75,7 +75,7 @@ function NewSubject() {
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
         classid: classId
     });
-    const subjectData = useDBitem(DataManager.subjectData.db);
+    const subjectData = useDBitem(DataManager.subjectData.db, DataManager.subjectData.default);
 
     const alert = useAlert();
 

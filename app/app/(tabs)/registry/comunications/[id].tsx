@@ -24,7 +24,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
-    const comunicationResponse = useDBitem(DataManager.comunicationResponseData.db);
+    const comunicationResponse = useDBitem(DataManager.comunicationResponseData.db, DataManager.comunicationResponseData.default);
 
     const comunicationData = useAppDataSync(DataManager.comunicationData.db, `${DataManager.comunicationData.app}:${classid}`, [DataManager.comunicationData.default], {
         classid: classid

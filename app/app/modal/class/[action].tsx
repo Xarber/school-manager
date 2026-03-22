@@ -68,7 +68,7 @@ function NewClass() {
 
     const canProceed = className.length > 0 && classDescription.length > 0;
 
-    const classData = useDBitem(DataManager.classData.db);
+    const classData = useDBitem(DataManager.classData.db, DataManager.classData.default);
 
     const alert = useAlert();
 
