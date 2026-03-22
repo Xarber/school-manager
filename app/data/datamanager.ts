@@ -475,7 +475,7 @@ export function DataLoader({ id, keys, body, onLoad }: { id: string, keys: { db:
     return null;
 }
 
-export function useDBitem(dbkey: string, body: Object = {}) {
+export function useDBitem(dbkey: string, defaultData: Object, body: Object = {}) {
     const [data, setData]: any = useState({ _id: null });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);

@@ -70,7 +70,10 @@ export default function ProfileTab() {
         _id: DataManager.classData.offline,
         title: i18n.t("profile.class.offlineclass.name"),
         description: i18n.t("profile.class.offlineclass.description"),
-        badge: null,
+        badge: (DataManager.classData.offline === userData.data.settings.activeClassId ? {
+            text: i18n.t("profile.class.active.badge.title"),
+            color: "#0A84FF"
+        } : null),
         onPress: () => {
             router.push(`/profile/class/${DataManager.classData.offline}`);
         }

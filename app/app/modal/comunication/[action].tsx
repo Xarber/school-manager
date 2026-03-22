@@ -94,7 +94,7 @@ function NewComunication() {
         classid: classId
     });
 
-    const comunicationData = useDBitem(DataManager.comunicationData.db);
+    const comunicationData = useDBitem(DataManager.comunicationData.db, DataManager.comunicationData.default);
 
     const alert = useAlert();
 

@@ -94,7 +94,7 @@ function NewHomework() {
     let subjects = (Object.values(subjectMap) as SubjectData[])
     .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
 
-    const homeworkData = useDBitem(DataManager.homeworkData.db);
+    const homeworkData = useDBitem(DataManager.homeworkData.db, DataManager.homeworkData.default);
 
     const alert = useAlert();
 

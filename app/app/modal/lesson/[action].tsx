@@ -101,7 +101,7 @@ function NewLesson() {
     let subjects = (Object.values(subjectMap) as SubjectData[])
     .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
 
-    const lessonData = useDBitem(DataManager.lessonData.db);
+    const lessonData = useDBitem(DataManager.lessonData.db, DataManager.lessonData.default);
 
     const alert = useAlert();
 

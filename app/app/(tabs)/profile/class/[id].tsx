@@ -4,7 +4,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling, { defaultScreenSizes } from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
-import { useAppDataSync, DataManager, ClassData, UserInfo, useDBitem, SubjectData, DataLoader } from "@/data/datamanager";
+import { useAppDataSync, DataManager, ClassData, UserInfo, SubjectData, DataLoader } from "@/data/datamanager";
 import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -13,6 +13,7 @@ import i18n from "@/constants/i18n";
 import { useCallback, useState } from "react";
 import { useUserData } from "@/data/UserDataContext";
 import { useNetworkContext } from "@/constants/NetworkContext";
+import { useAccountData } from "@/data/AccountDataContext";
 
 function AllClassList() {
     const theme = useTheme();
@@ -29,6 +30,7 @@ function AllClassList() {
     if (insets.bottom == 0) insets.bottom = 20;
 
     const userData = useUserData();
+    const accountData = useAccountData();
     
     if (userData.data.classes.length === 1 && userData.data.settings.activeClassId != (userData.data.classes[0]._id ?? userData.data.classes[0])) {
         userData.save({...userData.data, settings: {...userData.data.settings,
@@ -83,7 +85,10 @@ function AllClassList() {
         _id: DataManager.classData.offline,
         title: i18n.t("profile.class.offlineclass.name"),
         description: i18n.t("profile.class.offlineclass.description"),
-        badge: null,
+        badge: (DataManager.classData.offline === userData.data.settings.activeClassId ? {
+            text: i18n.t("profile.class.active.badge.title"),
+            color: "#0A84FF"
+        } : null),
         onPress: () => {
             router.push(`/profile/class/${DataManager.classData.offline}`);
         }
@@ -150,7 +155,7 @@ function AllClassList() {
                             onPress: () => {
                                 router.push(`/modal/class/create`);
                             },
-                            display: userData.data.userInfo.role != "student",
+                            display: (userData.data.userInfo.role != "student" && accountData.data.active),
                         },
                         {
                             title: i18n.t("profile.class.join.title"),
@@ -161,6 +166,7 @@ function AllClassList() {
                             onPress: () => {
                                 router.push(`/modal/invitation/enter`);
                             },
+                            display: (accountData.data.active)
                         }
                     ]} align="right" itemStyles={{ borderRadius: 360 }} />
                 </View>
@@ -184,6 +190,7 @@ function Class(props: { classId: string }) {
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const userData = useUserData();
+    const accountData = useAccountData();
     let activeClass = userData.loading === false ? userData.data.settings.activeClassId : 0;
     let isActiveClass = activeClass === classId;
 
@@ -234,7 +241,7 @@ function Class(props: { classId: string }) {
                                 }} style={{...commonStyle.button, flexGrow: 1, backgroundColor: isActiveClass ? "#7d7d7d7d" : theme.primary}}>
                                     {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.buttonText}>{isActiveClass ? i18n.t("profile.class.active.title") : i18n.t("profile.class.active.set.title")}</Text>}
                                 </TouchableOpacity>
-                                {classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid) && (network.serverReachable === true) && (
+                                {(accountData.data.active) && classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid) && (network.serverReachable === true) && (
                                     <Link href={{ pathname: "/modal/invitation/create" as any, params: { for: "class", targetid: classId, name: classData.data.name }}} style={{...commonStyle.button}}>
                                         {(userData.loading) ? <ActivityIndicator size="small" color={theme.text} /> : (
                                             <View style={commonStyle.listUserElement}>
@@ -411,8 +418,8 @@ function AllClassSubjects() {
                         {
                             title: i18n.t("profile.class.subjects.all.create.title"),
                             iconName: "add",
-                            styles: !network.serverReachable ? { backgroundColor: theme.disabled } : null,
-                            enabled: network.serverReachable === true,
+                            styles: (!network.serverReachable && classId != DataManager.classData.offline) ? { backgroundColor: theme.disabled } : null,
+                            enabled: (network.serverReachable === true || classId === DataManager.classData.offline),
                             buffering: !network.ready,
                             onPress: () => {
                                 router.push({pathname: `/modal/subject/create` as any, params: { classid: classId }});

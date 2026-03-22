@@ -90,7 +90,7 @@ function NewInvitation() {
     const [bottomHeight, setBottomHeight] = useState(0);
 
     const userData = useUserData();
-    const inviteData = useDBitem(DataManager.invitation.db);
+    const inviteData = useDBitem(DataManager.invitation.db, DataManager.invitation.default);
     const [loading, setLoading] = useState(false);
     const [canProceed, setCanProceed] = useState(true);
     const [joinAs, setJoinAs] = useState("student" as "student" | "teacher");
