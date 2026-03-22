@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import Constants from "expo-constants";
 import { Platform } from 'react-native';
 import { useNetworkContext } from '@/constants/NetworkContext';
-import { dbpaths } from './db';
 import i18n from '@/constants/i18n';
+import { devMode } from './devMode';
 
 export const env = Constants.executionEnvironment;
 export const isProductionBinary = env === "standalone"; // release build created with/without EAS Build
@@ -16,8 +16,6 @@ export const isExpoGo = isStoreClient && !!Constants.expoVersion;
 export const isDevClient = isStoreClient && !Constants.expoVersion;
 
 export const isWeb = Platform.OS === "web";
-
-export const devMode = (__DEV__ && !isProductionBinary && !isWeb);
 
 const defaultIndexData = {
     accountId: "" as string,
@@ -591,7 +589,7 @@ export async function prepareOfflineData({userInfo, keys}: {userInfo: UserInfo, 
     }
 }
 
-console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(__DEV__ && !isProductionBinary) ? "true" : "false"}\n`);
+console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(devMode) ? "true" : "false"}\n`);
 export const DataManager = {
     db: {
         // connect: dbpaths.use, // use useNetworkContext().serverPath

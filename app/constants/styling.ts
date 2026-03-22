@@ -424,7 +424,9 @@ const createModalStyles = (theme: Theme) => StyleSheet.create({
         color: theme.text,
         textAlign: "left",
         paddingLeft: 15,
-        paddingRight: 15
+        paddingRight: 15,
+        outlineStyle: "none" as any,
+        borderWidth: 0
     },
     cardEditFieldSelect: {
         width: "100%",
@@ -437,7 +439,9 @@ const createModalStyles = (theme: Theme) => StyleSheet.create({
         padding: 15,
         display: "flex",
         justifyContent: "center",
-        flexDirection: "row"
+        flexDirection: "row",
+        borderWidth: 0,
+        outlineStyle: "none" as any
     },
     cardEditFieldSelectItem: {
         backgroundColor: theme.opaqueCard,
@@ -489,6 +493,8 @@ const createModalStyles = (theme: Theme) => StyleSheet.create({
         textAlign: "left",
         textAlignVertical: "top",
         padding: 15,
+        borderWidth: 0,
+        outlineStyle: "none" as any
     },
 
     bottomActions: {

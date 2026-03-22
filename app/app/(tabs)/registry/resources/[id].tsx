@@ -1,7 +1,8 @@
 import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import { DataManager, ComunicationData, SubjectData, useAppDataSync, UserInfo, UserData, devMode } from '@/data/datamanager';
+import { DataManager, ComunicationData, SubjectData, useAppDataSync, UserInfo, UserData } from '@/data/datamanager';
+import { devMode } from '@/data/devMode';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import i18n from '@/constants/i18n';
