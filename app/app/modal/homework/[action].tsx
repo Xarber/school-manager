@@ -174,7 +174,7 @@ function NewHomework() {
                                         )
                                     }
                                     {
-                                        Platform.OS === "android" && (
+                                        (Platform.OS === "android" || Platform.OS === "web") && (
                                             <Picker
                                                 mode="dropdown"
                                                 style={modalStyle.cardEditFieldSelect}
@@ -211,6 +211,37 @@ function NewHomework() {
                                             display="default"
                                             onChange={updateDate}
                                         />
+                                    }
+                                    {
+                                        Platform.OS === "web" && (
+                                            <View style={{display: "flex", flexDirection: "row", gap: 10}}>
+                                                <input
+                                                    type="date"
+                                                    style={modalStyle.cardEditFieldInput}
+                                                    value={date.toISOString().split("T")[0]}
+                                                    onChange={(e: any) => {
+                                                        const [y,m,d] = e.target.value.split("-").map(Number);
+                                                        const newDate = new Date(date);
+                                                        newDate.setFullYear(y);
+                                                        newDate.setMonth(m-1);
+                                                        newDate.setDate(d);
+                                                        setDate(newDate);
+                                                    }}
+                                                />
+                                                <input
+                                                    type="time"
+                                                    style={modalStyle.cardEditFieldInput}
+                                                    value={date.toTimeString().slice(0,5)}
+                                                    onChange={(e: any) => {
+                                                        const [h,min] = e.target.value.split(":").map(Number);
+                                                        const newDate = new Date(date);
+                                                        newDate.setHours(h);
+                                                        newDate.setMinutes(min);
+                                                        setDate(newDate);
+                                                    }}
+                                                />
+                                            </View>
+                                        )
                                     }
                                 </View>
                             </View>

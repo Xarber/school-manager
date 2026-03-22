@@ -53,7 +53,7 @@ export default function ActionButtons({ items, align, containerStyles, itemStyle
                         {display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 0, overflow: "hidden"},
                         itemStyles,
                         e.styles,
-                        backgroundColor
+                        {backgroundColor}
                     ]} onPress={e.onPress}>
                         <BlurView style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 10 }}>
                             {e.buffering ? <ActivityIndicator size="small" color={theme.text} /> : null}

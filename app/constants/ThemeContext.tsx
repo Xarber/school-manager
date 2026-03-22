@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
-import { Scheme } from "./colors";
+import { Platform, useColorScheme } from "react-native";
+import { colors, Scheme } from "./colors";
 import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { useUserData } from "@/data/UserDataContext";
 import { themeList } from "./colors";
@@ -22,11 +22,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const userTheme = userData.data.settings?.theme;
+        const lightOrDark = colors[(userTheme === "system" ? (systemScheme as Scheme) : (userTheme as Scheme))].type;
 
         if (userTheme === "system") {
             setScheme(systemScheme as Scheme);
         } else if (userTheme) {
             setScheme(userTheme);
+        }
+
+        if (Platform.OS === "web") {
+            // rimuovi vecchio meta se esiste
+            const existing = document.querySelector('meta[name="color-scheme"]');
+            if (existing) document.head.removeChild(existing);
+
+            const meta = document.createElement("meta");
+            meta.name = "color-scheme";
+            meta.content = lightOrDark;
+            document.head.appendChild(meta);
         }
     }, [userData.data.settings?.theme, systemScheme]);
 

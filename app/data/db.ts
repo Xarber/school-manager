@@ -1,11 +1,7 @@
 
 import Constants from "expo-constants";
 import { Platform } from 'react-native';
-
-
-const env = Constants.executionEnvironment;
-const isProductionBinary = env === "standalone"; // release build created with/without EAS Build
-const isWeb = Platform.OS === "web";
+import { devMode } from "./devMode";
 
 let dbpathstmp = {
     development: "",
@@ -16,7 +12,7 @@ let dbpathstmp = {
     useArray: [] as string[]
 };
 
-if (__DEV__ && !isProductionBinary && !isWeb) {
+if (devMode) {
     dbpathstmp.use = dbpathstmp.allDevPaths[0];
     dbpathstmp.useArray = dbpathstmp.allDevPaths;
 }
