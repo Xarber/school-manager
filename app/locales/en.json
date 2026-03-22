@@ -598,6 +598,9 @@
             "title": "Your Grades",
             "stack": {
                 "title": "Grades"
+            },
+            "header": {
+                "description": "View your grades"
             }
         },
         "class": {
@@ -627,13 +630,21 @@
             }
         },
         "resources": {
+            "title": "Resources",
             "stack": {
                 "title": "Resources"
+            },
+            "header": {
+                "description": "View useful resources in this class"
             }
         },
         "schedule": {
             "stack": {
                 "title": "Schedule"
+            },
+            "title": "Week Schedule",
+            "header": {
+                "description": "View the week schedule"
             }
         },
         "homework": {

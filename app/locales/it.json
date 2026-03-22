@@ -627,6 +627,9 @@
             "title": "Le tue valutazioni",
             "stack": {
                 "title": "Valutazioni"
+            },
+            "header": {
+                "description": "Visualizza le tue valutazioni"
             }
         },
         "class": {
@@ -656,13 +659,21 @@
             }
         },
         "resources": {
+            "title": "Materiali",
             "stack": {
                 "title": "Risorse"
+            },
+            "header": {
+                "description": "Visualizza i materiali caricati nella classe"
             }
         },
         "schedule": {
             "stack": {
                 "title": "Orario"
+            },
+            "title": "Orario Scolastico",
+            "header": {
+                "description": "Visualizza l'orario scolastico"
             }
         },
         "homework": {
