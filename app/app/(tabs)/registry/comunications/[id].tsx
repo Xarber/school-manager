@@ -142,8 +142,11 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
     const [refreshing, setRefreshing] = useState(false);
 
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
-        classid: classid,
-        populate: ["comunications"]
+        classid: classid
+    })
+
+    const comunicationData = useAppDataSync(DataManager.comunicationData.db, `${DataManager.comunicationData.app}:${classid}`, [DataManager.comunicationData.default], {
+        classid: classid
     });
 
     const safeAreaInsets = useSafeAreaInsets();
@@ -152,7 +155,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
     const reload = async () => {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
-        await Promise.all([classData.load()]);
+        await Promise.all([classData.load(), comunicationData.load()]);
         setRefreshing(false);
     };
 
@@ -162,9 +165,9 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
         }, [])
     );
 
-    let comunications: ComunicationData[] = classData.data.comunications;
+    let comunications: ComunicationData[] = comunicationData.data;
 
-    return (classData.loading && !refreshing) ? ( 
+    return ((classData.loading || comunicationData.loading) && !refreshing) ? ( 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color={theme.text} />
         </View>
