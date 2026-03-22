@@ -258,7 +258,7 @@ function Class(props: { classId: string }) {
                             <View style={{...commonStyle.card, gap: 10}}>
                                 <Text style={commonStyle.headerText}>{i18n.t("profile.class.users.teachers.title")}</Text>
                                 <View style={{...commonStyle.card, gap: 10}}>
-                                    {classData.data.teachers.length === 0 && <Text style={commonStyle.text}>{i18n.t("profile.class.users.teachers.noteachers.text")}</Text>}
+                                    {classData.data.teachers.length === 0 && <Text key={"noteachers"} style={commonStyle.text}>{i18n.t("profile.class.users.teachers.noteachers.text")}</Text>}
                                     {classData.data.teachers.map((teacher: UserInfo) => (
                                         <View key={teacher.userid} style={commonStyle.listUserElement}>
                                             <Ionicons style={commonStyle.listUserElementIcon} name="id-card" size={30} color={theme.text} />
@@ -271,7 +271,7 @@ function Class(props: { classId: string }) {
                             <View style={{...commonStyle.card, gap: 10}}>
                                 <Text style={commonStyle.headerText}>{i18n.t("profile.class.users.students.title")}</Text>
                                 <View style={{...commonStyle.card, gap: 10}}>
-                                    {classData.data.students.length === 0 && <Text style={commonStyle.text}>{i18n.t("profile.class.users.students.nostudents.text")}</Text>}
+                                    {classData.data.students.length === 0 && <Text key={"nostudents"} style={commonStyle.text}>{i18n.t("profile.class.users.students.nostudents.text")}</Text>}
                                     {classData.data.students.map((student: UserInfo) => (
                                         <View key={student.userid} style={commonStyle.listUserElement}>
                                             <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />

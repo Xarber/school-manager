@@ -33,14 +33,43 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
 
         const checks = allServerPaths.map(path =>
             fetch(path)
-                .then(async r => ((r.ok && (await r.json()).success) ? path : null))
+                .then(async r => {
+                    return ((r.ok && (await r.json()).success) ? path : null);
+                })
                 .catch(() => null)
         );
 
-        const first = await Promise.race(checks);
+        const first = await new Promise<string | null>(resolve => {
+            let resolved = false;
+
+            const timeout = setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    resolve(null);
+                }
+            }, 10000); // 10s
+
+            checks.forEach(p => {
+                p.then(result => {
+                    if (!resolved && result) {
+                        resolved = true;
+                        clearTimeout(timeout);
+                        resolve(result);
+                    }
+                });
+            });
+
+            Promise.all(checks).then(() => {
+                if (!resolved) {
+                    resolved = true;
+                    clearTimeout(timeout);
+                    resolve(null);
+                }
+            });
+        });
 
         if (first) {
-            // console.warn("[Network] Server reachable:", first);
+            // console.warn("[Network] Server found.", first);
             setServerPath(first);
             setIsServerReachable(true);
             return first;
