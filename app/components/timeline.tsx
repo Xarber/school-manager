@@ -93,7 +93,7 @@ function TimelinePeriod({period, props, index}: {period: TimelinePeriod, props: 
 
                 {/* Divider */}
                 <View style={[{ flex: 1, borderRadius: 360, display: "flex", justifyContent: "center", alignItems: "center" }, !period.break ? {minHeight: 50, width: 2, backgroundColor: theme.disabled} : {minHeight: 80, opacity: 0.4}]}>
-                    <Feather name={"x"} size={20} color={theme.disabled} />
+                    <Feather style={{ display: !period.break ? "none" : "flex" }} name={"x"} size={20} color={theme.disabled} />
                 </View>
 
                 {/* End Time */}
