@@ -1,7 +1,6 @@
-import { View, Text, Image, ImageSourcePropType, Pressable } from "react-native"
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { View, Text, Pressable } from "react-native"
+import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/constants/useThemes"
-import { useState } from "react";
 import createStyling from "@/constants/styling";
 import i18n from "@/constants/i18n";
 

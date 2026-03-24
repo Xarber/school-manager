@@ -1,6 +1,6 @@
 /* Check user color scheme */
 import { Color } from 'expo-router';
-import { ColorValue, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { DarkTheme, DefaultTheme, Theme as NavTheme } from "@react-navigation/native";
 
 export type Scheme = 'light' | 'dark' | 'schoolmanager' | 'rainbow' | 'exams' | 'redgradient';

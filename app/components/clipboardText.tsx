@@ -1,5 +1,5 @@
 import { Text, View, TouchableOpacity } from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";

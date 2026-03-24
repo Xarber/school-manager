@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Platform, useColorScheme } from "react-native";
 import { colors, Scheme } from "./colors";
-import { useAppDataSync, DataManager } from "@/data/datamanager";
 import { useUserData } from "@/data/UserDataContext";
 import { themeList } from "./colors";
 import { setAlternateAppIcon, getAppIconName, resetAppIcon, supportsAlternateIcons } from "expo-alternate-app-icons";

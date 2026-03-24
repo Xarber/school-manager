@@ -1,4 +1,4 @@
-import Toast, { BaseToast, ErrorToast, InfoToast, BaseToastProps } from 'react-native-toast-message';
+import { BaseToast, ErrorToast, InfoToast, BaseToastProps } from 'react-native-toast-message';
 import { Theme } from './colors';
 
 

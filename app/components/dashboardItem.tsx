@@ -1,7 +1,6 @@
 import { View, Text, Image, ImageSourcePropType, Pressable } from "react-native"
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@/constants/useThemes"
-import { useState } from "react";
 import createStyling from "@/constants/styling";
 import i18n from "@/constants/i18n";
 
@@ -18,7 +17,7 @@ type DashboardItem = {
     onPress?: () => void;
 }
 type DashboardItemProps = {
-    title: string;
+    title?: string;
     items: DashboardItem[];
     maxItems?: number;
     noItemsText?: string;
@@ -61,7 +60,7 @@ export default function DashboardItem(props: DashboardItemProps) {
 
     return (
         <View style={[commonStyle.dashboardSection, {gap: 10}, props.hideIfEmpty && renderedCount === 0 ? {display: "none"} : null]}>
-            <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+            {props.title && <Pressable onPress={props.expand} style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                 <View>
                     <Text style={commonStyle.dashboardSectionTitle}>{props.title}</Text>
                     {props.expand && <Text style={{...commonStyle.text, fontSize: 14, color: theme.primary}}>{i18n.t("components.dashboardItem.seeAll.text")}</Text>}
@@ -69,7 +68,7 @@ export default function DashboardItem(props: DashboardItemProps) {
                 {props.expand && (
                     <MaterialIcons name="arrow-forward-ios" size={16} color={theme.primary} style={{ marginLeft: "auto" }} />
                 )}
-            </Pressable>
+            </Pressable>}
             <View style={[commonStyle.dashboardSectionContainer, props.collapsed ? {display: "none"} : null]}>
                 <Text style={renderedCount === 0 ? commonStyle.text : { display: "none" }}>{props.noItemsText ?? i18n.t("components.dashboardItem.empty.text")}</Text>
                 {props.items.map((item, index) => {

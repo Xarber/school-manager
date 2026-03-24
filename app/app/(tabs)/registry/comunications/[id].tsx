@@ -1,9 +1,9 @@
 import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import { DataManager, ComunicationData, SubjectData, useAppDataSync, UserInfo, UserData, useDBitem } from '@/data/datamanager';
+import { DataManager, ComunicationData, useAppDataSync, UserInfo, UserData, useDBitem } from '@/data/datamanager';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
@@ -180,10 +180,10 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                     <Text style={commonStyle.text}>{i18n.t("registry.comunications.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{ paddingBottom: safeAreaInsets.bottom + 70 }, (comunications.length == 0 ? { flex: 1 } : {})]} refreshControl={
+                    <ScrollView style={[]} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{ paddingBottom: safeAreaInsets.bottom + 70 }, (comunications.length == 0 ? { flex: 1 } : {})]} refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                     }>
-                        <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text>
+                        {/* <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text> */}
                         <View style={(comunications.length == 0 ? { flex: 1 } : {})}>
                             {comunications.length == 0 && (
                                 <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 10 }}>
@@ -191,7 +191,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                                     <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.nocomunications.text")}</Text>
                                 </View>
                             )}
-                            <DashboardItem title={""} hideIfEmpty={true} items={comunications.map((e: ComunicationData) => {
+                            <DashboardItem hideIfEmpty={true} items={comunications.map((e: ComunicationData) => {
                                 let description = `${e.content?.split("\n").slice(0, 2).join("\n")}`;
                                 if (description.length > 100) description = description.slice(0, 100) + "...";
                                 return {

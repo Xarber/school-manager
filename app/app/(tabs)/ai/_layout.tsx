@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { colors } from "@/constants/colors";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";

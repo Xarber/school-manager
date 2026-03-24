@@ -3,7 +3,7 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
 import { DataLoader, DataManager, LessonData, SubjectData, useAppDataSync, UserData, UserInfo } from '@/data/datamanager';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
@@ -45,6 +45,8 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
+    const scrollRef = useRef<ScrollView>(null);
+    const sectionRefs = useRef<{ [key: number]: View | null}>({});
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -84,6 +86,11 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
     );
 
     const lessons = regroupLessonsByDate(lessonData.data) as any[];
+    const now = Date.now();
+
+    const closestDate = lessons.reduce(((prev, curr) => {
+        return Math.abs(new Date(curr[0]).getTime() - now) < Math.abs(new Date(prev[0]).getTime() - now) ? curr : prev;
+    }));
 
     return (
         <>
@@ -121,10 +128,10 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                                 <Text style={commonStyle.text}>{i18n.t("registry.lessons.header.description")}</Text>
                             </View>}
                             <View style={optimizationStyle.item}>
-                                <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{paddingBottom: safeAreaInsets.bottom + 70}, (lessons.length === 0 ? { flex: 1} : null)]} refreshControl={
+                                <ScrollView ref={scrollRef} style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{paddingBottom: safeAreaInsets.bottom + 70}, (lessons.length === 0 ? { flex: 1} : null)]} refreshControl={
                                     <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                                 }>
-                                    <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.header.text", {class: classData.data.name})}</Text>
+                                    {/* <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.header.text", {class: classData.data.name})}</Text> */}
                                     <View style={(lessons.length === 0 ? { flex: 1} : {})}>
                                         {lessons.length === 0 ? (
                                             <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 10 }}>
@@ -133,20 +140,41 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                                             </View>
                                         ) : null}
                                         {lessons.map((e, i) => (
-                                            <DashboardItem key={e[0]} title={e[0]} items={e[1].map((e: any) => {
-                                                let teacher = classData.data.teachers.find((t: UserInfo) => t._id == e.data.teacher) ?? {};
-                                                let data = {
-                                                    title: subjects.find((s: SubjectData) => s._id == e.subjectid)?.name,
-                                                    subtitle: `${teacher?.surname} ${teacher?.name}`,
-                                                    description: `${e.data.description}\n${new Date(`${e.data.date}T${e.data.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"})}`,
-                                                } as any;
-                                                if (e.data.isExam == true) data.badge = {
-                                                    text: i18n.t("registry.lessons.exam"),
-                                                    color: theme.caution
-                                                }
-                                                if (e.data.scheduled == true) data.subtitle = `${i18n.t("calendar.exams.scheduled")}, ${data.subtitle}`;
-                                                return data;
-                                            })} />
+                                            <View
+                                                key={e[0]}
+                                                ref={(el) => {sectionRefs.current[new Date(e[0]).getTime()] = el}}
+                                                onLayout={() => {
+                                                    if (e[0] === closestDate[0] && sectionRefs.current[new Date(e[0]).getTime()]) {
+                                                        sectionRefs.current[new Date(e[0]).getTime()]?.measureLayout(
+                                                            scrollRef.current as any,
+                                                            (x, y) => {
+                                                                scrollRef.current?.scrollTo({ y, animated: true });
+                                                            },
+                                                            () => {}
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                <DashboardItem title={new Date(e[0]).toLocaleDateString("en-GB", {
+                                                    weekday: "long",
+                                                    day: "2-digit",
+                                                    month: "2-digit",
+                                                    year: "numeric",
+                                                })} items={e[1].map((e: any) => {
+                                                    let teacher = classData.data.teachers.find((t: UserInfo) => t._id == e.data.teacher) ?? {};
+                                                    let data = {
+                                                        title: subjects.find((s: SubjectData) => s._id == e.subjectid)?.name,
+                                                        subtitle: `${teacher?.surname} ${teacher?.name}`,
+                                                        description: `${e.data.description}\n${new Date(`${e.data.date}T${e.data.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"})}`,
+                                                    } as any;
+                                                    if (e.data.isExam == true) data.badge = {
+                                                        text: i18n.t("registry.lessons.exam"),
+                                                        color: theme.caution
+                                                    }
+                                                    if (e.data.scheduled == true) data.subtitle = `${i18n.t("calendar.exams.scheduled")}, ${data.subtitle}`;
+                                                    return data;
+                                                })} />
+                                            </View>
                                         ))}
                                     </View>
                                 </ScrollView>

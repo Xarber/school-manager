@@ -1,14 +1,12 @@
-import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import { DataManager, ComunicationData, SubjectData, useAppDataSync, UserInfo, UserData } from '@/data/datamanager';
+import { DataManager, useAppDataSync } from '@/data/datamanager';
 import { devMode } from '@/data/devMode';
-import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
 import i18n from '@/constants/i18n';
-import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
-import DashboardItem from '@/components/dashboardItem';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';

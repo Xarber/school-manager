@@ -5,20 +5,18 @@ import {
     Image,
     TextInput,
     ScrollView,
-    Alert,
     ActivityIndicator,
     Platform
 } from "react-native";
 import { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "expo-router";
-import { useRouter, useLocalSearchParams, router, Redirect } from "expo-router";
+import { useRouter, useLocalSearchParams, Redirect } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
-import { useAppDataSync, DataManager } from "@/data/datamanager";
 
-import { registerForPushNotificationsAsync, turnOnNotifications } from "@/data/notifications";
+import { turnOnNotifications } from "@/data/notifications";
 import { KeyboardShift } from "@/components/keyboardShift";
 import { useAlert } from "@/components/alert/AlertContext";
 import i18n from "@/constants/i18n";

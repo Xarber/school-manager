@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Alert, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { Calendar, ExpandableCalendar, LocaleConfig } from 'react-native-calendars';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
@@ -159,11 +159,13 @@ function CalendarComponent({userData}: {userData: UserData}) {
             if (items.length > 0) {
                 items.forEach((item: any) => {
                     if (item.data.isExam || item.data.scheduled) {mark = true;}
-                    if (item.data.scheduled && !dayHasScheduled) {
+                    if (item.data.scheduled) {
+                        if (dayHasScheduled) return;
                         dayHasScheduled = true;
                         dayDots.push({key: `scheduled:${item.data._id}`, color: theme.primary});
                     }
-                    else if (item.data.isExam && !dayHasExam) {
+                    else if (item.data.isExam) {
+                        if (dayHasExam) return;
                         dayHasExam = true;
                         dayDots.push({key: `exam:${item.data._id}`, color: theme.caution});
                     }
@@ -180,9 +182,10 @@ function CalendarComponent({userData}: {userData: UserData}) {
         allClassHomework.forEach((item)=>{
             if (item.dueDate) {
                 const date = item.dueDate.split(" ")[0];
-                markedDates[date] = {
+                if (!markedDates[date]?.hasHomework) markedDates[date] = {
                     ...(markedDates[date] || {}),
-                    dots: [...((markedDates[date] || {}).dots || []), {key: `homework:${item._id}`, color: theme.disabled}]
+                    dots: [...((markedDates[date] || {}).dots || []), {key: `homework:${item._id}`, color: theme.disabled}],
+                    hasHomework: true
                 }
             }
         });

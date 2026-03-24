@@ -11,6 +11,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Timeline from '@/components/timeline';
+import ActionButtons from '@/components/actionButtons';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -114,11 +116,6 @@ export default function ScheduleTab() {
                     <Text style={commonStyle.text}>{i18n.t("registry.schedule.header.description")}</Text>
                 </View>}
                 <View style={[optimizationStyle.item]}>
-                    {/* <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={reload} />
-                    }>
-                        <Text style={commonStyle.headerText}>{i18n.t("registry.schedule.title")}</Text>
-                    </ScrollView> */}
                     <Tab.Navigator screenOptions={()=>({
                         tabBarActiveTintColor: theme.text,
                         tabBarIndicatorStyle: { backgroundColor: theme.primary },
@@ -138,6 +135,92 @@ export default function ScheduleTab() {
     )
 }
 
-function ScheduleDay({day, classData, refreshing, reload, subjectData}: {day: number, classData: ClassData, refreshing: boolean, reload: Function, subjectData: {[key: string]: SubjectData}}) {
-    return <></>;
+function ScheduleDay({day, classData, refreshing, reload, subjectData}: {day: number, classData: ClassData, refreshing: boolean, reload: ()=>void, subjectData: {[key: string]: SubjectData}}) {
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+    const [mode, setMode] = useState<"read" | "write">("read");
+    const [loading, setLoading] = useState(false);
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
+    const addPeriod = () => {
+
+    };
+
+    const addItem = ({startTime, endTime}: {startTime: string, endTime: string}) => {
+        
+    }
+
+    const periods = day == 0 ? [] : [
+        {
+            startTime: "9:00",
+            endTime: "10:00",
+            items: [
+                {
+                    title: "History"
+                }, 
+                {
+                    title: "Geography"
+                }
+            ]
+        },
+        {
+            startTime: "11:00",
+            endTime: "12:00",
+            items: [
+                {
+                    title: "Science"
+                }
+            ]
+        },
+        {
+            startTime: "12:00",
+            endTime: "13:00",
+            items: [
+                {
+                    title: "Maths"
+                }
+            ]
+        }
+    ];
+
+    return (
+        <>
+            <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={[{ paddingBottom: safeAreaInsets.bottom + 70 }, (periods.length == 0 && { flex: 1 })]} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={reload} />
+            }>
+                <View style={{ padding: 20, paddingBottom: 0 }}>
+                    <Text style={commonStyle.headerText}>{i18n.t("components.calendar.localeconfig.dayNames")[day]}</Text>
+                </View>
+                <Timeline edit={{ editing: mode === "write", addItem, addPeriod }} periods={periods} />
+                {periods.length == 0 && (
+                    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 20, gap: 10 }}>
+                        <Ionicons name="albums-outline" size={40} color={theme.text} />
+                        <Text style={commonStyle.text}>{i18n.t("registry.schedule.noperiods")}</Text>
+                    </View>
+                )}
+            </ScrollView>
+            <ActionButtons items={[
+                {
+                    title: i18n.t("profile.data.actions.edit.title"),
+                    iconName: "pencil-sharp",
+                    onPress: () => {
+                        setMode("write");
+                    },
+                    display: mode === "read",
+                },
+                {
+                    title: i18n.t("profile.data.actions.save.title"),
+                    iconName: "checkmark",
+                    buffering: loading,
+                    onPress: () => {
+                        // ...
+                        setMode("read");
+                    },
+                    display: mode === "write",
+                },
+            ]} align="right" itemStyles={{ borderRadius: 360 }} />
+        </>
+    )
 }

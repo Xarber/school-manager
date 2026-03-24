@@ -4,7 +4,7 @@ import AppLockScreen from "@/components/appLockScreen";
 import { useUserData } from "@/data/UserDataContext";
 import * as LocalAuthentication from 'expo-local-authentication';
 import i18n from './i18n';
-import { Button, Text, View } from 'react-native';
+import { View } from 'react-native';
 
 type AppLockContextType = {
     firstUnlock: boolean;
