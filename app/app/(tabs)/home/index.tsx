@@ -80,7 +80,7 @@ function HomeScreen({userData}: {userData: UserData}) {
     const tomorrowLessons = filterExamsDate(1, lessons).filter((e: any)=>e.date != new Date().toISOString().split("T")[0]);
     const tomorrowHomework = allClassHomework.filter((e: any)=>e.dueDate.split(" ")[0] === new Date(new Date().getTime() + 86400000).toISOString().split("T")[0]);;
 
-    const tomorrowHours = classData.data.schedule.find((e: WeekSchedule) => e.day === new Date().getDay())?.hours ?? [];
+    const tomorrowHours = classData.data.schedule.find((e: WeekSchedule) => e.day === new Date(new Date().getTime() + 86400000).getDay())?.hours ?? [];
     const tomorrowSubjects = [] as {subject: string, hours: string[]}[];
     tomorrowHours.forEach((s: any) => {
         s.subjects.forEach((e: string) => {
