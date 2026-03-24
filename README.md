@@ -76,6 +76,7 @@ cd ./server/ && node .
 * ✔️ Custom app icons!
 * ✔️ App lock
 * ✔️ Confirmations for communications (accept, deny, message)
+* ✔️ Week schedule
 
 </details>
 
@@ -95,7 +96,6 @@ cd ./server/ && node .
 * ✧ Add logout logic (invalid user token)
 * ✧ User grades
     * Find required grade (or grade pair) to reach a goal.
-* ✧ Week schedule
 * ✧ Scheduled exams (important milestone)
     * Also add specific users only scheduled exams (Special Educational Needs (SEN) / Disturbi Specifici Apprendimento (DSA))
 * ✧ Second app optimization review (fix all warnings and optimize views)
