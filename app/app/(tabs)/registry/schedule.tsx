@@ -13,6 +13,7 @@ import { useCallback, useState } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Timeline from '@/components/timeline';
 import ActionButtons from '@/components/actionButtons';
+import { useClassData } from '@/data/ClassContext';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -30,9 +31,7 @@ export default function ScheduleTab() {
     const safeAreaInsets = useSafeAreaInsets();
     safeAreaInsets.bottom = safeAreaInsets.bottom ?? 20;
 
-    const classData = useAppDataSync(activeClassId != "" ? DataManager.classData.db : null, `${DataManager.classData.db}:${activeClassId}`, DataManager.classData.default, {
-        classid: activeClassId
-    });
+    const classData = useClassData();
     let subjectIds = classData.data.subjects;
     let subjects = (Object.values(subjectMap) as SubjectData[])
     .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
@@ -46,7 +45,7 @@ export default function ScheduleTab() {
 
     useFocusEffect(
         useCallback(()=>{
-            reload();
+            //reload();
         }, [])
     )
 

@@ -11,6 +11,7 @@ import DashboardItem from '@/components/dashboardItem';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useClassData } from '@/data/ClassContext';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
     let dateIndex = {};
@@ -51,9 +52,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
-    const classData = useAppDataSync(classid ? DataManager.classData.db : null, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
-        classid: classid
-    });
+    const classData = useClassData();
 
     const subjectIds = classData.data.subjects;
 
@@ -74,7 +73,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
 
     useFocusEffect(
         useCallback(() => {
-            reload();
+            //reload();
         }, [])
     );
 

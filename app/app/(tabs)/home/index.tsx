@@ -18,6 +18,7 @@ import { useCallback, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLanguage } from "@/constants/LanguageContext";
 import { Ionicons } from "@expo/vector-icons";
+import { useClassData } from "@/data/ClassContext";
 
 function HomeScreen({userData}: {userData: UserData}) {
     const theme = useTheme();
@@ -33,9 +34,7 @@ function HomeScreen({userData}: {userData: UserData}) {
     
     const activeClassId = userData.settings.activeClassId;
 
-    const classData = useAppDataSync(activeClassId != "" ? DataManager.classData.db : null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
-        classid: activeClassId
-    });
+    const classData = useClassData();
 
     let subjectIds = classData.data.subjects;
     let subjects = (Object.values(subjectMap) as SubjectData[])
@@ -60,7 +59,7 @@ function HomeScreen({userData}: {userData: UserData}) {
     
     useFocusEffect(
         useCallback(()=>{
-            reload();
+            //reload();
         }, [])
     )
 

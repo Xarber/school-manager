@@ -12,6 +12,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useClassData } from '@/data/ClassContext';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -211,9 +212,7 @@ function HomeworkTab({userData}: {userData: UserData}) {
     const { width, height } = useWindowDimensions();
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
 
-    const classData = useAppDataSync(classid != "" ? DataManager.classData.db : null, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
-        classid: classid
-    });
+    const classData = useClassData();
 
     let defaultHomeworkData = [{subjectid: "", data: [DataManager.homeworkData.default]}];
     const homeworkData = useAppDataSync(classid != "" ? DataManager.homeworkData.db : null, `${DataManager.homeworkData.app}:${classid}`, defaultHomeworkData, {
@@ -229,7 +228,7 @@ function HomeworkTab({userData}: {userData: UserData}) {
 
     useFocusEffect(
         useCallback(()=>{
-            reload();
+            //reload();
         }, [])
     )
 

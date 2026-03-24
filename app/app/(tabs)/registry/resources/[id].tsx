@@ -10,6 +10,7 @@ import { ActivityIndicator } from 'react-native';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useClassData } from '@/data/ClassContext';
 
 function ResourceTab({classid, resourceid}: {classid: string, resourceid: string}) {
     const theme = useTheme();
@@ -41,9 +42,7 @@ export function AllResources({classid}: {classid: string}) {
     const safeAreaInsets = useSafeAreaInsets();
     safeAreaInsets.bottom = safeAreaInsets.bottom ?? 20;
 
-    const classData = useAppDataSync(activeClassId != "" ? DataManager.classData.db : null, `${DataManager.classData.db}:${activeClassId}`, DataManager.classData.default, {
-        classid: activeClassId
-    });
+    const classData = useClassData();
 
     const reload = async () => {
         setRefreshing(true);
@@ -54,7 +53,7 @@ export function AllResources({classid}: {classid: string}) {
 
     useFocusEffect(
         useCallback(()=>{
-            reload();
+            //reload();
         }, [])
     )
 

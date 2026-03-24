@@ -11,6 +11,7 @@ import DashboardItem from '@/components/dashboardItem';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useClassData } from '@/data/ClassContext';
 
 function ComunicationTab({classid, comunicationid}: {classid: string, comunicationid: string}) {
     const theme = useTheme();
@@ -141,9 +142,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
 
-    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classid}`, DataManager.classData.default, {
-        classid: classid
-    })
+    const classData = useClassData();
 
     const comunicationData = useAppDataSync(DataManager.comunicationData.db, `${DataManager.comunicationData.app}:${classid}`, [DataManager.comunicationData.default], {
         classid: classid
@@ -161,7 +160,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
 
     useFocusEffect(
         useCallback(() => {
-            reload();
+            //reload();
         }, [])
     );
 
