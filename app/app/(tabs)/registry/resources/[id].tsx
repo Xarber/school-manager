@@ -50,7 +50,7 @@ export function AllResources({classid}: {classid: string}) {
         await Promise.all([classData.load()]);
         setRefreshing(false);
     };
-
+    
     useFocusEffect(
         useCallback(()=>{
             //reload();

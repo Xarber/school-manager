@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
 import { Switch } from 'react-native-paper';
+import { useSubjectData } from '@/data/SubjectMapContext';
 
 interface updateLessonProps {
     action: string;
@@ -74,7 +75,6 @@ function NewLesson() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
-    const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const [lessonName, setLessonName] = useState("");
     const [subjectId, setSubjectId] = useState("");
     const [date, setDate] = useState(new Date());
@@ -96,10 +96,7 @@ function NewLesson() {
         classid: classId
     });
 
-    const subjectIds = classData.data.subjects;
-
-    let subjects = (Object.values(subjectMap) as SubjectData[])
-    .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
+    let subjects = useSubjectData().subjects;
 
     const lessonData = useDBitem(DataManager.lessonData.db, DataManager.lessonData.default);
 
@@ -123,27 +120,6 @@ function NewLesson() {
     return (
         <>
             <Stack.Screen options={{headerTitle: i18n.t("modal.lesson.create.stack.title")}} />
-            {subjectIds.map((id: string) => {
-                return (
-                    <DataLoader
-                        key={id}
-                        id={id}
-                        keys={DataManager.subjectData}
-                        body={{ subjectid: id }}
-                        onLoad={(id, subjectdata) =>
-                            setSubjectMap(prev => {
-                                if (prev[id]?._id === subjectdata.data?._id) {
-                                    return prev;
-                                }
-                                return {
-                                    ...prev,
-                                    [id]: subjectdata.data
-                                };
-                            })
-                        }
-                    />
-                )
-            })}
             {
                 classData.loading ? <ActivityIndicator size="small" color={theme.text} /> : 
                 <KeyboardShift>

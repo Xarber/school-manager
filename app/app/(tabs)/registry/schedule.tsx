@@ -14,6 +14,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import Timeline from '@/components/timeline';
 import ActionButtons from '@/components/actionButtons';
 import { useClassData } from '@/data/ClassContext';
+import { useSubjectData } from '@/data/SubjectMapContext';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -24,7 +25,6 @@ export default function ScheduleTab() {
     const { width, height } = useWindowDimensions();
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
     const [refreshing, setRefreshing] = useState(false);
-    const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const userData = useUserData();
     const activeClassId = userData.data.settings.activeClassId;
 
@@ -33,8 +33,7 @@ export default function ScheduleTab() {
 
     const classData = useClassData();
     let subjectIds = classData.data.subjects;
-    let subjects = (Object.values(subjectMap) as SubjectData[])
-    .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
+    let subjects = useSubjectData().subjects;
 
     const reload = async () => {
         setRefreshing(true);
@@ -64,50 +63,29 @@ export default function ScheduleTab() {
     )
 
     function ScheduleSunday() {
-        return <ScheduleDay day={0} classData={classData.data} refreshing={refreshing} reload={reload} subjectData={subjectMap} />
+        return <ScheduleDay day={0} refreshing={refreshing} reload={reload} />
     }
     function ScheduleMonday() {
-        return <ScheduleDay day={1} classData={classData.data} refreshing={refreshing} reload={reload} subjectData={subjectMap} />
+        return <ScheduleDay day={1} refreshing={refreshing} reload={reload} />
     }
     function ScheduleTuesday() {
-        return <ScheduleDay day={2} classData={classData.data} refreshing={refreshing} reload={reload} subjectData={subjectMap} />
+        return <ScheduleDay day={2} refreshing={refreshing} reload={reload} />
     }
     function ScheduleWednesday() {
-        return <ScheduleDay day={3} classData={classData.data} refreshing={refreshing} reload={reload} subjectData={subjectMap} />
+        return <ScheduleDay day={3} refreshing={refreshing} reload={reload} />
     }
     function ScheduleThursday() {
-        return <ScheduleDay day={4} classData={classData.data} refreshing={refreshing} reload={reload} subjectData={subjectMap} />
+        return <ScheduleDay day={4} refreshing={refreshing} reload={reload} />
     }
     function ScheduleFriday() {
-        return <ScheduleDay day={5} classData={classData.data} refreshing={refreshing} reload={reload} subjectData={subjectMap} />
+        return <ScheduleDay day={5} refreshing={refreshing} reload={reload} />
     }
     function ScheduleSaturday() {
-        return <ScheduleDay day={6} classData={classData.data} refreshing={refreshing} reload={reload} subjectData={subjectMap} />
+        return <ScheduleDay day={6} refreshing={refreshing} reload={reload} />
     }
 
     return (
         <>
-            {subjectIds.map((id: string) => {
-                return (
-                    <DataLoader
-                        key={id}
-                        id={id}
-                        keys={DataManager.subjectData}
-                        body={{ subjectid: id }}
-                        onLoad={(id, subjectdata) =>
-                            setSubjectMap(prev => {
-                                if (prev[id]?._id === subjectdata.data?._id) {
-                                    return prev;
-                                }
-                                return {
-                                    ...prev,
-                                    [id]: subjectdata.data
-                                };
-                            })
-                        }
-                    />
-                )
-            })}
             <View style={[optimizationStyle.container, { flex: 1 }]}>
                 {(width > wrapperScreenSize) && <View style={[commonStyle.dashboardSection, optimizationStyle.item, { justifyContent: "center", gap: 5, alignItems: "center", height: "100%" }]}>
                     <Ionicons name="school" size={40} color={theme.text} />
@@ -134,7 +112,7 @@ export default function ScheduleTab() {
     )
 }
 
-function ScheduleDay({day, classData, refreshing, reload, subjectData}: {day: number, classData: ClassData, refreshing: boolean, reload: ()=>void, subjectData: {[key: string]: SubjectData}}) {
+function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolean, reload: ()=>void }) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const [mode, setMode] = useState<"read" | "write">("read");

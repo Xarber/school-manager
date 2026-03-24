@@ -12,6 +12,7 @@ import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useClassData } from '@/data/ClassContext';
+import { useSubjectData } from '@/data/SubjectMapContext';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
     let dateIndex = {};
@@ -41,7 +42,6 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const optimizationStyle = createStyling.createOptimizationStyles(theme);
-    const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const { width, height } = useWindowDimensions();
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
     const router = useRouter();
@@ -56,8 +56,7 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
 
     const subjectIds = classData.data.subjects;
 
-    let subjects = (Object.values(subjectMap) as SubjectData[])
-    .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
+    let subjects = useSubjectData().subjects;
 
     let defaultLessonsData = [{subjectid: "", data: [DataManager.lessonData.default]}];
     const lessonData = useAppDataSync(classid ? DataManager.lessonData.db : null, `${DataManager.lessonData.app}:${classid}`, defaultLessonsData, {
@@ -93,27 +92,6 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
 
     return (
         <>
-            {subjectIds.map((id: string) => {
-                return (
-                    <DataLoader
-                        key={id}
-                        id={id}
-                        keys={DataManager.subjectData}
-                        body={{ subjectid: id }}
-                        onLoad={(id, subjectdata) =>
-                            setSubjectMap(prev => {
-                                if (prev[id]?._id === subjectdata.data?._id) {
-                                    return prev;
-                                }
-                                return {
-                                    ...prev,
-                                    [id]: subjectdata.data
-                                };
-                            })
-                        }
-                    />
-                )
-            })}
             {(classData.loading && !refreshing) ? ( 
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                     <ActivityIndicator size="small" color={theme.text} />
