@@ -1,0 +1,18 @@
+import { useTheme } from "@/constants/useThemes";
+import { Ionicons } from "@expo/vector-icons";
+import { Text, View } from "react-native";
+import createStyling from "@/constants/styling";
+import i18n from "@/constants/i18n";
+
+export default function LabsScreen() {
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+            <Ionicons name="flask-sharp" size={40} color={theme.text} />
+            <Text style={[commonStyle.headerText, {textAlign: "center"}]}>{i18n.t("beta.undeveloped.title")}</Text>
+            <Text style={[commonStyle.text, {textAlign: "center"}]}>{i18n.t("beta.undeveloped.message")}</Text>
+        </View>
+    )
+}

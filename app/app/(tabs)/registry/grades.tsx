@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useClassData } from '@/data/ClassContext';
+import LabsScreen from '@/components/LabsScreen';
 
 export default function GradesTab() {
     const theme = useTheme();
@@ -41,11 +42,7 @@ export default function GradesTab() {
     )
 
     if (!devMode) return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
-            <Ionicons name="flask-sharp" size={40} color={theme.text} />
-            <Text style={[commonStyle.headerText, {textAlign: "center"}]}>{i18n.t("beta.undeveloped.title")}</Text>
-            <Text style={[commonStyle.text, {textAlign: "center"}]}>{i18n.t("beta.undeveloped.message")}</Text>
-        </View>
+        <LabsScreen />
     );
 
     if ((classData.loading || userData.loading) && !refreshing) return (
