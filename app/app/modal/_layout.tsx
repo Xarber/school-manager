@@ -42,6 +42,7 @@ export default function TabLayout() {
                 <Stack.Screen name="homework/[action]" options={{ presentation: "modal", title: i18n.t("modal.homework.stack.title"), headerShown: true, headerBackground, headerLeft: headerCancel }} />
                 <Stack.Screen name="lesson/[action]" options={{ presentation: "modal", title: i18n.t("modal.lesson.stack.title"), headerShown: true, headerBackground, headerLeft: headerCancel }} />
                 <Stack.Screen name="material/[action]" options={{ presentation: "modal", title: i18n.t("modal.material.stack.title"), headerShown: true, headerBackground, headerLeft: headerCancel }} />
+                <Stack.Screen name="schedule/[action]" options={{ presentation: "modal", title: i18n.t("modal.schedule.stack.title"), headerShown: true, headerBackground, headerLeft: headerCancel }} />
                 <Stack.Screen name="grade/[action]" options={{ presentation: "modal", title: i18n.t("modal.grade.stack.title"), headerShown: true, headerBackground, headerLeft: headerCancel }} />
                 <Stack.Screen name="comunication/[action]" options={{ presentation: "modal", title: i18n.t("modal.comunication.stack.title"), headerShown: true, headerBackground, headerLeft: headerCancel }} />
                 <Stack.Screen name="invitation/[action]" options={{ presentation: "modal", title: i18n.t("modal.invitation.stack.title"), headerShown: true, headerBackground, headerLeft: headerCancel }} />

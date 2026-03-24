@@ -286,6 +286,26 @@
                 "confirm": "Create"
             }
         },
+        "schedule": {
+            "create": {
+                "createdon": {
+                    "text": "Created on: {{createdOn}}"
+                },
+                "merge": {
+                    "text": "This period will be added to {{className}}"
+                },
+                "datetime": {
+                    "startTitle": "Start time",
+                    "endTitle": "End time"
+                },
+                "subjects": {
+                    "title": "Subjects",
+                    "addtitle": "Add a subject",
+                    "select": "Select a subject"
+                },
+                "confirm": "Add"
+            }
+        },
         "homework": {
             "stack": {
                 "title": "Homework"

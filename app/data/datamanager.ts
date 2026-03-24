@@ -131,14 +131,14 @@ const defaultClassData = {
 export type ClassData = typeof defaultClassData;
 
 const defaultScheduleHour = {
-    subject: '' as string | SubjectData, // _id rel
+    subjects: [] as string[] | SubjectData[], // _id rel
     startTime: '' as string,
     endTime: '' as string
 };
 export type ScheduleHour = typeof defaultScheduleHour;
 
 const defaultWeekSchedule = {
-    day: 'Monday' as 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday',
+    day: 1 as 1 | 2 | 3 | 4 | 5 | 6 | 0,
     hours: [] as ScheduleHour[],
     addedAt: '' as string,
     editedAt: 0 as number
