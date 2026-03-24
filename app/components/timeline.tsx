@@ -42,7 +42,6 @@ export default function Timeline(props: TimelineProps) {
 
     if (props.renderBreaks != false) {
         for (let i = 0;i < props.periods.length;i++) {
-            if (props.periods[i].items.length == 0) props.periods[i].break = true;
             if (props.periods[i + 1] == null) break;
             if (props.periods[i + 1].startTime != props.periods[i].endTime) {
                 const [h1, m1] = props.periods[i].endTime.split(":").map(Number);
@@ -105,7 +104,7 @@ function TimelinePeriod({period, props, index}: {period: TimelinePeriod, props: 
                     {period.break ? null : period.items.map(( item, index ) => {
                         return <TimelineItem key={index} item={item} index={index} />
                     })}
-                    {period.break && (
+                    {(period.break || period.items.length == 0) && (
                         <View style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", gap: 5 }}>
                             <Ionicons name="albums-outline" size={20} color={theme.disabled} />
                             <Text style={[commonStyle.text, { color: theme.disabled }]}>{i18n.t("components.timeline.noitems")}</Text>

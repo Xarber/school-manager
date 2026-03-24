@@ -315,6 +315,24 @@
                 "confirm": "Crea"
             }
         },
+        "schedule": {
+            "createdon": {
+                "text": "Creata il: {{createdOn}}"
+            },
+            "merge": {
+                "text": "Quest'ora verrà aggiunta alla classe {{className}}"
+            },
+            "datetime": {
+                "startTitle": "Ora di inizio",
+                "endTitle": "Ora di fine"
+            },
+            "subjects": {
+                "title": "Materie",
+                    "addtitle": "Aggiungi una materia",
+                    "select": "Seleziona una materia"
+            },
+            "confirm": "Aggiungi"
+        },
         "homework": {
             "stack": {
                 "title": "Compiti"

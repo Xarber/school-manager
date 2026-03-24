@@ -1,7 +1,7 @@
 import { View, Text, ActivityIndicator, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import { TextInput } from 'react-native';
 import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 
@@ -14,6 +14,7 @@ import { Switch } from 'react-native-paper';
 import SegmentedSlider from "@/components/segmentedPicker";
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
+import { useClassData } from '@/data/ClassContext';
 
 interface updateComunicationProps {
     action: string;
@@ -88,9 +89,10 @@ function NewComunication() {
 
     const canProceed = (comunicationName.length > 0) && (comunicationDescription.length > 0);
 
-    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
-        classid: classId
-    });
+    const classData = useClassData();
+    useEffect(()=>{
+        classData.load();
+    }, []);
 
     const comunicationData = useDBitem(DataManager.comunicationData.db, DataManager.comunicationData.default);
 

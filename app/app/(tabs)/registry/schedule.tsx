@@ -3,12 +3,12 @@ import { useTheme } from '@/constants/useThemes';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
 import { Ionicons } from '@expo/vector-icons';
 import i18n from '@/constants/i18n';
-import { ClassData, DataLoader, DataManager, SubjectData, useAppDataSync } from '@/data/datamanager';
+import { ClassData, DataLoader, DataManager, ScheduleHour, SubjectData, useAppDataSync, UserInfo, WeekSchedule } from '@/data/datamanager';
 import { devMode } from '@/data/devMode';
 import { useUserData } from '@/data/UserDataContext';
 import { ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Timeline from '@/components/timeline';
@@ -118,49 +118,37 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
     const [mode, setMode] = useState<"read" | "write">("read");
     const [loading, setLoading] = useState(false);
 
+    const userData = useUserData();
+    const classData = useClassData();
+    const subjects = useSubjectData().subjects;
+
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const addPeriod = () => {
-
+        router.push({pathname: `/modal/schedule/create` as any, params: {day}});
     };
 
     const addItem = ({startTime, endTime}: {startTime: string, endTime: string}) => {
-        
+        console.log(startTime, endTime);
     }
 
-    const periods = day == 0 ? [] : [
-        {
-            startTime: "9:00",
-            endTime: "10:00",
-            items: [
-                {
-                    title: "History"
-                }, 
-                {
-                    title: "Geography"
+    let dayPeriods = classData.data.schedule.find((e: WeekSchedule)=> {
+        return e.day === day;
+    })?.hours ?? [];
+
+    const periods = dayPeriods.map((e: ScheduleHour) => {
+        return {
+            ...e,
+            items: e.subjects.map((e: any) => {
+                if (!subjects.find((s: SubjectData)=>s._id === e)) return null;
+                let sub = subjects.find((s: SubjectData)=>s._id === e);
+                return {
+                    title: sub.name,
                 }
-            ]
-        },
-        {
-            startTime: "11:00",
-            endTime: "12:00",
-            items: [
-                {
-                    title: "Science"
-                }
-            ]
-        },
-        {
-            startTime: "12:00",
-            endTime: "14:00",
-            items: [
-                {
-                    title: "Maths"
-                }
-            ]
+            }).filter((e: any) => e !== null)
         }
-    ];
+    })
 
     return (
         <>
@@ -185,7 +173,7 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
                     onPress: () => {
                         setMode("write");
                     },
-                    display: mode === "read",
+                    display: classData.data.teachers.find((e: UserInfo) => e._id === userData.data.userInfo._id) && mode === "read",
                 },
                 {
                     title: i18n.t("profile.data.actions.save.title"),

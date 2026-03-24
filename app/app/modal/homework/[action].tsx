@@ -1,7 +1,7 @@
 import { View, Text, ActivityIndicator, TouchableOpacity, Platform, ScrollView, Pressable, Keyboard } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import {router, Stack, useLocalSearchParams} from "expo-router";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import { TextInput } from 'react-native';
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
 import { useSubjectData } from '@/data/SubjectMapContext';
+import { useClassData } from '@/data/ClassContext';
 
 interface updateHomeworkProps {
     action: string;
@@ -86,9 +87,10 @@ function NewHomework() {
 
     const canProceed = (homeworkName.length > 0) && (subjectId.length > 0);
 
-    const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
-        classid: classId
-    });
+    const classData = useClassData();
+    useEffect(()=>{
+        classData.load();
+    }, []);
 
     const subjects = useSubjectData().subjects;
 
