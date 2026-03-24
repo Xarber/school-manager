@@ -10,6 +10,7 @@ import { ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { useClassData } from '@/data/ClassContext';
 
 export default function GradesTab() {
     const theme = useTheme();
@@ -24,9 +25,7 @@ export default function GradesTab() {
     const safeAreaInsets = useSafeAreaInsets();
     safeAreaInsets.bottom = safeAreaInsets.bottom ?? 20;
 
-    const classData = useAppDataSync(activeClassId != "" ? DataManager.classData.db : null, `${DataManager.classData.db}:${activeClassId}`, DataManager.classData.default, {
-        classid: activeClassId
-    });
+    const classData = useClassData();
 
     const reload = async () => {
         setRefreshing(true);
@@ -37,7 +36,7 @@ export default function GradesTab() {
 
     useFocusEffect(
         useCallback(()=>{
-            reload();
+            //reload();
         }, [])
     )
 

@@ -48,7 +48,7 @@ function AllClassList() {
 
     useFocusEffect(
         useCallback(() => {
-            reload();
+            //reload();
         }, [])
     );
 
@@ -207,7 +207,7 @@ function Class(props: { classId: string }) {
 
     useFocusEffect(
         useCallback(() => {
-            reload();
+            //reload();
         }, [])
     );
 
@@ -342,7 +342,7 @@ function AllClassSubjects() {
 
     useFocusEffect(
         useCallback(() => {
-            reload();
+            //reload();
         }, [])
     );
 

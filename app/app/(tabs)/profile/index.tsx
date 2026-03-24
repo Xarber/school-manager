@@ -100,7 +100,7 @@ export default function ProfileTab() {
 
     useFocusEffect(
         useCallback(() => {
-            reload();
+            //reload();
         }, [])
     );
 

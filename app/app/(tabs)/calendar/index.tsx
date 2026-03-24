@@ -17,6 +17,7 @@ import { UserData } from '@/data/datamanager';
 import { useLanguage } from '@/constants/LanguageContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useClassData } from '@/data/ClassContext';
 
 export function loadHomeworkForDate(date: string, homework: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
@@ -99,9 +100,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
 
     const activeClassId = userData.settings.activeClassId;
 
-    const classData = useAppDataSync(activeClassId != "" ? DataManager.classData.db : null, `${DataManager.classData.app}:${activeClassId}`, DataManager.classData.default, {
-        classid: activeClassId
-    });
+    const classData = useClassData();
     let subjectIds = classData.data.subjects;
     let subjects = (Object.values(subjectMap) as SubjectData[])
     .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
@@ -126,7 +125,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
 
     useFocusEffect(
         useCallback(()=>{
-            reload();
+            //reload();
         }, [])
     )
 

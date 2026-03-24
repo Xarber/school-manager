@@ -15,6 +15,7 @@ import { BlurView } from "expo-blur";
 import { AppLockProvider } from "@/constants/AuthContext";
 import { NetworkProvider } from "@/constants/NetworkContext";
 import { DebugDataProvider } from "@/data/DebugDataContext";
+import { ClassDataProvider } from "@/data/ClassContext";
 
 function AppLayout() {
   const theme = useTheme();
@@ -56,13 +57,15 @@ export default function RootLayout() {
       <AccountDataProvider>
         <DebugDataProvider>
           <UserDataProvider>
-            <ContextThemeProvider>
-              <LanguageProvider>
-                <AlertProvider>
-                  <AppLayout />
-                </AlertProvider>
-              </LanguageProvider>
-            </ContextThemeProvider>
+            <ClassDataProvider>
+              <ContextThemeProvider>
+                <LanguageProvider>
+                  <AlertProvider>
+                    <AppLayout />
+                  </AlertProvider>
+                </LanguageProvider>
+              </ContextThemeProvider>
+            </ClassDataProvider>
           </UserDataProvider>
         </DebugDataProvider>
       </AccountDataProvider>
