@@ -14,7 +14,8 @@
             "add": {
                 "text": "Add"
             },
-            "addPeriod": "Add period"
+            "addPeriod": "Add period",
+            "noitems": "Break time!"
         },
         "applock": {
             "unlock": "Unlock app",

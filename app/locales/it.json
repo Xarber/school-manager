@@ -14,7 +14,8 @@
             "add": {
                 "text": "Aggiungi"
             },
-            "addPeriod": "Aggiungi ora"
+            "addPeriod": "Aggiungi ora",
+            "noitems": "Un po' di pausa!"
         },
         "applock": {
             "unlock": "Sblocca app",

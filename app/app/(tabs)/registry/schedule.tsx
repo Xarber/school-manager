@@ -153,7 +153,7 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
         },
         {
             startTime: "12:00",
-            endTime: "13:00",
+            endTime: "14:00",
             items: [
                 {
                     title: "Maths"
