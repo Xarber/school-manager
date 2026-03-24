@@ -130,7 +130,7 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
     };
 
     const addItem = ({startTime, endTime}: {startTime: string, endTime: string}) => {
-        console.log(startTime, endTime);
+        router.push({pathname: `/modal/schedule/edit` as any, params: {day, startTime, endTime}});
     }
 
     let dayPeriods = classData.data.schedule.find((e: WeekSchedule)=> {

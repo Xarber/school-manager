@@ -12,7 +12,7 @@
     "components": {
         "timeline": {
             "add": {
-                "text": "Aggiungi"
+                "text": "Modifica"
             },
             "addPeriod": "Aggiungi ora",
             "noitems": "Un po' di pausa!"
@@ -316,22 +316,75 @@
             }
         },
         "schedule": {
-            "createdon": {
-                "text": "Creata il: {{createdOn}}"
-            },
-            "merge": {
-                "text": "Quest'ora verrà aggiunta alla classe {{className}}"
-            },
-            "datetime": {
-                "startTitle": "Ora di inizio",
-                "endTitle": "Ora di fine"
-            },
-            "subjects": {
-                "title": "Materie",
+            "create": {
+                "stack": {
+                    "title": "Aggiungi ora"
+                },
+                "createdon": {
+                    "text": "Creata il: {{createdOn}}"
+                },
+                "merge": {
+                    "text": "Quest'ora verrà aggiunta alla classe {{className}}"
+                },
+                "datetime": {
+                    "startTitle": "Ora di inizio",
+                    "endTitle": "Ora di fine"
+                },
+                "subjects": {
+                    "title": "Materie",
                     "addtitle": "Aggiungi una materia",
                     "select": "Seleziona una materia"
+                },
+                "success": {
+                    "title": "Fatto!",
+                    "description": "Aggiunta con successo!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Errore"
+                },
+                "confirm": "Aggiungi"
             },
-            "confirm": "Aggiungi"
+            "edit": {
+                "stack": {
+                    "title": "Modifica ora"
+                },
+                "createdon": {
+                    "text": "Modificata il: {{createdOn}}"
+                },
+                "merge": {
+                    "text": "Quest'ora verrà modificato nella classe {{className}}"
+                },
+                "datetime": {
+                    "startTitle": "Ora di inizio",
+                    "endTitle": "Ora di fine"
+                },
+                "subjects": {
+                    "title": "Materie",
+                    "addtitle": "Aggiungi una materia",
+                    "select": "Seleziona una materia"
+                },
+                "success": {
+                    "title": "Fatto!",
+                    "description": "Modificata con successo!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Errore"
+                },
+                "confirm": "Aggiungi",
+                "delete": "Rimuovi"
+            },
+            "delete": {
+                "success": {
+                    "title": "Fatto!",
+                    "description": "Eliminata con successo!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Errore"
+                }
+            }
         },
         "homework": {
             "stack": {
@@ -604,7 +657,8 @@
             "title": "Domani",
             "exam": "Verifica",
             "lesson": "Lezione",
-            "homework": "Compito"
+            "homework": "Compito",
+            "schedule": "Orario"
         },
         "upcoming": {
             "title": "Prossime verifiche"
