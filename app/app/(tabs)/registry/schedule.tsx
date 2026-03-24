@@ -48,14 +48,6 @@ export default function ScheduleTab() {
         }, [])
     )
 
-    if (!devMode) return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
-            <Ionicons name="flask-sharp" size={40} color={theme.text} />
-            <Text style={[commonStyle.headerText, {textAlign: "center"}]}>{i18n.t("beta.undeveloped.title")}</Text>
-            <Text style={[commonStyle.text, {textAlign: "center"}]}>{i18n.t("beta.undeveloped.message")}</Text>
-        </View>
-    );
-
     if ((classData.loading || userData.loading) && !refreshing) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color={theme.text} />
