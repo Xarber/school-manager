@@ -10,6 +10,12 @@
         }
     },
     "components": {
+        "timeline": {
+            "add": {
+                "text": "Add"
+            },
+            "addPeriod": "Add period"
+        },
         "applock": {
             "unlock": "Unlock app",
             "fallback": "Try another way",
@@ -645,7 +651,8 @@
             "title": "Week Schedule",
             "header": {
                 "description": "View the week schedule"
-            }
+            },
+            "noperiods": "Nothing for today!"
         },
         "homework": {
             "stack": {

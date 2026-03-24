@@ -5,25 +5,23 @@ import {
     Image,
     TextInput,
     ScrollView,
-    Alert,
     ActivityIndicator,
     Pressable
 } from "react-native";
 import { Keyboard } from "react-native";
 import { useEffect, useState } from "react";
-import { useRouter, useLocalSearchParams, router, Redirect } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
-import { useAppDataSync, DataManager } from "@/data/datamanager";
+import { DataManager } from "@/data/datamanager";
 import { KeyboardShift } from "@/components/keyboardShift";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
 import { useAccountData } from "@/data/AccountDataContext";
 import welcomeImage from "@/assets/images/welcome.png";
 import { useNetworkContext } from "@/constants/NetworkContext";
-import { useNetInfo } from "@react-native-community/netinfo";
 import { Ionicons } from "@expo/vector-icons";
 
 interface AlertProps {

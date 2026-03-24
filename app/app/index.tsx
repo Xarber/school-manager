@@ -1,11 +1,7 @@
 import { Redirect, SplashScreen } from "expo-router";
-import { Button, Text, View } from "react-native";
-import { useAppDataSync, DataManager } from "@/data/datamanager";
+import { View } from "react-native";
 import { useEffect, useState } from "react";
-import { useGlobalStore } from "@/data/store";
 import { useUserData } from "@/data/UserDataContext";
-import i18n from "@/constants/i18n";
-import AppLockScreen from "@/components/appLockScreen";
 import { useAppLockContext } from "@/constants/AuthContext";
 import { useDebugData } from "@/data/DebugDataContext";
 

@@ -4,7 +4,6 @@ import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
 import UserGrades from "@/components/gradesComponent";
-import ClipboardText from "@/components/clipboardText";
 
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useAppDataSync, DataManager, UserData, SubjectData, DataLoader } from "@/data/datamanager";

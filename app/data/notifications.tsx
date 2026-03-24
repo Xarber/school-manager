@@ -1,8 +1,6 @@
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { useAccountData } from './AccountDataContext';
-import { useUserData } from './UserDataContext';
 
 export async function registerForPushNotificationsAsync() {
     if (!Device.isDevice || Platform.OS === "web") {

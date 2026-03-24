@@ -5,7 +5,7 @@ import {useState} from "react";
 import { TextInput } from 'react-native';
 
 import createStyling from '@/constants/styling';
-import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
+import { DataManager, useDBitem } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';

@@ -1,10 +1,4 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
-import { AppState } from "react-native";
-import AppLockScreen from "@/components/appLockScreen";
-import { useUserData } from "@/data/UserDataContext";
-import * as LocalAuthentication from 'expo-local-authentication';
-import i18n from './i18n';
-import { Button, Text, View } from 'react-native';
 import { NetInfoStateType } from "@react-native-community/netinfo";
 import * as NetInfo from "@react-native-community/netinfo"
 import { dbpaths } from "@/data/db";

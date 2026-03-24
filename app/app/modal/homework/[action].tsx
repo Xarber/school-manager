@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, TouchableOpacity, Platform, ScrollView, Pressable } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, Platform, ScrollView, Pressable, Keyboard } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import {router, Stack, useLocalSearchParams} from "expo-router";
 import {useState} from "react";
@@ -110,6 +110,8 @@ function NewHomework() {
             is24Hour: true,
         });
     };
+
+    if (subjectPickeriOSvisible) Keyboard.dismiss();
 
     return (
         <>

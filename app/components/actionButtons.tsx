@@ -1,5 +1,5 @@
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
 import { Ionicons } from "@expo/vector-icons";

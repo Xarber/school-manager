@@ -1,5 +1,4 @@
 import {Stack} from "expo-router";
-import { colors } from "@/constants/colors";
 import i18n from "@/constants/i18n";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";

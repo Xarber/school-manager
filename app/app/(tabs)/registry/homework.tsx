@@ -8,7 +8,7 @@ import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ActivityIndicator } from 'react-native';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -39,17 +39,26 @@ export function stringToColor(str: string) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-function renderHomework(homework: HomeworkData[], classData: ClassData) {
+function renderHomework(homework: HomeworkData[], classData: ClassData, refreshing: boolean, reload: () => void) {
     const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const dateIndex: { [date: string]: HomeworkData[] } = {};
-    const allDates: string[] = [];
+    const allDates: {date: string, timestamp: number}[] = [];
+    const scrollRef = useRef<ScrollView>(null);
+    const sectionRefs = useRef<{ [key: number]: View | null}>({});
+    const now = Date.now();
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     let subjectIds = classData.subjects as string[];
     let subjects = (Object.values(subjectMap) as SubjectData[])
     .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
 
     for (let i = 0; i < homework.length; i++) {
-        const date = new Date(homework[i].dueDate).toLocaleDateString("en-GB", {
+        const dateObj = new Date(homework[i].dueDate);
+        const date = dateObj.toLocaleDateString("en-GB", {
             weekday: "long",
             day: "2-digit",
             month: "2-digit",
@@ -59,55 +68,79 @@ function renderHomework(homework: HomeworkData[], classData: ClassData) {
             dateIndex[date] = [];
         }
         dateIndex[date].push(homework[i]);
-        if (!allDates.includes(date)) allDates.push(date);
+        if (!allDates.find(e=>e.date === date)) allDates.push({date, timestamp: dateObj.getTime()});
     }
-    allDates.sort();
+    allDates.sort((a, b) => a.timestamp - b.timestamp);
+
+    const closestDate = allDates.reduce(((prev, curr) => {
+        return Math.abs(curr.timestamp - now) < Math.abs(prev.timestamp - now) ? curr : prev;
+    }))
 
     return allDates.length > 0 ? (
-        <View>
-            {subjectIds.map((id: string) => {
-                return (
-                    <DataLoader
-                        key={id}
-                        id={id}
-                        keys={DataManager.subjectData}
-                        body={{ subjectid: id }}
-                        onLoad={(id, subjectdata) =>
-                            setSubjectMap(prev => {
-                                if (prev[id]?._id === subjectdata.data?._id) {
-                                    return prev;
-                                }
-                                return {
-                                    ...prev,
-                                    [id]: subjectdata.data
-                                };
-                            })
-                        }
-                    />
-                )
-            })}
-            {
-                allDates.map((date) => {
+        <ScrollView ref={scrollRef} style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
+        }>
+            <View>
+                {subjectIds.map((id: string) => {
                     return (
-                        <DashboardItem
-                            key={date}
-                            title={date}
-                            items={dateIndex[date].map(e=>{
-                                return {
-                                    title: e.title,
-                                    description: e.description,
-                                    badge: {
-                                        text: (subjects.find((s: any) => s._id == (e as any).subjectid) as any)?.name,
-                                        color: stringToColor((e as any).subjectid)
-                                    },
-                                    onPress: () => {}
-                                };
-                            })}
+                        <DataLoader
+                            key={id}
+                            id={id}
+                            keys={DataManager.subjectData}
+                            body={{ subjectid: id }}
+                            onLoad={(id, subjectdata) =>
+                                setSubjectMap(prev => {
+                                    if (prev[id]?._id === subjectdata.data?._id) {
+                                        return prev;
+                                    }
+                                    return {
+                                        ...prev,
+                                        [id]: subjectdata.data
+                                    };
+                                })
+                            }
                         />
-                    );
-                })
-            }
-        </View>
+                    )
+                })}
+                {
+                    allDates.map((dateObj) => {
+                        let date = dateObj.date;
+                        return (
+                            <View
+                                key={date}
+                                ref={(el) => {sectionRefs.current[dateObj.timestamp] = el}}
+                                onLayout={() => {
+                                    if (dateObj.timestamp === closestDate.timestamp && sectionRefs.current[dateObj.timestamp]) {
+                                        sectionRefs.current[dateObj.timestamp]?.measureLayout(
+                                            scrollRef.current as any,
+                                            (x, y) => {
+                                                scrollRef.current?.scrollTo({ y, animated: true });
+                                            },
+                                            () => {}
+                                        );
+                                    }
+                                }}
+                            >
+                                <DashboardItem
+                                    title={date}
+                                    items={dateIndex[date].map(e=>{
+                                        return {
+                                            title: e.title,
+                                            description: e.description,
+                                            badge: {
+                                                text: (subjects.find((s: any) => s._id == (e as any).subjectid) as any)?.name,
+                                                color: stringToColor((e as any).subjectid)
+                                            },
+                                            onPress: () => {}
+                                        };
+                                    })}
+                                />
+                            </View>
+                        );
+                    })
+                }
+            </View>
+        </ScrollView>
     ) : null;
 }
 
@@ -159,11 +192,9 @@ function HomeworkComponent({mode, userData, classid, classData, reload, refreshi
                 <Text style={commonStyle.text}>{i18n.t("registry.homework.warn.nohomework.text")}</Text>
             </View>
         ) : (
-            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
-            }>
-                {renderHomework(filteredItems, classData)}
-            </ScrollView>
+            <>
+                {renderHomework(filteredItems, classData, refreshing, reload)}
+            </>
         )
     );
 }

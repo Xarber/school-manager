@@ -1,9 +1,8 @@
-import { View, Text, ActivityIndicator, TouchableOpacity, Platform, ScrollView, Pressable } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
-import {router, Stack, useLocalSearchParams} from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import {useState} from "react";
 import { TextInput } from 'react-native';
-import { Picker } from "@react-native-picker/picker";
 import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 
 import createStyling from '@/constants/styling';
@@ -11,7 +10,6 @@ import { useAppDataSync, DataManager, useDBitem, SubjectData } from '@/data/data
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { BlurView } from 'expo-blur';
-import { Ionicons } from '@expo/vector-icons';
 import { Switch } from 'react-native-paper';
 import SegmentedSlider from "@/components/segmentedPicker";
 import { useUserData } from '@/data/UserDataContext';

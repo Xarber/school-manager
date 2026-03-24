@@ -1,5 +1,5 @@
-import { ActivityIndicator, Alert, RefreshControl, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
-import { Icon, Link, Stack, useFocusEffect } from "expo-router";
+import { ActivityIndicator, RefreshControl, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { Link, Stack, useFocusEffect } from "expo-router";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import createStyling, { defaultScreenSizes } from "@/constants/styling";
@@ -7,7 +7,7 @@ import DashboardItem, { getTextColor } from "@/components/dashboardItem";
 import { useAppDataSync, DataManager, ClassData, UserInfo, SubjectData, DataLoader } from "@/data/datamanager";
 import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ActionButtons from "@/components/actionButtons";
 import i18n from "@/constants/i18n";
 import { useCallback, useState } from "react";

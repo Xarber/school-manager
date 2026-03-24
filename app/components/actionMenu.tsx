@@ -1,4 +1,4 @@
-import { View, Text, Image, ImageSourcePropType } from "react-native"
+import { View, Text } from "react-native"
 import { Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@/constants/useThemes"

@@ -1,5 +1,5 @@
 import { Text, View, ScrollView, RefreshControl, ActivityIndicator } from "react-native";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Stack, useFocusEffect } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
@@ -7,9 +7,6 @@ import DashboardItem from "@/components/dashboardItem";
 import createStyling from "@/constants/styling";
 import { router } from "expo-router";
 import { DataManager, ClassData, DataLoader, prepareOfflineData } from "@/data/datamanager";
-import NetInfo from "@react-native-community/netinfo";
-import Toast from "react-native-toast-message";
-import createToastConfig from "@/constants/toast";
 import i18n from "@/constants/i18n";
 import { useAccountData } from "@/data/AccountDataContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

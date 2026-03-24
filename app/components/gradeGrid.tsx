@@ -1,6 +1,4 @@
-import { View, Text, Image, ImageSourcePropType } from "react-native"
-import { Pressable } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { View, Text } from "react-native"
 import { useTheme } from "@/constants/useThemes"
 import createStyling from "@/constants/styling";
 import CircularProgress from 'react-native-circular-progress-indicator';

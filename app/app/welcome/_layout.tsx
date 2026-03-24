@@ -1,7 +1,6 @@
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/constants/useThemes";
-import { colors } from "@/constants/colors";
 import i18n from "@/constants/i18n";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";

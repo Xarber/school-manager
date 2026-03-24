@@ -1,7 +1,6 @@
 import { ActivityIndicator, Text, TextInput, View } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
 import createStyling from '@/constants/styling';
-import { DataManager, useAppDataSync } from '@/data/datamanager';
 import i18n from '@/constants/i18n';
 import { useState } from 'react';
 import ActionButtons from '@/components/actionButtons';
