@@ -313,36 +313,40 @@ function EditSchedule() {
                         </View>
                     </ScrollView>
                     <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
-                        {mode === "edit" && <BlurView>
-                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updatePeriod({
-                                day,
-                                classData,
-                                period: periodData,
-                                setLoading,
-                                alert,
-                                mode: "delete",
-                            })} style={[modalStyle.bottomActionButton, {backgroundColor: theme.caution}]}>
-                                {loading
-                                    ? <ActivityIndicator size="small" color={theme.text} />
-                                    : <Ionicons name="trash-bin" size={20} color={theme.text} key="delete" />
-                                }
-                            </TouchableOpacity>
-                        </BlurView>}
-                        <BlurView>
-                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updatePeriod({
-                                day,
-                                classData,
-                                period: periodData,
-                                setLoading,
-                                alert,
-                                mode
-                            })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
-                                {loading
-                                    ? <ActivityIndicator size="small" color={theme.text} />
-                                    : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t(`modal.schedule.${mode}.confirm`)}</Text>
-                                }
-                            </TouchableOpacity>
-                        </BlurView>
+                        {mode === "edit" && <View style={{borderRadius: 360, overflow: "hidden"}}>
+                            <BlurView style={{flex: 1}}>
+                                <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updatePeriod({
+                                    day,
+                                    classData,
+                                    period: periodData,
+                                    setLoading,
+                                    alert,
+                                    mode: "delete",
+                                })} style={[modalStyle.bottomActionButton, {backgroundColor: theme.caution}]}>
+                                    {loading
+                                        ? <ActivityIndicator size="small" color={theme.text} />
+                                        : <Ionicons name="trash-bin" size={20} color={theme.text} key="delete" />
+                                    }
+                                </TouchableOpacity>
+                            </BlurView>
+                        </View>}
+                        <View style={{borderRadius: 360, overflow: "hidden"}}>
+                            <BlurView style={{flex: 1}}>
+                                <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updatePeriod({
+                                    day,
+                                    classData,
+                                    period: periodData,
+                                    setLoading,
+                                    alert,
+                                    mode
+                                })} style={[modalStyle.bottomActionButton, canProceed ? {} : {backgroundColor: theme.disabled}]}>
+                                    {loading
+                                        ? <ActivityIndicator size="small" color={theme.text} />
+                                        : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t(`modal.schedule.${mode}.confirm`)}</Text>
+                                    }
+                                </TouchableOpacity>
+                            </BlurView>
+                        </View>
                     </View>
                     {
                         Platform.OS === "ios" && 
