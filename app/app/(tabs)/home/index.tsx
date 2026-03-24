@@ -101,7 +101,6 @@ function HomeScreen({userData}: {userData: UserData}) {
     if (tomorrowSubjects.length > 0) {
         tomorrowSubjects.forEach((subject: {subject: string, hours: string[]}) => {
             if (tomorrowSection.find((e: any) => e.subjectid === subject.subject)) return;
-            console.warn(subject);
             tomorrowSection.push({
                 isSchedule: true,
                 subjectid: subject.subject,
