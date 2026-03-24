@@ -112,7 +112,7 @@ function TimelinePeriod({period, props, index}: {period: TimelinePeriod, props: 
                     )}
                     {!period.break && props.edit?.editing && (
                         <TouchableOpacity onPress={() => props.edit?.addItem({ startTime: period.startTime, endTime: period.endTime })} style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5 }}>
-                            <Ionicons name="add" size={20} color={theme.text} />
+                            <Ionicons name="pencil-outline" size={20} color={theme.text} />
                             <Text style={commonStyle.text}>{i18n.t("components.timeline.add.text")}</Text>
                         </TouchableOpacity>
                     )}

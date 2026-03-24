@@ -6,7 +6,7 @@ import DashboardItem from "@/components/dashboardItem";
 import UserGrades from "@/components/gradesComponent";
 
 import { Stack, useFocusEffect, useRouter } from "expo-router";
-import { useAppDataSync, DataManager, UserData, SubjectData, DataLoader } from "@/data/datamanager";
+import { useAppDataSync, DataManager, UserData, SubjectData, DataLoader, WeekSchedule } from "@/data/datamanager";
 import i18n from "@/constants/i18n";
 import { useUserData } from "@/data/UserDataContext";
 import findToday from "@/components/findToday";
@@ -80,23 +80,41 @@ function HomeScreen({userData}: {userData: UserData}) {
     const tomorrowLessons = filterExamsDate(1, lessons).filter((e: any)=>e.date != new Date().toISOString().split("T")[0]);
     const tomorrowHomework = allClassHomework.filter((e: any)=>e.dueDate.split(" ")[0] === new Date(new Date().getTime() + 86400000).toISOString().split("T")[0]);;
 
+    const tomorrowHours = classData.data.schedule.find((e: WeekSchedule) => e.day === new Date().getDay())?.hours ?? [];
+    const tomorrowSubjects = [] as {subject: string, hours: string[]}[];
+    tomorrowHours.forEach((s: any) => {
+        s.subjects.forEach((e: string) => {
+            let subIndex = tomorrowSubjects.find((e2: any) => e2.subject === e);
+            if (!subIndex) tomorrowSubjects.push({subject: e, hours: [s.startTime + " - " + s.endTime]});
+            else subIndex.hours.push(s.startTime + " - " + s.endTime);
+        });
+    });
+
     const tomorrowDay = new Date(new Date().getTime() + 86400000).toLocaleDateString("en-GB", {
         weekday: "long",
     });
-
-    let tomorrow = {};
-    if (!classData.loading && classData.data) tomorrow = classData.data.schedule[tomorrowDay];
     
     let tomorrowSection: any[] = [];
     if (tomorrowExams.length > 0) tomorrowSection = [...tomorrowSection, ...tomorrowExams];
-    if (tomorrowLessons.length > 0) tomorrowSection = [...tomorrowSection, ...tomorrowLessons];
     if (tomorrowHomework.length > 0) tomorrowSection = [...tomorrowSection, ...tomorrowHomework];
+    if (tomorrowLessons.length > 0) tomorrowSection = [...tomorrowSection, ...tomorrowLessons];
+    if (tomorrowSubjects.length > 0) {
+        tomorrowSubjects.forEach((subject: {subject: string, hours: string[]}) => {
+            if (tomorrowSection.find((e: any) => e.subjectid === subject.subject)) return;
+            console.warn(subject);
+            tomorrowSection.push({
+                isSchedule: true,
+                subjectid: subject.subject,
+                title: subjects.find((e: SubjectData) => e._id === subject.subject)?.name,
+                description: subject.hours.join(", ")
+            });
+        })
+    }
 
     let homescreenPageData = {
         homework: allClassHomework,
         grades: userData.grades ?? [],
         subjects: subjects,
-        tomorrowSchedule: tomorrow,
         tomorrow: tomorrowSection,
         exams: exams,
         userdata: userData
@@ -127,14 +145,16 @@ function HomeScreen({userData}: {userData: UserData}) {
                                     let data = {
                                         title: e.title,
                                         description: e.description,
-                                        subtitle: 
-                                            e.isExam ? i18n.t("home.tomorrow.exam") : 
-                                            (!!e.dueDate ? i18n.t("home.tomorrow.homework") : i18n.t("home.tomorrow.lesson")),
+                                        subtitle: (e.isExam ? i18n.t("home.tomorrow.exam") : 
+                                            (!!e.dueDate ? i18n.t("home.tomorrow.homework") : 
+                                            (!!e.isSchedule ? i18n.t("home.tomorrow.schedule") : 
+                                            i18n.t("home.tomorrow.lesson")
+                                            ))),
                                         onPress: () => {
                                             //router.push(`/calendar/${e.date}`);
                                         }
                                     } as any;
-                                    if (subject) data.badge = {
+                                    if (subject && !e.isSchedule) data.badge = {
                                         text: subject,
                                         color: stringToColor(e.subjectid)
                                     };

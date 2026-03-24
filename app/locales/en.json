@@ -12,7 +12,7 @@
     "components": {
         "timeline": {
             "add": {
-                "text": "Add"
+                "text": "Edit"
             },
             "addPeriod": "Add period",
             "noitems": "Break time!"
@@ -288,6 +288,9 @@
         },
         "schedule": {
             "create": {
+                "stack": {
+                    "title": "Add a period"
+                },
                 "createdon": {
                     "text": "Created on: {{createdOn}}"
                 },
@@ -303,7 +306,55 @@
                     "addtitle": "Add a subject",
                     "select": "Select a subject"
                 },
+                "success": {
+                    "title": "Success",
+                    "description": "Period added!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Error"
+                },
                 "confirm": "Add"
+            },
+            "edit": {
+                "stack": {
+                    "title": "Edit period"
+                },
+                "createdon": {
+                    "text": "Edited on: {{createdOn}}"
+                },
+                "merge": {
+                    "text": "This period will be edited in {{className}}"
+                },
+                "datetime": {
+                    "startTitle": "Start time",
+                    "endTitle": "End time"
+                },
+                "subjects": {
+                    "title": "Subjects",
+                    "addtitle": "Add a subject",
+                    "select": "Select a subject"
+                },
+                "success": {
+                    "title": "Success",
+                    "description": "Period edited!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Error"
+                },
+                "confirm": "Edit",
+                "delete": "Remove"
+            },
+            "delete": {
+                "success": {
+                    "title": "Success",
+                    "description": "Period deleted!",
+                    "confirm": "Okay"
+                },
+                "error": {
+                    "title": "Error"
+                }
             }
         },
         "homework": {
@@ -577,7 +628,8 @@
             "title": "Tomorrow",
             "exam": "Exam",
             "lesson": "Lesson",
-            "homework": "Homework"
+            "homework": "Homework",
+            "schedule": "Schedule"
         },
         "upcoming": {
             "title": "Upcoming Exams"
