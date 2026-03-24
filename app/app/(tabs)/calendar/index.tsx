@@ -18,6 +18,7 @@ import { useLanguage } from '@/constants/LanguageContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useClassData } from '@/data/ClassContext';
+import { useSubjectData } from '@/data/SubjectMapContext';
 
 export function loadHomeworkForDate(date: string, homework: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
@@ -80,7 +81,6 @@ export function filterExamsDate(days: number, exams: any) {
 function CalendarComponent({userData}: {userData: UserData}) {
     LocaleConfig.locales['lang'] = i18n.t("components.calendar.localeconfig");
     LocaleConfig.defaultLocale = 'lang';
-    const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const theme = useTheme();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
@@ -101,9 +101,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
     const activeClassId = userData.settings.activeClassId;
 
     const classData = useClassData();
-    let subjectIds = classData.data.subjects;
-    let subjects = (Object.values(subjectMap) as SubjectData[])
-    .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
+    let subjects = useSubjectData().subjects;
 
     let defaultLessonsData = [{subjectid: "", data: [DataManager.lessonData.default]}];
     const lessonData = useAppDataSync(activeClassId != "" ? DataManager.lessonData.db : null, `${DataManager.lessonData.app}:${activeClassId}`, defaultLessonsData, {
@@ -218,27 +216,6 @@ function CalendarComponent({userData}: {userData: UserData}) {
 
     return (
         <>
-            {subjectIds.map((id: string) => {
-                return (
-                    <DataLoader
-                        key={id}
-                        id={id}
-                        keys={DataManager.subjectData}
-                        body={{ subjectid: id }}
-                        onLoad={(id, subjectdata) =>
-                            setSubjectMap(prev => {
-                                if (prev[id]?._id === subjectdata.data?._id) {
-                                    return prev;
-                                }
-                                return {
-                                    ...prev,
-                                    [id]: subjectdata.data
-                                };
-                            })
-                        }
-                    />
-                )
-            })}
             <Stack.Screen options={{ headerTitle: i18n.t("calendar.stack.title") }} />
             {
                 ((classData.loading || lessonData.loading || homeworkData.loading) && !refreshing) ? (

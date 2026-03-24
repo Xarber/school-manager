@@ -16,6 +16,7 @@ import { AppLockProvider } from "@/constants/AuthContext";
 import { NetworkProvider } from "@/constants/NetworkContext";
 import { DebugDataProvider } from "@/data/DebugDataContext";
 import { ClassDataProvider } from "@/data/ClassContext";
+import { SubjectDataProvider } from "@/data/SubjectMapContext";
 
 function AppLayout() {
   const theme = useTheme();
@@ -58,13 +59,15 @@ export default function RootLayout() {
         <DebugDataProvider>
           <UserDataProvider>
             <ClassDataProvider>
-              <ContextThemeProvider>
-                <LanguageProvider>
-                  <AlertProvider>
-                    <AppLayout />
-                  </AlertProvider>
-                </LanguageProvider>
-              </ContextThemeProvider>
+              <SubjectDataProvider>
+                <ContextThemeProvider>
+                  <LanguageProvider>
+                    <AlertProvider>
+                      <AppLayout />
+                    </AlertProvider>
+                  </LanguageProvider>
+                </ContextThemeProvider>
+              </SubjectDataProvider>
             </ClassDataProvider>
           </UserDataProvider>
         </DebugDataProvider>

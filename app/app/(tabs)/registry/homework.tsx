@@ -13,6 +13,7 @@ import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useClassData } from '@/data/ClassContext';
+import { useSubjectData } from '@/data/SubjectMapContext';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -41,7 +42,6 @@ export function stringToColor(str: string) {
 }
 
 function renderHomework(homework: HomeworkData[], classData: ClassData, refreshing: boolean, reload: () => void) {
-    const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const dateIndex: { [date: string]: HomeworkData[] } = {};
     const allDates: {date: string, timestamp: number}[] = [];
     const scrollRef = useRef<ScrollView>(null);
@@ -53,9 +53,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData, refreshi
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
-    let subjectIds = classData.subjects as string[];
-    let subjects = (Object.values(subjectMap) as SubjectData[])
-    .filter((sbj: SubjectData) => typeof sbj === "object" && sbj);
+    let subjects = useSubjectData().subjects;
 
     for (let i = 0; i < homework.length; i++) {
         const dateObj = new Date(homework[i].dueDate);
@@ -82,27 +80,6 @@ function renderHomework(homework: HomeworkData[], classData: ClassData, refreshi
             <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
         }>
             <View>
-                {subjectIds.map((id: string) => {
-                    return (
-                        <DataLoader
-                            key={id}
-                            id={id}
-                            keys={DataManager.subjectData}
-                            body={{ subjectid: id }}
-                            onLoad={(id, subjectdata) =>
-                                setSubjectMap(prev => {
-                                    if (prev[id]?._id === subjectdata.data?._id) {
-                                        return prev;
-                                    }
-                                    return {
-                                        ...prev,
-                                        [id]: subjectdata.data
-                                    };
-                                })
-                            }
-                        />
-                    )
-                })}
                 {
                     allDates.map((dateObj) => {
                         let date = dateObj.date;
