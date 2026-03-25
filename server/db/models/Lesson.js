@@ -9,6 +9,7 @@ const LessonSchema = new Schema({
     room: {type: String, required: false},
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
     scheduled: {type: Boolean, required: false, default: false},
+    schedule: {type: Schema.Types.ObjectId, ref: 'ScheduledLesson'},
     isExam: {type: Boolean, required: false, default: false},
     addedAt: {type: String, required: true},
     editedAt: {type: Number, required: true},
