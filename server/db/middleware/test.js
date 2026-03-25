@@ -3,6 +3,7 @@ const router = require('express').Router();
 
 function connectionTest(req, res) {
     const token = req.header('Authorization')?.replace('Bearer ', '');
+    const uploadsEnabled = Boolean(process.env.ALLOW_UPLOADS) ?? false;
 
     //set debug metrics
     let authenticated = false;
@@ -19,6 +20,7 @@ function connectionTest(req, res) {
         success: true,
         authenticated,
         serverTime: requestTime,
+        uploadsEnabled,
         //add more debug data if needed
     });
 }

@@ -8,6 +8,7 @@ const ClassSchema = new Schema({
     schedule: [{type: WeekScheduleSchema}],
     comunications: [{type: Schema.Types.ObjectId, ref: 'Comunication'}],
     material: [{type: Schema.Types.ObjectId, ref: 'Material'}],
+    files: [{type: Schema.Types.ObjectId, ref: 'File'}],
     homework: [{type: Schema.Types.ObjectId, ref: 'Homework'}],
     lessons: [{type: Schema.Types.ObjectId, ref: 'Lesson'}],
     subjects: [{type: Schema.Types.ObjectId, ref: 'Subject'}],
