@@ -295,7 +295,7 @@ function EditSchedule() {
                                                     >
                                                         <Picker.Item style={modalStyle.cardEditFieldSelectItem} label={i18n.t(`modal.schedule.${mode}.subjects.select`)} value="" enabled={addingPeriod.length === 0} />
                                                         {
-                                                            subjects.map((subject: any) => <Picker.Item style={modalStyle.cardEditFieldSelectItem} key={subject._id} label={subject.name} value={subject._id} />)
+                                                            subjects.map((subject: any) => periodSubjects.includes(subject._id) ? null : <Picker.Item style={modalStyle.cardEditFieldSelectItem} key={subject._id} label={subject.name} value={subject._id} />)
                                                         }
                                                     </Picker>
                                                 )
@@ -358,7 +358,7 @@ function EditSchedule() {
                                     <Picker style={modalStyle.cardEditFieldPicker} selectedValue={addingPeriod} onValueChange={value => {if (value.length > 0) setAddingPeriod(value)}}>
                                         <Picker.Item label={i18n.t(`modal.schedule.${mode}.subjects.select`)} value="" enabled={addingPeriod.length === 0}/>
                                         {
-                                            subjects.map((subject: any) => <Picker.Item key={subject._id} label={subject.name} value={subject._id} />)
+                                            subjects.map((subject: any) => periodSubjects.includes(subject._id) ? null : <Picker.Item key={subject._id} label={subject.name} value={subject._id} />)
                                         }
                                     </Picker>
                                 </BlurView>

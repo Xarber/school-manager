@@ -203,10 +203,6 @@ function LessonTab() {
 
     const lessonDay = findToday(language, `${lessonData.data.date}T${lessonData.data.time}`);
     const lessonTime = new Date(`${lessonData.data.date}T${lessonData.data.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"});
-    
-    if (!devMode && lessonData.data.scheduled) return (
-        <LabsScreen />
-    );
 
     // Todo: Add dates, schedules, excluded students, divide for SEN/non SEN.
 
@@ -232,7 +228,7 @@ function LessonTab() {
                     {lessonData.data.scheduled == true && (
                         <View style={[commonStyle.card, { gap: 10 }]}>
                             <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days")}</Text>
-
+                            <LabsScreen />
                         </View>
                     )}
                 </View>
