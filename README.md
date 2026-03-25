@@ -88,7 +88,7 @@ cd ./server/ && node .
 * ⚙️ Resources (links to websites or files)
 * ⚙️ Scheduled exams (important milestone)
     * Also add specific users only scheduled exams (Special Educational Needs (SEN) / Disturbi Specifici Apprendimento (DSA))
-* 🛠️ Offline app usage
+* 🛠️ (Heavy work, will stay here for a while) Offline app usage
 
 
 </details>
@@ -117,9 +117,10 @@ cd ./server/ && node .
     * Homework generator (exercises on topic -> pdf output) -> Include guided exercises, scaling to more difficult exercises.
     * Topic summary from uploaded resources
     * Summarize arguments where user is less prepared (based on grades)
-* ✧ File Uploads
+* ✧ File Uploads (client side)
 * ✧ Page filters (filter homework/lessons/... by subject, date, etc)
 * ✧ Custom database hosting (huge milestone, manage your own servers through desktop tauri app, integrate with main app with server code)
+    * Add hashing, trust certificates, client challenges, and as many security measures as possible to prevent server tampering.
 * ✧ Add own homework & exams (for class & subject, save in user data). NOT GRADES!
 * ✧ Parent accounts
 * ✧ Create schools

@@ -217,6 +217,25 @@ const defaultLessonData = {
 };
 export type LessonData = typeof defaultLessonData;
 
+const defaultLessonScheduleDateData = {
+    day: new Date(0) as Date,
+    students: [] as string[] | UserInfo[], // _id rel
+    availability: -1 as number,
+    addedAt: '' as string,
+    editedAt: 0 as number
+};
+export type LessonScheduleDateData = typeof defaultLessonScheduleDateData;
+
+const defaultLessonScheduleData = {
+    _id: "" as string,
+    dates: [] as LessonScheduleDateData[],
+    lock: false as boolean,
+    exclude: [] as string[] | UserInfo[], // _id rel
+    addedAt: '' as string,
+    editedAt: 0 as number
+};
+export type LessonScheduleData = typeof defaultLessonScheduleData;
+
 const defaultComunicationResponseData = {
     _id: "" as string,
     user: "" as string | UserInfo, // _id rel
@@ -713,6 +732,11 @@ export const DataManager = {
         app: "@app:lessonData",
         db: "/api/classes/lessons",
         default: defaultLessonData
+    },
+    lessonScheduleData: {
+        app: "@app:lessonScheduleData",
+        db: "/api/classes/scheduled",
+        default: defaultLessonScheduleData
     },
     comunicationData: {
         app: "@app:comunicationData",
