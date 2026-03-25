@@ -379,7 +379,10 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
         }
         try {
             let updated = { data: newValue };
-            if (dbkey != null && !!userToken && network.serverReachable) {
+            let isOfflineId = appkey
+                ?.split(":")
+                ?.some(id => DataManager.offline.ids.includes(id));
+            if (dbkey != null && !!userToken && network.serverReachable && !isOfflineId) {
                 loadDebug.mode = "database";
                 const response = await fetch(network.serverPath + dbkey + DataManager.db.update, {
                     method: 'POST',
@@ -395,7 +398,7 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
                     else throw new Error(responseData.error || response.statusText);
                 });
                 if (!response.success) throw new Error(response.error || response.message || 'Save failed');
-            } else if (dbkey != null && !!userToken) {
+            } else if (dbkey != null && !!userToken && !isOfflineId) {
                 // Save operation to outbox
                 loadDebug.mode = "outbox";
                 let outbox = JSON.parse((await AsyncStorage.getItem(DataManager.outbox.app)) ?? "[]");

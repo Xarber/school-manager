@@ -112,7 +112,9 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     return (
-        <NetworkContext.Provider value={{ ready, serverReachable, uploadsAllowed, isOnline, type, serverPath, refresh }}>
+        <NetworkContext.Provider value={{ ready, uploadsAllowed, isOnline, type, serverPath, refresh,
+            serverReachable// : false // Tweak this to test offline app usage
+        }}>
             {children}
         </NetworkContext.Provider>
     );

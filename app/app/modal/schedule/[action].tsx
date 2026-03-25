@@ -15,6 +15,7 @@ import Timeline from '@/components/timeline';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 interface updatePeriodProps {
     day: number,
@@ -82,6 +83,7 @@ function EditSchedule() {
     const editStartTime = params.startTime as string;
     const editEndTime = params.endTime as string;
     const mode = (params.action === "edit" && editStartTime && editEndTime) ? "edit" : "create";
+    const network = useNetworkContext();
 
     const classData = useClassData();
     let subjects = useSubjectData().subjects;
@@ -113,7 +115,7 @@ function EditSchedule() {
 
     const [bottomHeight, setBottomHeight] = useState(0);
 
-    const canProceed = startTime && endTime && endTime.getTime() > startTime.getTime() &&
+    const canProceed = network.serverReachable === true && startTime && endTime && endTime.getTime() > startTime.getTime() &&
         (mode === "edit" || !classData.data.schedule.find((s: {day: number}) => s.day === day)?.hours.find((h: {startTime: string, endTime: string}) => h.startTime === startTimeText && h.endTime === endTimeText))
     ;
 
@@ -315,14 +317,14 @@ function EditSchedule() {
                     <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
                         {mode === "edit" && <View style={{borderRadius: 360, overflow: "hidden"}}>
                             <BlurView style={{flex: 1}}>
-                                <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updatePeriod({
+                                <TouchableOpacity disabled={!canProceed || loading} onPress={()=>updatePeriod({
                                     day,
                                     classData,
                                     period: periodData,
                                     setLoading,
                                     alert,
                                     mode: "delete",
-                                })} style={[modalStyle.bottomActionButton, {backgroundColor: theme.caution}]}>
+                                })} style={[modalStyle.bottomActionButton, {backgroundColor: theme.caution}, canProceed ? {} : {backgroundColor: theme.disabled}]}>
                                     {loading
                                         ? <ActivityIndicator size="small" color={theme.text} />
                                         : <Ionicons name="trash-bin" size={20} color={theme.text} key="delete" />
@@ -332,7 +334,7 @@ function EditSchedule() {
                         </View>}
                         <View style={{borderRadius: 360, overflow: "hidden"}}>
                             <BlurView style={{flex: 1}}>
-                                <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updatePeriod({
+                                <TouchableOpacity disabled={!canProceed || loading} onPress={()=>updatePeriod({
                                     day,
                                     classData,
                                     period: periodData,

@@ -12,6 +12,7 @@ import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useClassData } from '@/data/ClassContext';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 function ComunicationTab({classid, comunicationid}: {classid: string, comunicationid: string}) {
     const theme = useTheme();
@@ -22,6 +23,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     const [accept, setAccept] = useState(false);
     const [responseSent, setResponseSent] = useState(false);
     const userData = useUserData();
+    const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -50,9 +52,10 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
         setResponseSent(true);
     }
 
-    const canSend = comunication && ((comunication.confirmationType ?? "accept") === "message") ?
-        (!responseSent && reply.trim().length > 0) : 
-        (!responseSent);
+    let canSend = comunication && ((comunication.confirmationType ?? "accept") === "message") ?
+        (reply.trim().length > 0) : true;
+
+    if (network.serverReachable === false) canSend = false;
 
     const isTeacher = classData.data.teachers.find((e: UserInfo) => e._id === userData.data.userInfo._id);
 
@@ -65,7 +68,6 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                     <Text style={[commonStyle.text, { fontSize: 15 }]}>{comunication.content}</Text>
                 </View>
                 {comunication.requiresConfirmation == true && (
-
                     <View style={{gap: 10}}>
                     <View style={{gap: 10}}>
                         <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.reply.title")}</Text>
@@ -80,33 +82,37 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                 {
                                     title: i18n.t("registry.comunications.reply.accept"),
                                     styles: {
-                                        backgroundColor: (canSend || (!canSend && accept)) ? theme.primary : theme.disabled,
-                                        opacity: canSend ? 1 : 0.5
+                                        backgroundColor: (!responseSent || (responseSent && accept)) ? theme.primary : theme.disabled,
+                                        opacity: (canSend && !responseSent) ? 1 : 0.5
                                     },
                                     iconName: "checkmark",
                                     onPress: () => {
+                                        if (!canSend || responseSent) return;
                                         comunicationResponse.create({
                                             comunicationid: comunication._id,
                                             state: true
                                         }).then(() => {
                                             comunicationData.load();
                                         });
-                                    }
+                                    },
+                                    enabled: network.serverReachable === true
                                 }, {
                                     title: i18n.t("registry.comunications.reply.reject"),
                                     styles: {
-                                        backgroundColor: (canSend || (!canSend && !accept)) ? theme.caution : theme.disabled,
-                                        opacity: canSend ? 1 : 0.5
+                                        backgroundColor: (!responseSent || (responseSent && !accept)) ? theme.caution : theme.disabled,
+                                        opacity: (canSend && !responseSent) ? 1 : 0.5
                                     },
                                     iconName: "ban",
                                     onPress: () => {
+                                        if (!canSend || responseSent) return;
                                         comunicationResponse.create({
                                             comunicationid: comunication._id,
                                             state: false
                                         }).then(() => {
                                             comunicationData.load();
                                         });
-                                    }
+                                    },
+                                    enabled: network.serverReachable === true
                                 }
                             ]} />
                         )}
@@ -114,9 +120,9 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                             <View style={[modalStyle.cardEdit]}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("registry.comunications.reply.message")}</Text>
-                                    <TextInput readOnly={(responseSent === true)} maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
+                                    <TextInput readOnly={(!canSend || responseSent)} maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
                                 </View>
-                                <TouchableOpacity disabled={!canSend} style={[commonStyle.wideButton, (!canSend ? { backgroundColor: theme.disabled } : null)]} onPress={() => {
+                                <TouchableOpacity disabled={(!canSend || responseSent)} style={[commonStyle.wideButton, ((!canSend || responseSent) ? { backgroundColor: theme.disabled } : null)]} onPress={() => {
                                     comunicationResponse.create({
                                         comunicationid: comunication._id,
                                         message: reply
@@ -171,6 +177,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
+    const network = useNetworkContext();
 
     const classData = useClassData();
 
@@ -242,7 +249,8 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                     onPress: () => {
                         router.push({pathname: `/modal/comunication/create` as any, params: {classid: classid}});
                     },
-                    display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false
+                    display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false,
+                    enabled: network.serverReachable === true
                 }
             ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </>

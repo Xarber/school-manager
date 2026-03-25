@@ -15,6 +15,7 @@ import Timeline from '@/components/timeline';
 import ActionButtons from '@/components/actionButtons';
 import { useClassData } from '@/data/ClassContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -113,6 +114,9 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
     const userData = useUserData();
     const classData = useClassData();
     const subjects = useSubjectData().subjects;
+    const network = useNetworkContext();
+
+    if (network.serverReachable === false && mode == "write") setMode("read");
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -166,6 +170,7 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
                         setMode("write");
                     },
                     display: classData.data.teachers.find((e: UserInfo) => e._id === userData.data.userInfo._id) && mode === "read",
+                    enabled: network.serverReachable == true
                 },
                 {
                     title: i18n.t("profile.data.actions.save.title"),
@@ -176,6 +181,7 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
                         setMode("read");
                     },
                     display: mode === "write",
+                    enabled: network.serverReachable == true
                 },
             ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </>

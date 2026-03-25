@@ -16,6 +16,7 @@ import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useClassData } from '@/data/ClassContext';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 interface updateHomeworkProps {
     action: string;
@@ -79,13 +80,14 @@ function NewHomework() {
     const [homeworkDescription, setHomeworkDescription] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
+    const network = useNetworkContext();
 
     const [bottomHeight, setBottomHeight] = useState(0);
 
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
-    const canProceed = (homeworkName.length > 0) && (subjectId.length > 0);
+    const canProceed = network.serverReachable === true && (homeworkName.length > 0) && (subjectId.length > 0);
 
     const classData = useClassData();
     useEffect(()=>{
@@ -230,7 +232,7 @@ function NewHomework() {
                     </ScrollView>
                     <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
                         <BlurView>
-                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateHomework({
+                            <TouchableOpacity disabled={!canProceed || loading} onPress={()=>updateHomework({
                                 action: "create",
                                 title: homeworkName,
                                 description: homeworkDescription,

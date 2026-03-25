@@ -17,6 +17,7 @@ import { useLanguage } from '@/constants/LanguageContext';
 import findToday from '@/components/findToday';
 import { devMode } from '@/data/devMode';
 import LabsScreen from '@/components/LabsScreen';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
     let dateIndex = {};
@@ -52,6 +53,7 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
     const [refreshing, setRefreshing] = useState(false);
     const scrollRef = useRef<ScrollView>(null);
     const sectionRefs = useRef<{ [key: number]: View | null}>({});
+    const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -171,7 +173,8 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
                             onPress: () => {
                                 router.push({pathname: `/modal/lesson/create` as any, params: {classid}});
                             },
-                            display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false
+                            display: classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).userInfo._id) ? true : false,
+                            enabled: network.serverReachable === true
                         }
                     ]} align="right" itemStyles={{ borderRadius: 360 }} />
                 </>

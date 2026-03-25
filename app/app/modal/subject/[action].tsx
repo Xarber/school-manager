@@ -11,6 +11,7 @@ import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 interface updateSubjectProps {
     action: string;
@@ -64,13 +65,14 @@ function NewSubject() {
     const [subjectName, setSubjectName] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
+    const network = useNetworkContext();
 
     const [bottomHeight, setBottomHeight] = useState(0);
 
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
-    const canProceed = subjectName.length > 0;
+    const canProceed = network.serverReachable === true && subjectName.length > 0;
 
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
         classid: classId
@@ -107,7 +109,7 @@ function NewSubject() {
                     </ScrollView>
                     <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
                         <BlurView>
-                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateSubject({
+                            <TouchableOpacity disabled={!canProceed || loading} onPress={()=>updateSubject({
                                 action: "create",
                                 name: subjectName,
                                 maxgrade: 100,
