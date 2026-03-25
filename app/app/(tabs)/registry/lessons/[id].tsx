@@ -2,17 +2,21 @@ import { RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'rea
 import { useTheme } from '@/constants/useThemes';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
 import { DataLoader, DataManager, LessonData, SubjectData, useAppDataSync, UserData, UserInfo } from '@/data/datamanager';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
-import DashboardItem from '@/components/dashboardItem';
+import DashboardItem, { getTextColor } from '@/components/dashboardItem';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useClassData } from '@/data/ClassContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
+import { useLanguage } from '@/constants/LanguageContext';
+import findToday from '@/components/findToday';
+import { devMode } from '@/data/devMode';
+import LabsScreen from '@/components/LabsScreen';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
     let dateIndex = {};
@@ -38,7 +42,7 @@ export function regroupLessonsByDate(lessonArray: {subjectid: string, data: Less
     return dateIndex;
 }
 
-function LessonsTab({classid, userData}: {classid: string, userData: UserData}) {
+function AllLessonsTab({classid, userData}: {classid: string, userData: UserData}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const optimizationStyle = createStyling.createOptimizationStyles(theme);
@@ -143,6 +147,9 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
                                                         title: subjects.find((s: SubjectData) => s._id == e.subjectid)?.name,
                                                         subtitle: `${teacher?.surname} ${teacher?.name}`,
                                                         description: `${e.data.description}\n${new Date(`${e.data.date}T${e.data.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"})}`,
+                                                        onPress: () => {
+                                                            router.push({pathname: `/(tabs)/registry/lessons/${e.data._id}` as any, params: {classid}});
+                                                        }
                                                     } as any;
                                                     if (e.data.isExam == true) data.badge = {
                                                         text: i18n.t("registry.lessons.exam"),
@@ -173,10 +180,70 @@ function LessonsTab({classid, userData}: {classid: string, userData: UserData}) 
     );
 }
 
+function LessonTab() {
+    const params = useLocalSearchParams();
+    const lessonid = params.id as string;
+    const classData = useClassData();
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+    const language = useLanguage();
+
+    const lessonData = useAppDataSync(classData.data._id != "" ? DataManager.lessonData.db : null, `${DataManager.lessonData.app}:${lessonid}`, DataManager.lessonData.default, {
+        lessonid
+    });
+
+    if (lessonData.loading) return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="small" color={theme.text} />
+        </View>
+    )
+
+    const lessonDay = findToday(language, `${lessonData.data.date}T${lessonData.data.time}`);
+    const lessonTime = new Date(`${lessonData.data.date}T${lessonData.data.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"});
+    
+    if (!devMode && lessonData.data.scheduled) return (
+        <LabsScreen />
+    );
+
+    // Todo: Add dates, schedules, excluded students, divide for SEN/non SEN.
+
+    return (
+        <>
+            <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 10 }}>
+                <View style={commonStyle.dashboardSection}>
+                    <Text style={commonStyle.headerText}>{lessonData.data.title}</Text>
+                    <View style={[commonStyle.card, { gap: 10 }]}>
+                        <Text style={commonStyle.text}>{lessonData.data.description}</Text>
+                        <View style={[commonStyle.card, { gap: 10 }]}>
+                            <Text style={commonStyle.text}>{i18n.t("registry.lessons.datestring", {date: lessonDay, time: lessonTime})}</Text>
+                            <View style={{display: (lessonData.data.isExam || lessonData.data.scheduled) ? "flex" : "none",flexDirection: "row", gap: 5}}>
+                                {lessonData.data.isExam == true && (
+                                    <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.opaqueCard, color: getTextColor(theme.opaqueCard) }]}>{i18n.t("registry.lessons.exam")}</Text>
+                                )}
+                                {lessonData.data.scheduled == true && (
+                                    <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.opaqueCard, color: getTextColor(theme.opaqueCard) }]}>{i18n.t("registry.lessons.scheduled.title")}</Text>
+                                )}
+                            </View>
+                        </View>
+                    </View>
+                    {lessonData.data.scheduled == true && (
+                        <View style={[commonStyle.card, { gap: 10 }]}>
+                            <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days")}</Text>
+
+                        </View>
+                    )}
+                </View>
+            </ScrollView>
+        </>
+    );
+}
+
 export default function LessonsWrapper() {
     const userData = useUserData();
     const classid = userData.data.settings.activeClassId;
     const theme = useTheme();
+    const params = useLocalSearchParams();
+    const id = params.id as string;
 
     if (userData.loading) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -184,5 +251,11 @@ export default function LessonsWrapper() {
         </View>
     );
 
-    return <LessonsTab classid={classid} userData={userData.data} />
+    switch (id) {
+        case "all":
+            return <AllLessonsTab classid={classid} userData={userData.data} />
+        default:
+            return <LessonTab />
+    }
+
 }

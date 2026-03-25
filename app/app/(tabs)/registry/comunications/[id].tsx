@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react';
 import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
 import { ActivityIndicator } from 'react-native';
-import DashboardItem from '@/components/dashboardItem';
+import DashboardItem, { getTextColor } from '@/components/dashboardItem';
 import { useUserData } from '@/data/UserDataContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,6 +30,8 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     const comunicationData = useAppDataSync(DataManager.comunicationData.db, `${DataManager.comunicationData.app}:${classid}`, [DataManager.comunicationData.default], {
         classid: classid
     });
+    
+    const classData = useClassData();
 
     if (comunicationData.loading) {
         return (
@@ -52,6 +54,8 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
         (!responseSent && reply.trim().length > 0) : 
         (!responseSent);
 
+    const isTeacher = classData.data.teachers.find((e: UserInfo) => e._id === userData.data.userInfo._id);
+
     return !!comunication ? (
         <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
             <Stack.Screen options={{ headerTitle: comunication.title }} />
@@ -61,6 +65,8 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                     <Text style={[commonStyle.text, { fontSize: 15 }]}>{comunication.content}</Text>
                 </View>
                 {comunication.requiresConfirmation == true && (
+
+                    <View style={{gap: 10}}>
                     <View style={{gap: 10}}>
                         <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.reply.title")}</Text>
                         {(comunication.confirmationType ?? "accept") === "accept" && (
@@ -122,6 +128,30 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                 </TouchableOpacity>
                             </View>
                         )}
+                    </View>
+                    {isTeacher && <View style={{gap: 10}}>
+                        <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.responses.title")}</Text>
+                        <View style={[commonStyle.card]}>
+                            {comunication.responses.length == 0 && (
+                                <View style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 10}}>
+                                    <Ionicons name="albums-outline" size={40} color={theme.text} />
+                                    <Text style={commonStyle.text}>{i18n.t("registry.comunications.responses.none")}</Text>
+                                </View>
+                            )}
+                            {comunication.responses.map((e: any) => {
+                                console.warn(JSON.stringify(e, null, 2));
+                                return (
+                                <View key={e._id} style={{gap: 10}}>
+                                    <Text style={[commonStyle.headerText]}>{e.user.name}</Text>
+                                    {e.message && <Text style={commonStyle.text}>{e.message}</Text>}
+                                    <View style={{gap: 10}}>
+                                        {!e.message && <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.action, color: getTextColor(theme.action) }]}>{e.state ? i18n.t("registry.comunications.responses.accepted") : i18n.t("registry.comunications.responses.rejected")}</Text>}
+                                        <Text style={commonStyle.text}>{new Date(e.editedAt).toLocaleString()}</Text>
+                                    </View>
+                                </View>
+                            )})}
+                        </View>
+                    </View>}
                     </View>
                 )}
             </View>

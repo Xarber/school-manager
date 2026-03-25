@@ -7,6 +7,7 @@ type NetworkContextType = {
     ready: boolean;
     isOnline: boolean | null;
     serverReachable: boolean | null;
+    uploadsAllowed: boolean | null;
     serverPath: string | null;
     type: NetInfoStateType | null;
     refresh: () => void;
@@ -19,6 +20,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     const [isOnline, setIsOnline] = useState<boolean | null>(null);
     const [serverReachable, setIsServerReachable] = useState<boolean | null>(null);
     const [serverPath, setServerPath] = useState<string | null>(null);
+    const [uploadsAllowed, setUploadsAllowed] = useState<boolean | null>(null);
     const [type, setType] = useState<NetInfoStateType | null>(null);
     const refreshingRef = useRef(false);
 
@@ -28,12 +30,14 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         const checks = allServerPaths.map(path =>
             fetch(path)
                 .then(async r => {
-                    return ((r.ok && (await r.json()).success) ? path : null);
+                    let json = (await r.json());
+                    let okay = r.ok && json.success;
+                    return (okay ? {path, response: json} : null);
                 })
                 .catch(() => null)
         );
 
-        const first = await new Promise<string | null>(resolve => {
+        const first = await new Promise<{path: string, response: any} | null>(resolve => {
             let resolved = false;
 
             const timeout = setTimeout(() => {
@@ -64,13 +68,15 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
 
         if (first) {
             // console.warn("[Network] Server found.", first);
-            setServerPath(first);
+            setServerPath(first.path);
+            setUploadsAllowed(first.response.uploadsEnabled);
             setIsServerReachable(true);
             return first;
         }
 
         // console.warn("[Network] No servers are reachable.");
         setServerPath(null);
+        setUploadsAllowed(false);
         setIsServerReachable(false);
         return null;
     }
@@ -106,7 +112,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     return (
-        <NetworkContext.Provider value={{ ready, serverReachable, isOnline, type, serverPath, refresh }}>
+        <NetworkContext.Provider value={{ ready, serverReachable, uploadsAllowed, isOnline, type, serverPath, refresh }}>
             {children}
         </NetworkContext.Provider>
     );

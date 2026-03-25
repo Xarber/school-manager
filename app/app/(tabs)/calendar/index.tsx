@@ -10,7 +10,7 @@ import { Stack, useFocusEffect } from 'expo-router';
 import { useAppDataSync, DataManager, LessonData, SubjectData, DataLoader } from "@/data/datamanager";
 import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
-import { regroupLessonsByDate } from '../registry/lessons';
+import { regroupLessonsByDate } from '../registry/lessons/[id]';
 import { regroupHomework, stringToColor } from '../registry/homework';
 import findToday from '@/components/findToday';
 import { UserData } from '@/data/datamanager';

@@ -786,6 +786,12 @@
                 "message": "Insert an answer",
                 "messagePlaceholder": "Your answer",
                 "send": "Send"
+            },
+            "responses": {
+                "title": "All Responses",
+                "none": "Nothing here!",
+                "accepted": "Accepted",
+                "rejected": "Rejected"
             }
         },
         "lessons": {
@@ -806,6 +812,11 @@
             },
             "create": {
                 "title": "Create"
+            },
+            "datestring": "{{date}} at {{time}}",
+            "scheduled": {
+                "title": "Scheduled",
+                "days": "Days"
             },
             "exam": "Exam"
         }

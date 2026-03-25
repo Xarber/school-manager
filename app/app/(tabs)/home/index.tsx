@@ -12,7 +12,7 @@ import { useUserData } from "@/data/UserDataContext";
 import findToday from "@/components/findToday";
 import { ActivityIndicator } from "react-native";
 import { regroupHomework, stringToColor } from "../registry/homework";
-import { regroupLessonsByDate } from "../registry/lessons";
+import { regroupLessonsByDate } from "../registry/lessons/[id]";
 import { filterExamsDate, filterLessonsFromExams } from "../calendar";
 import { useCallback, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -182,7 +182,7 @@ function HomeScreen({userData}: {userData: UserData}) {
                                     return data;
                                 })} maxItems={3} expand={() => {
                                     router.push("/registry");
-                                    setTimeout(()=>router.push("/registry/lessons"), 36);
+                                    setTimeout(()=>router.push("/registry/lessons/all"), 36);
                                 }}/>
                             </View>
                         </View>

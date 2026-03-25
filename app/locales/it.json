@@ -815,6 +815,12 @@
                 "message": "Inserisci una risposta",
                 "messagePlaceholder": "La tua risposta",
                 "send": "Invia"
+            },
+            "responses": {
+                "title": "Risposte",
+                "none": "Non c'è niente!",
+                "accepted": "Accettata",
+                "rejected": "Rifiutata"
             }
         },
         "lessons": {
@@ -835,6 +841,11 @@
             },
             "create": {
                 "title": "Crea"
+            },
+            "datestring": "{{date}} alle {{time}}",
+            "scheduled": {
+                "title": "Programmata",
+                "days": "Days"
             },
             "exam": "Verifica"
         }
