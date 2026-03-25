@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useClassData } from '@/data/ClassContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -188,6 +189,7 @@ function HomeworkTab({userData}: {userData: UserData}) {
     const commonStyle = createStyling.createCommonStyles(theme);
     const { width, height } = useWindowDimensions();
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
+    const network = useNetworkContext();
 
     const classData = useClassData();
 
@@ -261,7 +263,8 @@ function HomeworkTab({userData}: {userData: UserData}) {
                     onPress: () => {
                         router.push({pathname: `/modal/homework/create` as any, params: {classid: userData.settings.activeClassId}});
                     },
-                    display: classData.data.teachers.find((teacher: UserInfo) => teacher._id === (userData as any).userInfo._id) ? true : false
+                    display: classData.data.teachers.find((teacher: UserInfo) => teacher._id === (userData as any).userInfo._id) ? true : false,
+                    enabled: network.serverReachable === true
                 }
             ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </>

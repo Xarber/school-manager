@@ -18,6 +18,7 @@ import { KeyboardShift } from '@/components/keyboardShift';
 import { ScrollView } from 'react-native';
 import { BlurView } from 'expo-blur';
 import i18n from '@/constants/i18n';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 function addDashes(str: string) {
   return str.replace(/(.{4})/g, '$1-').replace(/-$/, '');
@@ -81,6 +82,7 @@ function NewInvitation() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
+    const network = useNetworkContext();
 
     const params = useLocalSearchParams();
     const targetName = params.name as string;
@@ -92,7 +94,7 @@ function NewInvitation() {
     const userData = useUserData();
     const inviteData = useDBitem(DataManager.invitation.db, DataManager.invitation.default);
     const [loading, setLoading] = useState(false);
-    const [canProceed, setCanProceed] = useState(true);
+    const canProceed = network.serverReachable === true;
     const [joinAs, setJoinAs] = useState("student" as "student" | "teacher");
 
     const alertContext = useAlert();
@@ -125,7 +127,7 @@ function NewInvitation() {
                 </ScrollView>
                 <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
                     <BlurView>
-                        <TouchableOpacity disabled={loading} onPress={()=>updateInvite({
+                        <TouchableOpacity disabled={loading || !canProceed} onPress={()=>updateInvite({
                             action: "create",
                             invitefor: targetType,
                             targetid: targetId,
@@ -134,7 +136,7 @@ function NewInvitation() {
                             alert: alertContext,
                             setLoading,
                             create: inviteData.create
-                        })} style={[modalStyle.bottomActionButton]}>
+                        })} style={[modalStyle.bottomActionButton, !canProceed && {backgroundColor: theme.disabled}]}>
                             {loading 
                                 ? <ActivityIndicator size="small" color={theme.text} />
                                 : <Text style={[commonStyle.text, modalStyle.bottomActionButtonText]}>{i18n.t("modal.invitation.create.confirm")}</Text>
@@ -153,9 +155,10 @@ function EnterInvitation() {
     const modalStyle = createStyling.createModalStyles(theme);
     const params = useLocalSearchParams();
     const router = useRouter();
+    const network = useNetworkContext();
 
     const [inviteCode, setInviteCode] = useState("");
-    const [canProceed, setCanProceed] = useState(false);
+    const canProceed = network.serverReachable === true && inviteCode.length == 14;
 
     return (
         <KeyboardShift>
@@ -168,7 +171,6 @@ function EnterInvitation() {
                         <View style={{gap: 10, width: "100%"}}>
                             <TextInput autoFocus={true} maxLength={14} style={[modalStyle.cardEditFieldInput, {textAlign: "center"}]} value={inviteCode} onChangeText={(t)=>{
                                 setInviteCode(addDashes(t.toUpperCase().replaceAll('-', '')));
-                                setCanProceed(t.length == 14);
                             }} />
                             <TouchableOpacity disabled={!canProceed} onPress={() => {
                                 router.replace({ pathname: "/modal/invitation/read" as any, params: {invitecode: inviteCode}});
@@ -189,6 +191,8 @@ function ReadInvitation() {
     const modalStyle = createStyling.createModalStyles(theme);
     const params = useLocalSearchParams();
     const inviteCode = params.invitecode as string;
+    const network = useNetworkContext();
+    const canProceed = network.serverReachable === true;
 
     const inviteData = useAppDataSync(DataManager.invitation.db, `${DataManager.invitation.app}:${inviteCode.replaceAll('-', '')}`, DataManager.invitation.default, {
         code: inviteCode
@@ -210,13 +214,13 @@ function ReadInvitation() {
                     )
                 }
             </View>
-            <TouchableOpacity onPress={(()=>{
+            <TouchableOpacity disabled={!canProceed || inviteData.loading} onPress={(()=>{
                 inviteData.save({
                     code: inviteCode
                 }).then(data=>{
                     router.dismissAll();
                 })
-            })} style={modalStyle.bottomActionButton}>
+            })} style={[modalStyle.bottomActionButton, !canProceed && {backgroundColor: theme.disabled}]}>
                 {inviteData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.text}>{i18n.t("modal.invitation.read.accept")}</Text>}
             </TouchableOpacity>
         </View>

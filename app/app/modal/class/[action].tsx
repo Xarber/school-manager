@@ -11,6 +11,7 @@ import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
 import { BlurView } from 'expo-blur';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 interface updateClassProps {
     action: string;
@@ -60,13 +61,14 @@ function NewClass() {
     const modalStyle = createStyling.createModalStyles(theme);
     const [className, setClassName] = useState("");
     const [classDescription, setClassDescription] = useState("");
+    const network = useNetworkContext();
 
     const [bottomHeight, setBottomHeight] = useState(0);
     
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
-    const canProceed = className.length > 0 && classDescription.length > 0;
+    const canProceed = network.serverReachable === true && className.length > 0 && classDescription.length > 0;
 
     const classData = useDBitem(DataManager.classData.db, DataManager.classData.default);
 
@@ -103,7 +105,7 @@ function NewClass() {
                 </ScrollView>
                 <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
                     <BlurView>
-                        <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateClass({
+                        <TouchableOpacity disabled={!canProceed || loading} onPress={()=>updateClass({
                             action: "create",
                             name: className,
                             description: classDescription,

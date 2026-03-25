@@ -15,6 +15,7 @@ import SegmentedSlider from "@/components/segmentedPicker";
 import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
 import { useClassData } from '@/data/ClassContext';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 interface updateComunicationProps {
     action: string;
@@ -81,13 +82,14 @@ function NewComunication() {
     const [comunicationDescription, setComunicationDescription] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
+    const network = useNetworkContext();
 
     const [bottomHeight, setBottomHeight] = useState(0);
 
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
-    const canProceed = (comunicationName.length > 0) && (comunicationDescription.length > 0);
+    const canProceed = network.serverReachable === true && (comunicationName.length > 0) && (comunicationDescription.length > 0);
 
     const classData = useClassData();
     useEffect(()=>{
@@ -231,7 +233,7 @@ function NewComunication() {
                     </ScrollView>
                     <View style={modalStyle.bottomActions} onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
                         <BlurView>
-                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateComunication({
+                            <TouchableOpacity disabled={!canProceed || loading} onPress={()=>updateComunication({
                                 action: "create",
                                 classid: classId,
                                 title: comunicationName,

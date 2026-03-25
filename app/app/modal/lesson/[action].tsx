@@ -17,6 +17,7 @@ import { KeyboardShift } from '@/components/keyboardShift';
 import { Switch } from 'react-native-paper';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useClassData } from '@/data/ClassContext';
+import { useNetworkContext } from '@/constants/NetworkContext';
 
 interface updateLessonProps {
     action: string;
@@ -85,13 +86,14 @@ function NewLesson() {
     const [lessonDescription, setLessonDescription] = useState("");
     const params = useLocalSearchParams();
     const classId = params.classid as string;
+    const network = useNetworkContext();
 
     const [bottomHeight, setBottomHeight] = useState(0);
 
     const userData = useUserData();
     const [loading, setLoading] = useState(false);
 
-    const canProceed = (lessonName.length > 0) && (subjectId.length > 0);
+    const canProceed = network.serverReachable === true && (lessonName.length > 0) && (subjectId.length > 0);
 
     const classData = useClassData();
     useEffect(()=>{
@@ -244,7 +246,7 @@ function NewLesson() {
                     </ScrollView>
                     <View style={modalStyle.bottomActions}>
                         <BlurView onLayout={e => setBottomHeight(e.nativeEvent.layout.height + 40)}>
-                            <TouchableOpacity disabled={!canProceed && !loading} onPress={()=>updateLesson({
+                            <TouchableOpacity disabled={!canProceed || loading} onPress={()=>updateLesson({
                                 action: "create",
                                 title: lessonName,
                                 description: lessonDescription,
