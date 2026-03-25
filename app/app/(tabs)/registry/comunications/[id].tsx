@@ -17,6 +17,7 @@ import { useNetworkContext } from '@/constants/NetworkContext';
 function ComunicationTab({classid, comunicationid}: {classid: string, comunicationid: string}) {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const optimizationStyles = createStyling.createOptimizationStyles(theme);
     const modalStyle = createStyling.createModalStyles(theme);
     const id = comunicationid;
     const [reply, setReply] = useState("");
@@ -62,102 +63,104 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     return !!comunication ? (
         <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
             <Stack.Screen options={{ headerTitle: comunication.title }} />
-            <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-                <Text style={commonStyle.headerText}>{comunication.title}</Text>
-                <View style={[commonStyle.card]}>
-                    <Text style={[commonStyle.text, { fontSize: 15 }]}>{comunication.content}</Text>
+            <View style={[commonStyle.dashboardSection, { flex: 1, gap: 20 }]}>
+                <View>
+                    <Text style={commonStyle.headerText}>{comunication.title}</Text>
+                    <View style={[commonStyle.card]}>
+                        <Text style={[commonStyle.text, { fontSize: 15 }]}>{comunication.content}</Text>
+                    </View>
                 </View>
                 {comunication.requiresConfirmation == true && (
-                    <View style={{gap: 10}}>
-                    <View style={{gap: 10}}>
-                        <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.reply.title")}</Text>
-                        {(comunication.confirmationType ?? "accept") === "accept" && (
-                            <ActionButtons containerStyles={{
-                                position: undefined,
-                                flex: 1,
-                                bottom: undefined,
-                                left: undefined,
-                                right: undefined
-                            }} itemStyles={{borderRadius: 360, flex: 1}} items={[
-                                {
-                                    title: i18n.t("registry.comunications.reply.accept"),
-                                    styles: {
-                                        backgroundColor: (!responseSent || (responseSent && accept)) ? theme.primary : theme.disabled,
-                                        opacity: (canSend && !responseSent) ? 1 : 0.5
-                                    },
-                                    iconName: "checkmark",
-                                    onPress: () => {
-                                        if (!canSend || responseSent) return;
+                    <View style={[optimizationStyles.container, {gap: 20}]}>
+                        <View style={[optimizationStyles.item, {gap: 10}]}>
+                            <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.reply.title")}</Text>
+                            {(comunication.confirmationType ?? "accept") === "accept" && (
+                                <ActionButtons containerStyles={{
+                                    position: undefined,
+                                    flex: 1,
+                                    bottom: undefined,
+                                    left: undefined,
+                                    right: undefined
+                                }} itemStyles={{borderRadius: 360, flex: 1}} items={[
+                                    {
+                                        title: i18n.t("registry.comunications.reply.accept"),
+                                        styles: {
+                                            backgroundColor: (!responseSent || (responseSent && accept)) ? theme.primary : theme.disabled,
+                                            opacity: (canSend && !responseSent) ? 1 : 0.5
+                                        },
+                                        iconName: "checkmark",
+                                        onPress: () => {
+                                            if (!canSend || responseSent) return;
+                                            comunicationResponse.create({
+                                                comunicationid: comunication._id,
+                                                state: true
+                                            }).then(() => {
+                                                comunicationData.load();
+                                            });
+                                        },
+                                        enabled: network.serverReachable === true
+                                    }, {
+                                        title: i18n.t("registry.comunications.reply.reject"),
+                                        styles: {
+                                            backgroundColor: (!responseSent || (responseSent && !accept)) ? theme.caution : theme.disabled,
+                                            opacity: (canSend && !responseSent) ? 1 : 0.5
+                                        },
+                                        iconName: "ban",
+                                        onPress: () => {
+                                            if (!canSend || responseSent) return;
+                                            comunicationResponse.create({
+                                                comunicationid: comunication._id,
+                                                state: false
+                                            }).then(() => {
+                                                comunicationData.load();
+                                            });
+                                        },
+                                        enabled: network.serverReachable === true
+                                    }
+                                ]} />
+                            )}
+                            {(comunication.confirmationType ?? "accept") === "message" && (
+                                <View style={[modalStyle.cardEdit]}>
+                                    <View style={modalStyle.cardEditField}>
+                                        <Text style={modalStyle.cardEditFieldText}>{i18n.t("registry.comunications.reply.message")}</Text>
+                                        <TextInput readOnly={(!canSend || responseSent)} maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
+                                    </View>
+                                    <TouchableOpacity disabled={(!canSend || responseSent)} style={[commonStyle.wideButton, ((!canSend || responseSent) ? { backgroundColor: theme.disabled } : null)]} onPress={() => {
                                         comunicationResponse.create({
                                             comunicationid: comunication._id,
-                                            state: true
+                                            message: reply
                                         }).then(() => {
                                             comunicationData.load();
                                         });
-                                    },
-                                    enabled: network.serverReachable === true
-                                }, {
-                                    title: i18n.t("registry.comunications.reply.reject"),
-                                    styles: {
-                                        backgroundColor: (!responseSent || (responseSent && !accept)) ? theme.caution : theme.disabled,
-                                        opacity: (canSend && !responseSent) ? 1 : 0.5
-                                    },
-                                    iconName: "ban",
-                                    onPress: () => {
-                                        if (!canSend || responseSent) return;
-                                        comunicationResponse.create({
-                                            comunicationid: comunication._id,
-                                            state: false
-                                        }).then(() => {
-                                            comunicationData.load();
-                                        });
-                                    },
-                                    enabled: network.serverReachable === true
-                                }
-                            ]} />
-                        )}
-                        {(comunication.confirmationType ?? "accept") === "message" && (
-                            <View style={[modalStyle.cardEdit]}>
-                                <View style={modalStyle.cardEditField}>
-                                    <Text style={modalStyle.cardEditFieldText}>{i18n.t("registry.comunications.reply.message")}</Text>
-                                    <TextInput readOnly={(!canSend || responseSent)} maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
-                                </View>
-                                <TouchableOpacity disabled={(!canSend || responseSent)} style={[commonStyle.wideButton, ((!canSend || responseSent) ? { backgroundColor: theme.disabled } : null)]} onPress={() => {
-                                    comunicationResponse.create({
-                                        comunicationid: comunication._id,
-                                        message: reply
-                                    }).then(() => {
-                                        comunicationData.load();
-                                    });
-                                }}>
-                                    <Text style={commonStyle.buttonText}>{i18n.t("registry.comunications.reply.send")}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                    </View>
-                    {isTeacher && <View style={{gap: 10}}>
-                        <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.responses.title")}</Text>
-                        <View style={[commonStyle.card]}>
-                            {comunication.responses.length == 0 && (
-                                <View style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 10}}>
-                                    <Ionicons name="albums-outline" size={40} color={theme.text} />
-                                    <Text style={commonStyle.text}>{i18n.t("registry.comunications.responses.none")}</Text>
+                                    }}>
+                                        <Text style={commonStyle.buttonText}>{i18n.t("registry.comunications.reply.send")}</Text>
+                                    </TouchableOpacity>
                                 </View>
                             )}
-                            {comunication.responses.map((e: any) => {
-                                console.warn(JSON.stringify(e, null, 2));
-                                return (
-                                <View key={e._id} style={{gap: 10}}>
-                                    <Text style={[commonStyle.headerText]}>{e.user.name}</Text>
-                                    {e.message && <Text style={commonStyle.text}>{e.message}</Text>}
-                                    <View style={{gap: 10}}>
-                                        {!e.message && <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.action, color: getTextColor(theme.action) }]}>{e.state ? i18n.t("registry.comunications.responses.accepted") : i18n.t("registry.comunications.responses.rejected")}</Text>}
-                                        <Text style={commonStyle.text}>{new Date(e.editedAt).toLocaleString()}</Text>
-                                    </View>
-                                </View>
-                            )})}
                         </View>
-                    </View>}
+                        {isTeacher && <View style={[optimizationStyles.item, {gap: 10}]}>
+                            <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.responses.title")}</Text>
+                            <View style={[commonStyle.card]}>
+                                {comunication.responses.length == 0 && (
+                                    <View style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 10}}>
+                                        <Ionicons name="albums-outline" size={40} color={theme.text} />
+                                        <Text style={commonStyle.text}>{i18n.t("registry.comunications.responses.none")}</Text>
+                                    </View>
+                                )}
+                                {comunication.responses.map((e: any) => {
+                                    console.warn(JSON.stringify(e, null, 2));
+                                    return (
+                                    <View key={e._id} style={{gap: 10}}>
+                                        <Text style={[commonStyle.headerText]}>{e.user.name}</Text>
+                                        {e.message && <Text style={commonStyle.text}>{e.message}</Text>}
+                                        <View style={{gap: 10}}>
+                                            {!e.message && <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.action, color: getTextColor(theme.action) }]}>{e.state ? i18n.t("registry.comunications.responses.accepted") : i18n.t("registry.comunications.responses.rejected")}</Text>}
+                                            <Text style={commonStyle.text}>{new Date(e.editedAt).toLocaleString()}</Text>
+                                        </View>
+                                    </View>
+                                )})}
+                            </View>
+                        </View>}
                     </View>
                 )}
             </View>
