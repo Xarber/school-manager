@@ -300,6 +300,17 @@ const defaultReadInvitationData = {
 }
 export type ReadInvitationData = typeof defaultReadInvitationData;
 
+const defaultFileData = {
+    _id: "" as string,
+    name: "" as string,
+    mimetype: "" as string,
+    size: 0 as number,
+    author: "" as string | UserInfo, // _id rel
+    addedAt: "" as string,
+    editedAt: 0 as number
+}
+export type FileData = typeof defaultFileData;
+
 export function useAppDataSync(dbkey: string | null, appkey: string | null, defaultValue: any, body: Object = {}) {
     const [data, setData]: any = useState(defaultValue);
     const [loading, setLoading] = useState(true);
@@ -714,6 +725,11 @@ export const DataManager = {
         app: null,
         db: "/api/invitation",
         default: defaultReadInvitationData
+    },
+    files: {
+        app: "@app:files",
+        db: "/api/upload",
+        default: defaultFileData
     },
     school: {
         app: "@app:school",
