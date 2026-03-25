@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require("mongoose");
 const { UserInfo, UserData } = require('../../models/User');
-const paths = require('./paths.js');
+const paths = require('../paths.js');
 
 const router = express.Router();
 
