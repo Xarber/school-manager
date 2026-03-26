@@ -104,7 +104,7 @@ async function verifyOtp(email: string, otpcode: string, reset: Function, alert:
         switch (status.error) {
             case "Invalid or expired code":
                 alert.show({title: i18n.t("welcome.account.error.generic.title"), message: i18n.t("welcome.account.error.otpinvalid")});
-                reset();
+                reset(false);
                 break;
             case "Login failed":
                 alert.show({title: i18n.t("welcome.account.error.generic.title"), message: i18n.t("welcome.account.error.generic.description")});
@@ -133,8 +133,8 @@ function LoginPage({alert}: AccountProps) {
     let safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
-    const reset = () => {
-        setOtpsent(false);
+    const reset = (full: boolean = true) => {
+        if (full) setOtpsent(false);
         setLoading(false);
         setOtpcode("");
     }
@@ -156,7 +156,12 @@ function LoginPage({alert}: AccountProps) {
                                 </View>
                                 <View style={(!otpsent || !network.serverReachable) ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.otp.title")}</Text>
-                                    <TextInput autoFocus autoCapitalize="none" maxLength={6} keyboardType="number-pad" style={welcomeStyles.bottomViewBodyFormFieldInput} value={otpcode} onChangeText={setOtpcode} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
+                                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 10}}>
+                                        <TextInput autoFocus autoCapitalize="none" maxLength={6} keyboardType="number-pad" style={[welcomeStyles.bottomViewBodyFormFieldInput, {flex: 1}]} value={otpcode} onChangeText={setOtpcode} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
+                                        <TouchableOpacity onPress={()=>{reset();sendOtp(email, setOtpsent, setLoading, alert as any, (network.serverPath as string));}}>
+                                            <Ionicons name="sync-circle-outline" size={20} color={theme.text} />
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
                             <View style={{ flex: 1, justifyContent: "center", alignItems: "center"}}>
