@@ -1,13 +1,12 @@
 
-import React from 'react';
-import { Stack, useRouter } from 'expo-router';
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@/constants/useThemes";
-import { Button, Platform } from 'react-native';
 import i18n from '@/constants/i18n';
-import { View } from 'react-native';
+import { useTheme } from "@/constants/useThemes";
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Stack, useRouter } from 'expo-router';
+import React from 'react';
+import { Button, Platform, View } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const theme = useTheme();

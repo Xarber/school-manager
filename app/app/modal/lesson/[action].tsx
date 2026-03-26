@@ -1,23 +1,22 @@
-import { View, Text, ActivityIndicator, TouchableOpacity, Platform, ScrollView, Pressable, Keyboard } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
-import {router, Stack, useLocalSearchParams} from "expo-router";
-import {useEffect, useState} from "react";
-import { TextInput } from 'react-native';
-import { Picker } from "@react-native-picker/picker";
 import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Keyboard, Platform, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import createStyling from '@/constants/styling';
-import { useAppDataSync, DataManager, useDBitem, SubjectData, DataLoader } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
-import i18n from '@/constants/i18n';
-import { BlurView } from 'expo-blur';
-import { Ionicons } from '@expo/vector-icons';
-import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
-import { Switch } from 'react-native-paper';
-import { useSubjectData } from '@/data/SubjectMapContext';
-import { useClassData } from '@/data/ClassContext';
+import i18n from '@/constants/i18n';
 import { useNetworkContext } from '@/constants/NetworkContext';
+import createStyling from '@/constants/styling';
+import { useClassData } from '@/data/ClassContext';
+import { DataManager, SubjectData, useDBitem } from '@/data/datamanager';
+import { useSubjectData } from '@/data/SubjectMapContext';
+import { useUserData } from '@/data/UserDataContext';
+import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
+import { Switch } from 'react-native-paper';
 
 interface updateLessonProps {
     action: string;

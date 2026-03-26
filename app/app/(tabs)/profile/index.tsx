@@ -1,16 +1,15 @@
-import { Text, View, ScrollView, RefreshControl, ActivityIndicator } from "react-native";
-import { useState, useCallback, useEffect } from "react";
-import { Stack, useFocusEffect } from "expo-router";
-import { useTheme } from "@/constants/useThemes";
-import { BlurView } from "expo-blur";
 import DashboardItem from "@/components/dashboardItem";
-import createStyling from "@/constants/styling";
-import { router } from "expo-router";
-import { DataManager, ClassData, DataLoader, prepareOfflineData } from "@/data/datamanager";
 import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
 import { useAccountData } from "@/data/AccountDataContext";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ClassData, DataLoader, DataManager, prepareOfflineData } from "@/data/datamanager";
 import { useUserData } from "@/data/UserDataContext";
+import { BlurView } from "expo-blur";
+import { router, Stack, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ProfileTab() {
     const theme = useTheme();

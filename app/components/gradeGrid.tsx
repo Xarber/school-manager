@@ -1,8 +1,8 @@
-import { View, Text } from "react-native"
-import { useTheme } from "@/constants/useThemes"
-import createStyling from "@/constants/styling";
-import CircularProgress from 'react-native-circular-progress-indicator';
 import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { Text, View } from "react-native";
+import CircularProgress from 'react-native-circular-progress-indicator';
 
 type Grade = {
     title: string;

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  Pressable,
   LayoutAnimation,
   Platform,
+  Pressable,
+  StyleSheet,
+  Text,
   UIManager,
-  StyleSheet
+  View
 } from "react-native";
 
 if (Platform.OS === "android") {

@@ -1,6 +1,6 @@
 // src/sync/backgroundSync.ts
-import * as TaskManager from "expo-task-manager";
 import * as BackgroundTask from "expo-background-task";
+import * as TaskManager from "expo-task-manager";
 import { AppState } from "react-native";
 
 const SYNC_TASK = "db-sync-task";

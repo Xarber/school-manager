@@ -1,12 +1,11 @@
-import { ActivityIndicator, Text, TextInput, View } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
-import createStyling from '@/constants/styling';
-import i18n from '@/constants/i18n';
-import { useState } from 'react';
 import ActionButtons from '@/components/actionButtons';
-import { ScrollView } from 'react-native';
-import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
+import i18n from '@/constants/i18n';
+import createStyling from '@/constants/styling';
+import { useTheme } from '@/constants/useThemes';
+import { useUserData } from '@/data/UserDataContext';
+import { useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
 
 export default function ProfileData() {
     const theme = useTheme();

@@ -1,22 +1,25 @@
-import { ThemeProvider } from "@react-navigation/native";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { ensureBackgroundSyncRegistered, startForegroundSync } from "@/data/sync";
-import { useEffect } from "react";
+import { AlertProvider } from "@/components/alert/AlertContext";
+import { AppLockProvider } from "@/constants/AuthContext";
+import { LanguageProvider } from "@/constants/LanguageContext";
+import { NetworkProvider } from "@/constants/NetworkContext";
 import { ThemeProvider as ContextThemeProvider } from "@/constants/ThemeContext";
 import { createNavigationTheme } from "@/constants/colors";
-import { AlertProvider } from "@/components/alert/AlertContext";
-import { UserDataProvider } from "@/data/UserDataContext";
-import { AccountDataProvider } from "@/data/AccountDataContext";
-import { LanguageProvider } from "@/constants/LanguageContext";
 import { useTheme } from "@/constants/useThemes";
-import { LinearGradient } from "expo-linear-gradient";
-import { BlurView } from "expo-blur";
-import { AppLockProvider } from "@/constants/AuthContext";
-import { NetworkProvider } from "@/constants/NetworkContext";
-import { DebugDataProvider } from "@/data/DebugDataContext";
+import { AccountDataProvider } from "@/data/AccountDataContext";
 import { ClassDataProvider } from "@/data/ClassContext";
+import { ComunicationDataProvider } from "@/data/ComunicationMapContext";
+import { DebugDataProvider } from "@/data/DebugDataContext";
+import { HomeworkDataProvider } from "@/data/HomeworkMapContext";
+import { LessonDataProvider } from "@/data/LessonMapContext";
 import { SubjectDataProvider } from "@/data/SubjectMapContext";
+import { UserDataProvider } from "@/data/UserDataContext";
+import { ensureBackgroundSyncRegistered, startForegroundSync } from "@/data/sync";
+import { ThemeProvider } from "@react-navigation/native";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 
 function AppLayout() {
   const theme = useTheme();
@@ -60,13 +63,19 @@ export default function RootLayout() {
           <UserDataProvider>
             <ClassDataProvider>
               <SubjectDataProvider>
-                <ContextThemeProvider>
-                  <LanguageProvider>
-                    <AlertProvider>
-                      <AppLayout />
-                    </AlertProvider>
-                  </LanguageProvider>
-                </ContextThemeProvider>
+                <ComunicationDataProvider>
+                  <LessonDataProvider>
+                    <HomeworkDataProvider>
+                      <ContextThemeProvider>
+                        <LanguageProvider>
+                          <AlertProvider>
+                            <AppLayout />
+                          </AlertProvider>
+                        </LanguageProvider>
+                      </ContextThemeProvider>
+                    </HomeworkDataProvider>
+                  </LessonDataProvider>
+                </ComunicationDataProvider>
               </SubjectDataProvider>
             </ClassDataProvider>
           </UserDataProvider>

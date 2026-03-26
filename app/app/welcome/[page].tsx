@@ -1,33 +1,32 @@
-import { 
-    Text,
-    View,
-    TouchableOpacity,
-    Image,
-    TextInput,
-    ScrollView,
+import { Redirect, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import {
     ActivityIndicator,
-    Platform
+    Image,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
-import { useState, useCallback, useEffect } from "react";
-import { useFocusEffect } from "expo-router";
-import { useRouter, useLocalSearchParams, Redirect } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
 
-import { turnOnNotifications } from "@/data/notifications";
-import { KeyboardShift } from "@/components/keyboardShift";
 import { useAlert } from "@/components/alert/AlertContext";
+import { KeyboardShift } from "@/components/keyboardShift";
 import i18n from "@/constants/i18n";
-import { useUserData } from "@/data/UserDataContext";
 import { useAccountData } from "@/data/AccountDataContext";
+import { turnOnNotifications } from "@/data/notifications";
+import { useUserData } from "@/data/UserDataContext";
 
 import welcomeImage from "@/assets/images/welcome.png";
-import { isDevice } from "expo-device";
 import { useNetworkContext } from "@/constants/NetworkContext";
-import { Ionicons } from "@expo/vector-icons";
 import { useDebugData } from "@/data/DebugDataContext";
+import { Ionicons } from "@expo/vector-icons";
+import { isDevice } from "expo-device";
 
 function StartPage() {
     const router = useRouter();

@@ -1,8 +1,7 @@
-import { View, Text } from "react-native"
-import { Pressable } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@/constants/useThemes"
 import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Pressable, Text, View } from "react-native";
 
 type Action = {
     title: string;

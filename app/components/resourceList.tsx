@@ -1,8 +1,8 @@
-import { View, Text, Pressable } from "react-native"
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/constants/useThemes"
-import createStyling from "@/constants/styling";
 import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable, Text, View } from "react-native";
 
 type ResourceItem = {
     title: string;

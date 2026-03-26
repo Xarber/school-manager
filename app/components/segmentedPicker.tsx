@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { View, Text, Pressable, StyleSheet, LayoutChangeEvent } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 interface SegmentedSliderProps<T extends string> {
   options: readonly T[]

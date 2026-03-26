@@ -845,7 +845,8 @@
             "datestring": "{{date}} alle {{time}}",
             "scheduled": {
                 "title": "Programmata",
-                "days": "Days"
+                "days": "Giorni",
+                "excluded": "Studenti Esclusi"
             },
             "exam": "Verifica"
         }

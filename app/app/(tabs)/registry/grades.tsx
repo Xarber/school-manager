@@ -1,17 +1,15 @@
-import { ActivityIndicator, RefreshControl, Text, useWindowDimensions, View } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
-import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import { Ionicons } from '@expo/vector-icons';
+import LabsScreen from '@/components/LabsScreen';
 import i18n from '@/constants/i18n';
-import { DataManager, useAppDataSync } from '@/data/datamanager';
+import createStyling, { defaultScreenSizes } from '@/constants/styling';
+import { useTheme } from '@/constants/useThemes';
+import { useClassData } from '@/data/ClassContext';
 import { devMode } from '@/data/devMode';
 import { useUserData } from '@/data/UserDataContext';
-import { ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { useClassData } from '@/data/ClassContext';
-import LabsScreen from '@/components/LabsScreen';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function GradesTab() {
     const theme = useTheme();

@@ -1,22 +1,20 @@
-import { View, Text, TouchableOpacity, Switch, ActivityIndicator, ScrollView, useWindowDimensions } from "react-native";
-import { useTheme } from "@/constants/useThemes";
-import createStyling, { defaultScreenSizes } from "@/constants/styling";
-import DashboardItem from "@/components/dashboardItem";
-import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useLocalSearchParams } from "expo-router";
-import { Stack } from "expo-router";
-import { RadioButton } from "react-native-paper";
 import { useAlert } from "@/components/alert/AlertContext";
+import DashboardItem from "@/components/dashboardItem";
+import { themeList } from "@/constants/colors";
 import i18n, { translations } from "@/constants/i18n";
-import { useUserData } from "@/data/UserDataContext";
 import { useLanguage } from "@/constants/LanguageContext";
+import createStyling, { defaultScreenSizes } from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
 import { useAccountData } from "@/data/AccountDataContext";
 import { turnOffNotifications, turnOnNotifications } from "@/data/notifications";
-import { useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { themeList } from "@/constants/colors";
+import { useUserData } from "@/data/UserDataContext";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
+import { ActivityIndicator, ScrollView, Switch, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { RadioButton } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function settingsPage() {
     const params = useLocalSearchParams();

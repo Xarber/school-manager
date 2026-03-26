@@ -1,23 +1,23 @@
-import { RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
-import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import { DataLoader, DataManager, LessonData, SubjectData, useAppDataSync, UserData, UserInfo } from '@/data/datamanager';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
-import { ActivityIndicator } from 'react-native';
 import DashboardItem, { getTextColor } from '@/components/dashboardItem';
-import { useUserData } from '@/data/UserDataContext';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useClassData } from '@/data/ClassContext';
-import { useSubjectData } from '@/data/SubjectMapContext';
-import { useLanguage } from '@/constants/LanguageContext';
 import findToday from '@/components/findToday';
-import { devMode } from '@/data/devMode';
 import LabsScreen from '@/components/LabsScreen';
+import i18n from '@/constants/i18n';
+import { useLanguage } from '@/constants/LanguageContext';
 import { useNetworkContext } from '@/constants/NetworkContext';
+import createStyling, { defaultScreenSizes } from '@/constants/styling';
+import { useTheme } from '@/constants/useThemes';
+import { useClassData } from '@/data/ClassContext';
+import { LessonData, SubjectData, UserData, UserInfo } from '@/data/datamanager';
+import { devMode } from '@/data/devMode';
+import { useLessonData } from '@/data/LessonMapContext';
+import { useSubjectData } from '@/data/SubjectMapContext';
+import { useUserData } from '@/data/UserDataContext';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
     let dateIndex = {};
@@ -60,19 +60,25 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
 
     const classData = useClassData();
 
-    const subjectIds = classData.data.subjects;
-
     let subjects = useSubjectData().subjects;
+    const lessonsData = useLessonData().lessons;
 
-    let defaultLessonsData = [{subjectid: "", data: [DataManager.lessonData.default]}];
-    const lessonData = useAppDataSync(classid ? DataManager.lessonData.db : null, `${DataManager.lessonData.app}:${classid}`, defaultLessonsData, {
-        classid: classid
+    const lessonData = [] as {subjectid: string, data: LessonData[]}[];
+    lessonsData.forEach((e: LessonData)=>{
+        let subject = subjects.find((s: SubjectData)=>(s.lessons as string[]).includes(e._id))?._id;
+
+        if (lessonData.find((lsn: any) => lsn.subjectid === subject)) {
+            lessonData.find((lsn: any) => lsn.subjectid === subject)?.data.push(e);
+        } else {
+            lessonData.push({subjectid: subject, data: [e]});
+            return;
+        }
     });
 
     const reload = async () => {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
-        await Promise.all([classData.load(), lessonData.load()]);
+        await Promise.all([classData.load()]);
         setRefreshing(false);
     };
 
@@ -89,7 +95,7 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
         </View>
     );
 
-    const lessons = regroupLessonsByDate(lessonData.data) as any[];
+    const lessons = regroupLessonsByDate(lessonData) as any[];
     const now = Date.now();
 
     const closestDate = lessons.reduce(((prev, curr) => {
@@ -190,10 +196,11 @@ function LessonTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
     const language = useLanguage();
+    const userData = useUserData();
 
-    const lessonData = useAppDataSync(classData.data._id != "" ? DataManager.lessonData.db : null, `${DataManager.lessonData.app}:${lessonid}`, DataManager.lessonData.default, {
-        lessonid
-    });
+    const lessons = useLessonData().lessons;
+
+    const lessonData = lessons.find((e: any) => e._id == lessonid) ?? {};
 
     if (lessonData.loading) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -201,8 +208,8 @@ function LessonTab() {
         </View>
     )
 
-    const lessonDay = findToday(language, `${lessonData.data.date}T${lessonData.data.time}`);
-    const lessonTime = new Date(`${lessonData.data.date}T${lessonData.data.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"});
+    const lessonDay = findToday(language, `${lessonData.date}T${lessonData.time}`);
+    const lessonTime = new Date(`${lessonData.date}T${lessonData.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"});
 
     // Todo: Add dates, schedules, excluded students, divide for SEN/non SEN.
 
@@ -210,25 +217,41 @@ function LessonTab() {
         <>
             <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 10 }}>
                 <View style={commonStyle.dashboardSection}>
-                    <Text style={commonStyle.headerText}>{lessonData.data.title}</Text>
+                    <Text style={commonStyle.headerText}>{lessonData.title}</Text>
                     <View style={[commonStyle.card, { gap: 10 }]}>
-                        <Text style={commonStyle.text}>{lessonData.data.description}</Text>
+                        <Text style={commonStyle.text}>{lessonData.description}</Text>
                         <View style={[commonStyle.card, { gap: 10 }]}>
                             <Text style={commonStyle.text}>{i18n.t("registry.lessons.datestring", {date: lessonDay, time: lessonTime})}</Text>
-                            <View style={{display: (lessonData.data.isExam || lessonData.data.scheduled) ? "flex" : "none",flexDirection: "row", gap: 5}}>
-                                {lessonData.data.isExam == true && (
+                            <View style={{display: (lessonData.isExam || lessonData.scheduled) ? "flex" : "none",flexDirection: "row", gap: 5}}>
+                                {lessonData.isExam == true && (
                                     <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.opaqueCard, color: getTextColor(theme.opaqueCard) }]}>{i18n.t("registry.lessons.exam")}</Text>
                                 )}
-                                {lessonData.data.scheduled == true && (
+                                {lessonData.scheduled == true && (
                                     <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.opaqueCard, color: getTextColor(theme.opaqueCard) }]}>{i18n.t("registry.lessons.scheduled.title")}</Text>
                                 )}
                             </View>
                         </View>
                     </View>
-                    {lessonData.data.scheduled == true && (
-                        <View style={[commonStyle.card, { gap: 10 }]}>
-                            <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days")}</Text>
-                            <LabsScreen />
+                    {lessonData.scheduled == true && (
+                        <View style={{ gap: 10 }}>
+                            <View style={[commonStyle.card, { gap: 10 }]}>
+                                <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days")}</Text>
+                                {!devMode ? <LabsScreen /> : (
+                                    <View>
+
+                                    </View>
+                                )}
+                            </View>
+                            {classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).data.userInfo._id) && (
+                                <View style={[commonStyle.card, { gap: 10 }]}>
+                                    <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.excluded")}</Text>
+                                    {!devMode ? <LabsScreen /> : (
+                                        <View>
+                                            
+                                        </View>
+                                    )}
+                                </View>
+                            )}
                         </View>
                     )}
                 </View>

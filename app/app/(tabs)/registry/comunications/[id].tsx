@@ -1,18 +1,18 @@
-import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
+import ActionButtons from '@/components/actionButtons';
+import DashboardItem, { getTextColor } from '@/components/dashboardItem';
+import i18n from '@/constants/i18n';
+import { useNetworkContext } from '@/constants/NetworkContext';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import { DataManager, ComunicationData, useAppDataSync, UserInfo, UserData, useDBitem } from '@/data/datamanager';
+import { useTheme } from '@/constants/useThemes';
+import { useClassData } from '@/data/ClassContext';
+import { useComunicationData } from '@/data/ComunicationMapContext';
+import { ComunicationData, DataManager, useDBitem, UserData, UserInfo } from '@/data/datamanager';
+import { useUserData } from '@/data/UserDataContext';
+import { Ionicons } from '@expo/vector-icons';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import i18n from '@/constants/i18n';
-import ActionButtons from '@/components/actionButtons';
-import { ActivityIndicator } from 'react-native';
-import DashboardItem, { getTextColor } from '@/components/dashboardItem';
-import { useUserData } from '@/data/UserDataContext';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useClassData } from '@/data/ClassContext';
-import { useNetworkContext } from '@/constants/NetworkContext';
 
 function ComunicationTab({classid, comunicationid}: {classid: string, comunicationid: string}) {
     const theme = useTheme();
@@ -30,9 +30,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
     const comunicationResponse = useDBitem(DataManager.comunicationResponseData.db, DataManager.comunicationResponseData.default);
 
-    const comunicationData = useAppDataSync(DataManager.comunicationData.db, `${DataManager.comunicationData.app}:${classid}`, [DataManager.comunicationData.default], {
-        classid: classid
-    });
+    const comunicationData = useComunicationData().comunications;
     
     const classData = useClassData();
 
@@ -44,7 +42,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
         );
     }
 
-    let comunication = comunicationData.data.find((e: ComunicationData) => e._id === id);
+    let comunication = comunicationData.find((e: ComunicationData) => e._id === id);
 
     let userResponse = comunication?.responses ? comunication.responses.find((e: any) => e.user._id === userData.data.userInfo._id) : null;
     if (!responseSent && userResponse) {
@@ -138,29 +136,31 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                 </View>
                             )}
                         </View>
-                        {isTeacher && <View style={[optimizationStyles.item, {gap: 10}]}>
-                            <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.responses.title")}</Text>
-                            <View style={[commonStyle.card]}>
-                                {comunication.responses.length == 0 && (
-                                    <View style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 10}}>
-                                        <Ionicons name="albums-outline" size={40} color={theme.text} />
-                                        <Text style={commonStyle.text}>{i18n.t("registry.comunications.responses.none")}</Text>
-                                    </View>
-                                )}
-                                {comunication.responses.map((e: any) => {
-                                    console.warn(JSON.stringify(e, null, 2));
-                                    return (
-                                    <View key={e._id} style={{gap: 10}}>
-                                        <Text style={[commonStyle.headerText]}>{e.user.name}</Text>
-                                        {e.message && <Text style={commonStyle.text}>{e.message}</Text>}
-                                        <View style={{gap: 10}}>
-                                            {!e.message && <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.action, color: getTextColor(theme.action) }]}>{e.state ? i18n.t("registry.comunications.responses.accepted") : i18n.t("registry.comunications.responses.rejected")}</Text>}
-                                            <Text style={commonStyle.text}>{new Date(e.editedAt).toLocaleString()}</Text>
+                        {isTeacher && (
+                            <View style={[optimizationStyles.item, {gap: 10}]}>
+                                <Text style={[commonStyle.headerText]}>{i18n.t("registry.comunications.responses.title")}</Text>
+                                <View style={[commonStyle.card]}>
+                                    {comunication.responses.length == 0 && (
+                                        <View style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 10}}>
+                                            <Ionicons name="albums-outline" size={40} color={theme.text} />
+                                            <Text style={commonStyle.text}>{i18n.t("registry.comunications.responses.none")}</Text>
                                         </View>
-                                    </View>
-                                )})}
+                                    )}
+                                    {comunication.responses.map((e: any) => {
+                                        return (
+                                            <View key={e._id} style={{gap: 10}}>
+                                                <Text style={[commonStyle.headerText]}>{e.user.name}</Text>
+                                                {e.message && <Text style={commonStyle.text}>{e.message}</Text>}
+                                                <View style={{gap: 10}}>
+                                                    {!e.message && <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.action, color: getTextColor(theme.action) }]}>{e.state ? i18n.t("registry.comunications.responses.accepted") : i18n.t("registry.comunications.responses.rejected")}</Text>}
+                                                    <Text style={commonStyle.text}>{new Date(e.editedAt).toLocaleString()}</Text>
+                                                </View>
+                                            </View>
+                                        )
+                                    })}
+                                </View>
                             </View>
-                        </View>}
+                        )}
                     </View>
                 )}
             </View>
@@ -184,9 +184,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
 
     const classData = useClassData();
 
-    const comunicationData = useAppDataSync(DataManager.comunicationData.db, `${DataManager.comunicationData.app}:${classid}`, [DataManager.comunicationData.default], {
-        classid: classid
-    });
+    const comunicationData = useComunicationData().comunications;
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -194,7 +192,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
     const reload = async () => {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
-        await Promise.all([classData.load(), comunicationData.load()]);
+        await Promise.all([classData.load()]);
         setRefreshing(false);
     };
 
@@ -204,7 +202,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
         }, [])
     );
 
-    let comunications: ComunicationData[] = comunicationData.data;
+    let comunications: ComunicationData[] = comunicationData;
 
     return ((classData.loading || comunicationData.loading) && !refreshing) ? ( 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

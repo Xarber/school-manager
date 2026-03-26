@@ -1,8 +1,8 @@
-import { View, Text, Pressable } from "react-native"
-import { useTheme } from "@/constants/useThemes"
-import createStyling from "@/constants/styling";
-import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
+import { Pressable, Text, View } from "react-native";
 
 type UserGrade = {
     title: string;

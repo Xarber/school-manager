@@ -1,10 +1,9 @@
-import { useTheme } from "@/constants/useThemes";
-import createStyling from "@/constants/styling";
-import { TouchableOpacity, View } from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { Pressable, Text } from "react-native";
-import { getTextColor } from "./dashboardItem";
 import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { getTextColor } from "./dashboardItem";
 
 interface TimelineItem {
     title: string;

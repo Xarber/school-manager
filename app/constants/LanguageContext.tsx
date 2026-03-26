@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { setLocale, getLocale } from '@/constants/i18n';
-import * as React from 'react';
+import { getLocale, setLocale } from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
+import * as React from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const LanguageContext = createContext({
   locale: 'en',

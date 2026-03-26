@@ -1,16 +1,14 @@
-import { RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
+import i18n from '@/constants/i18n';
 import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import { DataManager, useAppDataSync } from '@/data/datamanager';
+import { useTheme } from '@/constants/useThemes';
+import { useClassData } from '@/data/ClassContext';
 import { devMode } from '@/data/devMode';
+import { useUserData } from '@/data/UserDataContext';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import i18n from '@/constants/i18n';
-import { ActivityIndicator } from 'react-native';
-import { useUserData } from '@/data/UserDataContext';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useClassData } from '@/data/ClassContext';
 
 function ResourceTab({classid, resourceid}: {classid: string, resourceid: string}) {
     const theme = useTheme();

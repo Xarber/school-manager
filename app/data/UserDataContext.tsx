@@ -1,5 +1,5 @@
+import { DataManager, useAppDataSync } from "@/data/datamanager";
 import { createContext, useContext } from "react";
-import { useAppDataSync, DataManager } from "@/data/datamanager";
 
 const UserDataContext = createContext<any>(null);
 

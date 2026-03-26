@@ -1,9 +1,9 @@
 
 import i18n from '@/constants/i18n';
-import { Text, TouchableOpacity, View } from 'react-native';
+import createStyling from '@/constants/styling';
 import { useTheme } from '@/constants/useThemes';
 import { Ionicons } from '@expo/vector-icons';
-import createStyling from '@/constants/styling';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function AppLockScreen({authenticate, isAuthenticated}: {authenticate: () => void, isAuthenticated: boolean}) {
     const theme = useTheme();

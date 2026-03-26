@@ -1,9 +1,9 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
-import Constants from "expo-constants";
-import { Platform } from 'react-native';
 import { useNetworkContext } from '@/constants/NetworkContext';
 import i18n from '@/constants/i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from "expo-constants";
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { devMode } from './devMode';
 
 export const env = Constants.executionEnvironment;

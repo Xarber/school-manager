@@ -1,9 +1,9 @@
-import { Text, View, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { useTheme } from "@/constants/useThemes";
 import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from 'expo-clipboard';
+import { useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export interface ClipboardTextProps {
     text: string;
