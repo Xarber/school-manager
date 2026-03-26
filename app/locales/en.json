@@ -114,7 +114,8 @@
                     },
                     "otp": {
                         "title": "OTP Code",
-                        "placeholder": "Password"
+                        "placeholder": "Password",
+                        "hint": "Sent too many emails? Find one with the code: {{code}}"
                     }
                 },
                 "continue": "Continue",

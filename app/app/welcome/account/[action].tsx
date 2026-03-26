@@ -62,7 +62,7 @@ export function validateEmail(email: string) {
       );
 }
 
-async function sendOtp(email: string, setotpsent: Function, setloading: Function, alert: {show: (props: AlertProps)=>void, hide: Function}, serverpath: string) {
+async function sendOtp(email: string, setotpsent: Function, setloading: Function, setemailcode: Function, alert: {show: (props: AlertProps)=>void, hide: Function}, serverpath: string) {
     setloading(true);
 
     const status = await fetch(serverpath + DataManager.db.authenticate, {
@@ -79,6 +79,7 @@ async function sendOtp(email: string, setotpsent: Function, setloading: Function
     if (status.success) {
         setloading(false);
         setotpsent(true);
+        setemailcode(status.code.toString());
     } else {
         setloading(false);
         alert.show({title: i18n.t("welcome.account.error.otpsendfail.title"), message: status.message});
@@ -127,6 +128,8 @@ function LoginPage({alert}: AccountProps) {
     const [email, setEmail] = useState("");
     const [otpcode, setOtpcode] = useState("");
     const [otpsent, setOtpsent] = useState(false);
+    const [emailcode, setEmailcode] = useState("");
+    const [emailResent, setEmailResent] = useState(false);
 
     const accountData = useAccountData();
     const [loading, setLoading] = useState(false);
@@ -158,9 +161,13 @@ function LoginPage({alert}: AccountProps) {
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.otp.title")}</Text>
                                     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 10}}>
                                         <TextInput autoFocus autoCapitalize="none" maxLength={6} keyboardType="number-pad" style={[welcomeStyles.bottomViewBodyFormFieldInput, {flex: 1}]} value={otpcode} onChangeText={setOtpcode} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
-                                        <TouchableOpacity onPress={()=>{reset();sendOtp(email, setOtpsent, setLoading, alert as any, (network.serverPath as string));}}>
+                                        <TouchableOpacity onPress={()=>{reset();sendOtp(email, setOtpsent, setLoading, setEmailcode, alert as any, (network.serverPath as string));setEmailResent(true);}}>
                                             <Ionicons name="sync-circle-outline" size={20} color={theme.text} />
                                         </TouchableOpacity>
+                                    </View>
+                                    <View style={{ display: (emailcode.length > 3 && emailResent) ? "flex" : "none", flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 10}}>
+                                        <Ionicons name="information-circle" size={20} color={theme.text} />
+                                        <Text style={[welcomeStyles.bottomViewBodyFormFieldText, {flex: 1, fontSize: 12}]}>{i18n.t("welcome.account.auth.input.otp.hint", {code: emailcode})}</Text>
                                     </View>
                                 </View>
                             </View>
@@ -184,7 +191,7 @@ function LoginPage({alert}: AccountProps) {
             <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
                 <TouchableOpacity disabled={!validateEmail(email) || loading || !network.ready || !network.serverReachable} style={(!validateEmail(email) || !network.serverReachable) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                     if (!otpsent) {
-                        sendOtp(email, setOtpsent, setLoading, alert as any, (network.serverPath as string));
+                        sendOtp(email, setOtpsent, setLoading, setEmailcode, alert as any, (network.serverPath as string));
                     } else {
                         setLoading(true);
                         verifyOtp(email, otpcode, reset, alert as any, (network.serverPath as string)).then(status => {
