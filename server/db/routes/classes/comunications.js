@@ -46,7 +46,7 @@ router.post(paths.dbGet, async (req, res) => {
         {path: "responses", populate: ["user"]}
       ]).lean();
       if (!isUserTeacher) {
-        const filteredResponses = comunication.responses.filter(r => r.sender._id.equals(user.userinfo_id));
+        const filteredResponses = comunication.responses.filter(r => r.user._id.equals(user.userinfo_id));
         if (!comunication.requiresConfirmation || filteredResponses.length) {
           comunication.responses = filteredResponses;
         }
@@ -56,7 +56,7 @@ router.post(paths.dbGet, async (req, res) => {
 
     if (!isUserTeacher) {
       classInfo.comunications = classInfo.comunications.map(c => {
-        const filteredResponses = c.responses.filter(r => r.sender._id.equals(user.userinfo_id));
+        const filteredResponses = c.responses.filter(r => r.user._id.equals(user.userinfo_id));
         if (!c.requiresConfirmation || filteredResponses.length) {
           c.responses = filteredResponses;
           return c;
