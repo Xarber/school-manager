@@ -48,8 +48,8 @@ router.post(paths.authenticate, async (req, res) => {
     // Save new code
     await Verification.create({ email, code });
 
-    let emailCode = Date.now();
-
+    let emailCode = Date.now().toString().slice(-6);
+    
     // Send email
     const mailOptions = {
       from: `"School Manager" <${process.env.ICLOUD_NODEMAILER_SENDFROM}>`,
