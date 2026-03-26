@@ -12,24 +12,47 @@ const router = express.Router();
 router.post(paths.dbGet, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
-    const { classid } = req.body;
+    const { classid, comunicationid } = req.body;
     if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
+    if (!classid && !comunicationid) return res.status(400).json({ error: 'Class ID or Comunication ID required' });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
     if (!userInfo) return res.status(404).json({ error: 'User info not found' });
     
-    const classInfo = await Class.findOne({ _id: classid }).populate({
-      path: 'comunications',
-      populate: ["sender", {path: "responses", populate: ["user"]}]
-    }).lean();
+    let classInfo, comunicationData;
+
+    switch (true) {
+      case !!comunicationid:
+        classInfo = await Class.findOne({ comunications: comunicationid });
+        break;
+      case !!classid:
+        classInfo = await Class.findOne({ _id: classid }).populate({
+          path: 'comunications',
+          populate: ["sender", {path: "responses", populate: ["user"]}]
+        }).lean();
+        break;
+    }
 
     if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    const isUserTeacher = classInfo.teachers.some(t => t.equals(user.userinfo_id));
     if (
         !classInfo.students.some(t => t.equals(userInfo._id))
         && !classInfo.teachers.some(t => t.equals(userInfo._id))
     ) return res.status(403).json({ error: 'Access denied to this class' });
+    const isUserTeacher = classInfo.teachers.some(t => t.equals(user.userinfo_id));
+
+    if (comunicationid) {
+      const comunication = await Comunication.findOne({ _id: comunicationid }).populate([
+        "sender",
+        {path: "responses", populate: ["user"]}
+      ]).lean();
+      if (!isUserTeacher) {
+        const filteredResponses = comunication.responses.filter(r => r.sender._id.equals(user.userinfo_id));
+        if (!comunication.requiresConfirmation || filteredResponses.length) {
+          comunication.responses = filteredResponses;
+        }
+      }
+      return res.json({ success: true, data: comunication });
+    }
 
     if (!isUserTeacher) {
       classInfo.comunications = classInfo.comunications.map(c => {
