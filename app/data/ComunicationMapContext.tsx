@@ -1,5 +1,5 @@
 import { ComunicationData, DataLoader, DataManager } from "@/data/datamanager";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useClassData } from "./ClassContext";
 
 const ComunicationDataContext = createContext<any>(null);
@@ -7,13 +7,17 @@ const ComunicationDataContext = createContext<any>(null);
 export function ComunicationDataProvider({ children }: { children: React.ReactNode }) {
     const classData = useClassData();
     const [comunicationMap, setComunicationMap] = useState(({} as {[key: string]: ComunicationData}));
-    let comunicationIds = classData.data.comunications ?? [];
+    let [comunicationIds, setComunicationIds] = useState<string[]>([]);
+
+    useEffect(()=>{
+        setComunicationIds([...classData.data.comunications]);
+    }, [classData.data]);
 
     let comunications = (Object.values(comunicationMap) as ComunicationData[])
-    .filter((sbj: ComunicationData) => typeof sbj === "object" && sbj);
+    .filter((cmn: ComunicationData) => typeof cmn === "object" && cmn);
 
     let unloadedComunications = (comunicationIds as string[])
-    .filter((sbj: any) => typeof comunicationMap[sbj] === "undefined");
+    .filter((cmn: any) => typeof comunicationMap[cmn] === "undefined");
 
     return (
         <ComunicationDataContext.Provider value={{comunications, unloadedComunications }}>
