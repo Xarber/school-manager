@@ -48,21 +48,23 @@ router.post(paths.authenticate, async (req, res) => {
     // Save new code
     await Verification.create({ email, code });
 
+    let emailCode = Date.now();
+
     // Send email
     const mailOptions = {
       from: `"School Manager" <${process.env.ICLOUD_NODEMAILER_SENDFROM}>`,
       to: email,
       subject: 'Your Verification Code',
-      text: `Your verification code is: ${code}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.`,
-      html: `<p>Your verification code is: <strong>${code}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p>`
+      text: `Your verification code is: ${code}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.\n\n(Email code is ${emailCode})`,
+      html: `<p>Your verification code is: <strong>${code}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p><p>(Email code is ${emailCode})</p>`
     };
 
-    console.log(`[AUTH] Sent verification code to ${email}\n`);
+    console.log(`[AUTH] Sent verification code to ${email}, code: ${emailCode}\n`);
 
     if (process.env.EMAIL_SEND_MODE === 'resend') await transporter.emails.send(mailOptions);
     if (process.env.EMAIL_SEND_MODE === 'nodemailer') await transporter.sendMail(mailOptions);
     
-    res.json({ success: true, message: 'Verification code sent' });
+    res.json({ success: true, message: 'Verification code sent', code: emailCode });
   } catch (error) {
     console.error('Send error:', error);
     res.status(500).json({ error: 'Failed to send code', dbError: error });
