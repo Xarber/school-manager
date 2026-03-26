@@ -1,9 +1,9 @@
-import { Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@/constants/useThemes";
 import i18n from "@/constants/i18n";
+import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
+import { Stack } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AccountLayout() {
     const theme = useTheme();

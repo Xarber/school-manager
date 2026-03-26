@@ -1,21 +1,19 @@
-import { ActivityIndicator, RefreshControl, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
-import { Link, Stack, useFocusEffect } from "expo-router";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { useTheme } from "@/constants/useThemes";
-import createStyling, { defaultScreenSizes } from "@/constants/styling";
-import DashboardItem, { getTextColor } from "@/components/dashboardItem";
-import { useAppDataSync, DataManager, ClassData, UserInfo, SubjectData, DataLoader } from "@/data/datamanager";
-import { ScrollView } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ActionButtons from "@/components/actionButtons";
-import i18n from "@/constants/i18n";
-import { useCallback, useState } from "react";
-import { useUserData } from "@/data/UserDataContext";
-import { useNetworkContext } from "@/constants/NetworkContext";
-import { useAccountData } from "@/data/AccountDataContext";
+import DashboardItem, { getTextColor } from "@/components/dashboardItem";
 import LabsScreen from "@/components/LabsScreen";
+import i18n from "@/constants/i18n";
+import { useNetworkContext } from "@/constants/NetworkContext";
+import createStyling, { defaultScreenSizes } from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { useAccountData } from "@/data/AccountDataContext";
+import { ClassData, DataLoader, DataManager, SubjectData, useAppDataSync, UserInfo } from "@/data/datamanager";
 import { devMode } from "@/data/devMode";
+import { useUserData } from "@/data/UserDataContext";
+import { Ionicons } from "@expo/vector-icons";
+import { Link, Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { ActivityIndicator, RefreshControl, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function AllClassList() {
     const theme = useTheme();
@@ -243,7 +241,7 @@ function Class(props: { classId: string }) {
                                 }} style={{...commonStyle.button, flexGrow: 1, backgroundColor: isActiveClass ? "#7d7d7d7d" : theme.primary}}>
                                     {userData.loading ? <ActivityIndicator size="small" color={theme.text} /> : <Text style={commonStyle.buttonText}>{isActiveClass ? i18n.t("profile.class.active.title") : i18n.t("profile.class.active.set.title")}</Text>}
                                 </TouchableOpacity>
-                                {(accountData.data.active) && classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid) && (network.serverReachable === true) && (
+                                {(accountData.data.active) && classData.data.teachers.some((teacher: UserInfo) => teacher._id === userData.data.userInfo._id) && (network.serverReachable === true) && (
                                     <Link href={{ pathname: "/modal/invitation/create" as any, params: { for: "class", targetid: classId, name: classData.data.name }}} style={{...commonStyle.button}}>
                                         {(userData.loading) ? <ActivityIndicator size="small" color={theme.text} /> : (
                                             <View style={commonStyle.listUserElement}>
@@ -302,11 +300,10 @@ function AllClassSubjects() {
     const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
     const commonStyle = createStyling.createCommonStyles(theme);
     const optimizationStyle = createStyling.createOptimizationStyles(theme);
-    const { width, height } = useWindowDimensions();
+    const { width } = useWindowDimensions();
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
     const [refreshing, setRefreshing] = useState(false);
     const router = useRouter();
-    const insets = useSafeAreaInsets();
     const params = useLocalSearchParams();
     const classId = params.id as string;
     const network = useNetworkContext();
@@ -430,7 +427,7 @@ function AllClassSubjects() {
                             onPress: () => {
                                 router.push({pathname: `/modal/subject/create` as any, params: { classid: classId }});
                             },
-                            display: classData.data.teachers.some((teacher: UserInfo) => teacher.userid === userData.data.userInfo.userid),
+                            display: classData.data.teachers.some((teacher: UserInfo) => teacher._id === userData.data.userInfo._id),
                         }
                     ]} align="right" itemStyles={{ borderRadius: 360 }} />
                 </>

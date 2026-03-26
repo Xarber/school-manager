@@ -1,15 +1,14 @@
-import { Text, View, ScrollView, ActivityIndicator } from "react-native";
-import { BlurView } from "expo-blur";
-import { useTheme } from "@/constants/useThemes";
 import ActionMenu from "@/components/actionMenu";
-import createStyling from "@/constants/styling";
 import GradeGrid from "@/components/gradeGrid";
-import { useRouter } from "expo-router";
-import { Stack } from "expo-router";
 import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
 import { useUserData } from "@/data/UserDataContext";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import { Stack, useRouter } from "expo-router";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function RegistryTab() {
     const theme = useTheme();

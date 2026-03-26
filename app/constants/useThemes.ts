@@ -1,4 +1,4 @@
-import { colors, Theme, Scheme } from "./colors";
+import { colors, Scheme, Theme } from "./colors";
 import { useThemeContext } from "./ThemeContext";
 
 export function useTheme(force?: Scheme, simple?: boolean): Theme {

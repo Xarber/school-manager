@@ -1,17 +1,16 @@
-import { View, Text, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
-import {router, Stack, useLocalSearchParams} from "expo-router";
-import {useState} from "react";
-import { TextInput } from 'react-native';
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { AlertProps, useAlert } from '@/components/alert/AlertContext';
+import { KeyboardShift } from '@/components/keyboardShift';
+import i18n from '@/constants/i18n';
+import { useNetworkContext } from '@/constants/NetworkContext';
 import createStyling from '@/constants/styling';
 import { DataManager, useDBitem } from '@/data/datamanager';
-import { AlertProps, useAlert } from '@/components/alert/AlertContext';
-import i18n from '@/constants/i18n';
 import { useUserData } from '@/data/UserDataContext';
-import { KeyboardShift } from '@/components/keyboardShift';
 import { BlurView } from 'expo-blur';
-import { useNetworkContext } from '@/constants/NetworkContext';
 
 interface updateClassProps {
     action: string;

@@ -1,9 +1,9 @@
-import {Stack} from "expo-router";
 import i18n from "@/constants/i18n";
 import { useTheme } from "@/constants/useThemes";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
+import { Stack } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeLayout() {
     const theme = useTheme();

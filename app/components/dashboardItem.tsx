@@ -1,8 +1,8 @@
-import { View, Text, Image, ImageSourcePropType, Pressable } from "react-native"
-import { MaterialIcons } from "@expo/vector-icons";
-import { useTheme } from "@/constants/useThemes"
-import createStyling from "@/constants/styling";
 import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Image, ImageSourcePropType, Pressable, Text, View } from "react-native";
 
 type DashboardItemBadge = {
     text: string;

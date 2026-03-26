@@ -1,27 +1,27 @@
-import { 
-    Text,
-    View,
-    TouchableOpacity,
-    Image,
-    TextInput,
-    ScrollView,
-    ActivityIndicator,
-    Pressable
-} from "react-native";
-import { Keyboard } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import {
+    ActivityIndicator,
+    Image,
+    Keyboard,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTheme } from "@/constants/useThemes";
-import createStyling from "@/constants/styling";
-import { DataManager } from "@/data/datamanager";
+import welcomeImage from "@/assets/images/welcome.png";
 import { KeyboardShift } from "@/components/keyboardShift";
 import i18n from "@/constants/i18n";
-import { useUserData } from "@/data/UserDataContext";
-import { useAccountData } from "@/data/AccountDataContext";
-import welcomeImage from "@/assets/images/welcome.png";
 import { useNetworkContext } from "@/constants/NetworkContext";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { useAccountData } from "@/data/AccountDataContext";
+import { DataManager } from "@/data/datamanager";
+import { useUserData } from "@/data/UserDataContext";
 import { Ionicons } from "@expo/vector-icons";
 
 interface AlertProps {

@@ -1,8 +1,8 @@
+import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
 import { useTheme } from "@/constants/useThemes";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
-import createStyling from "@/constants/styling";
-import i18n from "@/constants/i18n";
 
 export default function LabsScreen() {
     const theme = useTheme();

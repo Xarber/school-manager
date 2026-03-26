@@ -1,9 +1,8 @@
+import { useUserData } from "@/data/UserDataContext";
+import { getAppIconName, setAlternateAppIcon, supportsAlternateIcons } from "expo-alternate-app-icons";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Platform, useColorScheme } from "react-native";
-import { colors, Scheme } from "./colors";
-import { useUserData } from "@/data/UserDataContext";
-import { themeList } from "./colors";
-import { setAlternateAppIcon, getAppIconName, resetAppIcon, supportsAlternateIcons } from "expo-alternate-app-icons";
+import { colors, Scheme, themeList } from "./colors";
 
 const ThemeContext = createContext<Scheme>("light");
 

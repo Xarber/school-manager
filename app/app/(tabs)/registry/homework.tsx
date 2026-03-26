@@ -1,20 +1,20 @@
-import { Platform, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
-import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import DashboardItem from '@/components/dashboardItem';
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useAppDataSync, DataManager, HomeworkData, UserData, ClassData, SubjectData, UserInfo, DataLoader } from "@/data/datamanager";
-import i18n from '@/constants/i18n';
 import ActionButtons from '@/components/actionButtons';
-import { useFocusEffect, useRouter } from 'expo-router';
-import { ActivityIndicator } from 'react-native';
-import { useCallback, useRef, useState } from 'react';
-import { useUserData } from '@/data/UserDataContext';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useClassData } from '@/data/ClassContext';
-import { useSubjectData } from '@/data/SubjectMapContext';
+import DashboardItem from '@/components/dashboardItem';
+import i18n from '@/constants/i18n';
 import { useNetworkContext } from '@/constants/NetworkContext';
+import createStyling, { defaultScreenSizes } from '@/constants/styling';
+import { useTheme } from '@/constants/useThemes';
+import { useClassData } from '@/data/ClassContext';
+import { ClassData, HomeworkData, SubjectData, UserData, UserInfo } from "@/data/datamanager";
+import { useHomeworkData } from '@/data/HomeworkMapContext';
+import { useSubjectData } from '@/data/SubjectMapContext';
+import { useUserData } from '@/data/UserDataContext';
+import { Ionicons } from '@expo/vector-icons';
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
     let homeworkList = [] as any[];
@@ -192,16 +192,25 @@ function HomeworkTab({userData}: {userData: UserData}) {
     const network = useNetworkContext();
 
     const classData = useClassData();
+    const subjects = useSubjectData().subjects;
 
-    let defaultHomeworkData = [{subjectid: "", data: [DataManager.homeworkData.default]}];
-    const homeworkData = useAppDataSync(classid != "" ? DataManager.homeworkData.db : null, `${DataManager.homeworkData.app}:${classid}`, defaultHomeworkData, {
-        classid: classid
+    const homeworksData = useHomeworkData().homework;
+    const homeworkData = [] as {subjectid: string, data: HomeworkData[]}[];
+    homeworksData.forEach((e: HomeworkData)=>{
+        let subject = subjects.find((s: SubjectData)=>(s.homework as string[]).includes(e._id))?._id;
+
+        if (homeworkData.find((hmw: any) => hmw.subjectid === subject)) {
+            homeworkData.find((hmw: any) => hmw.subjectid === subject)?.data.push(e);
+        } else {
+            homeworkData.push({subjectid: subject, data: [e]});
+            return;
+        }
     });
 
     const reload = async () => {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
-        await Promise.all([classData.load(), homeworkData.load()]);
+        await Promise.all([classData.load()]);
         setRefreshing(false);
     };
 
@@ -212,15 +221,15 @@ function HomeworkTab({userData}: {userData: UserData}) {
     )
 
     function AllHomework() {
-        return <HomeworkComponent mode="all" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData.data} classid={classid} />
+        return <HomeworkComponent mode="all" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData} classid={classid} />
     }
 
     function CompletedHomework() {
-        return <HomeworkComponent mode="completed" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData.data} classid={classid} />
+        return <HomeworkComponent mode="completed" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData} classid={classid} />
     }
 
     function MissedHomework() {
-        return <HomeworkComponent mode="missed" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData.data} classid={classid} />
+        return <HomeworkComponent mode="missed" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData} classid={classid} />
     }
 
     if (classid == "") return (
@@ -230,7 +239,7 @@ function HomeworkTab({userData}: {userData: UserData}) {
         </View>
     )
 
-    if ((classData.loading || homeworkData.loading) && !refreshing) return (
+    if ((classData.loading) && !refreshing) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color={theme.text} />
         </View>

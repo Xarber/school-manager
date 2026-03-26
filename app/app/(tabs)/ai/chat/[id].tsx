@@ -1,10 +1,7 @@
-import { View, Text } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import createStyling from '@/constants/styling';
-import { Ionicons } from '@expo/vector-icons';
-import i18n from '@/constants/i18n';
 import LabsScreen from '@/components/LabsScreen';
+import createStyling from '@/constants/styling';
+import { useTheme } from '@/constants/useThemes';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function ChatScreen() {
     const theme = useTheme();

@@ -1,7 +1,7 @@
-import { Stack } from "expo-router";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
+import { Stack } from "expo-router";
 
 export default function AiLayout() {
     const theme = useTheme();

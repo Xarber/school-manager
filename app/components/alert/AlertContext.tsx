@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useState } from "react";
-import { Keyboard } from "react-native";
-import { View, Text, TouchableOpacity, Pressable } from "react-native";
-import { useTheme } from "@/constants/useThemes";
-import createStyling from "@/constants/styling";
 import i18n from "@/constants/i18n";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import React, { createContext, useContext, useState } from "react";
+import { Keyboard, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 interface Action {
   title: string;

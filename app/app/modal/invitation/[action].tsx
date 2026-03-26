@@ -1,24 +1,18 @@
-import { View, Text } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
-import createStyling from '@/constants/styling';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useAppDataSync, DataManager, useDBitem } from '@/data/datamanager';
-import { Stack } from 'expo-router';
-import { ActivityIndicator } from 'react-native';
-import { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { RadioButton } from 'react-native-paper';
-import { TextInput } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import ClipboardText from '@/components/clipboardText';
-import { useUserData } from '@/data/UserDataContext';
 import { KeyboardShift } from '@/components/keyboardShift';
-import { ScrollView } from 'react-native';
-import { BlurView } from 'expo-blur';
 import i18n from '@/constants/i18n';
 import { useNetworkContext } from '@/constants/NetworkContext';
+import createStyling from '@/constants/styling';
+import { useTheme } from '@/constants/useThemes';
+import { DataManager, useAppDataSync, useDBitem } from '@/data/datamanager';
+import { useUserData } from '@/data/UserDataContext';
+import { Feather } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
+import { router, Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { RadioButton } from 'react-native-paper';
 
 function addDashes(str: string) {
   return str.replace(/(.{4})/g, '$1-').replace(/-$/, '');

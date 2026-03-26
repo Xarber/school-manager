@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { AppState } from "react-native";
 import AppLockScreen from "@/components/appLockScreen";
 import { useUserData } from "@/data/UserDataContext";
 import * as LocalAuthentication from 'expo-local-authentication';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { AppState, View } from "react-native";
 import i18n from './i18n';
-import { View } from 'react-native';
 
 type AppLockContextType = {
     firstUnlock: boolean;

@@ -816,7 +816,8 @@
             "datestring": "{{date}} at {{time}}",
             "scheduled": {
                 "title": "Scheduled",
-                "days": "Days"
+                "days": "Days",
+                "excluded": "Excluded Students"
             },
             "exam": "Exam"
         }

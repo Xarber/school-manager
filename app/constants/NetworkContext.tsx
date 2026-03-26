@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
-import { NetInfoStateType } from "@react-native-community/netinfo";
-import * as NetInfo from "@react-native-community/netinfo"
 import { dbpaths } from "@/data/db";
+import * as NetInfo from "@react-native-community/netinfo";
+import { NetInfoStateType } from "@react-native-community/netinfo";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 
 type NetworkContextType = {
     ready: boolean;

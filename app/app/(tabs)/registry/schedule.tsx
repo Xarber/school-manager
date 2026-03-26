@@ -1,21 +1,19 @@
-import { ActivityIndicator, RefreshControl, Text, useWindowDimensions, View } from 'react-native';
-import { useTheme } from '@/constants/useThemes';
-import createStyling, { defaultScreenSizes } from '@/constants/styling';
-import { Ionicons } from '@expo/vector-icons';
+import ActionButtons from '@/components/actionButtons';
+import Timeline from '@/components/timeline';
 import i18n from '@/constants/i18n';
-import { ClassData, DataLoader, DataManager, ScheduleHour, SubjectData, useAppDataSync, UserInfo, WeekSchedule } from '@/data/datamanager';
-import { devMode } from '@/data/devMode';
+import { useNetworkContext } from '@/constants/NetworkContext';
+import createStyling, { defaultScreenSizes } from '@/constants/styling';
+import { useTheme } from '@/constants/useThemes';
+import { useClassData } from '@/data/ClassContext';
+import { ScheduleHour, SubjectData, UserInfo, WeekSchedule } from '@/data/datamanager';
+import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
-import { ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Timeline from '@/components/timeline';
-import ActionButtons from '@/components/actionButtons';
-import { useClassData } from '@/data/ClassContext';
-import { useSubjectData } from '@/data/SubjectMapContext';
-import { useNetworkContext } from '@/constants/NetworkContext';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createMaterialTopTabNavigator();
 

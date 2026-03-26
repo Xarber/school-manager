@@ -1,8 +1,8 @@
-import {Stack} from "expo-router";
 import i18n from "@/constants/i18n";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
+import { Stack } from "expo-router";
 
 export default function RegistryLayout() {
     const theme = useTheme();

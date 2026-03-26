@@ -1,25 +1,27 @@
-import { Text, View, ScrollView, RefreshControl } from "react-native";
-import { BlurView } from "expo-blur";
-import { useTheme } from "@/constants/useThemes";
-import createStyling from "@/constants/styling";
 import DashboardItem from "@/components/dashboardItem";
 import UserGrades from "@/components/gradesComponent";
+import createStyling from "@/constants/styling";
+import { useTheme } from "@/constants/useThemes";
+import { BlurView } from "expo-blur";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 
-import { Stack, useFocusEffect, useRouter } from "expo-router";
-import { useAppDataSync, DataManager, UserData, SubjectData, DataLoader, WeekSchedule } from "@/data/datamanager";
-import i18n from "@/constants/i18n";
-import { useUserData } from "@/data/UserDataContext";
 import findToday from "@/components/findToday";
+import i18n from "@/constants/i18n";
+import { useLanguage } from "@/constants/LanguageContext";
+import { useClassData } from "@/data/ClassContext";
+import { HomeworkData, LessonData, SubjectData, UserData, WeekSchedule } from "@/data/datamanager";
+import { useHomeworkData } from "@/data/HomeworkMapContext";
+import { useLessonData } from "@/data/LessonMapContext";
+import { useSubjectData } from "@/data/SubjectMapContext";
+import { useUserData } from "@/data/UserDataContext";
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { filterExamsDate, filterLessonsFromExams } from "../calendar";
 import { regroupHomework, stringToColor } from "../registry/homework";
 import { regroupLessonsByDate } from "../registry/lessons/[id]";
-import { filterExamsDate, filterLessonsFromExams } from "../calendar";
-import { useCallback, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useLanguage } from "@/constants/LanguageContext";
-import { Ionicons } from "@expo/vector-icons";
-import { useClassData } from "@/data/ClassContext";
-import { useSubjectData } from "@/data/SubjectMapContext";
 
 function HomeScreen({userData}: {userData: UserData}) {
     const theme = useTheme();
@@ -37,21 +39,37 @@ function HomeScreen({userData}: {userData: UserData}) {
     const classData = useClassData();
 
     let subjects = useSubjectData().subjects;
+    const lessonsData = useLessonData().lessons;
 
-    let defaultLessonsData = [{subjectid: "", data: [DataManager.lessonData.default]}];
-    const lessonData = useAppDataSync(activeClassId != "" ? DataManager.lessonData.db : null, `${DataManager.lessonData.app}:${activeClassId}`, defaultLessonsData, {
-        classid: activeClassId
+    const lessonData = [] as {subjectid: string, data: LessonData[]}[];
+    lessonsData.forEach((e: LessonData)=>{
+        let subject = subjects.find((s: SubjectData)=>(s.lessons as string[]).includes(e._id))?._id;
+
+        if (lessonData.find((lsn: any) => lsn.subjectid === subject)) {
+            lessonData.find((lsn: any) => lsn.subjectid === subject)?.data.push(e);
+        } else {
+            lessonData.push({subjectid: subject, data: [e]});
+            return;
+        }
     });
 
-    let defaultHomeworkData = [{subjectid: "", data: [DataManager.homeworkData.default]}];
-    const homeworkData = useAppDataSync(activeClassId != "" ? DataManager.homeworkData.db : null, `${DataManager.homeworkData.app}:${activeClassId}`, defaultHomeworkData, {
-        classid: activeClassId
+    const homeworksData = useHomeworkData().homework;
+    const homeworkData = [] as {subjectid: string, data: HomeworkData[]}[];
+    homeworksData.forEach((e: HomeworkData)=>{
+        let subject = subjects.find((s: SubjectData)=>(s.homework as string[]).includes(e._id))?._id;
+
+        if (homeworkData.find((hmw: any) => hmw.subjectid === subject)) {
+            homeworkData.find((hmw: any) => hmw.subjectid === subject)?.data.push(e);
+        } else {
+            homeworkData.push({subjectid: subject, data: [e]});
+            return;
+        }
     });
 
     const reload = async () => {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
-        await Promise.all([lessonData.load(), homeworkData.load()]);
+        await Promise.all([]);
         setRefreshing(false);
     };
     
@@ -68,8 +86,8 @@ function HomeScreen({userData}: {userData: UserData}) {
         </View>
     );
     
-    const allClassHomework = regroupHomework(homeworkData.data);
-    const allClassLessons = regroupLessonsByDate(lessonData.data);
+    const allClassHomework = regroupHomework(homeworkData);
+    const allClassLessons = regroupLessonsByDate(lessonData);
     const lessons = filterLessonsFromExams(false, allClassLessons);
     const exams = filterLessonsFromExams(true, allClassLessons);
 
@@ -125,7 +143,7 @@ function HomeScreen({userData}: {userData: UserData}) {
         <>
             <Stack.Screen options={{ headerTitle: today }} />
             {
-                ((classData.loading || lessonData.loading || homeworkData.loading) && !refreshing) ? (
+                ((classData.loading) && !refreshing) ? (
                     <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
                         <ActivityIndicator size="small" color={theme.text} />
                     </View>

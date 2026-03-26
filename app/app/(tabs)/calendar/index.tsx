@@ -1,24 +1,25 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { useTheme } from '@/constants/useThemes';
-import createStyling from '@/constants/styling';
 import DashboardItem from '@/components/dashboardItem';
+import createStyling from '@/constants/styling';
+import { useTheme } from '@/constants/useThemes';
+import { BlurView } from 'expo-blur';
 import { Stack, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 
-import { useAppDataSync, DataManager, LessonData, SubjectData, DataLoader } from "@/data/datamanager";
-import i18n from '@/constants/i18n';
-import { useUserData } from '@/data/UserDataContext';
-import { regroupLessonsByDate } from '../registry/lessons/[id]';
-import { regroupHomework, stringToColor } from '../registry/homework';
 import findToday from '@/components/findToday';
-import { UserData } from '@/data/datamanager';
+import i18n from '@/constants/i18n';
 import { useLanguage } from '@/constants/LanguageContext';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useClassData } from '@/data/ClassContext';
+import { HomeworkData, LessonData, SubjectData, UserData } from "@/data/datamanager";
+import { useHomeworkData } from '@/data/HomeworkMapContext';
+import { useLessonData } from '@/data/LessonMapContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
+import { useUserData } from '@/data/UserDataContext';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { regroupHomework, stringToColor } from '../registry/homework';
+import { regroupLessonsByDate } from '../registry/lessons/[id]';
 
 export function loadHomeworkForDate(date: string, homework: any) {
     const selectedDate = new Date(date).toISOString().split("T")[0];
@@ -102,21 +103,37 @@ function CalendarComponent({userData}: {userData: UserData}) {
 
     const classData = useClassData();
     let subjects = useSubjectData().subjects;
+    const lessonsData = useLessonData().lessons;
 
-    let defaultLessonsData = [{subjectid: "", data: [DataManager.lessonData.default]}];
-    const lessonData = useAppDataSync(activeClassId != "" ? DataManager.lessonData.db : null, `${DataManager.lessonData.app}:${activeClassId}`, defaultLessonsData, {
-        classid: activeClassId
+    const lessonData = [] as {subjectid: string, data: LessonData[]}[];
+    lessonsData.forEach((e: LessonData)=>{
+        let subject = subjects.find((s: SubjectData)=>(s.lessons as string[]).includes(e._id))?._id;
+
+        if (lessonData.find((lsn: any) => lsn.subjectid === subject)) {
+            lessonData.find((lsn: any) => lsn.subjectid === subject)?.data.push(e);
+        } else {
+            lessonData.push({subjectid: subject, data: [e]});
+            return;
+        }
     });
 
-    let defaultHomeworkData = [{subjectid: "", data: [DataManager.homeworkData.default]}];
-    const homeworkData = useAppDataSync(activeClassId != "" ? DataManager.homeworkData.db : null, `${DataManager.homeworkData.app}:${activeClassId}`, defaultHomeworkData, {
-        classid: activeClassId
+    const homeworksData = useHomeworkData().homework;
+    const homeworkData = [] as {subjectid: string, data: HomeworkData[]}[];
+    homeworksData.forEach((e: HomeworkData)=>{
+        let subject = subjects.find((s: SubjectData)=>(s.homework as string[]).includes(e._id))?._id;
+
+        if (homeworkData.find((hmw: any) => hmw.subjectid === subject)) {
+            homeworkData.find((hmw: any) => hmw.subjectid === subject)?.data.push(e);
+        } else {
+            homeworkData.push({subjectid: subject, data: [e]});
+            return;
+        }
     });
 
     const reload = async () => {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
-        await Promise.all([lessonData.load(), homeworkData.load()]);
+        await Promise.all([]);
         loadMarkedDates(selectedDate);
         setRefreshing(false);
     };
@@ -127,8 +144,8 @@ function CalendarComponent({userData}: {userData: UserData}) {
         }, [])
     )
 
-    const allClassHomework = regroupHomework(homeworkData.data);
-    const allClassLessons = regroupLessonsByDate(lessonData.data);
+    const allClassHomework = regroupHomework(homeworkData);
+    const allClassLessons = regroupLessonsByDate(lessonData);
     
     const lessons = filterLessonsFromExams(false, allClassLessons);
     const exams = filterLessonsFromExams(true, allClassLessons);
@@ -195,7 +212,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
 
     useEffect(()=>{
         loadMarkedDates(selectedDate);
-    }, [selectedDate, (!classData.loading && !lessonData.loading && !homeworkData.loading)]);
+    }, [selectedDate, (!classData.loading)]);
 
     let calendarTheme = {
         backgroundColor: "transparent",
@@ -218,7 +235,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
         <>
             <Stack.Screen options={{ headerTitle: i18n.t("calendar.stack.title") }} />
             {
-                ((classData.loading || lessonData.loading || homeworkData.loading) && !refreshing) ? (
+                ((classData.loading) && !refreshing) ? (
                     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
                         <ActivityIndicator size="small" color={theme.text} />
                     </View>

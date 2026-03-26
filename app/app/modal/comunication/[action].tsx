@@ -1,21 +1,20 @@
-import { View, Text, ActivityIndicator, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
-import { router, Stack, useLocalSearchParams } from "expo-router";
-import {useEffect, useState} from "react";
-import { TextInput } from 'react-native';
 import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import createStyling from '@/constants/styling';
-import { useAppDataSync, DataManager, useDBitem, SubjectData } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
+import { KeyboardShift } from '@/components/keyboardShift';
+import SegmentedSlider from "@/components/segmentedPicker";
 import i18n from '@/constants/i18n';
+import { useNetworkContext } from '@/constants/NetworkContext';
+import createStyling from '@/constants/styling';
+import { useClassData } from '@/data/ClassContext';
+import { DataManager, useDBitem } from '@/data/datamanager';
+import { useUserData } from '@/data/UserDataContext';
 import { BlurView } from 'expo-blur';
 import { Switch } from 'react-native-paper';
-import SegmentedSlider from "@/components/segmentedPicker";
-import { useUserData } from '@/data/UserDataContext';
-import { KeyboardShift } from '@/components/keyboardShift';
-import { useClassData } from '@/data/ClassContext';
-import { useNetworkContext } from '@/constants/NetworkContext';
 
 interface updateComunicationProps {
     action: string;

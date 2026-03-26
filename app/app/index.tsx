@@ -1,9 +1,9 @@
-import { Redirect, SplashScreen } from "expo-router";
-import { View } from "react-native";
-import { useEffect, useState } from "react";
-import { useUserData } from "@/data/UserDataContext";
 import { useAppLockContext } from "@/constants/AuthContext";
 import { useDebugData } from "@/data/DebugDataContext";
+import { useUserData } from "@/data/UserDataContext";
+import { Redirect, SplashScreen } from "expo-router";
+import { useEffect, useState } from "react";
+import { View } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 

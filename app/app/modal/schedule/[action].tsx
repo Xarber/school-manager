@@ -1,21 +1,21 @@
-import { View, Text, ActivityIndicator, TouchableOpacity, ScrollView, Platform, Keyboard, Pressable } from 'react-native';
 import { useTheme } from '@/constants/useThemes';
-import {router, Stack, useLocalSearchParams} from "expo-router";
-import {useState} from "react";
 import { BlurView } from 'expo-blur';
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import { ActivityIndicator, Keyboard, Platform, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-import createStyling from '@/constants/styling';
-import { SubjectData } from '@/data/datamanager';
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
-import i18n from '@/constants/i18n';
 import { KeyboardShift } from '@/components/keyboardShift';
-import { useClassData } from '@/data/ClassContext';
-import { useSubjectData } from '@/data/SubjectMapContext';
 import Timeline from '@/components/timeline';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { Ionicons } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
+import i18n from '@/constants/i18n';
 import { useNetworkContext } from '@/constants/NetworkContext';
+import createStyling from '@/constants/styling';
+import { useClassData } from '@/data/ClassContext';
+import { SubjectData } from '@/data/datamanager';
+import { useSubjectData } from '@/data/SubjectMapContext';
+import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 
 interface updatePeriodProps {
     day: number,

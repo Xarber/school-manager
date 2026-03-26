@@ -1,11 +1,11 @@
+import i18n from '@/constants/i18n';
+import { useTheme } from "@/constants/useThemes";
+import { Feather, FontAwesome } from "@expo/vector-icons";
 import { Tabs } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import React from 'react';
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@/constants/useThemes";
-import { FontAwesome, Feather } from "@expo/vector-icons";
-import i18n from '@/constants/i18n';
 import { Platform } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function renderNativeTabs() {
   const theme = useTheme();
