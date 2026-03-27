@@ -14,11 +14,11 @@ router.post(paths.dbGet, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     const { classid, subjectid, homeworkid } = req.body;
 
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid && !subjectid && !homeworkid) return res.status(400).json({ error: 'Class ID or Subject ID or Homework ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!classid && !subjectid && !homeworkid) return res.status(400).json({ error: req.t("errors.classid_or_subjectid_or_homeworkid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     let classInfo, subjectInfo;
 
@@ -38,23 +38,23 @@ router.post(paths.dbGet, async (req, res) => {
         break;
     }
 
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    else if (!classid && !subjectInfo) return res.status(404).json({ error: 'Subject not found' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    else if (!classid && !subjectInfo) return res.status(404).json({ error: req.t("errors.subject_not_found") });
 
     if (
       !classInfo.students.some(t => t.equals(user.userinfo_id))
       && !classInfo.teachers.some(t => t.equals(user.userinfo_id))
-    ) return res.status(403).json({ error: 'Access denied to this class' });
+    ) return res.status(403).json({ error: req.t("errors.class_access_denied") });
 
     if (homeworkid) {
       const homework = await Homework.findOne({ _id: homeworkid }).lean();
-      if (!homework) return res.status(404).json({ error: 'Homework not found' });
+      if (!homework) return res.status(404).json({ error: req.t("errors.homework_not_found") });
       return res.json({ success: true, data: homework });
     }
 
     if (subjectid) {
       const subject = await Subject.findOne({ _id: subjectid }).lean();
-      if (!subject) return res.status(404).json({ error: 'Subject not found' });
+      if (!subject) return res.status(404).json({ error: req.t("errors.subject_not_found") });
       return res.json({ success: true, data: subject.homework || [] });
     }
 
@@ -74,7 +74,7 @@ router.post(paths.dbGet, async (req, res) => {
     return res.json({ success: true, data: result });
   } catch (error) {
     console.error('Get homework error:', error);
-    res.status(500).json({ error: 'Failed to get homework', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.get_homework"), dbError: error });
   }
 });
 
@@ -83,27 +83,25 @@ router.post(paths.dbCreate, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     const { classid, subjectid } = req.body;
 
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
-    if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!classid) return res.status(400).json({ error: req.t("errors.classid_required") });
+    if (!subjectid) return res.status(400).json({ error: req.t("errors.subjectid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const classInfo = await Class.findOne({ _id: classid });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create homework' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.homework_create_teacher_only") });
 
     const subjectInfo = await Subject.findOne({ _id: subjectid });
-    if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
-    //if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create homework' });
+    if (!subjectInfo) return res.status(404).json({ error: req.t("errors.subject_not_found") });
 
     const { title, description, dueDate, points } = req.body;
-    if (!title) return res.status(400).json({ error: 'Title is required' });
-    if (!description) return res.status(400).json({ error: 'Description is required' });
-    if (!dueDate) return res.status(400).json({ error: 'Due date is required' });
+    if (!title) return res.status(400).json({ error: req.t("errors.homework_title_required") });
+    if (!description) return res.status(400).json({ error: req.t("errors.homework_description_required") });
+    if (!dueDate) return res.status(400).json({ error: req.t("errors.homework_duedate_required") });
     
-
     const newHomework = new Homework({
         // homeworkid: `homework_${idGenerate()}`,
         title,
@@ -126,7 +124,7 @@ router.post(paths.dbCreate, async (req, res) => {
     res.json({ success: true, data: newHomework._id });
   } catch (error) {
     console.error('Create homework error:', error);
-    res.status(500).json({ error: 'Failed to create homework', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.create_homework"), dbError: error });
   }
 });
 
@@ -135,21 +133,21 @@ router.post(paths.dbDelete, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     const { homeworkid } = req.body;
 
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!homeworkid) return res.status(400).json({ error: 'Homework ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!homeworkid) return res.status(400).json({ error: req.t("errors.homeworkid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const homework = await Homework.findOne({ _id: homeworkid });
-    if (!homework) return res.status(404).json({ error: 'Homework not found' });
+    if (!homework) return res.status(404).json({ error: req.t("errors.homework_not_found") });
 
     const subjectInfo = await Subject.findOne({ homework: homeworkid });
-    if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
+    if (!subjectInfo) return res.status(404).json({ error: req.t("errors.subject_not_found") });
 
     const classInfo = await Class.findOne({ subjects: subjectInfo._id });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete homework' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.homework_delete_teacher_only") });
 
     // Remove homework from subject
     subjectInfo.homework = subjectInfo.homework.filter(hwId => hwId.toString() !== homework._id.toString());
@@ -161,7 +159,7 @@ router.post(paths.dbDelete, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Delete homework error:', error);
-    res.status(500).json({ error: 'Failed to delete homework', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.delete_homework"), dbError: error });
   }
 });
 
@@ -170,21 +168,21 @@ router.post(paths.dbUpdate, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     const { homeworkid } = req.body;
 
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!homeworkid) return res.status(400).json({ error: 'Homework ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!homeworkid) return res.status(400).json({ error: req.t("errors.homeworkid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const homework = await Homework.findOne({ _id: homeworkid });
-    if (!homework) return res.status(404).json({ error: 'Homework not found' });
+    if (!homework) return res.status(404).json({ error: req.t("errors.homework_not_found") });
 
     const subjectInfo = await Subject.findOne({ homework: homeworkid });
-    if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
+    if (!subjectInfo) return res.status(404).json({ error: req.t("errors.subject_not_found") });
 
     const classInfo = await Class.findOne({ subjects: subjectInfo._id });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can update homework' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.homework_update_teacher_only") });
 
     const { title, description, dueDate, points } = req.body;
     if (title !== undefined) homework.title = title;
@@ -198,7 +196,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Update homework error:', error);
-    res.status(500).json({ error: 'Failed to update homework', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.update_homework"), dbError: error });
   }
 });
 

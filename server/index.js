@@ -2,14 +2,30 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require("cors");
+const i18n = require("i18n");
+const path = require('path');
 dotenv.config();
 
 const branch = process.env.BRANCH;
+
+i18n.configure({
+    locales: ['en', 'it'],
+    defaultLocale: 'en',
+    directory: path.join(__dirname, 'locales'),
+    objectNotation: true,
+    autoReload: true,
+    updateFiles: false,
+    api: {
+        '__': 't',
+        '__n': 'tn'
+    }
+});
 
 const paths = require('./db/routes/paths.js');
 
 const auth = require("./db/middleware/auth");
 const debugTest = require("./db/middleware/test");
+const locales = require("./db/middleware/locales.js");
 
 const userRoutes = require('./db/routes/users');
 const accountRoutes = require('./db/routes/account');
@@ -35,8 +51,10 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 const app = express();
+app.use(i18n.init);
 app.use(cors());
 app.use(express.json());
+app.use(locales);
 app.use(debugTest);  // Debug middleware for metrics and testing
 app.use('/api/auth', authRoutes);
 
@@ -60,7 +78,7 @@ app.use('/api/upload', uploadRoutes);
 
 // Invalid URL
 app.use((req, res) => {
-    res.status(404).json({ error: 'Invalid API endpoint' });
+    res.status(404).json({ error: i18n.t("errors.invalid_endpoint") });
 });
 
 app.listen(paths.dbPort, () => {

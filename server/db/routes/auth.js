@@ -38,7 +38,7 @@ const router = express.Router();
 router.post(paths.authenticate, async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email required' });
+    if (!email) return res.status(400).json({ error: req.t("errors.email_required") });
 
     const code = crypto.randomInt(100000, 999999).toString(); // 6-digit code
 
@@ -54,9 +54,9 @@ router.post(paths.authenticate, async (req, res) => {
     const mailOptions = {
       from: `"School Manager" <${process.env.ICLOUD_NODEMAILER_SENDFROM}>`,
       to: email,
-      subject: 'Your Verification Code',
-      text: `Your verification code is: ${code}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.\n\n(Email code is ${emailCode})`,
-      html: `<p>Your verification code is: <strong>${code}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p><p>(Email code is ${emailCode})</p>`
+      subject: req.t("emails.otp.subject"),
+      text: req.t("emails.otp.text", { code, emailCode }),
+      html: req.t("emails.otp.html", { code, emailCode })
     };
 
     console.log(`[AUTH] Sent verification code to ${email}, code: ${emailCode}\n`);
@@ -64,10 +64,10 @@ router.post(paths.authenticate, async (req, res) => {
     if (process.env.EMAIL_SEND_MODE === 'resend') await transporter.emails.send(mailOptions);
     if (process.env.EMAIL_SEND_MODE === 'nodemailer') await transporter.sendMail(mailOptions);
     
-    res.json({ success: true, message: 'Verification code sent', code: emailCode });
+    res.json({ success: true, message: req.t("messages.otp_sent"), code: emailCode });
   } catch (error) {
     console.error('Send error:', error);
-    res.status(500).json({ error: 'Failed to send code', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.send_otp"), dbError: error });
   }
 });
 
@@ -75,10 +75,10 @@ router.post(paths.authenticate, async (req, res) => {
 router.post(paths.authenticateOtp, async (req, res) => {
   try {
     const { code, email } = req.body;
-    if (!code || !email) return res.status(400).json({ error: 'Code and email required' });
+    if (!code || !email) return res.status(400).json({ error: req.t("errors.code_email_required") });
 
     const verification = await Verification.findOne({ email, code }).lean();
-    if (!verification) return res.status(400).json({ error: 'Invalid or expired code' });
+    if (!verification) return res.status(400).json({ error: req.t("errors.invalid_otp") });
 
     // Check if user exists
     let isNewUser = false;
@@ -174,26 +174,26 @@ router.post(paths.authenticateOtp, async (req, res) => {
     });
   } catch (error) {
     console.error('Verify error:', error);
-    res.status(500).json({ error: 'Login failed', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.login"), dbError: error });
   }
 });
 
 router.post(paths.dbMe, authenticateToken, async (req, res) => {
-  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  if (!req.user) return res.status(401).json({ error: req.t("errors.unauthorized") });
   try {
     const user = await UserInfo.findOne({ _id: req.user.userinfo_id }).lean();
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: req.t("errors.user_not_found") });
     res.json({ success: true, data: user });
   } catch (error) {
-    res.status(500).json({ error: "Failed to get user", dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.get_user"), dbError: error });
   }
 });
 
 router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => {
-  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  if (!req.user) return res.status(401).json({ error: req.t("errors.unauthorized") });
   try {
     const user = await UserInfo.findOne({ _id: req.user.userinfo_id }).lean();
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const { name, surname, email } = req.body;
     
@@ -205,7 +205,7 @@ router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => 
     
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: "Failed to update user", dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.update_user"), dbError: error });
   }
 });
 

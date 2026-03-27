@@ -68,7 +68,8 @@ async function sendOtp(email: string, setotpsent: Function, setloading: Function
     const status = await fetch(serverpath + DataManager.db.authenticate, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept-Language': i18n.locale
         },
         body: JSON.stringify({ email })
     })
@@ -91,7 +92,8 @@ async function verifyOtp(email: string, otpcode: string, reset: Function, alert:
     const status = await fetch(serverpath + DataManager.db.authenticateOtp, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept-Language': i18n.locale
         },
         body: JSON.stringify({ email, code: otpcode })
     })

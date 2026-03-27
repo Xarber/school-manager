@@ -356,7 +356,8 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + userToken
+                        'Authorization': 'Bearer ' + userToken,
+                        'Accept-Language': i18n.locale
                     },
                     body: JSON.stringify(body)
                 })
@@ -407,7 +408,8 @@ export function useAppDataSync(dbkey: string | null, appkey: string | null, defa
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + userToken
+                        'Authorization': 'Bearer ' + userToken,
+                        'Accept-Language': i18n.locale
                     },
                     body: JSON.stringify({...body, ...newValue})
                 })
@@ -527,7 +529,8 @@ export function useDBitem(dbkey: string, defaultData: Object, body: Object = {})
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + userToken
+                        'Authorization': 'Bearer ' + userToken,
+                        'Accept-Language': i18n.locale
                     },
                     body: JSON.stringify({...body, ...itemdata})
                 })
@@ -571,7 +574,8 @@ export function useDBitem(dbkey: string, defaultData: Object, body: Object = {})
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + userToken
+                        'Authorization': 'Bearer ' + userToken,
+                        'Accept-Language': i18n.locale
                     },
                     body: JSON.stringify({ ...body, _id: data._id })
                 })
