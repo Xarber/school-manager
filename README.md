@@ -90,7 +90,6 @@ cd ./server/ && node .
     * Also add specific users only scheduled exams (Special Educational Needs (SEN) / Disturbi Specifici Apprendimento (DSA))
 * 🛠️ (Heavy work, will stay here for a while) Offline app usage
 
-
 </details>
 
 <details>

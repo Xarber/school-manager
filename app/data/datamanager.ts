@@ -83,7 +83,7 @@ export type UserInfo = typeof defaultUserInfo;
 const defaultUserSettings = {
     theme: 'system' as 'light' | 'dark' | 'schoolmanager' | 'system',
     notifications: false as boolean,
-    language: 'en' as string,
+    language: 'system' as string,
     activeClassId: '' as string,
     appLock: false as boolean,
     appLockPersist: false as boolean,
