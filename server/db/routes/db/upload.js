@@ -19,27 +19,27 @@ const upload = multer({
 router.post(paths.dbGet, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
 
     const userInfo = await UserData.findOne({ _id: user.userinfo_id });
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const { classid } = req.body;
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
+    if (!classid) return res.status(400).json({ error: req.t("errors.classid_required") });
 
     const classData = await Class.findOne({ _id: classid });
-    if (!classData) return res.status(404).json({ error: 'Class not found' });
+    if (!classData) return res.status(404).json({ error: req.t("errors.class_not_found") });
     if (
         !classInfo.students.some(t => t.equals(userInfo._id))
         && !classInfo.teachers.some(t => t.equals(userInfo._id))
-    ) return res.status(403).json({ error: 'Access denied to this class' });
+    ) return res.status(403).json({ error: req.t("errors.class_access_denied") });
 
     const { fileid } = req.body;
-    if (!fileid) return res.status(400).json({ error: 'File ID required' });
+    if (!fileid) return res.status(400).json({ error: req.t("errors.fileid_required") });
 
     const fileData = await File.findOne({ _id: fileid });
-    if (!fileData) return res.status(404).json({ error: 'File not found' });
-    if (!classData.files.some(t => t.equals(fileData._id))) return res.status(403).json({ error: 'Access denied to this file' });
+    if (!fileData) return res.status(404).json({ error: req.t("errors.file_not_found") });
+    if (!classData.files.some(t => t.equals(fileData._id))) return res.status(403).json({ error: req.t("errors.file_access_denied") });
 
     const filename = fileData._id.toString();
     const filePath = path.join(__dirname, '..', '..', 'files', filename);
@@ -60,7 +60,7 @@ router.post(paths.dbGet, async (req, res) => {
     }
   } catch (error) {
     console.error('File download error:', error);
-    res.status(500).json({ error: 'Failed to download file', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.get_file"), dbError: error });
   }
 });
 
@@ -68,22 +68,22 @@ router.post(paths.dbCreate, upload.single('file'), async (req, res) => {
   try {
     const uploadsEnabled = Boolean(process.env.ALLOW_UPLOADS) ?? false;
 
-    if (!uploadsEnabled) return res.status(403).json({ error: 'File uploads are disabled' });
+    if (!uploadsEnabled) return res.status(403).json({ error: req.t("errors.file_uploads_disabled") });
 
     const user = req.user; // Assuming user is set by authentication middleware
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
 
     const userInfo = await UserData.findOne({ _id: user.userinfo_id });
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const { classid } = req.body;
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
+    if (!classid) return res.status(400).json({ error: req.t("errors.classid_required") });
     const classData = await Class.findOne({ _id: classid });
-    if (!classData) return res.status(404).json({ error: 'Class not found' });
-    if (!classData.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can upload files' });
+    if (!classData) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classData.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.file_upload_teacher_only") });
 
     const file = req.file;
-    if (!file) return res.status(400).json({ error: 'File not found' });
+    if (!file) return res.status(400).json({ error: req.t("errors.file_not_found") });
 
     const doc = await File.create({
         name: file.originalname,
@@ -104,30 +104,30 @@ router.post(paths.dbCreate, upload.single('file'), async (req, res) => {
     res.json({ success: true, data: doc._id });
   } catch (error) {
     console.error('File upload error:', error);
-    res.status(500).json({ error: 'Failed to upload file', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.create_file"), dbError: error });
   }
 });
 
 router.post(paths.dbDelete, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
 
     const userInfo = await UserData.findOne({ _id: user.userinfo_id });
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const { classid } = req.body;
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
+    if (!classid) return res.status(400).json({ error: req.t("errors.classid_required") });
     const classData = await Class.findOne({ _id: classid });
-    if (!classData) return res.status(404).json({ error: 'Class not found' });
-    if (!classData.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete files' });
+    if (!classData) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classData.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.file_delete_teacher_only") });
 
     const { fileid } = req.body;
-    if (!fileid) return res.status(400).json({ error: 'File ID required' });
+    if (!fileid) return res.status(400).json({ error: req.t("errors.fileid_required") });
 
     const fileData = await File.findOne({ _id: fileid });
-    if (!fileData) return res.status(404).json({ error: 'File not found' });
-    if (!classData.files.some(t => t.equals(fileData._id))) return res.status(403).json({ error: 'Access denied to this file' });
+    if (!fileData) return res.status(404).json({ error: req.t("errors.file_not_found") });
+    if (!classData.files.some(t => t.equals(fileData._id))) return res.status(403).json({ error: req.t("errors.file_access_denied") });
 
     const filename = fileData._id.toString();
     const filePath = path.join(__dirname, '..', '..', 'files', filename);
@@ -141,12 +141,12 @@ router.post(paths.dbDelete, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Delete file error:', error);
-    res.status(500).json({ error: 'Failed to delete file', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.delete_file"), dbError: error });
   }
 });
 
 router.post(paths.dbUpdate, async (req, res) => {
-    res.status(500).json({ error: 'Not implemented' });
+    res.status(500).json({ error: req.t("errors.not_implemented") });
 });
 
 module.exports = router;

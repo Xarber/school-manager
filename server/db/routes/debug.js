@@ -9,35 +9,35 @@ const router = express.Router();
 router.post(paths.dbGet, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const debugData = await Debug.findOne({ _id: user.debug_id }).lean();
-    if (!debugData) return res.status(404).json({ error: 'Debug data not found' });
+    if (!debugData) return res.status(404).json({ error: req.t("errors.debug_not_found") });
 
     res.json({ success: true, data: debugData });
   } catch (error) {
     console.error('Get debug data error:', error);
-    res.status(500).json({ error: 'Failed to get debug data', dbError: error});
+    res.status(500).json({ error: req.t("errors.request_responses.fail.get_debug_data"), dbError: error});
   }
 });
 
 router.post(paths.dbCreate, async (req, res) => {
     // Can't create a new debug data from here. Use authentication instead.
-    res.status(400).json({ error: 'Bad request' });
+    res.status(400).json({ error: req.t("errors.bad_request") });
 });
 
 router.post(paths.dbDelete, async (req, res) => {    
     // Can't delete a debug data from here. Use authentication instead.
-    res.status(400).json({ error: 'Bad request' });
+    res.status(400).json({ error: req.t("errors.bad_request") });
 });
 
 router.post(paths.dbUpdate, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
 
     let debugData = await Debug.findOne({ _id: user.debug_id });
     if (!debugData) {
@@ -68,7 +68,7 @@ router.post(paths.dbUpdate, async (req, res) => {
       errorLogs,
       performanceMetrics
     };
-    if (!data) return res.status(400).json({ error: 'Data is required' });
+    if (!data) return res.status(400).json({ error: req.t("errors.data_required") });
 
     debugData.firstLaunch = data.firstLaunch || debugData.firstLaunch;
     debugData.firstLaunchDate = data.firstLaunchDate || debugData.firstLaunchDate;
@@ -84,7 +84,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Update debug data error:', error);
-    res.status(500).json({ error: 'Failed to update debug data', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.update_debug_data"), dbError: error });
   }
 });
 

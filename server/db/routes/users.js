@@ -11,7 +11,7 @@ router.get(paths.dbMe, auth, async (req, res) => {
     // req.user.userid from token—validated!
     const user = await UserData.findOne({ _id: req.user.userdata_id })
       .populate(['userInfo', 'classes']);  // Joins classes
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     // Add user's classes (query separately if needed)
     const classes = await Class.find({ 
@@ -20,7 +20,7 @@ router.get(paths.dbMe, auth, async (req, res) => {
 
     res.json({ success: true, data: { user, classes } });
   } catch (error) {
-    res.status(500).json({ error: "Failed to get user data", dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.get_user"), dbError: error });
   }
 });
 

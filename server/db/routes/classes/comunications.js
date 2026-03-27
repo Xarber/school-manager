@@ -13,11 +13,11 @@ router.post(paths.dbGet, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
     const { classid, comunicationid } = req.body;
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid && !comunicationid) return res.status(400).json({ error: 'Class ID or Comunication ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!classid && !comunicationid) return res.status(400).json({ error: req.t("errors.classid_or_comunicationid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
     
     let classInfo, comunicationData;
 
@@ -33,11 +33,11 @@ router.post(paths.dbGet, async (req, res) => {
         break;
     }
 
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
     if (
         !classInfo.students.some(t => t.equals(userInfo._id))
         && !classInfo.teachers.some(t => t.equals(userInfo._id))
-    ) return res.status(403).json({ error: 'Access denied to this class' });
+    ) return res.status(403).json({ error: req.t("errors.class_access_denied") });
     const isUserTeacher = classInfo.teachers.some(t => t.equals(user.userinfo_id));
 
     if (comunicationid) {
@@ -68,7 +68,7 @@ router.post(paths.dbGet, async (req, res) => {
     res.json({ success: true, data: classInfo.comunications });
   } catch (error) {
     console.error('Get comunications error:', error);
-    res.status(500).json({ error: 'Failed to get comunications', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.get_comunications"), dbError: error });
   }
 });
 
@@ -76,19 +76,18 @@ router.post(paths.dbCreate, async (req, res) => {
   try {
     const { classid } = req.body;
     const user = req.user; // Assuming user is set by authentication middleware
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid) return res.status(400).json({ error: 'Class ID is required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!classid) return res.status(400).json({ error: req.t("errors.classid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create comunications' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const classInfo = await Class.findOne({ _id: classid });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create comunications' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.comunication_create_teacher_only") });
 
     const { title, content, date, time, urgency, requiresConfirmation, confirmationType } = req.body;
-    if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
+    if (!title || !content) return res.status(400).json({ error: req.t("errors.comunication_title_and_content_required") });
     const { subjectid } = req.body;
 
     const newComunication = new Comunication({
@@ -115,7 +114,7 @@ router.post(paths.dbCreate, async (req, res) => {
     res.json({ success: true, data: newComunication._id });
   } catch (error) {
     console.error('Create comunication error:', error);
-    res.status(500).json({ error: 'Failed to create comunication', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.create_comunication"), dbError: error });
   }
 });
 
@@ -123,16 +122,15 @@ router.post(paths.dbDelete, async (req, res) => {
   try {
     const { comunicationid } = req.body;
     const user = req.user; // Assuming user is set by authentication middleware
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!comunicationid) return res.status(400).json({ error: 'Comunication ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!comunicationid) return res.status(400).json({ error: req.t("errors.comunicationid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete comunications' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const classInfo = await Class.findOne({ comunications: comunicationid });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can delete comunications' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: req.t("errors.comunication_delete_teacher_only") });
 
     // Delete comunication (replace with actual Comunication model)
     await Comunication.deleteOne({ _id: comunicationid });
@@ -144,7 +142,7 @@ router.post(paths.dbDelete, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Delete comunication error:', error);
-    res.status(500).json({ error: 'Failed to delete comunication', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.delete_comunication"), dbError: error });
   }
 });
 
@@ -152,24 +150,22 @@ router.post(paths.dbUpdate, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
     const { comunicationid } = req.body;
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!comunicationid) return res.status(400).json({ error: 'Comunication ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!comunicationid) return res.status(400).json({ error: req.t("errors.comunicationid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update comunications' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const classInfo = await Class.findOne({ comunications: comunicationid });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: 'Only teachers can update comunications' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(user.userinfo_id))) return res.status(403).json({ error: req.t("errors.comunication_update_teacher_only") });
 
     const comunicationInfo = await Comunication.findOne({ _id: comunicationid });
-    if (!comunicationInfo) return res.status(404).json({ error: 'Comunication not found' });
-    if (comunicationInfo.sender.toString() !== user.userinfo_id.toString()) return res.status(403).json({ error: 'Only the sender can update this comunication' });
+    if (!comunicationInfo) return res.status(404).json({ error: req.t("errors.comunication_not_found") });
+    if (comunicationInfo.sender.toString() !== user.userinfo_id.toString()) return res.status(403).json({ error: req.t("errors.comunication_update_sender_only") });
 
     // Update comunication (replace with actual Comunication model)
     const { title, content, date, time, urgency, requiresConfirmation, subjectid } = req.body;
-    if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
 
     if (title) comunicationInfo.title = title;
     if (content) comunicationInfo.content = content;
@@ -185,7 +181,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Update comunication error:', error);
-    res.status(500).json({ error: 'Failed to update comunication', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.update_comunication"), dbError: error });
   }
 });
 
@@ -194,29 +190,28 @@ router.post('/responses' + paths.dbCreate, async (req, res) => {
   try {
     const user = req.user; // Assuming user is set by authentication middleware
     const { comunicationid } = req.body;
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!comunicationid) return res.status(400).json({ error: 'Comunication ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!comunicationid) return res.status(400).json({ error: req.t("errors.comunicationid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update comunications' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const classInfo = await Class.findOne({ comunications: comunicationid });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
 
     if (
       !classInfo.teachers.some(t => t.equals(user.userinfo_id))
       && !classInfo.students.some(t => t.equals(user.userinfo_id))
-    ) return res.status(403).json({ error: 'Access denied to this class' });
+    ) return res.status(403).json({ error: req.t("errors.class_access_denied") });
     //todo: school logic
 
     const comunicationInfo = await Comunication.findOne({ _id: comunicationid });
-    if (!comunicationInfo) return res.status(404).json({ error: 'Comunication not found' });
+    if (!comunicationInfo) return res.status(404).json({ error: req.t("errors.comunication_not_found") });
 
     // Update comunication (replace with actual Comunication model)
     const { state, message } = req.body;
-    if (typeof state === "undefined" && (comunicationInfo.confirmationType ?? "accept") === "accept") return res.status(400).json({ error: 'State required.' });
-    if (typeof message === "undefined" && (comunicationInfo.confirmationType ?? "message") === "message") return res.status(400).json({ error: 'Message required.' });
+    if (typeof state === "undefined" && (comunicationInfo.confirmationType ?? "accept") === "accept") return res.status(400).json({ error: req.t("errors.comunication_reply_state_required") });
+    if (typeof message === "undefined" && (comunicationInfo.confirmationType ?? "message") === "message") return res.status(400).json({ error: req.t("errors.comunication_reply_message_required") });
 
     const newResponse = new ComunicationResponse({
       user: user.userinfo_id,
@@ -235,16 +230,16 @@ router.post('/responses' + paths.dbCreate, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Reply to comunication error:', error);
-    res.status(500).json({ error: 'Failed to reply to comunication', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.reply_comunication"), dbError: error });
   }
 });
 
 router.post('/responses' + paths.dbDelete, async (req, res) => {
-  return res.status(400).json({ error: 'Can\'t delete or update responses.' });
+  return res.status(400).json({ error: req.t("errors.comunication_reply_update_restricted") });
 });
 
 router.post('/responses' + paths.dbUpdate, async (req, res) => {
-  return res.status(400).json({ error: 'Can\'t delete or update responses.' });
+  return res.status(400).json({ error: req.t("errors.comunication_reply_update_restricted") });
 });
 
 module.exports = router;

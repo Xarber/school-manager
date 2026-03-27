@@ -12,31 +12,10 @@ const router = express.Router();
 router.post(paths.dbGet, async (req, res) => {
   try {
     //TODO
-    return res.status(400).json({ error: 'Not implemented yet.' });
-    const user = req.user; // Assuming user is set by authentication middleware
-    const { schoolid, classid, comunicationid, subjectid, comunicationresponseid, homeworkid, lessonid, materialid } = req.body;
-
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!materialid) return res.status(400).json({ error: 'Material ID required' });
-    if (!classid && !comunicationid && !subjectid && !homeworkid && !lessonid) return res.status(400).json({ error: 'Class ID or Comunication ID or Subject ID or Homework ID or Lesson ID required' });
-
-    const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-
-    //todo
-    if (schoolid) return res.status(500).json({ error: 'Not implemented' });
-
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-
-    if (
-      !classInfo.students.some(t => t.equals(user.userinfo_id))
-      && !classInfo.teachers.some(t => t.equals(user.userinfo_id))
-    ) return res.status(403).json({ error: 'Access denied to this class' });
-
-    return res.json({ success: true, data: result });
+    return res.status(400).json({ error: req.t("errors.not_implemented") });
   } catch (error) {
-    console.error('Get homework error:', error);
-    res.status(500).json({ error: 'Failed to get homework', dbError: error });
+    console.error('Get materials error:', error);
+    res.status(500).json({ error: req.t("errors.request_responses.fail.get_materials"), dbError: error });
   }
 });
 
@@ -45,28 +24,26 @@ router.post(paths.dbCreate, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     const { classid, subjectid } = req.body;
 
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!classid) return res.status(400).json({ error: 'Class ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!classid) return res.status(400).json({ error: req.t("errors.classid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create material' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const classInfo = await Class.findOne({ _id: classid });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create material' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.material_create_teacher_only") });
 
     let subjectInfo = null;
     if (subjectid) {
       subjectInfo = await Subject.findOne({ _id: subjectid });
-      if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
-      //if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can create material' });
+      if (!subjectInfo) return res.status(404).json({ error: req.t("errors.subject_not_found") });
     }
 
     const { title, description, type, url } = req.body;
-    if (!title) return res.status(400).json({ error: 'Title is required' });
-    if (!description) return res.status(400).json({ error: 'Description is required' });
-    if (!url) return res.status(400).json({ error: 'URL is required' });
+    if (!title) return res.status(400).json({ error: req.t("errors.material_title_required") });
+    if (!description) return res.status(400).json({ error: req.t("errors.material_description_required") });
+    if (!url) return res.status(400).json({ error: req.t("errors.material_url_required") });
 
     const newMaterial = new Material({
         materialid: `material_${idGenerate()}`,
@@ -92,7 +69,7 @@ router.post(paths.dbCreate, async (req, res) => {
     res.json({ success: true, data: newMaterial._id });
   } catch (error) {
     console.error('Create material error:', error);
-    res.status(500).json({ error: 'Failed to create material', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.create_material"), dbError: error });
   }
 });
 
@@ -101,19 +78,17 @@ router.post(paths.dbDelete, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     const { materialid } = req.body;
 
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!materialid) return res.status(400).json({ error: 'Material ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!materialid) return res.status(400).json({ error: req.t("errors.materialid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete material' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
     const classInfo = await Class.findOne({ material: materialid });
-    if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete material' });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.material_delete_teacher_only") });
 
     const subjectInfo = await Subject.findOne({ material: materialid });
-    //if (subjectInfo && !subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can delete material' });
 
     //remove material from class
     classInfo.material = classInfo.material.filter(m => m.toString() !== materialid);
@@ -130,7 +105,7 @@ router.post(paths.dbDelete, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Delete material error:', error);
-    res.status(500).json({ error: 'Failed to delete material', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.delete_material"), dbError: error });
   }
 });
 
@@ -139,15 +114,18 @@ router.post(paths.dbUpdate, async (req, res) => {
     const user = req.user; // Assuming user is set by authentication middleware
     const { materialid, title, description, type, url } = req.body;
 
-    if (!user) return res.status(401).json({ error: 'User authentication required' });
-    if (!materialid) return res.status(400).json({ error: 'Material ID required' });
+    if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+    if (!materialid) return res.status(400).json({ error: req.t("errors.materialid_required") });
 
     const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-    if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-    // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update material' });
+    if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
+
+    const classInfo = await Class.findOne({ material: materialid });
+    if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+    if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.material_update_teacher_only") });
 
     const material = await Material.findOne({ _id: materialid });
-    if (!material) return res.status(404).json({ error: 'Material not found' });
+    if (!material) return res.status(404).json({ error: req.t("errors.material_not_found") });
 
     if (title !== undefined) material.title = title;
     if (description !== undefined) material.description = description;
@@ -156,7 +134,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     material.editedAt = Date.now();
 
     if (title === undefined && description === undefined && type === undefined && url === undefined) {
-      return res.status(400).json({ error: 'No fields to update' });
+      return res.status(400).json({ error: req.t("errors.no_fields_to_update") });
     }
 
     await material.save();
@@ -164,7 +142,7 @@ router.post(paths.dbUpdate, async (req, res) => {
     res.json({ success: true, data: material });
   } catch (error) {
     console.error('Update material error:', error);
-    res.status(500).json({ error: 'Failed to update material', dbError: error });
+    res.status(500).json({ error: req.t("errors.request_responses.fail.update_material"), dbError: error });
   }
 });
 

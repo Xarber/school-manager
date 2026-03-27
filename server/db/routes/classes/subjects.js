@@ -13,27 +13,27 @@ router.post(paths.dbGet, async (req, res) => {
         const user = req.user; // Assuming user is set by authentication middleware
         const { subjectid } = req.body;
 
-        if (!user) return res.status(401).json({ error: 'User authentication required' });
-        if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
+        if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+        if (!subjectid) return res.status(400).json({ error: req.t("errors.subjectid_required") });
 
         const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-        if (!userInfo) return res.status(404).json({ error: 'User info not found' });
+        if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
         const subject = await Subject.findOne({ _id: subjectid }).lean();
-        if (!subject) return res.status(404).json({ error: 'Subject not found' });
+        if (!subject) return res.status(404).json({ error: req.t("errors.subject_not_found") });
 
         const classInfo = await Class.findOne({ subjects: subjectid });
-        if (!classInfo) return res.status(404).json({ error: 'Class not found' });
+        if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
 
         if (
             !classInfo.students.some(t => t.equals(userInfo._id))
             && !classInfo.teachers.some(t => t.equals(userInfo._id))
-        ) return res.status(403).json({ error: 'Access denied to this class' });
+        ) return res.status(403).json({ error: req.t("errors.class_access_denied") });
 
         res.json({ success: true, data: subject });
     } catch (error) {
         console.error('Get subject error:', error);
-        res.status(500).json({ error: 'Failed to get subject', dbError: error });
+        res.status(500).json({ error: req.t("errors.request_responses.fail.get_subject"), dbError: error });
     }
 });
 
@@ -42,21 +42,20 @@ router.post(paths.dbCreate, async (req, res) => {
         const user = req.user; // Assuming user is set by authentication middleware
         const { classid } = req.body;
 
-        if (!user) return res.status(401).json({ error: 'User authentication required' });
-        if (!classid) return res.status(400).json({ error: 'Class ID required' });
+        if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+        if (!classid) return res.status(400).json({ error: req.t("errors.classid_required") });
 
         const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-        if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-        // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can create subjects' });
+        if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
         const classInfo = await Class.findOne({ _id: classid });
-        if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-        if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can create subjects' });
+        if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+        if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.subject_create_teacher_only") });
 
         const { name, maxgrade, gradeType, allowOwnGrades } = req.body;
-        if (!name) return res.status(400).json({ error: 'Name is required' });
-        if (!maxgrade) return res.status(400).json({ error: 'Max grade is required' });
-        if (!gradeType) return res.status(400).json({ error: 'Grade type is required' });
+        if (!name) return res.status(400).json({ error: req.t("errors.subject_name_required") });
+        if (!maxgrade) return res.status(400).json({ error: req.t("errors.subject_max_grade_required") });
+        if (!gradeType) return res.status(400).json({ error: req.t("errors.subject_grade_type_required") });
 
         const newSubject = new Subject({
             // subjectid: `subject_${idGenerate()}`,
@@ -77,7 +76,7 @@ router.post(paths.dbCreate, async (req, res) => {
         res.json({ success: true, data: newSubject._id });
     } catch (error) {
         console.error('Create subject error:', error);
-        res.status(500).json({ error: 'Failed to create subject', dbError: error });
+        res.status(500).json({ error: req.t("errors.request_responses.fail.create_subject"), dbError: error });
     }
 });
 
@@ -86,20 +85,18 @@ router.post(paths.dbDelete, async (req, res) => {
         const user = req.user; // Assuming user is set by authentication middleware
         const { subjectid } = req.body;
 
-        if (!user) return res.status(401).json({ error: 'User authentication required' });
-        if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
+        if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+        if (!subjectid) return res.status(400).json({ error: req.t("errors.subjectid_required") });
 
         const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-        if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-        // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can delete subjects' });
+        if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
         const classInfo = await Class.findOne({ subjects: subjectid });
-        if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-        if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can delete subjects' });
+        if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+        if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.subject_delete_teacher_only") });
 
         const subjectInfo = await Subject.findOne({ _id: subjectid });
-        if (!subjectInfo) return res.status(404).json({ error: 'Subject not found' });
-        //if (!subjectInfo.teacher.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers of this subject can delete it' });
+        if (!subjectInfo) return res.status(404).json({ error: req.t("errors.subject_not_found") });
 
         //remove subject from class
         classInfo.subjects = classInfo.subjects.filter(s => s.toString() !== subjectInfo._id.toString());
@@ -110,7 +107,7 @@ router.post(paths.dbDelete, async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Delete subject error:', error);
-        res.status(500).json({ error: 'Failed to delete subject', dbError: error });
+        res.status(500).json({ error: req.t("errors.request_responses.fail.delete_subject"), dbError: error });
     }
 });
 
@@ -119,19 +116,18 @@ router.post(paths.dbUpdate, async (req, res) => {
         const user = req.user; // Assuming user is set by authentication middleware
         const { subjectid } = req.body;
 
-        if (!user) return res.status(401).json({ error: 'User authentication required' });
-        if (!subjectid) return res.status(400).json({ error: 'Subject ID required' });
+        if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+        if (!subjectid) return res.status(400).json({ error: req.t("errors.subjectid_required") });
 
         const userInfo = await UserInfo.findOne({ _id: user.userinfo_id });;
-        if (!userInfo) return res.status(404).json({ error: 'User info not found' });
-        // if (userInfo.role !== 'teacher') return res.status(403).json({ error: 'Only teachers can update subjects' });
+        if (!userInfo) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
         const classInfo = await Class.findOne({ subjects: subjectid });
-        if (!classInfo) return res.status(404).json({ error: 'Class not found' });
-        if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: 'Only teachers can update subjects' });
+        if (!classInfo) return res.status(404).json({ error: req.t("errors.class_not_found") });
+        if (!classInfo.teachers.some(t => t.equals(userInfo._id))) return res.status(403).json({ error: req.t("errors.subject_update_teacher_only") });
 
         const subject = await Subject.findOne({ _id: subjectid });
-        if (!subject) return res.status(404).json({ error: 'Subject not found' });
+        if (!subject) return res.status(404).json({ error: req.t("errors.subject_not_found") });
 
         const { name, maxgrade, teacher, allowOwnGrades } = req.body;
         if (name !== undefined) subject.name = name;
@@ -145,7 +141,7 @@ router.post(paths.dbUpdate, async (req, res) => {
         res.json({ success: true, data: subject });
     } catch (error) {
         console.error('Update subject error:', error);
-        res.status(500).json({ error: 'Failed to update subject', dbError: error });
+        res.status(500).json({ error: req.t("errors.request_responses.fail.update_subject"), dbError: error });
     }
 });
 
