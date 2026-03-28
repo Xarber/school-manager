@@ -5,6 +5,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000",
+  "lang": "it",
   "icons": [
     {
       "src": "/icons/icon-default-light.png",
@@ -27,7 +28,7 @@
     "education",
     "utilities"
   ],
-  "description": "Cross-platform app designed by a student to help you manage your school life better!\nFind homework, lessons, and plan your study sessions easily!",
+  "description": "App cross-platform designata da uno studente per aiutarti a gestire la tua vita scolastica al meglio!\nCerca compiti, lezioni e la pianifica le tue sessioni di studio facilmente!",
   "scope": "https://schoolmanager.expo.app/",
   "launch_handler": {
     "client_mode": "auto"

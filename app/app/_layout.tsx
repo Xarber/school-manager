@@ -39,6 +39,7 @@ function AppLayout() {
         <ThemeProvider value={navTheme}>
           <AppLockProvider>
             <HtmlHead
+              manifest={i18n.t("components.rootlayout.manifest")}
               title={i18n.t("components.rootlayout.title")}
               description={i18n.t("components.rootlayout.description")}
               site_name={i18n.t("components.rootlayout.sitename")}
