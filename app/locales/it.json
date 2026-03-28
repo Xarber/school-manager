@@ -13,7 +13,7 @@
     "components": {
         "rootlayout": {
             "title": "School Manager",
-            "description": "School Manager è un app cross-platform designata da uno studente per aiutarti a gestire la tua vita scolastica meglio!\nIl suo obiettivo è facilitare la ricerca di compiti, lezioni e la pianificazione delle tue sessioni di studio, sia per studenti che per insegnanti.\n\nSchool Manager è gratuito da usare e lo sarà sempre, ma se vuoi supportare il progetto, considera di condividerlo con i tuoi amici o lasciare una recensione!",
+            "description": "App cross-platform designata da uno studente per aiutarti a gestire la tua vita scolastica al meglio!\nCerca compiti, lezioni e la pianifica le tue sessioni di studio facilmente!",
             "sitename": "AtXarber",
             "banner": "/images/banner/Dark.png"
         },
