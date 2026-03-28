@@ -219,7 +219,7 @@ export type LessonData = typeof defaultLessonData;
 
 const defaultLessonScheduleDateData = {
     day: new Date(0) as Date,
-    students: [] as string[] | UserInfo[], // _id rel
+    students: [] as string[] | UserInfo[] | (1 | string)[], // _id rel
     availability: -1 as number,
     addedAt: '' as string,
     editedAt: 0 as number
@@ -684,6 +684,11 @@ export const DataManager = {
     userInfo: {
         app: null,
         db: null,
+        default: defaultUserInfo
+    },
+    classmateData: {
+        app: "@app:classmateData",
+        db: "/api/users",
         default: defaultUserInfo
     },
     userSettings: {
