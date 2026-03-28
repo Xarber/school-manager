@@ -43,6 +43,7 @@ function AppLayout() {
               title={i18n.t("components.rootlayout.title")}
               description={i18n.t("components.rootlayout.description")}
               site_name={i18n.t("components.rootlayout.sitename")}
+              icon={i18n.t("components.rootlayout.icon")}
               image={i18n.t("components.rootlayout.banner")}
             />
             <StatusBar style={theme.type === "dark" ? "light" : "dark"} />

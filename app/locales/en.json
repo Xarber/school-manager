@@ -16,7 +16,8 @@
             "description": "Cross-platform app designed by a student to help you manage your school life better!\nFind homework, lessons, and plan your study sessions easily!",
             "sitename": "@XARBER",
             "banner": "/images/banner/Dark.png",
-            "manifest": "/manifest-en.json"
+            "manifest": "/manifest-en.json",
+            "icon": "/icons/icon-default-light.png"
         },
         "timeline": {
             "add": {

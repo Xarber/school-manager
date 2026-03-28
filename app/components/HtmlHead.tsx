@@ -8,6 +8,7 @@ type Props = {
     site_name?: string;
     title?: string;
     description?: string;
+    icon?: string;
     image?: string;
     imageAlt?: string;
     locales?: string[];
@@ -32,6 +33,7 @@ export default function HtmlHead({
     site_name,
     title,
     description,
+    icon,
     image,
     imageAlt,
     locales = [],
@@ -51,13 +53,24 @@ export default function HtmlHead({
     // do nothing on native
     if (Platform.OS !== 'web') return null;
 
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js');
+    }
+
     return (
         <Head>
-            {manifest && <link rel="manifest" href={manifest} />}
+            {manifest != undefined && <link rel="manifest" href={manifest} />}
 
             <meta property="og:type" content={type} />
             {title && <title>{title}</title>}
             {description && <meta name="description" content={description} />}
+            {icon && (
+                <>
+                    <link rel="icon" href={icon} />
+                    <link rel="apple-touch-icon" href={icon} />
+                    <link rel="shortcut icon" href={icon} />
+                </>
+            )}
 
             {/* Open Graph */}
             {title && <meta property="og:title" content={title} />}
