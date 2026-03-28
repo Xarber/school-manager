@@ -109,6 +109,24 @@
             "empty": {
                 "text": "Non hai valutazioni!"
             }
+        },
+        "unloaded": {
+            "class": {
+                "title": "Carico...",
+                "description": "Questa classe si sta ancora caricando."
+            },
+            "subject": {
+                "title": "Carico...",
+                "description": "Questa materia si sta ancora caricando."
+            },
+            "comunication": {
+                "title": "Carico...",
+                "description": "Questa comunicazione si sta ancora caricando."
+            },
+            "homework": {
+                "title": "Carico...",
+                "description": "Questo compito si sta ancora caricando."
+            }
         }
     },
     "welcome": {
@@ -144,7 +162,7 @@
                     "otp": {
                         "title": "Codice OTP",
                         "placeholder": "Password",
-                        "hint": "Mandato troppe email? Trovane una con il codice: {{code}}"
+                        "hint": "Mandato troppe email? Cerca la parola: {{code}}"
                     }
                 },
                 "continue": "Continua",
@@ -903,16 +921,6 @@
             "offlineclass": {
                 "name": "Classe Offline",
                 "description": "Questa è la classe offline, puoi usarla senza internet e senza un account. Non puoi sincronizzarla con altri dispositivi o invitare persone."
-            },
-            "unloaded": {
-                "class": {
-                    "title": "Carico...",
-                    "description": "Questa classe si sta ancora caricando."
-                },
-                "subject": {
-                    "title": "Carico...",
-                    "description": "Questa materia si sta ancora caricando."
-                }
             },
             "header": {
                 "title": "Le tue classi",

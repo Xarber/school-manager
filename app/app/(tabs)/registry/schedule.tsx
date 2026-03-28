@@ -36,7 +36,6 @@ export default function ScheduleTab() {
 
     const reload = async () => {
         setRefreshing(true);
-        // await Promise.all([userData.load()]);
         await Promise.all([classData.load()]);
         setRefreshing(false);
     };
@@ -167,7 +166,7 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
                     onPress: () => {
                         setMode("write");
                     },
-                    display: classData.data.teachers.find((e: UserInfo) => e._id === userData.data.userInfo._id) && mode === "read",
+                    display: (classData.data.teachers.find((e: UserInfo) =>  e._id === userData.data.userInfo._id) ? true : false) && mode === "read",
                     enabled: network.serverReachable == true
                 },
                 {

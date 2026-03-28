@@ -7,6 +7,7 @@ const SubjectDataContext = createContext<any>(null);
 export function SubjectDataProvider({ children }: { children: React.ReactNode }) {
     const classData = useClassData();
     const [subjectMap, setSubjectMap] = useState(({} as {[key: string]: SubjectData}));
+    const [reloadToken, setReloadToken] = useState(0);
     let subjectIds = classData.data.subjects ?? [];
 
     let subjects = (Object.values(subjectMap) as SubjectData[])
@@ -15,12 +16,17 @@ export function SubjectDataProvider({ children }: { children: React.ReactNode })
     let unloadedSubjects = (subjectIds as string[])
     .filter((sbj: any) => typeof subjectMap[sbj] === "undefined");
 
+    const reload = () => {
+        setSubjectMap({});
+        setReloadToken(prev => prev + 1);
+    }
+
     return (
-        <SubjectDataContext.Provider value={{subjects, unloadedSubjects }}>
+        <SubjectDataContext.Provider value={{subjects, unloadedSubjects, reload, loading: unloadedSubjects.length > 0}}>
             {subjectIds.map((id: string) => {
                 return (
                     <DataLoader
-                        key={id}
+                        key={`${id}-${reloadToken}`}
                         id={id}
                         keys={DataManager.subjectData}
                         body={{ subjectid: id }}

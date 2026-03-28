@@ -59,6 +59,7 @@
         "comunication_reply_state_required": "Reply state is required",
         "comunication_reply_message_required": "Reply message is required",
         "comunication_reply_update_restricted": "Can't delete or update responses.",
+        "comunication_reply_already_replied": "You have already replied to this comunication",
         "classid_or_comunicationid_required": "Class ID or comunication ID is required",
         "classid_or_subjectid_or_homeworkid_or_examid_or_userid_required": "Class ID or subject ID or homework ID or exam ID or user ID is required",
         "classid_or_subjectid_or_homeworkid_required": "Class ID or subject ID or homework ID is required",
@@ -162,8 +163,28 @@
     "emails": {
         "otp": {
             "subject": "Your Verification Code",
-            "text": "Your verification code is: {{code}}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.\n\n(Email code is {{emailCode}})",
-            "html": "<p>Your verification code is: <strong>{{code}}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p><p>(Email code is {{emailCode}})</p>"
+            "text": "Your verification code is: {{code}}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.\n\n(Email fruit is {{emailCode}})",
+            "html": "<p>Your verification code is: <strong>{{code}}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p><p>(Email fruit is {{emailCode}})</p>",
+            "fruits": [
+                "Apple 🍎",
+                "Banana 🍌",
+                "Orange 🍊",
+                "Strawberry 🍓",
+                "Mango 🥭",
+                "Pineapple 🍍",
+                "Grapes 🍇",
+                "Peach 🍑",
+                "Cherry 🍒",
+                "Lemon 🍋",
+                "Pear 🍐",
+                "Watermelon 🍉",
+                "Blueberry 🫐",
+                "Raspberry 🍓",
+                "Kiwi 🥝",
+                "Melon 🍈",
+                "Cucumber 🥒",
+                "Tomato 🍅"
+            ]
         }
     }
 }

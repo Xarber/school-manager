@@ -50,6 +50,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData, refreshi
     const now = Date.now();
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const homeworkLoading = useHomeworkData().loading;
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -89,6 +90,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData, refreshi
                                 key={date}
                                 ref={(el) => {sectionRefs.current[dateObj.timestamp] = el}}
                                 onLayout={() => {
+                                    if (homeworkLoading) return;
                                     if (dateObj.timestamp === closestDate.timestamp && sectionRefs.current[dateObj.timestamp]) {
                                         sectionRefs.current[dateObj.timestamp]?.measureLayout(
                                             scrollRef.current as any,
@@ -194,8 +196,19 @@ function HomeworkTab({userData}: {userData: UserData}) {
     const classData = useClassData();
     const subjects = useSubjectData().subjects;
 
-    const homeworksData = useHomeworkData().homework;
+    const homeworksData = useHomeworkData().homework as HomeworkData[];
+    const homeworkReload = useHomeworkData().reload;
+    const homeworkLoading = useHomeworkData().unloadedHomework;
     const homeworkData = [] as {subjectid: string, data: HomeworkData[]}[];
+
+    let mergedHomeworkData = [...homeworksData, ...homeworkLoading.map((h: string) => {
+        return {
+            _id: h,
+            title: i18n.t("components.unloaded.homework.title"),
+            description: i18n.t("components.unloaded.homework.description"),
+            dueDate: "",
+        }
+    })] as HomeworkData[];
     homeworksData.forEach((e: HomeworkData)=>{
         let subject = subjects.find((s: SubjectData)=>(s.homework as string[]).includes(e._id))?._id;
 
@@ -211,6 +224,7 @@ function HomeworkTab({userData}: {userData: UserData}) {
         setRefreshing(true);
         //await Promise.all([userData.load()]);
         await Promise.all([classData.load()]);
+        homeworkReload();
         setRefreshing(false);
     };
 

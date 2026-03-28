@@ -62,6 +62,9 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
 
     let subjects = useSubjectData().subjects;
     const lessonsData = useLessonData().lessons;
+    const lessonsLoading = useLessonData().loading;
+    const unloadedLessons = useLessonData().unloadedLessons;
+    const lessonsReload = useLessonData().reload;
 
     const lessonData = [] as {subjectid: string, data: LessonData[]}[];
     lessonsData.forEach((e: LessonData)=>{
@@ -77,8 +80,8 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
 
     const reload = async () => {
         setRefreshing(true);
-        //await Promise.all([userData.load()]);
         await Promise.all([classData.load()]);
+        lessonsReload();
         setRefreshing(false);
     };
 
@@ -98,9 +101,9 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
     const lessons = regroupLessonsByDate(lessonData) as any[];
     const now = Date.now();
 
-    const closestDate = lessons.reduce(((prev, curr) => {
+    const closestDate = !lessonsLoading ? lessons.reduce(((prev, curr) => {
         return Math.abs(new Date(curr[0]).getTime() - now) < Math.abs(new Date(prev[0]).getTime() - now) ? curr : prev;
-    }));
+    })) : null;
 
     return (
         <>
@@ -133,6 +136,7 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
                                                 key={e[0]}
                                                 ref={(el) => {sectionRefs.current[new Date(e[0]).getTime()] = el}}
                                                 onLayout={() => {
+                                                    if (lessonsLoading) return;
                                                     if (e[0] === closestDate[0] && sectionRefs.current[new Date(e[0]).getTime()]) {
                                                         sectionRefs.current[new Date(e[0]).getTime()]?.measureLayout(
                                                             scrollRef.current as any,

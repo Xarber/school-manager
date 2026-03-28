@@ -58,6 +58,7 @@
         "comunication_update_sender_only": "Solo il mittente della comunicazione può modificarla",
         "comunication_reply_state_required": "Stato della risposta richiesto",
         "comunication_reply_message_required": "Messaggio della risposta richiesto",
+        "comunication_reply_already_replied": "Hai già risposto a questa comunicazione",
         "comunication_reply_update_restricted": "Impossibile cancellare o modificare le risposte",
         "classid_or_comunicationid_required": "ID della classe o della comunicazione richiesto",
         "classid_or_subjectid_or_homeworkid_or_examid_or_userid_required": "ID di classe, materia, compito, verifica o utente richiesto",
@@ -161,8 +162,28 @@
     "emails": {
         "otp": {
             "subject": "Il tuo codice di verifica",
-            "text": "Il tuo codice di verifica è: {{code}}. Scade tra 5 minuti.\nSe non hai richiesto questo codice, ignora questa email.\n\n(Il codice email è {{emailCode}})",
-            "html": "<p>Il tuo codice di verifica è: <strong>{{code}}</strong>.</p><p>Scade tra 5 minuti.</p><p>Se non hai richiesto questo codice, ignora questa email.</p><p>(Il codice email è {{emailCode}})</p>"
+            "text": "Il tuo codice di verifica è: {{code}}. Scade tra 5 minuti.\nSe non hai richiesto questo codice, ignora questa email.\n\n(Il frutto di questa email è {{emailCode}})",
+            "html": "<p>Il tuo codice di verifica è: <strong>{{code}}</strong>.</p><p>Scade tra 5 minuti.</p><p>Se non hai richiesto questo codice, ignora questa email.</p><p>(Il frutto di questa email è {{emailCode}})</p>",
+            "fruits": [
+                "Mela 🍎",
+                "Banana 🍌",
+                "Arancia 🍊",
+                "Fragola 🍓",
+                "Mango 🥭",
+                "Ananas 🍍",
+                "Uva 🍇",
+                "Pesca 🍑",
+                "Ciliegia 🍒",
+                "Limone 🍋",
+                "Pera 🍐",
+                "Anguria 🍉",
+                "Mirtilli 🫐",
+                "Lampone 🍓",
+                "Kiwi 🥝",
+                "Melone 🍈",
+                "Cetriolo 🥒",
+                "Pomodoro 🍅"
+            ]
         }
     }
 }

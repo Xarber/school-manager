@@ -30,11 +30,13 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
     const comunicationResponse = useDBitem(DataManager.comunicationResponseData.db, DataManager.comunicationResponseData.default);
 
+    const comunicationReload = useComunicationData().reload;
     const comunicationData = useComunicationData().comunications;
+    const unloadedComunications = useComunicationData().unloadedComunications;
     
     const classData = useClassData();
 
-    if (comunicationData.loading) {
+    if (unloadedComunications.includes(id)) {
         return (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <ActivityIndicator size="small" color={theme.text} />
@@ -57,6 +59,10 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     if (network.serverReachable === false) canSend = false;
 
     const isTeacher = classData.data.teachers.find((e: UserInfo) => e._id === userData.data.userInfo._id);
+
+    const reload = async () => {
+        await Promise.all([comunicationReload()]);
+    };
 
     return !!comunication ? (
         <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
@@ -93,7 +99,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                                 comunicationid: comunication._id,
                                                 state: true
                                             }).then(() => {
-                                                comunicationData.load();
+                                                reload();
                                             });
                                         },
                                         enabled: network.serverReachable === true
@@ -110,7 +116,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                                 comunicationid: comunication._id,
                                                 state: false
                                             }).then(() => {
-                                                comunicationData.load();
+                                                reload();
                                             });
                                         },
                                         enabled: network.serverReachable === true
@@ -121,14 +127,14 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                 <View style={[modalStyle.cardEdit]}>
                                     <View style={modalStyle.cardEditField}>
                                         <Text style={modalStyle.cardEditFieldText}>{i18n.t("registry.comunications.reply.message")}</Text>
-                                        <TextInput readOnly={(!canSend || responseSent)} maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
+                                        <TextInput readOnly={(responseSent)} maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
                                     </View>
                                     <TouchableOpacity disabled={(!canSend || responseSent)} style={[commonStyle.wideButton, ((!canSend || responseSent) ? { backgroundColor: theme.disabled } : null)]} onPress={() => {
                                         comunicationResponse.create({
                                             comunicationid: comunication._id,
                                             message: reply
                                         }).then(() => {
-                                            comunicationData.load();
+                                            reload();
                                         });
                                     }}>
                                         <Text style={commonStyle.buttonText}>{i18n.t("registry.comunications.reply.send")}</Text>
@@ -185,14 +191,16 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
     const classData = useClassData();
 
     const comunicationData = useComunicationData().comunications;
+    const unloadedComunications = useComunicationData().unloadedComunications;
+    const comunicationsReload = useComunicationData().reload;
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
 
     const reload = async () => {
         setRefreshing(true);
-        //await Promise.all([userData.load()]);
         await Promise.all([classData.load()]);
+        comunicationsReload();
         setRefreshing(false);
     };
 
@@ -202,9 +210,16 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
         }, [])
     );
 
-    let comunications: ComunicationData[] = comunicationData;
+    let comunications: ComunicationData[] = [...comunicationData, ...unloadedComunications.map((id: string) => (
+        {
+            _id: id,
+            title: i18n.t("components.unloaded.comunication.title"),
+            content: i18n.t("components.unloaded.comunication.description"),
+            responses: []
+        }
+    ))];
 
-    return ((classData.loading || comunicationData.loading) && !refreshing) ? ( 
+    return ((classData.loading) && !refreshing) ? ( 
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color={theme.text} />
         </View>

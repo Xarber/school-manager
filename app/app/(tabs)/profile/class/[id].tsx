@@ -48,7 +48,7 @@ function AllClassList() {
 
     useFocusEffect(
         useCallback(() => {
-            //reload();
+            reload();
         }, [])
     );
 
@@ -74,8 +74,8 @@ function AllClassList() {
     .map((cls: any) => {
         return ({
             _id: cls,
-            title: `${i18n.t("profile.class.unloaded.class.title")}`,
-            description: `${i18n.t("profile.class.unloaded.class.description")}`,
+            title: `${i18n.t("components.unloaded.class.title")}`,
+            description: `${i18n.t("components.unloaded.class.description")}`,
             badge: null,
             onPress: () => {}
         })
@@ -325,8 +325,8 @@ function AllClassSubjects() {
     .map((sbj: any) => {
         return ({
             _id: sbj,
-            title: `${i18n.t("profile.class.unloaded.subject.title")}`,
-            description: `${i18n.t("profile.class.unloaded.subject.description")}`,
+            title: `${i18n.t("components.unloaded.subject.title")}`,
+            description: `${i18n.t("components.unloaded.subject.description")}`,
             badge: null,
             onPress: () => {}
         })

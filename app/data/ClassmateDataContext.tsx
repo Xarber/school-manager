@@ -10,6 +10,7 @@ export function ClassmateDataProvider({ children }: { children: React.ReactNode 
     const classData = useClassData();
     const [classmateMap, setClassmateMap] = useState(({} as {[key: string]: UserInfo}));
     const [classmateIds, setClassmateIds] = useState<string[]>([]);
+    const [reloadToken, setReloadToken] = useState(0);
 
     //! Disabled for now, as it causes too many requests on app load, and the classmates are not critical data.
     //! Will implement a more efficient batching system later.
@@ -31,12 +32,17 @@ export function ClassmateDataProvider({ children }: { children: React.ReactNode 
     let unloadedClassmates = (classmateIds as string[])
     .filter((clsm: string) => typeof classmateMap[clsm] === "undefined");
 
+    const reload = () => {
+        setClassmateMap({});
+        setReloadToken(prev => prev + 1);
+    }
+
     return (
-        <ClassmateDataContext.Provider value={{classmates, unloadedClassmates }}>
+        <ClassmateDataContext.Provider value={{classmates, unloadedClassmates, reload, loading: unloadedClassmates.length > 0}}>
             {classmateIds.map((id: string) => {
                 return (
                     <DataLoader
-                        key={id}
+                        key={`${id}-${reloadToken}`}
                         id={id}
                         keys={DataManager.classmateData}
                         body={{ userid: id, classid: classData.data._id }}
