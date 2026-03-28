@@ -1,9 +1,11 @@
+import HtmlHead from "@/components/HtmlHead";
 import { AlertProvider } from "@/components/alert/AlertContext";
 import { AppLockProvider } from "@/constants/AuthContext";
 import { LanguageProvider } from "@/constants/LanguageContext";
 import { NetworkProvider } from "@/constants/NetworkContext";
 import { ThemeProvider as ContextThemeProvider } from "@/constants/ThemeContext";
 import { createNavigationTheme } from "@/constants/colors";
+import i18n from "@/constants/i18n";
 import { useTheme } from "@/constants/useThemes";
 import { AccountDataProvider } from "@/data/AccountDataContext";
 import { ClassDataProvider } from "@/data/ClassContext";
@@ -36,6 +38,12 @@ function AppLayout() {
       <BlurView style={{ flex: 1 }} intensity={60} tint={theme.type}>
         <ThemeProvider value={navTheme}>
           <AppLockProvider>
+            <HtmlHead
+              title={i18n.t("components.rootlayout.title")}
+              description={i18n.t("components.rootlayout.description")}
+              site_name={i18n.t("components.rootlayout.sitename")}
+              image={i18n.t("components.rootlayout.banner")}
+            />
             <StatusBar style={theme.type === "dark" ? "light" : "dark"} />
             <SyncBootstrap />
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />

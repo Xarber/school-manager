@@ -163,9 +163,9 @@
     "emails": {
         "otp": {
             "subject": "Your Verification Code",
-            "text": "Your verification code is: {{code}}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.\n\n(Email fruit is {{emailCode}})",
-            "html": "<p>Your verification code is: <strong>{{code}}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p><p>(Email fruit is {{emailCode}})</p>",
-            "fruits": [
+            "text": "Your verification code is: {{code}}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.\n\n(This email's word is {{emailCode}})",
+            "html": "<p>Your verification code is: <strong>{{code}}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p><p>(This email's word is {{emailCode}})</p>",
+            "words": [
                 "Apple 🍎",
                 "Banana 🍌",
                 "Orange 🍊",

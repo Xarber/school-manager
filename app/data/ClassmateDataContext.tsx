@@ -38,7 +38,7 @@ export function ClassmateDataProvider({ children }: { children: React.ReactNode 
     }
 
     return (
-        <ClassmateDataContext.Provider value={{classmates, unloadedClassmates, reload, loading: unloadedClassmates.length > 0}}>
+        <ClassmateDataContext.Provider value={{classmates, unloadedClassmates, classmateMap, reload, loading: unloadedClassmates.length > 0}}>
             {classmateIds.map((id: string) => {
                 return (
                     <DataLoader

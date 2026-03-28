@@ -203,10 +203,11 @@ function LessonTab() {
     const userData = useUserData();
 
     const lessons = useLessonData().lessons;
+    const unloadedLessons = useLessonData().unloadedLessons;
 
     const lessonData = lessons.find((e: any) => e._id == lessonid) ?? {};
 
-    if (lessonData.loading) return (
+    if (unloadedLessons.includes(lessonid)) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator size="small" color={theme.text} />
         </View>

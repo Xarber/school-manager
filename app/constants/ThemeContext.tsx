@@ -12,6 +12,34 @@ export function pascalCase(s: string) {
     return s.replaceAll("-", "").replaceAll(" ", "");
 }
 
+export function rgbStringToHex(input: string): string | null {
+    if (input.startsWith("#")) return input; // already hex
+    const match = input
+        .replace(/rgba?\(/, "")
+        .replace(")", "")
+        .split(/[\s,]+/)
+        .filter(Boolean);
+
+    if (match.length < 3) return null;
+
+    const [r, g, b, a] = match.map(Number);
+
+    const clamp = (v: number) =>
+        Math.max(0, Math.min(255, Math.round(v)));
+
+    const toHex = (v: number) =>
+        clamp(v).toString(16).padStart(2, "0");
+
+    const hex =
+        "#" +
+        toHex(r) +
+        toHex(g) +
+        toHex(b) +
+        (a !== undefined ? toHex(a * 255) : "");
+
+    return hex;
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const systemScheme = useColorScheme() ?? "light";
     const [scheme, setScheme] = useState<Scheme>(systemScheme as Scheme);
@@ -30,13 +58,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
         if (Platform.OS === "web") {
             // rimuovi vecchio meta se esiste
-            const existing = document.querySelector('meta[name="color-scheme"]');
-            if (existing) document.head.removeChild(existing);
+            const existingColor = document.querySelector('meta[name="color-scheme"]');
+            if (existingColor) document.head.removeChild(existingColor);
+            const existingTheme = document.querySelector('meta[name="theme-color"]');
+            if (existingTheme) document.head.removeChild(existingTheme);
 
-            const meta = document.createElement("meta");
-            meta.name = "color-scheme";
-            meta.content = lightOrDark;
-            document.head.appendChild(meta);
+
+            const metaColor = document.createElement("meta");
+            metaColor.name = "color-scheme";
+            metaColor.content = lightOrDark;
+            document.head.appendChild(metaColor);
+
+            const metaTheme = document.createElement("meta");
+            metaTheme.name = "theme-color";
+            metaTheme.content = rgbStringToHex(colors[(userTheme === "system" ? (systemScheme as Scheme) : (userTheme as Scheme))].background) as string;
+            document.head.appendChild(metaTheme);
         }
     }, [userData.data.settings?.theme, systemScheme]);
 

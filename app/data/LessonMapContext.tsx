@@ -29,7 +29,7 @@ export function LessonDataProvider({ children }: { children: React.ReactNode }) 
     }
 
     return (
-        <LessonDataContext.Provider value={{lessons, unloadedLessons, reload, loading: unloadedLessons.length > 0}}>
+        <LessonDataContext.Provider value={{lessons, unloadedLessons, lessonMap, reload, loading: unloadedLessons.length > 0}}>
             {lessonIds.map((id: string) => {
                 return (
                     <DataLoader

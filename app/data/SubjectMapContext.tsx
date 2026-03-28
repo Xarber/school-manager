@@ -22,7 +22,7 @@ export function SubjectDataProvider({ children }: { children: React.ReactNode })
     }
 
     return (
-        <SubjectDataContext.Provider value={{subjects, unloadedSubjects, reload, loading: unloadedSubjects.length > 0}}>
+        <SubjectDataContext.Provider value={{subjects, unloadedSubjects, subjectMap, reload, loading: unloadedSubjects.length > 0}}>
             {subjectIds.map((id: string) => {
                 return (
                     <DataLoader
