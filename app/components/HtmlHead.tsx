@@ -2,6 +2,8 @@ import Head from 'expo-router/head';
 import { Platform } from 'react-native';
 
 type Props = {
+    manifest?: string;
+
     type?: string;
     site_name?: string;
     title?: string;
@@ -24,6 +26,8 @@ type Props = {
 };
 
 export default function HtmlHead({
+    manifest,
+
     type = "website",
     site_name,
     title,
@@ -49,6 +53,8 @@ export default function HtmlHead({
 
     return (
         <Head>
+            {manifest && <link rel="manifest" href={manifest} />}
+
             <meta property="og:type" content={type} />
             {title && <title>{title}</title>}
             {description && <meta name="description" content={description} />}

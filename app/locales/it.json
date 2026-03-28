@@ -15,7 +15,8 @@
             "title": "School Manager",
             "description": "App cross-platform designata da uno studente per aiutarti a gestire la tua vita scolastica al meglio!\nCerca compiti, lezioni e la pianifica le tue sessioni di studio facilmente!",
             "sitename": "AtXarber",
-            "banner": "/images/banner/Dark.png"
+            "banner": "/images/banner/Dark.png",
+            "manifest": "/manifest-it.json"
         },
         "timeline": {
             "add": {
