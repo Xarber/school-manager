@@ -13,8 +13,8 @@
     "components": {
         "rootlayout": {
             "title": "School Manager",
-            "description": "School Manager is a cross-platform app designed by a student to help you manage your school life better!\nIts goal is to facilitate finding homework, lessons, and planning your study sessions, for both students and teachers.\n\nSchool Manager is free to use and will always be, but if you want to support the project, consider sharing it with your friends or leaving a review!",
-            "sitename": "AtXarber",
+            "description": "Cross-platform app designed by a student to help you manage your school life better!\nFind homework, lessons, and plan your study sessions easily!",
+            "sitename": "@XARBER",
             "banner": "/images/banner/Dark.png"
         },
         "timeline": {
