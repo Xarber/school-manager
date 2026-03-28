@@ -1,0 +1,35 @@
+{
+  "name": "School Manager",
+  "short_name": "School Manager",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000",
+  "icons": [
+    {
+      "src": "/icons/icon-default-light.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/icon-monochrome.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "monochrome maskable"
+    }
+  ],
+  "id": "com.xarber.schoolmanager",
+  "display_override": [
+    "window-controls-overlay"
+  ],
+  "categories": [
+    "education",
+    "utilities"
+  ],
+  "description": "Cross-platform app designed by a student to help you manage your school life better!\nFind homework, lessons, and plan your study sessions easily!",
+  "scope": "https://schoolmanager.expo.app/",
+  "launch_handler": {
+    "client_mode": "auto"
+  }
+}
