@@ -3,6 +3,7 @@
         "en": "English",
         "it": "Italian"
     },
+    "languageCodes": ["en_US", "en_GB", "en_CA", "en_AU", "it_IT", "it_CH"],
     "beta": {
         "undeveloped": {
             "title": "Still Cooking",
@@ -10,6 +11,12 @@
         }
     },
     "components": {
+        "rootlayout": {
+            "title": "School Manager",
+            "description": "School Manager is a cross-platform app designed by a student to help you manage your school life better!\nIts goal is to facilitate finding homework, lessons, and planning your study sessions, for both students and teachers.\n\nSchool Manager is free to use and will always be, but if you want to support the project, consider sharing it with your friends or leaving a review!",
+            "sitename": "AtXarber",
+            "banner": "/images/banner/Dark.png"
+        },
         "timeline": {
             "add": {
                 "text": "Edit"

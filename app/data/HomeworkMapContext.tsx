@@ -29,7 +29,7 @@ export function HomeworkDataProvider({ children }: { children: React.ReactNode }
     }
 
     return (
-        <HomeworkDataContext.Provider value={{homework, unloadedHomework, reload, loading: unloadedHomework.length > 0}}>
+        <HomeworkDataContext.Provider value={{homework, unloadedHomework, homeworkMap, reload, loading: unloadedHomework.length > 0}}>
             {homeworkIds.map((id: string) => {
                 return (
                     <DataLoader

@@ -162,9 +162,9 @@
     "emails": {
         "otp": {
             "subject": "Il tuo codice di verifica",
-            "text": "Il tuo codice di verifica è: {{code}}. Scade tra 5 minuti.\nSe non hai richiesto questo codice, ignora questa email.\n\n(Il frutto di questa email è {{emailCode}})",
-            "html": "<p>Il tuo codice di verifica è: <strong>{{code}}</strong>.</p><p>Scade tra 5 minuti.</p><p>Se non hai richiesto questo codice, ignora questa email.</p><p>(Il frutto di questa email è {{emailCode}})</p>",
-            "fruits": [
+            "text": "Il tuo codice di verifica è: {{code}}. Scade tra 5 minuti.\nSe non hai richiesto questo codice, ignora questa email.\n\n(La parola di questa email è {{emailCode}})",
+            "html": "<p>Il tuo codice di verifica è: <strong>{{code}}</strong>.</p><p>Scade tra 5 minuti.</p><p>Se non hai richiesto questo codice, ignora questa email.</p><p>(La parola di questa email è {{emailCode}})</p>",
+            "words": [
                 "Mela 🍎",
                 "Banana 🍌",
                 "Arancia 🍊",
