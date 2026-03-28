@@ -205,13 +205,19 @@ router.post('/responses' + paths.dbCreate, async (req, res) => {
     ) return res.status(403).json({ error: req.t("errors.class_access_denied") });
     //todo: school logic
 
-    const comunicationInfo = await Comunication.findOne({ _id: comunicationid });
+    const comunicationInfo = await Comunication.findOne({ _id: comunicationid }).populate({
+      path: 'responses',
+      populate: {
+        path: 'user'
+      },
+    });
     if (!comunicationInfo) return res.status(404).json({ error: req.t("errors.comunication_not_found") });
 
     // Update comunication (replace with actual Comunication model)
     const { state, message } = req.body;
     if (typeof state === "undefined" && (comunicationInfo.confirmationType ?? "accept") === "accept") return res.status(400).json({ error: req.t("errors.comunication_reply_state_required") });
     if (typeof message === "undefined" && (comunicationInfo.confirmationType ?? "message") === "message") return res.status(400).json({ error: req.t("errors.comunication_reply_message_required") });
+    if (comunicationInfo.responses && comunicationInfo.responses.some(r => r.user.equals(user.userinfo_id))) return res.status(400).json({ error: req.t("errors.comunication_reply_already_replied") });
 
     const newResponse = new ComunicationResponse({
       user: user.userinfo_id,

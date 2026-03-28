@@ -10,6 +10,7 @@ export function LessonDataProvider({ children }: { children: React.ReactNode }) 
     const [lessonMap, setLessonMap] = useState(({} as {[key: string]: LessonData}));
     const subjects = useSubjectData().subjects;
     const [lessonIds, setLessonIds] = useState<string[]>([]);
+    const [reloadToken, setReloadToken] = useState(0);
 
     useEffect(()=>{
         const subjectLessons = subjects.map((e: SubjectData)=>e.lessons).flat();
@@ -22,12 +23,17 @@ export function LessonDataProvider({ children }: { children: React.ReactNode }) 
     let unloadedLessons = (lessonIds as string[])
     .filter((lsn: any) => typeof lessonMap[lsn] === "undefined");
 
+    const reload = () => {
+        setLessonMap({});
+        setReloadToken(prev => prev + 1);
+    }
+
     return (
-        <LessonDataContext.Provider value={{lessons, unloadedLessons }}>
+        <LessonDataContext.Provider value={{lessons, unloadedLessons, reload, loading: unloadedLessons.length > 0}}>
             {lessonIds.map((id: string) => {
                 return (
                     <DataLoader
-                        key={id}
+                        key={`${id}-${reloadToken}`}
                         id={id}
                         keys={DataManager.lessonData}
                         body={{ lessonid: id }}

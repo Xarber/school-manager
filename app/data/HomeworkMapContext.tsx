@@ -10,6 +10,7 @@ export function HomeworkDataProvider({ children }: { children: React.ReactNode }
     const [homeworkMap, setHomeworkMap] = useState(({} as {[key: string]: HomeworkData}));
     const subjects = useSubjectData().subjects;
     const [homeworkIds, setHomeworkIds] = useState<string[]>([]);
+    const [reloadToken, setReloadToken] = useState(0);
 
     useEffect(()=>{
         const subjectHomework = subjects.map((e: SubjectData)=>e.homework).flat();
@@ -22,12 +23,17 @@ export function HomeworkDataProvider({ children }: { children: React.ReactNode }
     let unloadedHomework = (homeworkIds as string[])
     .filter((lsn: any) => typeof homeworkMap[lsn] === "undefined");
 
+    const reload = () => {
+        setHomeworkMap({});
+        setReloadToken(prev => prev + 1);
+    }
+
     return (
-        <HomeworkDataContext.Provider value={{homework, unloadedHomework }}>
+        <HomeworkDataContext.Provider value={{homework, unloadedHomework, reload, loading: unloadedHomework.length > 0}}>
             {homeworkIds.map((id: string) => {
                 return (
                     <DataLoader
-                        key={id}
+                        key={`${id}-${reloadToken}`}
                         id={id}
                         keys={DataManager.homeworkData}
                         body={{ homeworkid: id }}

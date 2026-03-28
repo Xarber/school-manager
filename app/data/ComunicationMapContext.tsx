@@ -7,7 +7,8 @@ const ComunicationDataContext = createContext<any>(null);
 export function ComunicationDataProvider({ children }: { children: React.ReactNode }) {
     const classData = useClassData();
     const [comunicationMap, setComunicationMap] = useState(({} as {[key: string]: ComunicationData}));
-    let [comunicationIds, setComunicationIds] = useState<string[]>([]);
+    const [comunicationIds, setComunicationIds] = useState<string[]>([]);
+    const [reloadToken, setReloadToken] = useState(0);
 
     useEffect(()=>{
         setComunicationIds([...classData.data.comunications]);
@@ -19,17 +20,23 @@ export function ComunicationDataProvider({ children }: { children: React.ReactNo
     let unloadedComunications = (comunicationIds as string[])
     .filter((cmn: any) => typeof comunicationMap[cmn] === "undefined");
 
+    const reload = () => {
+        setComunicationMap({});
+        setReloadToken(prev => prev + 1);
+    }
+
     return (
-        <ComunicationDataContext.Provider value={{comunications, unloadedComunications }}>
+        <ComunicationDataContext.Provider value={{comunications, comunicationMap, unloadedComunications, reload, loading: unloadedComunications.length > 0}}>
             {comunicationIds.map((id: string) => {
                 return (
                     <DataLoader
-                        key={id}
+                        key={`${id}-${reloadToken}`}
                         id={id}
                         keys={DataManager.comunicationData}
                         body={{ comunicationid: id }}
                         onLoad={(id, comunicationdata) =>
                             setComunicationMap(prev => {
+                                console.log(prev[id]);
                                 if (prev[id]?._id === comunicationdata.data?._id) {
                                     return prev;
                                 }

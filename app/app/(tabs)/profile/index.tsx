@@ -55,8 +55,8 @@ export default function ProfileTab() {
     .map((cls: any) => {
         return ({
             _id: cls,
-            title: `${i18n.t("profile.class.unloaded.class.title")}`,
-            description: `${i18n.t("profile.class.unloaded.class.description")}`,
+            title: `${i18n.t("components.unloaded.class.title")}`,
+            description: `${i18n.t("components.unloaded.class.description")}`,
             badge: null,
             onPress: () => {}
         })

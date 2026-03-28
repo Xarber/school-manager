@@ -80,6 +80,24 @@
             "empty": {
                 "text": "You have no grades!"
             }
+        },
+        "unloaded": {
+            "class": {
+                "title": "Loading...",
+                "description": "This class is still loading."
+            },
+            "subject": {
+                "title": "Loading...",
+                "description": "This subject is still loading."
+            },
+            "comunication": {
+                "title": "Loading...",
+                "description": "This notice is still loading."
+            },
+            "homework": {
+                "title": "Loading...",
+                "description": "This homework is still loading."
+            }
         }
     },
     "welcome": {
@@ -115,7 +133,7 @@
                     "otp": {
                         "title": "OTP Code",
                         "placeholder": "Password",
-                        "hint": "Sent too many emails? Find one with the code: {{code}}"
+                        "hint": "Sent too many emails? Search for the word: {{code}}"
                     }
                 },
                 "continue": "Continue",
@@ -874,16 +892,6 @@
             "offlineclass": {
                 "name": "Offline Class",
                 "description": "This is the offline class. You can use it with no internet and without an account. You can't syncronize it or invite other users."
-            },
-            "unloaded": {
-                "class": {
-                    "title": "Loading...",
-                    "description": "This class is still loading."
-                },
-                "subject": {
-                    "title": "Loading...",
-                    "description": "This subject is still loading."
-                }
             },
             "header": {
                 "title": "Your Classes",

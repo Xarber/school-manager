@@ -48,7 +48,7 @@ router.post(paths.authenticate, async (req, res) => {
     // Save new code
     await Verification.create({ email, code });
 
-    let emailCode = Date.now().toString().slice(-6);
+    let emailCode = req.t("emails.otp.fruits")[Math.floor(Math.random() * req.t("emails.otp.fruits").length)] // Date.now().toString().slice(-6);
     
     // Send email
     const mailOptions = {
