@@ -78,7 +78,8 @@ app.use('/api/upload', uploadRoutes);
 
 // Invalid URL
 app.use((req, res) => {
-    res.status(404).json({ error: i18n.t("errors.invalid_endpoint") });
+    console.error('Invalid endpoint accessed:', req.method, req.originalUrl);
+    res.status(404).json({ error: req.t("errors.invalid_endpoint") });
 });
 
 app.listen(paths.dbPort, () => {

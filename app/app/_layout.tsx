@@ -7,6 +7,7 @@ import { createNavigationTheme } from "@/constants/colors";
 import { useTheme } from "@/constants/useThemes";
 import { AccountDataProvider } from "@/data/AccountDataContext";
 import { ClassDataProvider } from "@/data/ClassContext";
+import { ClassmateDataProvider } from "@/data/ClassmateDataContext";
 import { ComunicationDataProvider } from "@/data/ComunicationMapContext";
 import { DebugDataProvider } from "@/data/DebugDataContext";
 import { HomeworkDataProvider } from "@/data/HomeworkMapContext";
@@ -62,21 +63,23 @@ export default function RootLayout() {
         <DebugDataProvider>
           <UserDataProvider>
             <ClassDataProvider>
-              <SubjectDataProvider>
-                <ComunicationDataProvider>
-                  <LessonDataProvider>
-                    <HomeworkDataProvider>
-                      <ContextThemeProvider>
-                        <LanguageProvider>
-                          <AlertProvider>
-                            <AppLayout />
-                          </AlertProvider>
-                        </LanguageProvider>
-                      </ContextThemeProvider>
-                    </HomeworkDataProvider>
-                  </LessonDataProvider>
-                </ComunicationDataProvider>
-              </SubjectDataProvider>
+              <ClassmateDataProvider>
+                <SubjectDataProvider>
+                  <ComunicationDataProvider>
+                    <LessonDataProvider>
+                      <HomeworkDataProvider>
+                        <ContextThemeProvider>
+                          <LanguageProvider>
+                            <AlertProvider>
+                              <AppLayout />
+                            </AlertProvider>
+                          </LanguageProvider>
+                        </ContextThemeProvider>
+                      </HomeworkDataProvider>
+                    </LessonDataProvider>
+                  </ComunicationDataProvider>
+                </SubjectDataProvider>
+              </ClassmateDataProvider>
             </ClassDataProvider>
           </UserDataProvider>
         </DebugDataProvider>
