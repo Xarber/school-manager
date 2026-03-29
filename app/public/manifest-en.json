@@ -1,6 +1,6 @@
 {
   "name": "School Manager",
-  "short_name": "School Manager",
+  "short_name": "School",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -8,14 +8,8 @@
   "lang": "en",
   "icons": [
     {
-      "src": "/icons/icon-default-light.png",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/images/icon-monochrome.png",
-      "sizes": "1024x1024",
+      "src": "/images/icon-monochrome-512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "monochrome maskable"
     }
