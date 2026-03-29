@@ -48,19 +48,23 @@ export default function ActionButtons({ items, align, containerStyles, itemStyle
                 e.enabled ??= !e.buffering;
                 let backgroundColor = e.styles?.backgroundColor ?? itemStyles?.backgroundColor ?? (!e.enabled ? theme.disabled : undefined) ?? commonStyle.button.backgroundColor;
                 let textColor = getTextColor(backgroundColor);
-                return <TouchableOpacity disabled={!e.enabled} key={i} style={[
-                        commonStyle.button, 
-                        {display: "flex", alignItems: "start",gap: 5, padding: 0, overflow: "hidden"},
-                        itemStyles,
-                        e.styles,
-                        {backgroundColor}
-                    ]} onPress={e.onPress}>
-                        <BlurView style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 10, flex: 1 }}>
-                            {e.buffering ? <ActivityIndicator size="small" color={theme.text} /> : null}
-                            {!e.buffering && <Ionicons name={e.iconName} size={e.iconSize ?? 30} color={textColor}></Ionicons>}
-                            {!e.buffering && (e.title && <Text style={{ color: textColor, fontSize: 12, paddingRight: 10 }}>{e.title}</Text>)}
+                return (
+                    <View style={{ borderRadius: 360, overflow: "hidden" }}>
+                        <BlurView>
+                            <TouchableOpacity disabled={!e.enabled} key={i} style={[
+                                commonStyle.button, 
+                                { display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 10, flex: 1, overflow: "hidden" },
+                                itemStyles,
+                                e.styles,
+                                {backgroundColor}
+                            ]} onPress={e.onPress}>
+                                {e.buffering ? <ActivityIndicator size="small" color={theme.text} /> : null}
+                                {!e.buffering && <Ionicons name={e.iconName} size={e.iconSize ?? 30} color={textColor}></Ionicons>}
+                                {!e.buffering && (e.title && <Text style={{ color: textColor, fontSize: 12, paddingRight: 10 }}>{e.title}</Text>)}
+                            </TouchableOpacity>
                         </BlurView>
-                </TouchableOpacity>
+                    </View>
+                )
             })}
         </View>
     );
