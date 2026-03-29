@@ -1,4 +1,5 @@
 import HtmlHead from "@/components/HtmlHead";
+import PWAInstallPrompt from "@/components/PwaInstallPrompt";
 import { AlertProvider } from "@/components/alert/AlertContext";
 import { AppLockProvider } from "@/constants/AuthContext";
 import { LanguageProvider } from "@/constants/LanguageContext";
@@ -49,6 +50,7 @@ function AppLayout() {
             <StatusBar style={theme.type === "dark" ? "light" : "dark"} />
             <SyncBootstrap />
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />
+            <PWAInstallPrompt />
           </AppLockProvider>
         </ThemeProvider>
       </BlurView>

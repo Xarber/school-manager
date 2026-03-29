@@ -19,6 +19,11 @@
             "manifest": "/manifest-it.json",
             "icon": "/icons/icon-default-light.png"
         },
+        "pwainstallprompt": {
+            "ios": "Installa l'app con:\nCondividi → Aggiungi alla schermata Home",
+            "default": "Installa l'app per un'esperienza migliore",
+            "install": "Installa"
+        },
         "timeline": {
             "add": {
                 "text": "Modifica"

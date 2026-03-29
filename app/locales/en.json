@@ -19,6 +19,11 @@
             "manifest": "/manifest-en.json",
             "icon": "/icons/icon-default-light.png"
         },
+        "pwainstallprompt": {
+            "ios": "Install the app with:\nShare → Add to Home Screen",
+            "default": "Install the app for a better experience",
+            "install": "Install"
+        },
         "timeline": {
             "add": {
                 "text": "Edit"
