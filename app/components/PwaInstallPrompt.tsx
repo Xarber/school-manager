@@ -36,7 +36,6 @@ export default function PWAInstallPrompt() {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      console.log("User choice:", outcome);
       setShowBanner(false);
       setDeferredPrompt(null);
     }

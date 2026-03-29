@@ -36,7 +36,6 @@ export function ComunicationDataProvider({ children }: { children: React.ReactNo
                         body={{ comunicationid: id }}
                         onLoad={(id, comunicationdata) =>
                             setComunicationMap(prev => {
-                                console.log(prev[id]);
                                 if (prev[id]?._id === comunicationdata.data?._id) {
                                     return prev;
                                 }
