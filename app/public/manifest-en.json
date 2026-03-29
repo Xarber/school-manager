@@ -8,19 +8,19 @@
   "lang": "en",
   "icons": [
     {
-      "src": "/images/icon-monochrome-512.png",
+      "src": "/icons/icon-monochrome-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/icon-monochrome-512.png",
+      "src": "/icons/icon-monochrome-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "monochrome"
     },
     {
-      "src": "/images/icon-monochrome-512.png",
+      "src": "/icons/icon-monochrome-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
