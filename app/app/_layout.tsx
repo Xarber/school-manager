@@ -15,6 +15,7 @@ import { ComunicationDataProvider } from "@/data/ComunicationMapContext";
 import { DebugDataProvider } from "@/data/DebugDataContext";
 import { HomeworkDataProvider } from "@/data/HomeworkMapContext";
 import { LessonDataProvider } from "@/data/LessonMapContext";
+import { LessonScheduleDataProvider } from "@/data/LessonScheduleContext";
 import { SubjectDataProvider } from "@/data/SubjectMapContext";
 import { UserDataProvider } from "@/data/UserDataContext";
 import { ensureBackgroundSyncRegistered, startForegroundSync } from "@/data/sync";
@@ -79,15 +80,17 @@ export default function RootLayout() {
                 <SubjectDataProvider>
                   <ComunicationDataProvider>
                     <LessonDataProvider>
-                      <HomeworkDataProvider>
-                        <ContextThemeProvider>
-                          <LanguageProvider>
-                            <AlertProvider>
-                              <AppLayout />
-                            </AlertProvider>
-                          </LanguageProvider>
-                        </ContextThemeProvider>
-                      </HomeworkDataProvider>
+                      <LessonScheduleDataProvider>
+                        <HomeworkDataProvider>
+                          <ContextThemeProvider>
+                            <LanguageProvider>
+                              <AlertProvider>
+                                <AppLayout />
+                              </AlertProvider>
+                            </LanguageProvider>
+                          </ContextThemeProvider>
+                        </HomeworkDataProvider>
+                      </LessonScheduleDataProvider>
                     </LessonDataProvider>
                   </ComunicationDataProvider>
                 </SubjectDataProvider>

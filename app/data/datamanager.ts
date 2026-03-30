@@ -211,6 +211,7 @@ const defaultLessonData = {
     room: '' as string | undefined,
     material: [] as string[] | MaterialData[], // _id rel
     scheduled: false as boolean,
+    schedule: undefined as string | LessonScheduleData | undefined, // _id rel
     isExam: false as boolean,
     addedAt: '' as string,
     editedAt: 0 as number
