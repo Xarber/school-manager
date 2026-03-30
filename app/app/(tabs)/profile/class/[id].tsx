@@ -267,7 +267,7 @@ function Class(props: { classId: string }) {
                                 <View style={{...commonStyle.card, gap: 10}}>
                                     {classData.data.teachers.length === 0 && <Text key={"noteachers"} style={commonStyle.text}>{i18n.t("profile.class.users.teachers.noteachers.text")}</Text>}
                                     {classData.data.teachers.map((teacher: UserInfo) => (
-                                        <View key={teacher._id} style={commonStyle.listUserElement}>
+                                        <View key={typeof teacher === "string" ? teacher : teacher._id} style={commonStyle.listUserElement}>
                                             <Ionicons style={commonStyle.listUserElementIcon} name="id-card" size={30} color={theme.text} />
                                             <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{teacher.name} {teacher.surname}</Text>
                                         </View>
@@ -280,7 +280,7 @@ function Class(props: { classId: string }) {
                                 <View style={{...commonStyle.card, gap: 10}}>
                                     {classData.data.students.length === 0 && <Text key={"nostudents"} style={commonStyle.text}>{i18n.t("profile.class.users.students.nostudents.text")}</Text>}
                                     {classData.data.students.map((student: UserInfo) => (
-                                        <View key={student._id} style={commonStyle.listUserElement}>
+                                        <View key={typeof student === "string" ? student : student._id} style={commonStyle.listUserElement}>
                                             <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
                                             <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>{student.name} {student.surname}</Text>
                                         </View>

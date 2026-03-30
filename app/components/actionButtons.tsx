@@ -49,9 +49,9 @@ export default function ActionButtons({ items, align, containerStyles, itemStyle
                 let backgroundColor = e.styles?.backgroundColor ?? itemStyles?.backgroundColor ?? (!e.enabled ? theme.disabled : undefined) ?? commonStyle.button.backgroundColor;
                 let textColor = getTextColor(backgroundColor);
                 return (
-                    <View style={{ borderRadius: 360, overflow: "hidden" }}>
+                    <View key={i} style={{ borderRadius: 360, overflow: "hidden" }}>
                         <BlurView>
-                            <TouchableOpacity disabled={!e.enabled} key={i} style={[
+                            <TouchableOpacity disabled={!e.enabled} style={[
                                 commonStyle.button, 
                                 { display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: 10, flex: 1, overflow: "hidden" },
                                 itemStyles,
