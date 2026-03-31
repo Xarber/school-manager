@@ -846,6 +846,23 @@
             "create": {
                 "title": "Create"
             },
+            "schedule": {
+                "header":  {
+                    "text": "Schedule",
+                    "description": "View the schedule for this exam"
+                },
+                "edit": {
+                    "title": "Schedule"
+                },
+                "tab": {
+                    "days": {
+                        "title": "Days"
+                    },
+                    "students": {
+                        "title": "Students"
+                    }
+                }
+            },
             "datestring": "{{date}} at {{time}}",
             "scheduled": {
                 "title": "Scheduled",

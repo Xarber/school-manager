@@ -73,9 +73,9 @@ function renderHomework(homework: HomeworkData[], classData: ClassData, refreshi
     }
     allDates.sort((a, b) => a.timestamp - b.timestamp);
 
-    const closestDate = allDates.reduce(((prev, curr) => {
+    const closestDate = (!homeworkLoading && allDates.length > 0) ? allDates.reduce(((prev, curr) => {
         return Math.abs(curr.timestamp - now) < Math.abs(prev.timestamp - now) ? curr : prev;
-    }))
+    })) : null;
 
     return allDates.length > 0 ? (
         <ScrollView ref={scrollRef} style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
@@ -90,7 +90,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData, refreshi
                                 key={date}
                                 ref={(el) => {sectionRefs.current[dateObj.timestamp] = el}}
                                 onLayout={() => {
-                                    if (homeworkLoading) return;
+                                    if (homeworkLoading || !closestDate) return;
                                     if (dateObj.timestamp === closestDate.timestamp && sectionRefs.current[dateObj.timestamp]) {
                                         sectionRefs.current[dateObj.timestamp]?.measureLayout(
                                             scrollRef.current as any,
@@ -291,7 +291,6 @@ function HomeworkTab({userData}: {userData: UserData}) {
                 }
             ]} align="right" itemStyles={{ borderRadius: 360 }} />
         </>
-
     )
 }
 
