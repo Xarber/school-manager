@@ -875,6 +875,23 @@
             "create": {
                 "title": "Crea"
             },
+            "schedule": {
+                "header":  {
+                    "text": "Programma",
+                    "description": "Visualizza il programma di questa verifica"
+                },
+                "edit": {
+                    "title": "Programma"
+                },
+                "tab": {
+                    "days": {
+                        "title": "Giorni"
+                    },
+                    "students": {
+                        "title": "Studenti"
+                    }
+                }
+            },
             "datestring": "{{date}} alle {{time}}",
             "scheduled": {
                 "title": "Programmata",

@@ -14,6 +14,7 @@ import { useLessonData } from '@/data/LessonMapContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
@@ -42,6 +43,8 @@ export function regroupLessonsByDate(lessonArray: {subjectid: string, data: Less
 
     return dateIndex;
 }
+
+const Tab = createMaterialTopTabNavigator();
 
 function AllLessonsTab({classid, userData}: {classid: string, userData: UserData}) {
     const theme = useTheme();
@@ -101,7 +104,7 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
     const lessons = regroupLessonsByDate(lessonData) as any[];
     const now = Date.now();
 
-    const closestDate = !lessonsLoading ? lessons.reduce(((prev, curr) => {
+    const closestDate = (!lessonsLoading && lessons.length > 0) ? lessons.reduce(((prev, curr) => {
         return Math.abs(new Date(curr[0]).getTime() - now) < Math.abs(new Date(prev[0]).getTime() - now) ? curr : prev;
     })) : null;
 
@@ -136,7 +139,7 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
                                                 key={e[0]}
                                                 ref={(el) => {sectionRefs.current[new Date(e[0]).getTime()] = el}}
                                                 onLayout={() => {
-                                                    if (lessonsLoading) return;
+                                                    if (lessonsLoading || !closestDate) return;
                                                     if (e[0] === closestDate[0] && sectionRefs.current[new Date(e[0]).getTime()]) {
                                                         sectionRefs.current[new Date(e[0]).getTime()]?.measureLayout(
                                                             scrollRef.current as any,
@@ -196,14 +199,22 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
 function LessonTab() {
     const params = useLocalSearchParams();
     const lessonid = params.id as string;
+    const page = params.page as string ?? "default";
+
     const classData = useClassData();
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const optimizationStyle = createStyling.createOptimizationStyles(theme);
+    const { width, height } = useWindowDimensions();
+    const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
     const language = useLanguage();
     const userData = useUserData();
 
     const lessons = useLessonData().lessons;
     const unloadedLessons = useLessonData().unloadedLessons;
+
+    const network = useNetworkContext();
+    const router = useRouter();
 
     const lessonData = lessons.find((e: any) => e._id == lessonid) ?? {};
 
@@ -216,51 +227,133 @@ function LessonTab() {
     const lessonDay = findToday(language, `${lessonData.date}T${lessonData.time}`);
     const lessonTime = new Date(`${lessonData.date}T${lessonData.time}`).toLocaleTimeString(undefined, {hour: "2-digit", minute: "2-digit"});
 
+    let isTeacher = classData.data.teachers.find((e: UserInfo | string) => (typeof e === "string" ? e : e._id) === (userData as any).data.userInfo._id) ? true : false;
+
     // Todo: Add dates, schedules, excluded students, divide for SEN/non SEN.
+
+    if (page === "schedule") {
+        if (!devMode) return <LabsScreen />;
+
+        function ScheduleStudents() {
+            return <LessonScheduleStudentsTab />
+        }
+
+        function ScheduleDays() {
+            return <LessonScheduleDaysTab />
+        }
+
+        return (
+            <>
+                <View style={[optimizationStyle.container, { flex: 1 }]}>
+                    {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, { justifyContent: "center", gap: 5, alignItems: "center", height: "100%" }]}>
+                        <Ionicons name="school" size={40} color={theme.text} />
+                        <Text style={commonStyle.headerText}>{classData.data.name}</Text>
+                        <Text style={commonStyle.text}>{i18n.t("registry.lessons.schedule.header.description")}</Text>
+                    </View>}
+                    <View style={optimizationStyle.item}>
+                        <Tab.Navigator screenOptions={()=>({
+                            tabBarActiveTintColor: theme.text,
+                            tabBarIndicatorStyle: { backgroundColor: theme.primary },
+                            // tabBarContentContainerStyle: { backgroundColor: theme.background },
+                        })}>
+                            <Tab.Screen name={i18n.t("registry.lessons.schedule.tab.days.title")} component={ScheduleDays} />
+                            <Tab.Screen name={i18n.t("registry.lessons.schedule.tab.students.title")} component={ScheduleStudents} />
+                        </Tab.Navigator>
+                    </View>
+                </View>
+            </>
+        );
+    }
 
     return (
         <>
-            <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 10 }}>
-                <View style={commonStyle.dashboardSection}>
-                    <Text style={commonStyle.headerText}>{lessonData.title}</Text>
-                    <View style={[commonStyle.card, { gap: 10 }]}>
-                        <Text style={commonStyle.text}>{lessonData.description}</Text>
-                        <View style={[commonStyle.card, { gap: 10 }]}>
-                            <Text style={commonStyle.text}>{i18n.t("registry.lessons.datestring", {date: lessonDay, time: lessonTime})}</Text>
-                            <View style={{display: (lessonData.isExam || lessonData.scheduled) ? "flex" : "none",flexDirection: "row", gap: 5}}>
-                                {lessonData.isExam == true && (
-                                    <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.opaqueCard, color: getTextColor(theme.opaqueCard) }]}>{i18n.t("registry.lessons.exam")}</Text>
-                                )}
-                                {lessonData.scheduled == true && (
-                                    <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.opaqueCard, color: getTextColor(theme.opaqueCard) }]}>{i18n.t("registry.lessons.scheduled.title")}</Text>
-                                )}
-                            </View>
-                        </View>
-                    </View>
-                    {lessonData.scheduled == true && (
-                        <View style={{ gap: 10 }}>
-                            <View style={[commonStyle.card, { gap: 10 }]}>
-                                <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days")}</Text>
-                                {!devMode ? <LabsScreen /> : (
-                                    <View>
-
+            <View style={[optimizationStyle.container, { flex: 1 }]}>
+                {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, { justifyContent: "center", gap: 5, alignItems: "center", height: "100%" }]}>
+                    <Ionicons name="school" size={40} color={theme.text} />
+                    <Text style={commonStyle.headerText}>{classData.data.name}</Text>
+                    <Text style={commonStyle.text}>{i18n.t("registry.lessons.header.description")}</Text>
+                </View>}
+                <View style={optimizationStyle.item}>
+                    <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 10 }}>
+                        <View style={commonStyle.dashboardSection}>
+                            {page === "default" && (     
+                                <>          
+                                    <Text style={commonStyle.headerText}>{lessonData.title}</Text>
+                                    <View style={[commonStyle.card, { gap: 10 }]}>
+                                        <Text style={commonStyle.text}>{lessonData.description}</Text>
+                                        <View style={[commonStyle.card, { gap: 10 }]}>
+                                            <Text style={commonStyle.text}>{i18n.t("registry.lessons.datestring", {date: lessonDay, time: lessonTime})}</Text>
+                                            <View style={{display: (lessonData.isExam || lessonData.scheduled) ? "flex" : "none",flexDirection: "row", gap: 5}}>
+                                                {lessonData.isExam == true && (
+                                                    <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.opaqueCard, color: getTextColor(theme.opaqueCard) }]}>{i18n.t("registry.lessons.exam")}</Text>
+                                                )}
+                                                {lessonData.scheduled == true && (
+                                                    <Text style={[commonStyle.dashboardSectionItemBadge, { backgroundColor: theme.opaqueCard, color: getTextColor(theme.opaqueCard) }]}>{i18n.t("registry.lessons.scheduled.title")}</Text>
+                                                )}
+                                            </View>
+                                        </View>
                                     </View>
-                                )}
-                            </View>
-                            {classData.data.teachers.find((e: UserInfo) => e._id === (userData as any).data.userInfo._id) && (
-                                <View style={[commonStyle.card, { gap: 10 }]}>
-                                    <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.excluded")}</Text>
-                                    {!devMode ? <LabsScreen /> : (
-                                        <View>
-                                            
+                                </>
+                            )}
+                            {lessonData.scheduled == true && (
+                                <View style={{ gap: 10 }}>
+                                    <View style={[commonStyle.card, { gap: 10 }]}>
+                                        <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days")}</Text>
+                                        {!devMode ? <LabsScreen /> : (
+                                            <View>
+
+                                            </View>
+                                        )}
+                                    </View>
+                                    {isTeacher && (
+                                        <View style={[commonStyle.card, { gap: 10 }]}>
+                                            <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.excluded")}</Text>
+                                            {!devMode ? <LabsScreen /> : (
+                                                <View>
+                                                    
+                                                </View>
+                                            )}
                                         </View>
                                     )}
                                 </View>
                             )}
                         </View>
-                    )}
+                    </ScrollView>
                 </View>
-            </ScrollView>
+            </View>
+            <ActionButtons items={[
+                {
+                    title: i18n.t("registry.lessons.schedule.edit.title"),
+                    iconName: "add",
+                    onPress: () => {
+                        router.push({pathname: `/(tabs)/registry/lessons/${lessonid}` as any, params: {page: "schedule"}});
+                    },
+                    display: isTeacher && lessonData.scheduled == true && page === "default",
+                    enabled: network.serverReachable === true
+                }
+            ]} align="right" itemStyles={{ borderRadius: 360 }} />
+        </>
+    );
+}
+
+function LessonScheduleStudentsTab() {
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+
+    return (
+        <>
+            <Text style={commonStyle.text}>Hello</Text>
+        </>
+    );
+}
+
+function LessonScheduleDaysTab() {
+    const theme = useTheme();
+    const commonStyle = createStyling.createCommonStyles(theme);
+
+    return (
+        <>
+            <Text style={commonStyle.text}>Hello 2</Text>
         </>
     );
 }
