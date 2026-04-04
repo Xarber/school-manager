@@ -101,7 +101,7 @@ function NewSubject() {
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.subject.create.input.name.title")}</Text>
-                                    <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.subject.create.name.default")} value={subjectName} onChangeText={text => setSubjectName(text)}/>
+                                    <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} placeholderTextColor={theme.disabled} placeholder={i18n.t("modal.subject.create.name.default")} value={subjectName} onChangeText={text => setSubjectName(text)}/>
                                 </View>
                             </View>
                         </View>

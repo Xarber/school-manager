@@ -341,9 +341,43 @@ function LessonScheduleStudentsTab() {
     const commonStyle = createStyling.createCommonStyles(theme);
 
     return (
-        <>
-            <Text style={commonStyle.text}>Hello</Text>
-        </>
+        <View style={commonStyle.dashboardSection}>
+            <View style={commonStyle.dashboardSection}>
+
+                <View style={{...commonStyle.card, gap: 10}}>
+                    <Text style={commonStyle.headerText}>Prenotati</Text>
+                    <View style={commonStyle.listUserElement}>
+                        <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
+                        <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>Enrico Leandro</Text>
+                    </View>
+                </View>
+
+                <View style={{...commonStyle.card, gap: 10}}>
+                    <Text style={commonStyle.headerText}>Non Prenotati</Text>
+                    <View style={commonStyle.listUserElement}>
+                        <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
+                        <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>Enrico Leandro</Text>
+                    </View>
+                </View>
+
+                <View style={{...commonStyle.card, gap: 10}}>
+                    <Text style={commonStyle.headerText}>Esclusi</Text>
+                    <View style={commonStyle.listUserElement}>
+                        <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
+                        <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>Enrico Leandro</Text>
+                    </View>
+                </View>
+
+                <View style={{...commonStyle.card, gap: 10}}>
+                    <Text style={commonStyle.headerText}>Interrogati</Text>
+                    <View style={commonStyle.listUserElement}>
+                        <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
+                        <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>Enrico Leandro</Text>
+                    </View>
+                </View>
+
+            </View>
+        </View>
     );
 }
 
@@ -353,7 +387,9 @@ function LessonScheduleDaysTab() {
 
     return (
         <>
-            <Text style={commonStyle.text}>Hello 2</Text>
+            <View style={commonStyle.dashboardSection}>
+                
+            </View>
         </>
     );
 }

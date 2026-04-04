@@ -135,11 +135,11 @@ function NewComunication() {
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.input.name.title")}</Text>
-                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.comunication.create.name.default")} value={comunicationName} onChangeText={text => setComunicationName(text)}/>
+                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} placeholderTextColor={theme.disabled} placeholder={i18n.t("modal.comunication.create.name.default")} value={comunicationName} onChangeText={text => setComunicationName(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.input.description.title")}</Text>
-                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} placeholder={i18n.t("modal.comunication.create.description.default")} value={comunicationDescription} onChangeText={text => setComunicationDescription(text)}/>
+                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} placeholderTextColor={theme.disabled} placeholder={i18n.t("modal.comunication.create.description.default")} value={comunicationDescription} onChangeText={text => setComunicationDescription(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.datetime.title")}</Text>

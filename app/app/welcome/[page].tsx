@@ -151,7 +151,7 @@ function SetNamePage() {
                         </View>
                         <View style={welcomeStyles.bottomViewBody}>
                             <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.name.description")}</Text>
-                            <TextInput autoFocus autoCapitalize="words" maxLength={30} style={welcomeStyles.bottomViewBodyInput} value={name} onChangeText={setName} placeholder={i18n.t("welcome.name.input.placeholder")} />
+                            <TextInput autoFocus autoCapitalize="words" maxLength={30} style={welcomeStyles.bottomViewBodyInput} value={name} onChangeText={setName} placeholderTextColor={theme.disabled} placeholder={i18n.t("welcome.name.input.placeholder")} />
                         </View>
                     </View>
                 </View>
@@ -214,7 +214,7 @@ function SetSurnamePage() {
                         </View>
                         <View style={welcomeStyles.bottomViewBody}>
                             <Text style={welcomeStyles.bottomViewBodyText}>{i18n.t("welcome.surname.description")}</Text>
-                            <TextInput autoFocus autoCapitalize="words" maxLength={40} style={welcomeStyles.bottomViewBodyInput} value={surname} onChangeText={setSurname} placeholder={i18n.t("welcome.surname.input.placeholder")} />
+                            <TextInput autoFocus autoCapitalize="words" maxLength={40} style={welcomeStyles.bottomViewBodyInput} value={surname} onChangeText={setSurname} placeholderTextColor={theme.disabled} placeholder={i18n.t("welcome.surname.input.placeholder")} />
                         </View>
                     </View>
                 </View>

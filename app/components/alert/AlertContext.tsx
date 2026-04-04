@@ -15,6 +15,7 @@ export interface AlertProps {
   dismissable?: boolean;
   children?: React.ReactNode;
   actions?: Action[];
+  autodismiss?: boolean;
 }
 
 export interface AlertContextType {
@@ -70,7 +71,7 @@ export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
                   style={[styles.alertButton, {backgroundColor: i === 0 ? colors.primary : colors.secondary}]}
                   onPress={() => {
                     action.onPress?.();
-                    hide();
+                    if (!!alertProps.autodismiss) hide();
                   }}
                 >
                   <Text style={styles.alertButtonText}>{action.title}</Text>

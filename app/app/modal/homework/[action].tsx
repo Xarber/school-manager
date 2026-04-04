@@ -137,11 +137,11 @@ function NewHomework() {
                             <View style={modalStyle.cardEdit}>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.homework.create.input.name.title")}</Text>
-                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.homework.create.name.default")} value={homeworkName} onChangeText={text => setHomeworkName(text)}/>
+                                    <TextInput maxLength={50} style={modalStyle.cardEditFieldInput} placeholderTextColor={theme.disabled} placeholder={i18n.t("modal.homework.create.name.default")} value={homeworkName} onChangeText={text => setHomeworkName(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.homework.create.input.description.title")}</Text>
-                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} placeholder={i18n.t("modal.homework.create.description.default")} value={homeworkDescription} onChangeText={text => setHomeworkDescription(text)}/>
+                                    <TextInput multiline={true} style={modalStyle.cardEditFieldTextArea} placeholderTextColor={theme.disabled} placeholder={i18n.t("modal.homework.create.description.default")} value={homeworkDescription} onChangeText={text => setHomeworkDescription(text)}/>
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.homework.create.subject.title")}</Text>

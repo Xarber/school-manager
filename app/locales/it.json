@@ -35,8 +35,17 @@
             "unlock": "Sblocca app",
             "fallback": "Prova un altro modo",
             "screen": {
-                "locked": "Locked",
-                "unlock": "Unlock"
+                "locked": "Bloccato",
+                "unlock": "Sblocca"
+            },
+            "pincode": {
+                "title": "Inserisci il PIN",
+                "message": "C'è bisogno del PIN per sbloccare l'app.",
+                "placeholder": "******",
+                "wrong": "PIN errato",
+                "actions": {
+                    "ok": "Conferma"
+                }
             }
         },
         "calendar": {

@@ -27,15 +27,15 @@ export function AppLockProvider({ children }: { children: React.ReactNode }) {
         const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
         if (!hasHardware || !isEnrolled) {
-        setIsAuthenticated(true); // fallback
-        setFirstUnlock(true);
-        return;
+            setIsAuthenticated(true); // fallback
+            setFirstUnlock(true);
+            return;
         }
 
         const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: i18n.t("components.applock.unlock"),
-        fallbackLabel: i18n.t("components.applock.fallback"),
-        disableDeviceFallback: false
+            promptMessage: i18n.t("components.applock.unlock"),
+            fallbackLabel: i18n.t("components.applock.fallback"),
+            disableDeviceFallback: false
         });
 
         if (result.success === true && !firstUnlock) setFirstUnlock(true);

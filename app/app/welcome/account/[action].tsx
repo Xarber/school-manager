@@ -157,12 +157,12 @@ function LoginPage({alert}: AccountProps) {
                             <View style={welcomeStyles.bottomViewBodyForm}>
                                 <View style={welcomeStyles.bottomViewBodyFormField}>
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.email.title")}</Text>
-                                    <TextInput autoCapitalize="none" keyboardType="email-address" style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{reset(); setEmail(text);}} placeholder={i18n.t("welcome.account.auth.input.email.placeholder")} />
+                                    <TextInput autoCapitalize="none" keyboardType="email-address" style={welcomeStyles.bottomViewBodyFormFieldInput} value={email} onChangeText={(text)=>{reset(); setEmail(text);}} placeholderTextColor={theme.disabled} placeholder={i18n.t("welcome.account.auth.input.email.placeholder")} />
                                 </View>
                                 <View style={(!otpsent || !network.serverReachable) ? {display: "none"} : welcomeStyles.bottomViewBodyFormField}>
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.auth.input.otp.title")}</Text>
                                     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 10}}>
-                                        <TextInput autoFocus autoCapitalize="none" maxLength={6} keyboardType="number-pad" style={[welcomeStyles.bottomViewBodyFormFieldInput, {flex: 1}]} value={otpcode} onChangeText={setOtpcode} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
+                                        <TextInput autoFocus autoCapitalize="none" maxLength={6} keyboardType="number-pad" style={[welcomeStyles.bottomViewBodyFormFieldInput, {flex: 1}]} value={otpcode} onChangeText={setOtpcode} placeholderTextColor={theme.disabled} placeholder={i18n.t("welcome.account.auth.input.otp.placeholder")} />
                                         <TouchableOpacity onPress={()=>{reset();sendOtp(email, setOtpsent, setLoading, setEmailcode, alert as any, (network.serverPath as string));setEmailResent(true);}}>
                                             <Ionicons name="sync-circle-outline" size={20} color={theme.text} />
                                         </TouchableOpacity>
@@ -250,11 +250,11 @@ function SignupPage({alert}: AccountProps) {
                             <View style={welcomeStyles.bottomViewBodyForm}>
                                 <View style={welcomeStyles.bottomViewBodyFormField}>
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.signup.input.name.title")}</Text>
-                                    <TextInput maxLength={30} autoCapitalize="words" style={welcomeStyles.bottomViewBodyFormFieldInput} value={name} onChangeText={setName} placeholder={i18n.t("welcome.account.signup.input.name.placeholder")} />
+                                    <TextInput maxLength={30} autoCapitalize="words" style={welcomeStyles.bottomViewBodyFormFieldInput} value={name} onChangeText={setName} placeholderTextColor={theme.disabled} placeholder={i18n.t("welcome.account.signup.input.name.placeholder")} />
                                 </View>
                                 <View style={welcomeStyles.bottomViewBodyFormField}>
                                     <Text style={welcomeStyles.bottomViewBodyFormFieldText}>{i18n.t("welcome.account.signup.input.surname.title")}</Text>
-                                    <TextInput maxLength={40} autoCapitalize="words" style={welcomeStyles.bottomViewBodyFormFieldInput} value={surname} onChangeText={setSurname} placeholder={i18n.t("welcome.account.signup.input.surname.placeholder")} />
+                                    <TextInput maxLength={40} autoCapitalize="words" style={welcomeStyles.bottomViewBodyFormFieldInput} value={surname} onChangeText={setSurname} placeholderTextColor={theme.disabled} placeholder={i18n.t("welcome.account.signup.input.surname.placeholder")} />
                                 </View>
                             </View>
                         </View>

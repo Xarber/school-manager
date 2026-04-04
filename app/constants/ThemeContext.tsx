@@ -1,8 +1,12 @@
 import { useUserData } from "@/data/UserDataContext";
-import { getAppIconName, setAlternateAppIcon, supportsAlternateIcons } from "expo-alternate-app-icons";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Platform, useColorScheme } from "react-native";
 import { colors, Scheme, themeList } from "./colors";
+import { isExpoGo } from "@/data/datamanager";
+
+let getAppIconName = ()=>null as string | null;
+let setAlternateAppIcon = (name: string | null)=>Promise.resolve(null) as Promise<string | null>;
+let supportsAlternateIcons = false;
 
 const ThemeContext = createContext<Scheme>("light");
 
@@ -44,6 +48,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const systemScheme = useColorScheme() ?? "light";
     const [scheme, setScheme] = useState<Scheme>(systemScheme as Scheme);
 
+    useEffect(() => {
+        if (isExpoGo) return;
+
+        (async () => {
+            try {
+                const mod = require("expo-alternate-app-icons");
+                if (mod && Platform.OS != "web") {
+                    getAppIconName = mod.getAppIconName;
+                    setAlternateAppIcon = mod.setAlternateAppIcon;
+                    supportsAlternateIcons = true;
+                }
+            } catch (e) {
+                if (e instanceof Error) console.warn("[THEMES] Failed to load expo-alternate-app-icons", e.message);
+            }
+        })();
+    }, []);
+
     const userData = useUserData();
 
     useEffect(() => {
@@ -76,35 +97,35 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         }
     }, [userData.data.settings?.theme, systemScheme]);
 
-    if (supportsAlternateIcons == true) {
-        useEffect(() => {
-            const userTheme = userData.data.settings?.theme;
-            if (!userTheme || userData.loading === true) return;
+    useEffect(() => {
+        if (!supportsAlternateIcons) return;
 
-            const updateIcon = async () => {
-                const currentAppIcon = getAppIconName();
-                await new Promise(r => setTimeout(r, 500));
-                try {
-                    if (themeList.special.includes(userTheme) || themeList.hidden.includes(userTheme)) {
-                        let specialIconName = pascalCase(`icon-${userTheme}`);
-                        if (currentAppIcon != specialIconName) {
-                            console.warn(`[THEMES] ${currentAppIcon ?? "Default"} -> ${specialIconName}`);
-                            await setAlternateAppIcon(specialIconName);
-                        }
-                    } else {
-                        if (currentAppIcon != null) {
-                            console.warn(`[THEMES] ${currentAppIcon} -> Default`);
-                            await setAlternateAppIcon(null);
-                        }
+        const userTheme = userData.data.settings?.theme;
+        if (!userTheme || userData.loading === true) return;
+
+        const updateIcon = async () => {
+            const currentAppIcon = getAppIconName();
+            await new Promise(r => setTimeout(r, 500));
+            try {
+                if (themeList.special.includes(userTheme) || themeList.hidden.includes(userTheme)) {
+                    let specialIconName = pascalCase(`icon-${userTheme}`);
+                    if (currentAppIcon != specialIconName) {
+                        console.warn(`[THEMES] ${currentAppIcon ?? "Default"} -> ${specialIconName}`);
+                        await setAlternateAppIcon(specialIconName);
                     }
-                } catch (e) {
-                    console.warn("[THEMES]", e);
+                } else {
+                    if (currentAppIcon != null) {
+                        console.warn(`[THEMES] ${currentAppIcon} -> Default`);
+                        await setAlternateAppIcon(null);
+                    }
                 }
-            };
+            } catch (e) {
+                console.warn("[THEMES]", e);
+            }
+        };
 
-            updateIcon();
-        }, [userData.data.settings?.theme, userData.loading]);
-    }
+        updateIcon();
+    }, [userData.data.settings?.theme, userData.loading]);
 
     return (
         <ThemeContext.Provider value={scheme}>
