@@ -37,6 +37,15 @@
             "screen": {
                 "locked": "Locked",
                 "unlock": "Unlock"
+            },
+            "pincode": {
+                "title": "Enter the PIN code",
+                "message": "You need your passcode to unlock the app.",
+                "placeholder": "******",
+                "wrong": "PIN errato",
+                "actions": {
+                    "ok": "Confirm"
+                }
             }
         },
         "calendar": {

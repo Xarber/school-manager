@@ -43,6 +43,10 @@ export async function ensureBackgroundSyncRegistered() {
     let stopRunning = false;
     const isRegistered = await TaskManager.isTaskRegisteredAsync(SYNC_TASK).catch(() => stopRunning = true);
     if (!isRegistered && !stopRunning) {
-        await BackgroundTask.registerTaskAsync(SYNC_TASK, { minimumInterval: 15 }); // minutes (inexact)
+        try {
+            await BackgroundTask.registerTaskAsync(SYNC_TASK, { minimumInterval: 15 }); // minutes (inexact)
+        } catch (e) {
+            if (e instanceof Error) console.warn("[SYNC] Failed to register background task", e.message);
+        }
     }
 }

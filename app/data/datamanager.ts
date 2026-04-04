@@ -11,7 +11,7 @@ export const isProductionBinary = env === "standalone"; // release build created
 export const isStoreClient = env === "storeClient";     // Expo Go OR a dev build using expo-dev-client
 
 // Expo Go specific: expoVersion is the Expo Go version string when running in Expo Go
-export const isExpoGo = isStoreClient && !!Constants.expoVersion;
+export const isExpoGo = (isStoreClient && !!Constants.expoVersion) || Constants.appOwnership === 'expo';
 export const isDevClient = isStoreClient && !Constants.expoVersion;
 
 export const isWeb = Platform.OS === "web";

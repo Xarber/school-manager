@@ -9,7 +9,10 @@ type Props = {
 }
 
 export const KeyboardShift = ({ children, extraPadding }: Props) => {
-  const height = useHeaderHeight();
+  let height = 0;
+  try {
+    height = useHeaderHeight();
+  } catch (e) {}
   const insets = useSafeAreaInsets();
 
   return (

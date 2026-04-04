@@ -92,12 +92,12 @@ function NewClass() {
                         <View style={modalStyle.cardEdit}>
                             <View style={modalStyle.cardEditField}>
                                 <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.name.title")}</Text>
-                                <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.class.create.name.default")} value={className} onChangeText={text => setClassName(text)}/>
+                                <TextInput maxLength={30} style={modalStyle.cardEditFieldInput} placeholderTextColor={theme.disabled} placeholder={i18n.t("modal.class.create.name.default")} value={className} onChangeText={text => setClassName(text)}/>
                             </View>
 
                             <View>
                                 <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.class.create.input.description.title")}</Text>
-                                <TextInput style={modalStyle.cardEditFieldInput} placeholder={i18n.t("modal.class.create.description.default")} value={classDescription} onChangeText={text => setClassDescription(text)} />
+                                <TextInput style={modalStyle.cardEditFieldInput} placeholderTextColor={theme.disabled} placeholder={i18n.t("modal.class.create.description.default")} value={classDescription} onChangeText={text => setClassDescription(text)} />
                             </View>
                         </View>
                     </View>

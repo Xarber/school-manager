@@ -127,7 +127,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
                                 <View style={[modalStyle.cardEdit]}>
                                     <View style={modalStyle.cardEditField}>
                                         <Text style={modalStyle.cardEditFieldText}>{i18n.t("registry.comunications.reply.message")}</Text>
-                                        <TextInput readOnly={(responseSent)} maxLength={300} style={modalStyle.cardEditFieldInput} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
+                                        <TextInput readOnly={(responseSent)} maxLength={300} style={modalStyle.cardEditFieldInput} placeholderTextColor={theme.disabled} placeholder={i18n.t("registry.comunications.reply.messagePlaceholder")} value={reply} onChangeText={text => setReply(text)}/>
                                     </View>
                                     <TouchableOpacity disabled={(!canSend || responseSent)} style={[commonStyle.wideButton, ((!canSend || responseSent) ? { backgroundColor: theme.disabled } : null)]} onPress={() => {
                                         comunicationResponse.create({
