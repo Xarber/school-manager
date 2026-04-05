@@ -1,7 +1,7 @@
 # 🎓 School Manager
-![Expo](https://img.shields.io/badge/Expo-55-blue)
-![React Native](https://img.shields.io/badge/React%20Native-0.76-green)
-![License](https://img.shields.io/badge/license-MIT-purple)
+![Expo](https://img.shields.io/badge/Expo-55.0.9-blue)
+![React Native](https://img.shields.io/badge/React%20Native-0.83.4-green)
+![License](https://img.shields.io/badge/license-AGPL%203.0-purple)
 
 Welcome to the school manager repo!
 
