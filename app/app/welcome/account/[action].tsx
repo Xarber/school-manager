@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
     Image,
@@ -23,6 +23,7 @@ import { useAccountData } from "@/data/AccountDataContext";
 import { DataManager } from "@/data/datamanager";
 import { useUserData } from "@/data/UserDataContext";
 import { Ionicons } from "@expo/vector-icons";
+import AlertElement from "@/components/alert/alertElement";
 
 interface AlertProps {
     title: string;
@@ -265,7 +266,8 @@ function SignupPage({alert}: AccountProps) {
                 <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                     alert.show({
                         title: i18n.t("welcome.account.signup.confirm.title"),
-                        message: `${name} ${surname}`, 
+                        message: `${name} ${surname}`,
+                        autodismiss: true,
                         actions: [
                             {
                                 title: i18n.t("welcome.account.signup.confirm.true"),
@@ -399,76 +401,20 @@ function LogoutPage({alert}: AccountProps) {
     );
 }
 
-function AlertComponent(alertProps: RootAlertProps) {
-    const colors = useTheme();
-    const styles = createStyling.createAlertStyles(colors);
-
-    return (
-        <>
-            <Pressable style={styles.container} onPress={alertProps.dismissable ? alertProps.hide : undefined}>
-                <Pressable style={styles.alert} onPress={(e) => e.stopPropagation()}>
-                    <Text style={styles.alertHeaderText}>{alertProps.title}</Text>
-
-                    <View style={styles.alertContent}>
-                    <Text style={styles.alertText}>{alertProps.message}</Text>
-                        {alertProps.children}
-                    </View>
-
-                    <View style={styles.alertActions}>
-                        {alertProps.actions?.slice(0,2).map((action, i) => (
-                            <TouchableOpacity
-                                key={i}
-                                style={[styles.alertButton, {backgroundColor: i === 0 ? colors.primary : colors.secondary}]}
-                                onPress={() => {
-                                    action.onPress?.();
-                                    alertProps.hide();
-                                }}
-                            >
-                                <Text style={styles.alertButtonText}>{action.title}</Text>
-                            </TouchableOpacity>
-                        ))}
-                        {(alertProps.actions ?? []).length === 0 && (
-                            <TouchableOpacity
-                                style={[styles.alertButton, { backgroundColor: colors.primary }]}
-                                onPress={() => {
-                                    alertProps.hide();
-                                }}
-                            >
-                                <Text style={styles.alertButtonText}>{i18n.t("components.alert.close.default.text")}</Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                </Pressable>
-            </Pressable>
-        </>
-    )
-}
-
 export default function AccountScreen() {
     const params = useLocalSearchParams();
     const action = params.action as string;
 
-    const [visible, setVisible] = useState(false);
-    const [alertProps, setAlertProps] = useState<AlertProps | null>(null);
-
-    const show = (props: AlertProps) => {
-        Keyboard.dismiss();
-        if (props.dismissable === undefined && !props.actions) props.dismissable = true;
-        else if (!!props.actions) props.dismissable = false;
-        setAlertProps(props);
-        setVisible(true);
-    };
-
-    const hide = () => {
-        setVisible(false);
-    };
+    const alertRef = useRef<{ show: (props: AlertProps) => void; hide: () => void} | null>(null);
+    const show = (props: AlertProps) => alertRef.current?.show(props);
+    const hide = () => alertRef.current?.hide();
 
     if (action === "login" || action === "signup" ) {
         return (
             <>
                 {action === "login" && <LoginPage alert={{show, hide}} />}
                 {action === "signup" && <SignupPage alert={{show, hide}} />}
-                {visible && alertProps && (<AlertComponent title={alertProps.title} message={alertProps.message} dismissable={alertProps.dismissable} children={alertProps.children} actions={alertProps.actions} hide={hide} />)}
+                <AlertElement ref={alertRef} />
             </>
         )
     };
@@ -480,7 +426,7 @@ export default function AccountScreen() {
         >
             {action === "loggedin" && <LoggedInPage alert={{show, hide}} />}
             {action === "logout" && <LogoutPage alert={{show, hide}} />}
-            {visible && alertProps && (<AlertComponent title={alertProps.title} message={alertProps.message} dismissable={alertProps.dismissable} children={alertProps.children} actions={alertProps.actions} hide={hide} />)}
+            <AlertElement ref={alertRef} />
         </SafeAreaView>
     );
 }

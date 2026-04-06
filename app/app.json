@@ -4,7 +4,10 @@
     "slug": "school-manager",
     "description": "Manage your school activities easily, sync with your classmates & teachers.",
     "updates": {
-      "url": "https://u.expo.dev/41089c6c-2549-4047-827c-f4b5133ebbcf"
+      "url": "https://u.expo.dev/41089c6c-2549-4047-827c-f4b5133ebbcf",
+      "enabled": true,
+      "checkAutomatically": "NEVER",
+      "fallbackToCacheTimeout": 0
     },
     "runtimeVersion": {
       "policy": "appVersion"

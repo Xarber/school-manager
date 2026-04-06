@@ -162,6 +162,7 @@ function SetNamePage() {
                     alert.show({
                         title: i18n.t("welcome.name.confirm.title"),
                         message: name,
+                        autodismiss: true,
                         actions: [
                             {
                                 title: i18n.t("welcome.name.confirm.true"),
@@ -225,6 +226,7 @@ function SetSurnamePage() {
                     alert.show({
                         title: i18n.t("welcome.surname.confirm.title"),
                         message: surname,
+                        autodismiss: true,
                         actions: [
                             {
                                 title: i18n.t("welcome.surname.confirm.true"),

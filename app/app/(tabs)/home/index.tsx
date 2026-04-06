@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { filterExamsDate, filterLessonsFromExams } from "../calendar";
 import { regroupHomework, stringToColor } from "../registry/homework";
 import { regroupLessonsByDate } from "../registry/lessons/[id]";
+import { useAlert } from "@/components/alert/AlertContext";
 
 function HomeScreen({userData}: {userData: UserData}) {
     const theme = useTheme();
@@ -30,6 +31,7 @@ function HomeScreen({userData}: {userData: UserData}) {
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
     const optimizationStyle = createStyling.createOptimizationStyles(theme);
+    const alert = useAlert();
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
