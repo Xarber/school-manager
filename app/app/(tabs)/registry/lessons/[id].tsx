@@ -298,7 +298,7 @@ function LessonTab() {
                             {lessonData.scheduled == true && (
                                 <View style={{ gap: 10 }}>
                                     <View style={[commonStyle.card, { gap: 10 }]}>
-                                        <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days")}</Text>
+                                        <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days.title")}</Text>
                                         {!devMode ? <LabsScreen /> : (
                                             <View>
 
@@ -307,7 +307,7 @@ function LessonTab() {
                                     </View>
                                     {isTeacher && (
                                         <View style={[commonStyle.card, { gap: 10 }]}>
-                                            <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.excluded")}</Text>
+                                            <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.students.excludedstudents")}</Text>
                                             {!devMode ? <LabsScreen /> : (
                                                 <View>
                                                     
@@ -340,12 +340,56 @@ function LessonScheduleStudentsTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
 
+    const lessonScheduleData = {
+        _id: "",
+        dates: (()=>{
+            const dates = [];
+
+            const generateDate = ()=>{
+                // generate a random date
+                const date = new Date();
+                date.setDate(date.getDate() + Math.floor(Math.random() * 7));
+
+                // generate a random availability 3 to 5
+                const availability = Math.floor(Math.random() * 3) + 3;
+
+                // generate random length of students
+                const studentlength = Math.floor(Math.random() * 3) + 1;
+                const students = Array.from({ length: studentlength }, () => `student-${Math.floor(Math.random() * 100)}`);
+
+                return {
+                    date,
+                    availability,
+                    students
+                };
+            }
+            
+            for (let i = 0; i < 4; i++) {
+                dates.push(generateDate());
+            }
+
+            return dates;
+        })(),
+        lock: false,
+        exclude: (()=>{
+            const exclude = [];
+
+            for (let i = 0; i < 5; i++) {
+                exclude.push(`student-${Math.floor(Math.random() * 100)}`);
+            }
+
+            return exclude;
+        })(),
+        addedAt: "",
+        editedAt: 0
+    };
+
     return (
         <View style={commonStyle.dashboardSection}>
             <View style={commonStyle.dashboardSection}>
 
                 <View style={{...commonStyle.card, gap: 10}}>
-                    <Text style={commonStyle.headerText}>Prenotati</Text>
+                    <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.students.scheduled")}</Text>
                     <View style={commonStyle.listUserElement}>
                         <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
                         <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>Enrico Leandro</Text>
@@ -353,7 +397,7 @@ function LessonScheduleStudentsTab() {
                 </View>
 
                 <View style={{...commonStyle.card, gap: 10}}>
-                    <Text style={commonStyle.headerText}>Non Prenotati</Text>
+                    <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.students.notscheduled")}</Text>
                     <View style={commonStyle.listUserElement}>
                         <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
                         <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>Enrico Leandro</Text>
@@ -361,7 +405,7 @@ function LessonScheduleStudentsTab() {
                 </View>
 
                 <View style={{...commonStyle.card, gap: 10}}>
-                    <Text style={commonStyle.headerText}>Esclusi</Text>
+                    <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.students.excluded")}</Text>
                     <View style={commonStyle.listUserElement}>
                         <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
                         <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>Enrico Leandro</Text>
@@ -369,7 +413,7 @@ function LessonScheduleStudentsTab() {
                 </View>
 
                 <View style={{...commonStyle.card, gap: 10}}>
-                    <Text style={commonStyle.headerText}>Interrogati</Text>
+                    <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.students.called")}</Text>
                     <View style={commonStyle.listUserElement}>
                         <Ionicons style={commonStyle.listUserElementIcon} name="person" size={30} color={theme.text} />
                         <Text style={{...commonStyle.text, ...commonStyle.listUserElementText}}>Enrico Leandro</Text>
@@ -384,12 +428,84 @@ function LessonScheduleStudentsTab() {
 function LessonScheduleDaysTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const language = useLanguage();
+
+    const safeAreaInsets = useSafeAreaInsets();
+    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+
+    const lessonScheduleData = {
+        _id: "",
+        dates: (()=>{
+            const dates = [];
+
+            const generateDate = ()=>{
+                // generate a random date
+                const date = new Date();
+                date.setDate(date.getDate() + Math.floor(Math.random() * 7));
+
+                // generate a random availability 3 to 5
+                const availability = Math.floor(Math.random() * 3) + 3;
+
+                // generate random length of students
+                const studentlength = Math.floor(Math.random() * 3) + 1;
+                const students = Array.from({ length: studentlength }, () => `student-${Math.floor(Math.random() * 100)}`);
+
+                return {
+                    date,
+                    availability,
+                    students
+                };
+            }
+            
+            for (let i = 0; i < 4; i++) {
+                let date = generateDate();
+                dates.push({
+                    day: date.date,
+                    students: date.students,
+                    availability: date.availability,
+                    addedAt: "",
+                    editedAt: 0
+                });
+            }
+
+            return dates;
+        })(),
+        lock: false,
+        exclude: (()=>{
+            const exclude = [];
+
+            for (let i = 0; i < 5; i++) {
+                exclude.push(`student-${Math.floor(Math.random() * 100)}`);
+            }
+
+            return exclude;
+        })(),
+        addedAt: "",
+        editedAt: 0
+    };
 
     return (
         <>
-            <View style={commonStyle.dashboardSection}>
-                
-            </View>
+            <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+                <View style={commonStyle.dashboardSection}>
+                    {lessonScheduleData.dates.map((date, index) => {
+                        let students = date.students.length;
+                        let available = date.availability - date.students.length;
+
+                        return (
+                            <View key={JSON.stringify(date)} style={[commonStyle.card, { gap: 10 }]}>
+                                <Text style={commonStyle.headerText}>{findToday(language, date.day.toISOString())}</Text>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                                    <Ionicons name="calendar-clear" size={18} color={theme.text} />
+                                    <Text style={commonStyle.text}>{i18n.t(`registry.lessons.scheduled.days.scheduled.${students == 1 ? "1" : "0"}`, { count: students })}</Text>
+                                    <View style={[commonStyle.divider, commonStyle.verticalDivider]} />
+                                    <Text style={commonStyle.text}>{i18n.t(`registry.lessons.scheduled.days.available.${available == 1 ? "1" : "0"}`, { count: available })}</Text>
+                                </View>
+                            </View>
+                        );
+                    })}
+                </View>
+            </ScrollView>
         </>
     );
 }

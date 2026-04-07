@@ -904,8 +904,24 @@
             "datestring": "{{date}} alle {{time}}",
             "scheduled": {
                 "title": "Programmata",
-                "days": "Giorni",
-                "excluded": "Studenti Esclusi"
+                "students": {
+                    "excludedstudents": "Studenti Esclusi",
+                    "scheduled": "Prenotati",
+                    "notscheduled": "Senza risposta",
+                    "excluded": "Esclusi",
+                    "called": "Interrogati"
+                },
+                "days": {
+                    "title": "Giorni",
+                    "scheduled": {
+                        "1": "{{count}} studente prenotato",
+                        "0": "{{count}} studenti prenotati"
+                    },
+                    "available": {
+                        "1": "{{count}} posto disponibile",
+                        "0": "{{count}} posti disponibili"
+                    }
+                }
             },
             "exam": "Verifica"
         }

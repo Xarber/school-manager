@@ -4,7 +4,7 @@
   "packageIdentifier": "com.xarber.schoolmanager",
   "description": "Manage your school activities easily, sync with your classmates & teachers.",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Xarber <xarber@xcenter.it>",
   "scheme": "school-manager",
   "scripts": {
@@ -28,6 +28,7 @@
     "@react-native-community/datetimepicker": "8.6.0",
     "@react-native-community/netinfo": "11.5.2",
     "@react-native-picker/picker": "2.11.4",
+    "@react-native-segmented-control/segmented-control": "2.5.7",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/material-top-tabs": "^7.4.13",

@@ -875,8 +875,24 @@
             "datestring": "{{date}} at {{time}}",
             "scheduled": {
                 "title": "Scheduled",
-                "days": "Days",
-                "excluded": "Excluded Students"
+                "students": {
+                    "excludedstudents": "Excluded Students",
+                    "scheduled": "Scheduled",
+                    "notscheduled": "Awaiting Response",
+                    "excluded": "Excluded",
+                    "called": "Called on"
+                },
+                "days": {
+                    "title": "Days",
+                    "scheduled": {
+                        "1": "{{count}} scheduled student",
+                        "0": "{{count}} scheduled students"
+                    },
+                    "available": {
+                        "1": "{{count}} available spot",
+                        "0": "{{count}} available spots"
+                    }
+                }
             },
             "exam": "Exam"
         }
