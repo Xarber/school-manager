@@ -32,6 +32,23 @@ const createCommonStyles = (theme: Theme) => StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
     },
+    divider: {
+        borderRadius: 360,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: 2,
+        minWidth: 2,
+        backgroundColor: theme.disabled
+    },
+    verticalDivider: {
+        width: 2,
+        height: "100%"
+    },
+    horizontalDivider: {
+        height: 2,
+        width: "100%"
+    },
     card: {
         backgroundColor: theme.card,
         padding: 15,

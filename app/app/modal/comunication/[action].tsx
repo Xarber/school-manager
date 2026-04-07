@@ -15,6 +15,7 @@ import { DataManager, useDBitem } from '@/data/datamanager';
 import { useUserData } from '@/data/UserDataContext';
 import { BlurView } from 'expo-blur';
 import { Switch } from 'react-native-paper';
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 interface updateComunicationProps {
     action: string;
@@ -111,6 +112,13 @@ function NewComunication() {
             is24Hour: true,
         });
     };
+    
+    let urgencies = [
+        i18n.t("modal.comunication.create.urgency.options.low"),
+        i18n.t("modal.comunication.create.urgency.options.medium"),
+        i18n.t("modal.comunication.create.urgency.options.high"),
+    ];
+    let selectedUrgencyIndex = urgencies.indexOf(i18n.t(`modal.comunication.create.urgency.options.${urgency}`));
 
     return (
         <>
@@ -197,22 +205,18 @@ function NewComunication() {
                                 </View>
                                 <View style={modalStyle.cardEditField}>
                                     <Text style={modalStyle.cardEditFieldText}>{i18n.t("modal.comunication.create.urgency.title")}</Text>
-                                    <SegmentedSlider 
-                                        options={[
-                                            i18n.t("modal.comunication.create.urgency.options.low"),
-                                            i18n.t("modal.comunication.create.urgency.options.medium"),
-                                            i18n.t("modal.comunication.create.urgency.options.high"),
-                                        ]}
-                                        value={i18n.t(`modal.comunication.create.urgency.options.${urgency}`)}
+                                    <SegmentedControl 
+                                        values={urgencies}
+                                        selectedIndex={selectedUrgencyIndex}
                                         onChange={(v)=>{
-                                            switch (v) {
-                                                case i18n.t("modal.comunication.create.urgency.options.low"):
+                                            switch (v.nativeEvent.selectedSegmentIndex) {
+                                                case 0:
                                                     setUrgency("low");
                                                     break;
-                                                case i18n.t("modal.comunication.create.urgency.options.medium"):
+                                                case 1:
                                                     setUrgency("medium");
                                                     break;
-                                                case i18n.t("modal.comunication.create.urgency.options.high"):
+                                                case 2:
                                                     setUrgency("high");
                                                     break;
                                             }
