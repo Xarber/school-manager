@@ -3,7 +3,14 @@
         "en": "English",
         "it": "Italian"
     },
-    "languageCodes": ["en_US", "en_GB", "en_CA", "en_AU", "it_IT", "it_CH"],
+    "languageCodes": [
+        "en_US",
+        "en_GB",
+        "en_CA",
+        "en_AU",
+        "it_IT",
+        "it_CH"
+    ],
     "beta": {
         "undeveloped": {
             "title": "Still Cooking",
@@ -64,9 +71,38 @@
                     "November",
                     "December"
                 ],
-                "monthNamesShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                "dayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-                "dayNamesShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                "monthNamesShort": [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec"
+                ],
+                "dayNames": [
+                    "Sunday",
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday"
+                ],
+                "dayNamesShort": [
+                    "Sun",
+                    "Mon",
+                    "Tue",
+                    "Wed",
+                    "Thu",
+                    "Fri",
+                    "Sat"
+                ],
                 "today": "Today"
             }
         },
@@ -856,7 +892,7 @@
                 "title": "Create"
             },
             "schedule": {
-                "header":  {
+                "header": {
                     "text": "Schedule",
                     "description": "View the schedule for this exam"
                 },
@@ -885,12 +921,12 @@
                 "days": {
                     "title": "Days",
                     "scheduled": {
-                        "1": "{{count}} scheduled student",
-                        "0": "{{count}} scheduled students"
+                        "0": "{{count}} scheduled students",
+                        "1": "{{count}} scheduled student"
                     },
                     "available": {
-                        "1": "{{count}} available spot",
-                        "0": "{{count}} available spots"
+                        "0": "{{count}} available spots",
+                        "1": "{{count}} available spot"
                     }
                 }
             },
