@@ -3,7 +3,14 @@
         "en": "Inglese",
         "it": "Italiano"
     },
-    "languageCodes": ["en_US", "en_GB", "en_CA", "en_AU", "it_IT", "it_CH"],
+    "languageCodes": [
+        "en_US",
+        "en_GB",
+        "en_CA",
+        "en_AU",
+        "it_IT",
+        "it_CH"
+    ],
     "beta": {
         "undeveloped": {
             "title": "In cottura",
@@ -885,7 +892,7 @@
                 "title": "Crea"
             },
             "schedule": {
-                "header":  {
+                "header": {
                     "text": "Programma",
                     "description": "Visualizza il programma di questa verifica"
                 },
@@ -914,12 +921,12 @@
                 "days": {
                     "title": "Giorni",
                     "scheduled": {
-                        "1": "{{count}} studente prenotato",
-                        "0": "{{count}} studenti prenotati"
+                        "0": "{{count}} studenti prenotati",
+                        "1": "{{count}} studente prenotato"
                     },
                     "available": {
-                        "1": "{{count}} posto disponibile",
-                        "0": "{{count}} posti disponibili"
+                        "0": "{{count}} posti disponibili",
+                        "1": "{{count}} posto disponibile"
                     }
                 }
             },
