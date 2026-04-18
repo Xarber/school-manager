@@ -71,6 +71,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
             setServerPath(first.path);
             setUploadsAllowed(first.response.uploadsEnabled);
             setIsServerReachable(true);
+            if (first.response.overrideOnline === true) setIsOnline(true);
             return first;
         }
 
@@ -92,8 +93,8 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
                 isOnline: (state.isInternetReachable || state.isConnected)
             };
 
-            await findWorkingServer();
             setIsOnline(data.isOnline);
+            await findWorkingServer();
             setType(data.type);
             if (ready != true) setReady(true);
         } finally {

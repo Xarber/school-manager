@@ -7,6 +7,10 @@ const AccountSchema = new Schema({
     pushToken: [{type: String, required: false}],
     locked: {type: Boolean, required: false, default: false},
     active: {type: Boolean, required: false, default: true},
+    otpbackup: {
+        base32: {type: String, required: false},
+        otpauth_url: {type: String, required: false},
+    },
     addedAt: {type: String, required: true},
     editedAt: {type: Number, required: true},
 });

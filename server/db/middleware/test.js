@@ -21,6 +21,7 @@ function connectionTest(req, res) {
         authenticated,
         serverTime: requestTime,
         uploadsEnabled,
+        overrideOnline: (process.argv.includes("-o") || process.argv.includes("--force-online")),
         //add more debug data if needed
     });
 }
