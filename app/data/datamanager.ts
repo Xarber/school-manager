@@ -627,6 +627,7 @@ export async function prepareOfflineData({userInfo, keys}: {userInfo: UserInfo, 
 }
 
 console.log(`\n[DATAMANAGER]\nRunning in ${env} mode;\nisProductionBinary: ${isProductionBinary};\nisStoreClient: ${isStoreClient};\nisExpoGo: ${isExpoGo};\nisDevClient: ${isDevClient}\nUsing local DB: ${(devMode) ? "true" : "false"}\n`);
+let dmappkey = `@app${devMode ? ":dev" : ""}`
 export const DataManager = {
     db: {
         // connect: dbpaths.use, // use useNetworkContext().serverPath
@@ -659,26 +660,27 @@ export const DataManager = {
         pushRegister: "/api/account/register-push",
         pushUnregister: "/api/account/unregister-push",
     },
+    appkey: dmappkey,
     offline: {
         ids: ["oflclsid"]
     },
     outbox: {
-        app: "@app:outbox",
+        app: `${dmappkey}:outbox`,
         db: null,
         default: defaultOutboxData
     },
     index: {
-        app: "@app:idIndex",
+        app: `${dmappkey}:idIndex`,
         db: null,
         default: defaultIndexData
     },
     accountData: {
-        app: "@app:accountData",
+        app: `${dmappkey}:accountData`,
         db: null,
         default: defaultAccountData
     },
     debugData: {
-        app: "@app:debugData",
+        app: `${dmappkey}:debugData`,
         db: "/api/debug",
         default: defaultDebugData
     },
@@ -688,7 +690,7 @@ export const DataManager = {
         default: defaultUserInfo
     },
     classmateData: {
-        app: "@app:classmateData",
+        app: `${dmappkey}:classmateData`,
         db: "/api/users",
         default: defaultUserInfo
     },
@@ -698,12 +700,12 @@ export const DataManager = {
         default: defaultUserSettings
     },
     userData: {
-        app: "@app:userData",
+        app: `${dmappkey}:userData`,
         db: "/api/account",
         default: defaultUserData
     },
     classData: {
-        app: "@app:classData",
+        app: `${dmappkey}:classData`,
         db: "/api/classes",
         default: defaultClassData,
         offline: "oflclsid"
@@ -719,42 +721,42 @@ export const DataManager = {
         default: defaultWeekSchedule
     },
     subjectData: {
-        app: "@app:subjectData",
+        app: `${dmappkey}:subjectData`,
         db: "/api/classes/subjects",
         default: defaultSubjectData
     },
     gradeData: {
-        app: "@app:gradeData",
+        app: `${dmappkey}:gradeData`,
         db: "/api/classes/grades",
         default: defaultGradeData
     },
     materialData: {
-        app: "@app:materialData",
+        app: `${dmappkey}:materialData`,
         db: "/api/classes/materials",
         default: defaultMaterialData
     },
     homeworkData: {
-        app: "@app:homeworkData",
+        app: `${dmappkey}:homeworkData`,
         db: "/api/classes/homework",
         default: defaultHomeworkData
     },
     lessonData: {
-        app: "@app:lessonData",
+        app: `${dmappkey}:lessonData`,
         db: "/api/classes/lessons",
         default: defaultLessonData
     },
     lessonScheduleData: {
-        app: "@app:lessonScheduleData",
+        app: `${dmappkey}:lessonScheduleData`,
         db: "/api/classes/scheduled",
         default: defaultLessonScheduleData
     },
     comunicationData: {
-        app: "@app:comunicationData",
+        app: `${dmappkey}:comunicationData`,
         db: "/api/classes/comunications",
         default: defaultComunicationData
     },
     comunicationResponseData: {
-        app: "@app:comunicationResponseData",
+        app: `${dmappkey}:comunicationResponseData`,
         db: "/api/classes/comunications/responses",
         default: defaultComunicationResponseData
     },
@@ -764,12 +766,12 @@ export const DataManager = {
         default: defaultReadInvitationData
     },
     files: {
-        app: "@app:files",
+        app: `${dmappkey}:files`,
         db: "/api/upload",
         default: defaultFileData
     },
     school: {
-        app: "@app:school",
+        app: `${dmappkey}:school`,
         db: "/api/school",
         default: defaultSchoolData
     }

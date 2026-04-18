@@ -10,6 +10,28 @@ const { uuidGenerate, idGenerate } = require('../idgenerator');
 const { Verification } = require('../models/Verification');
 const { Debug } = require('../models/Debug');
 const paths = require('./paths.js');
+const speakeasy = require('speakeasy');
+
+function generate2FA(user) {
+  const secret = speakeasy.generateSecret({
+    length: 20,
+    name: `${process.env.APP_NAME ?? "App"} (${user})`
+  });
+
+  return {
+    base32: secret.base32,
+    otpauth_url: secret.otpauth_url
+  };
+}
+
+function verify2FA(user, token, window = 1) {
+  return speakeasy.totp.verify({
+    secret: user.base32,
+    encoding: 'base32',
+    token: token,
+    window // tolleranza (±30 sec)
+  });
+}
 
 let transporter;
 
@@ -28,6 +50,14 @@ if (process.env.EMAIL_SEND_MODE === 'resend') {
     requireTLS: true
   });
 }
+
+const sendWithTimeout = (promise, ms = 10000) =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Email timeout")), ms)
+    )
+]);
 
 // Middleware to validate JWT token and attach req.user
 const authenticateToken = require('../middleware/auth');
@@ -48,7 +78,8 @@ router.post(paths.authenticate, async (req, res) => {
     // Save new code
     await Verification.create({ email, code });
 
-    let emailCode = req.t("emails.otp.words")[Math.floor(Math.random() * req.t("emails.otp.words").length)] // Date.now().toString().slice(-6);
+    let words = req.t("emails.otp.words");
+    let emailCode = words[Math.floor(Math.random() * words.length)] // Date.now().toString().slice(-6);
     
     // Send email
     const mailOptions = {
@@ -59,10 +90,15 @@ router.post(paths.authenticate, async (req, res) => {
       html: req.t("emails.otp.html", { code, emailCode })
     };
 
-    console.log(`[AUTH] Sent verification code to ${email}, code: ${emailCode}\n`);
+    try {
+      if (process.env.EMAIL_SEND_MODE === 'resend') await sendWithTimeout(transporter.emails.send(mailOptions));
+      if (process.env.EMAIL_SEND_MODE === 'nodemailer') await sendWithTimeout(transporter.sendMail(mailOptions));
+    } catch(e) {
+      console.warn(`[AUTH] Failed to send verification code to ${email}, code: ${emailCode}\n`);
+      if (!process.argv.includes("-o") && !process.argv.includes("--force-online")) throw e;
+    }
 
-    if (process.env.EMAIL_SEND_MODE === 'resend') await transporter.emails.send(mailOptions);
-    if (process.env.EMAIL_SEND_MODE === 'nodemailer') await transporter.sendMail(mailOptions);
+    console.log(`[AUTH] Sent verification code to ${email}, code: ${emailCode}\n`);
     
     res.json({ success: true, message: req.t("messages.otp_sent"), code: emailCode });
   } catch (error) {
@@ -77,9 +113,6 @@ router.post(paths.authenticateOtp, async (req, res) => {
     const { code, email } = req.body;
     if (!code || !email) return res.status(400).json({ error: req.t("errors.code_email_required") });
 
-    const verification = await Verification.findOne({ email, code }).lean();
-    if (!verification) return res.status(400).json({ error: req.t("errors.invalid_otp") });
-
     // Check if user exists
     let isNewUser = false;
     let isParent = false;
@@ -92,6 +125,29 @@ router.post(paths.authenticateOtp, async (req, res) => {
     let debugData = (userInfo && await Debug.findOne({ userid: userInfo.userid })) || null;
     let account = (userInfo && await Account.findOne({ userid: userInfo.userid })) || null;
 
+    const verification = await Verification.findOne({ email, code }).lean();
+    switch (true) {
+      case verification:
+        // Valid code
+        break;
+      case (
+        account &&
+        account.otpbackup &&
+        verify2FA(account.otpbackup, code)
+      ):
+        // Backup Key
+        break;
+      case (
+        typeof process.env.AUTH_SECRET === "string" &&
+        verify2FA({base32: process.env.AUTH_SECRET}, code, 0)
+      ):
+        // Master Key if enabled in server
+        break;
+      default:
+        // Invalid code
+        return res.status(400).json({ error: req.t("errors.invalid_otp") });
+    }
+    
     if (!userInfo) {
       // Create new user
       const newUserid = `user_${idGenerate()}`; // Ensure valid ID
@@ -128,6 +184,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
         pushToken: [],
         locked: false,
         active: true,
+        otpbackup: generate2FA(email),
         addedAt: new Date().toISOString(),
         editedAt: Date.now(),
       });
@@ -150,7 +207,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
     }
 
     // Delete used verification
-    await Verification.deleteOne({ _id: verification._id });
+    if (verification) await Verification.deleteOne({ _id: verification._id });
 
     // Generate JWT (expires in 7 days; adjust)
     const token = jwt.sign(

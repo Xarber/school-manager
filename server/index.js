@@ -1,10 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const MongoMemoryServer = require('mongodb-memory-server').MongoMemoryServer;
 const dotenv = require('dotenv');
 const cors = require("cors");
 const i18n = require("i18n");
 const path = require('path');
 dotenv.config();
+
+const useLocalDB = process.argv.includes("-l") || process.argv.includes("--local");
+let mongod;
 
 const branch = process.env.BRANCH;
 
@@ -43,45 +47,79 @@ const subjectsRoutes = require('./db/routes/classes/subjects');
 const invitationRoutes = require('./db/routes/invitation');
 const uploadRoutes = require('./db/routes/db/upload');
 
-mongoose.connect(process.env.MONGODB_URI, {
-    dbName: `schoolmanager-${branch}`,
-    appName: "SchoolManager-API",
-}).catch(err => {
-    console.error('MongoDB connection error:', err);
+async function connectDB() {
+    let mongoDBuri = process.env.MONGODB_URI
+    if (useLocalDB) {
+        mongod = await MongoMemoryServer.create({
+            instance: {
+                dbPath: "./db/files/mongo"
+            }
+        });
+        mongoDBuri = mongod.getUri();
+        console.warn("[DB] Using local database:", mongoDBuri);
+    }
+
+    mongoose.connect(mongoDBuri, {
+        dbName: `schoolmanager-${branch}`,
+        appName: "SchoolManager-API",
+    }).catch(err => {
+        console.error('MongoDB connection error:', err);
+    });
+}
+
+async function disconnectDB() {
+    try {
+        await mongoose.disconnect();
+    } catch(e) {}
+
+    if (useLocalDB) try {
+        await mongod.stop();
+    } catch(e) {}
+}
+
+async function startServer() {
+    await connectDB();
+
+    const app = express();
+    app.use(i18n.init);
+    app.use(cors());
+    app.use(express.json());
+    app.use(locales);
+    app.use(debugTest);  // Debug middleware for metrics and testing
+    app.use('/api/auth', authRoutes);
+
+    app.use(auth);
+
+    app.use('/api/account', accountRoutes);  // todo: Delete account
+    app.use('/api/users', userRoutes);  // Mount routes
+
+    app.use('/api/debug', debugRoutes);
+
+    app.use('/api/classes', classesRoutes);
+    app.use('/api/classes/comunications', comunicationsRoutes);
+    app.use('/api/classes/grades', gradesRoutes);
+    app.use('/api/classes/homework', homeworkRoutes);
+    app.use('/api/classes/lessons', lessonsRoutes);
+    app.use('/api/classes/scheduled', scheduledRoutes);
+    app.use('/api/classes/materials', materialsRoutes);
+    app.use('/api/classes/subjects', subjectsRoutes);
+    app.use('/api/invitation', invitationRoutes);
+    app.use('/api/upload', uploadRoutes);
+
+    // Invalid URL
+    app.use((req, res) => {
+        console.error('Invalid endpoint accessed:', req.method, req.originalUrl);
+        res.status(404).json({ error: req.t("errors.invalid_endpoint") });
+    });
+
+    app.listen(paths.dbPort, () => {
+        console.warn(`Server is running on port ${paths.dbPort}.`);
+    });
+}
+
+process.on("SIGINT", async () => {
+    disconnectDB();
+    process.exit(0);
 });
 
-const app = express();
-app.use(i18n.init);
-app.use(cors());
-app.use(express.json());
-app.use(locales);
-app.use(debugTest);  // Debug middleware for metrics and testing
-app.use('/api/auth', authRoutes);
-
-app.use(auth);
-
-app.use('/api/account', accountRoutes);  // todo: Delete account
-app.use('/api/users', userRoutes);  // Mount routes
-
-app.use('/api/debug', debugRoutes);
-
-app.use('/api/classes', classesRoutes);
-app.use('/api/classes/comunications', comunicationsRoutes);
-app.use('/api/classes/grades', gradesRoutes);
-app.use('/api/classes/homework', homeworkRoutes);
-app.use('/api/classes/lessons', lessonsRoutes);
-app.use('/api/classes/scheduled', scheduledRoutes);
-app.use('/api/classes/materials', materialsRoutes);
-app.use('/api/classes/subjects', subjectsRoutes);
-app.use('/api/invitation', invitationRoutes);
-app.use('/api/upload', uploadRoutes);
-
-// Invalid URL
-app.use((req, res) => {
-    console.error('Invalid endpoint accessed:', req.method, req.originalUrl);
-    res.status(404).json({ error: req.t("errors.invalid_endpoint") });
-});
-
-app.listen(paths.dbPort, () => {
-    console.warn(`Server is running on port ${paths.dbPort}.`);
-});
+startServer();

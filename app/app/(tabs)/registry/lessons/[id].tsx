@@ -231,6 +231,50 @@ function LessonTab() {
 
     // Todo: Add dates, schedules, excluded students, divide for SEN/non SEN.
 
+    const lessonScheduleData = {
+        _id: "",
+        dates: (()=>{
+            const dates = [];
+
+            const generateDate = ()=>{
+                // generate a random date
+                const date = new Date();
+                date.setDate(date.getDate() + Math.floor(Math.random() * 7));
+
+                // generate a random availability 3 to 5
+                const availability = Math.floor(Math.random() * 3) + 3;
+
+                // generate random length of students
+                const studentlength = Math.floor(Math.random() * 3) + 1;
+                const students = Array.from({ length: studentlength }, () => `student-${Math.floor(Math.random() * 100)}`);
+
+                return {
+                    date,
+                    availability,
+                    students
+                };
+            }
+            
+            for (let i = 0; i < 4; i++) {
+                dates.push(generateDate());
+            }
+
+            return dates;
+        })(),
+        lock: false,
+        exclude: (()=>{
+            const exclude = [];
+
+            for (let i = 0; i < 5; i++) {
+                exclude.push(`student-${Math.floor(Math.random() * 100)}`);
+            }
+
+            return exclude;
+        })(),
+        addedAt: "",
+        editedAt: 0
+    };
+
     if (page === "schedule") {
         if (!devMode) return <LabsScreen />;
 
@@ -300,8 +344,15 @@ function LessonTab() {
                                     <View style={[commonStyle.card, { gap: 10 }]}>
                                         <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.scheduled.days.title")}</Text>
                                         {!devMode ? <LabsScreen /> : (
-                                            <View>
-
+                                            <View style={{ flexDirection: "row", gap: 5, flexWrap: "wrap" }}>
+                                                {lessonScheduleData.dates.map((date, index) => {
+                                                    let dateName = findToday(language, date.date.toISOString());
+                                                    return (
+                                                        <View key={dateName} style={[commonStyle.card, { gap: 5, flexGrow: 1, flexShrink: 1 }]}>
+                                                            <Text style={commonStyle.text}>{dateName}</Text>
+                                                        </View>
+                                                    )
+                                                })}
                                             </View>
                                         )}
                                     </View>
