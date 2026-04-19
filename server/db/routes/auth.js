@@ -11,6 +11,8 @@ const { Verification } = require('../models/Verification');
 const { Debug } = require('../models/Debug');
 const paths = require('./paths.js');
 const speakeasy = require('speakeasy');
+const handlebars = require('handlebars');
+const fs = require('fs');
 
 function generate2FA(user) {
   const secret = speakeasy.generateSecret({
@@ -61,6 +63,7 @@ const sendWithTimeout = (promise, ms = 10000) =>
 
 // Middleware to validate JWT token and attach req.user
 const authenticateToken = require('../middleware/auth');
+const path = require('path');
 
 const router = express.Router();
 
@@ -81,13 +84,28 @@ router.post(paths.authenticate, async (req, res) => {
     let words = req.t("emails.otp.words");
     let emailCode = words[Math.floor(Math.random() * words.length)] // Date.now().toString().slice(-6);
     
+    const templatePath = path.join(__dirname, '../models/otp.html');
+    const emailHTML = fs.readFileSync(templatePath, 'utf8');
+    const template = handlebars.compile(emailHTML);
+    const html = template({ 
+      code,
+      emailCode,
+      title: req.t("emails.otp.html.title"),
+      subtitle: req.t("emails.otp.html.subtitle"),
+      infoExpires: req.t("emails.otp.html.info.expires"),
+      infoPrivate: req.t("emails.otp.html.info.private"),
+      infoWord: req.t("emails.otp.html.info.word"),
+      footerCopy: req.t("emails.otp.html.footer.copy"),
+      footerIgnore: req.t("emails.otp.html.footer.ignore")
+    });
+
     // Send email
     const mailOptions = {
       from: `"School Manager" <${process.env.ICLOUD_NODEMAILER_SENDFROM}>`,
       to: email,
-      subject: req.t("emails.otp.subject"),
+      subject: req.t("emails.otp.subject", { emoji: emailCode.split(" ")[1] }),
       text: req.t("emails.otp.text", { code, emailCode }),
-      html: req.t("emails.otp.html", { code, emailCode })
+      html
     };
 
     try {
@@ -125,9 +143,9 @@ router.post(paths.authenticateOtp, async (req, res) => {
     let debugData = (userInfo && await Debug.findOne({ userid: userInfo.userid })) || null;
     let account = (userInfo && await Account.findOne({ userid: userInfo.userid })) || null;
 
-    const verification = await Verification.findOne({ email, code }).lean();
+    const verification = await Verification.findOne({ email, code }).lean() || null;
     switch (true) {
-      case verification:
+      case (verification != null):
         // Valid code
         break;
       case (
