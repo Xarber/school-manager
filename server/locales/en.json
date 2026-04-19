@@ -162,9 +162,21 @@
     },
     "emails": {
         "otp": {
-            "subject": "Your Verification Code",
-            "text": "Your verification code is: {{code}}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.\n\n(This email's word is {{emailCode}})",
-            "html": "<p>Your verification code is: <strong>{{code}}</strong>.</p><p>It expires in 5 minutes.</p><p>If you did not request this, please ignore this email.</p><p>(This email's word is {{emailCode}})</p>",
+            "subject": "[{{emoji}}] Your Verification Code",
+            "text": "Your verification code is: {{code}}. It expires in 5 minutes.\nIf you did not request this, please ignore this email.\n\n(This email's word is {{emailCode}}).",
+            "html": {
+                "title": "Verify your login",
+                "subtitle": "Use the code below to continue.",
+                "info": {
+                    "expires": "This code expires in 5 minutes.",
+                    "private": "Do not share it with anyone.",
+                    "word": "Email word:"
+                },
+                "footer": {
+                    "copy": "© 2026 Xarber. All rights reserved.",
+                    "ignore": "If you didn’t request this, you can safely ignore this email."
+                }
+            },
             "words": [
                 "Apple 🍎",
                 "Banana 🍌",

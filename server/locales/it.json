@@ -161,9 +161,21 @@
     },
     "emails": {
         "otp": {
-            "subject": "Il tuo codice di verifica",
-            "text": "Il tuo codice di verifica è: {{code}}. Scade tra 5 minuti.\nSe non hai richiesto questo codice, ignora questa email.\n\n(La parola di questa email è {{emailCode}})",
-            "html": "<p>Il tuo codice di verifica è: <strong>{{code}}</strong>.</p><p>Scade tra 5 minuti.</p><p>Se non hai richiesto questo codice, ignora questa email.</p><p>(La parola di questa email è {{emailCode}})</p>",
+            "subject": "[{{emoji}}] Codice di verifica",
+            "text": "Il tuo codice di verifica è: {{code}}. Scade tra 5 minuti.\nSe non hai richiesto questo codice, ignora questa email.\n\n(La parola di questa email è {{emailCode}}).",
+            "html": {
+                "title": "Verifica l'accesso",
+                "subtitle": "Usa questo codice per continuare.",
+                "info": {
+                    "expires": "Questo codice scade tra 5 minuti.",
+                    "private": "Non condividerlo con nessuno.",
+                    "word": "Parola dell'email:"
+                },
+                "footer": {
+                    "copy": "© 2026 Xarber. Tutti i diritti riservati.",
+                    "ignore": "Se non hai richiesto un codice, puoi ignorare questa email."
+                }
+            },
             "words": [
                 "Mela 🍎",
                 "Banana 🍌",
