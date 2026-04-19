@@ -199,7 +199,7 @@ function LoginPage({alert}: AccountProps) {
                         setLoading(true);
                         verifyOtp(email, otpcode, reset, alert as any, (network.serverPath as string)).then(status => {
                             setLoading(false);
-                            if (!status.success) return;
+                            if (!status?.success) return;
                             accountData.save({
                                 ...accountData.data,
                                 username: email,
