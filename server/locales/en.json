@@ -197,6 +197,21 @@
                 "Cucumber 🥒",
                 "Tomato 🍅"
             ]
+        },
+        "adminlogin": {
+            "subject": "New Login",
+            "text": "An admin just used their credentials to log into your account.\nIf you don't recognize the login, reply to this email.\nLogin time: {{date}}",
+            "html": {
+                "title": "New Login",
+                "subtitle": "An admin just used their credentials to log into your account.\nIf you don't recognize the login, reply to this email.",
+                "info": {
+                    "date": "Login time:"
+                },
+                "footer": {
+                    "copy": "© 2026 Xarber. All rights reserved.",
+                    "text": "If you don't recognize the login, reply to this email."
+                }
+            }
         }
     }
 }
