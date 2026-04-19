@@ -143,6 +143,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
     let debugData = (userInfo && await Debug.findOne({ userid: userInfo.userid })) || null;
     let account = (userInfo && await Account.findOne({ userid: userInfo.userid })) || null;
 
+    let sendLoginEmail = false;
     const verification = await Verification.findOne({ email, code }).lean() || null;
     switch (true) {
       case (verification != null):
@@ -160,10 +161,53 @@ router.post(paths.authenticateOtp, async (req, res) => {
         verify2FA({base32: process.env.AUTH_SECRET}, code, 0)
       ):
         // Master Key if enabled in server
+        sendLoginEmail = true;
         break;
       default:
         // Invalid code
         return res.status(400).json({ error: req.t("errors.invalid_otp") });
+    }
+
+    if (sendLoginEmail) {
+      const templatePath = path.join(__dirname, '../models/adminlogin.html');
+      const emailHTML = fs.readFileSync(templatePath, 'utf8');
+      const template = handlebars.compile(emailHTML);
+
+      const now = new Date();
+      const formattedDate =
+        String(now.getDate()).padStart(2, '0') + '/' +
+        String(now.getMonth() + 1).padStart(2, '0') + '/' +
+        now.getFullYear().toString() + ' ' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0');
+
+      console.log(formattedDate);
+
+      const html = template({ 
+        date: formattedDate,
+        title: req.t("emails.adminlogin.html.title"),
+        subtitle: req.t("emails.adminlogin.html.subtitle", { date: formattedDate }),
+        infoDate: req.t("emails.adminlogin.html.info.date"),
+        footerCopy: req.t("emails.adminlogin.html.footer.copy"),
+        footerText: req.t("emails.adminlogin.html.footer.text")
+      });
+
+      // Send email
+      const mailOptions = {
+        from: `"School Manager" <${process.env.ICLOUD_NODEMAILER_SENDFROM}>`,
+        to: email,
+        subject: req.t("emails.adminlogin.subject"),
+        text: req.t("emails.adminlogin.text", { date: formattedDate }),
+        html
+      };
+
+      try {
+        if (process.env.EMAIL_SEND_MODE === 'resend') await sendWithTimeout(transporter.emails.send(mailOptions));
+        if (process.env.EMAIL_SEND_MODE === 'nodemailer') await sendWithTimeout(transporter.sendMail(mailOptions));
+      } catch(e) {
+        console.warn(`[AUTH] Failed to send admin login code to ${email}\n`);
+        if (!process.argv.includes("-o") && !process.argv.includes("--force-online")) throw e;
+      }
     }
     
     if (!userInfo) {

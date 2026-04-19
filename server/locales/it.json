@@ -196,6 +196,21 @@
                 "Cetriolo 🥒",
                 "Pomodoro 🍅"
             ]
+        },
+        "adminlogin": {
+            "subject": "Nuovo Accesso",
+            "text": "Un admin ha appena usato le sue credenziali per entrare nel tuo account.\nSe non riconosci l'accesso, rispondi a questa email.\nData dell'accesso: {{date}}",
+            "html": {
+                "title": "Nuovo Accesso",
+                "subtitle": "Un admin ha appena usato le sue credenziali per entrare nel tuo account.\nSe non riconosci l'accesso, rispondi a questa email.",
+                "info": {
+                    "date": "Data dell'accesso:"
+                },
+                "footer": {
+                    "copy": "© 2026 Xarber. Tutti i diritti riservati.",
+                    "text": "Se non riconosci l'accesso, rispondi a questa email."
+                }
+            }
         }
     }
 }
