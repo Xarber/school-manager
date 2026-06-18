@@ -14,7 +14,7 @@ import { useLessonData } from '@/data/LessonMapContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
@@ -246,7 +246,12 @@ function LessonTab() {
 
                 // generate random length of students
                 const studentlength = Math.floor(Math.random() * 3) + 1;
-                const students = Array.from({ length: studentlength }, () => `student-${Math.floor(Math.random() * 100)}`);
+                const students = Array.from({ length: studentlength }, () => {
+                    const random = Math.floor(Math.random() * 100);
+                    let id = `student-${random}`;
+                    if (random > 50) id = userData.data.userInfo._id;
+                    return id;
+                });
 
                 return {
                     date,
@@ -321,7 +326,7 @@ function LessonTab() {
                     <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 10 }}>
                         <View style={commonStyle.dashboardSection}>
                             {page === "default" && (     
-                                <>          
+                                <>
                                     <Text style={commonStyle.headerText}>{lessonData.title}</Text>
                                     <View style={[commonStyle.card, { gap: 10 }]}>
                                         <Text style={commonStyle.text}>{lessonData.description}</Text>
@@ -389,6 +394,7 @@ function LessonTab() {
 
 function LessonScheduleStudentsTab() {
     const theme = useTheme();
+    const userData = useUserData()
     const commonStyle = createStyling.createCommonStyles(theme);
 
     const lessonScheduleData = {
@@ -406,7 +412,12 @@ function LessonScheduleStudentsTab() {
 
                 // generate random length of students
                 const studentlength = Math.floor(Math.random() * 3) + 1;
-                const students = Array.from({ length: studentlength }, () => `student-${Math.floor(Math.random() * 100)}`);
+                const students = Array.from({ length: studentlength }, () => {
+                    const random = Math.floor(Math.random() * 100);
+                    let id = `student-${random}`;
+                    if (random > 50) id = userData.data.userInfo._id;
+                    return id;
+                });
 
                 return {
                     date,
@@ -479,6 +490,7 @@ function LessonScheduleStudentsTab() {
 function LessonScheduleDaysTab() {
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const userData = useUserData();
     const language = useLanguage();
 
     const safeAreaInsets = useSafeAreaInsets();
@@ -499,7 +511,12 @@ function LessonScheduleDaysTab() {
 
                 // generate random length of students
                 const studentlength = Math.floor(Math.random() * 3) + 1;
-                const students = Array.from({ length: studentlength }, () => `student-${Math.floor(Math.random() * 100)}`);
+                const students = Array.from({ length: studentlength }, () => {
+                    const random = Math.floor(Math.random() * 100);
+                    let id = `student-${random}`;
+                    if (random > 50) id = userData.data.userInfo._id;
+                    return id;
+                });
 
                 return {
                     date,
@@ -508,16 +525,14 @@ function LessonScheduleDaysTab() {
                 };
             }
             
-            for (let i = 0; i < 4; i++) {
-                let date = generateDate();
-                dates.push({
-                    day: date.date,
-                    students: date.students,
-                    availability: date.availability,
-                    addedAt: "",
-                    editedAt: 0
-                });
-            }
+            let date = generateDate();
+            dates.push({
+                day: date.date,
+                students: date.students,
+                availability: date.availability,
+                addedAt: "",
+                editedAt: 0
+            });
 
             return dates;
         })(),

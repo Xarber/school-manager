@@ -1,6 +1,6 @@
 # 🎓 School Manager
-![Expo](https://img.shields.io/badge/Expo-55.0.9-blue)
-![React Native](https://img.shields.io/badge/React%20Native-0.83.4-green)
+![Expo](https://img.shields.io/badge/Expo-56.0.11-blue)
+![React Native](https://img.shields.io/badge/React%20Native-0.85.3-green)
 ![License](https://img.shields.io/badge/license-AGPL%203.0-purple)
 
 Welcome to the school manager repo!
@@ -13,7 +13,7 @@ Its goal is to facilitate finding homework, lessons, and planning your study ses
 ![Preview](docs/screenshots/ip16p_preview.png)
 
 # 🪄 How it works
-This is an Expo 55 React Native app, built for mobile and web.
+This is an Expo 56 React Native app, built for mobile and web.
 
 School Manager uses Tauri to bundle the web version of the app into a desktop environment app.
 
