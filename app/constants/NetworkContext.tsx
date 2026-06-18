@@ -68,17 +68,17 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
 
         if (first) {
             // console.warn("[Network] Server found.", first);
-            setServerPath(first.path);
-            setUploadsAllowed(first.response.uploadsEnabled);
-            setIsServerReachable(true);
-            if (first.response.overrideOnline === true) setIsOnline(true);
+            if (serverPath != first.path) setServerPath(first.path);
+            if (uploadsAllowed != first.response.uploadsEnabled) setUploadsAllowed(first.response.uploadsEnabled);
+            if (serverReachable != true) setIsServerReachable(true);
+            if (first.response.overrideOnline === true && isOnline != true) setIsOnline(true);
             return first;
         }
 
         // console.warn("[Network] No servers are reachable.");
-        setServerPath(null);
-        setUploadsAllowed(false);
-        setIsServerReachable(false);
+        if (serverPath != null) setServerPath(null);
+        if (uploadsAllowed != false) setUploadsAllowed(false);
+        if (serverReachable != false) setIsServerReachable(false);
         return null;
     }
 
@@ -93,9 +93,9 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
                 isOnline: (state.isInternetReachable || state.isConnected)
             };
 
-            setIsOnline(data.isOnline);
-            await findWorkingServer();
-            setType(data.type);
+            const server = await findWorkingServer();
+            if (!server?.response?.overrideOnline && isOnline != data.isOnline) setIsOnline(data.isOnline);
+            if (type != data.type) setType(data.type);
             if (ready != true) setReady(true);
         } finally {
             refreshingRef.current = false;
@@ -114,7 +114,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <NetworkContext.Provider value={{ ready, uploadsAllowed, isOnline, type, serverPath, refresh,
-            serverReachable// : false // Tweak this to test offline app usage
+            serverReachable// : false //* Tweak this to test offline app usage
         }}>
             {children}
         </NetworkContext.Provider>

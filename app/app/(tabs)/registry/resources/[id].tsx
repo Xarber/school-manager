@@ -80,8 +80,9 @@ export function AllResources({classid}: {classid: string}) {
                 <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={reload} />
                 }>
-                    <Text style={commonStyle.headerText}>{i18n.t("registry.resources.title")}</Text>
-
+                    <View>
+                        
+                    </View>
                 </ScrollView>
             </View>
         </View>
