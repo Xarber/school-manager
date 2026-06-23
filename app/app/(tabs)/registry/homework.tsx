@@ -10,7 +10,7 @@ import { useHomeworkData } from '@/data/HomeworkMapContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';

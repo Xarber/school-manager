@@ -19,7 +19,7 @@ import { LessonScheduleDataProvider } from "@/data/LessonScheduleContext";
 import { SubjectDataProvider } from "@/data/SubjectMapContext";
 import { UserDataProvider } from "@/data/UserDataContext";
 import { ensureBackgroundSyncRegistered, startForegroundSync } from "@/data/sync";
-import { ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider } from "expo-router/react-navigation";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";

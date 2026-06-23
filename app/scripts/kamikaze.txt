@@ -1,0 +1,19 @@
+rm -rf node_modules
+rm -rf .expo
+rm -rf .expo-shared
+rm -rf dist
+rm -rf web-build
+
+rm -rf ios
+rm -rf android
+
+rm -rf package-lock.json
+rm -rf yarn.lock
+
+
+# I used this to reset everything when expo was just failing to load.
+# Running these commands made the packages realign and install correctly:
+# npm install expo
+# npx expo install expo-constants
+# npx expo install react-native-tab-view
+# npx expo install @expo/ui
