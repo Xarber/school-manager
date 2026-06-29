@@ -6,7 +6,6 @@ import { ActivityIndicator, Platform, ScrollView, Text, TextInput, TouchableOpac
 
 import { AlertProps, useAlert } from '@/components/alert/AlertContext';
 import { KeyboardShift } from '@/components/keyboardShift';
-import SegmentedSlider from "@/components/segmentedPicker";
 import i18n from '@/constants/i18n';
 import { useNetworkContext } from '@/constants/NetworkContext';
 import createStyling from '@/constants/styling';

@@ -51,7 +51,6 @@
     "expo-ios-scene-lifecycle-plugin": "github:YesterdaysLemon/expo-ios-scene-lifecycle-plugin",
     "expo-linear-gradient": "~56.0.4",
     "expo-linking": "~56.0.14",
-    "expo-llm-mediapipe": "^0.6.0",
     "expo-local-authentication": "~56.0.4",
     "expo-localization": "~56.0.6",
     "expo-module-scripts": "^55.0.2",
