@@ -76,7 +76,6 @@
           }
         }
       ],
-      "expo-llm-mediapipe",
       [
         "expo-alternate-app-icons",
         [

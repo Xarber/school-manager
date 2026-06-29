@@ -8,19 +8,11 @@
       "developmentClient": true,
       "channel": "development",
       "distribution": "internal",
-      "android": {
-        "buildType": "app-bundle"
-      }
-    },
-    "devSimulator": {
-      "developmentClient": true,
-      "channel": "development",
-      "distribution": "internal",
       "ios": {
         "simulator": true
       },
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "apk"
       }
     },
     "simulator": {
@@ -30,14 +22,14 @@
         "simulator": true
       },
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "apk"
       }
     },
     "preview": {
       "distribution": "internal",
       "channel": "beta",
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "apk"
       }
     },
     "production": {
