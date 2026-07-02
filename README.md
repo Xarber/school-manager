@@ -85,6 +85,7 @@ cd ./server/ && node .
 <details open>
 <summary>⚙️ In progress</summary>
 
+* ⚙️ Add passkey and security key login support
 * ⚙️ Resources (links to websites or files)
 * ⚙️ Scheduled exams (important milestone)
     * Also add specific users only scheduled exams (Special Educational Needs (SEN) / Disturbi Specifici Apprendimento (DSA))
