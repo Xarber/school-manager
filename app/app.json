@@ -12,8 +12,8 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "version": "1.0.2",
-    "orientation": "portrait",
+    "version": "1.0.3",
+    "orientation": "default",
     "icon": "./assets/icons/icon-monochrome.png",
     "scheme": "schoolmanager",
     "userInterfaceStyle": "automatic",
@@ -43,6 +43,7 @@
       "./plugins/withIosDeploymentTarget",
       "expo-router",
       "expo-ios-scene-lifecycle-plugin",
+      "expo-llm-mediapipe",
       [
         "expo-splash-screen",
         {
