@@ -1,6 +1,7 @@
 {
     "errors": {
         "invalid_endpoint": "Invalid API endpoint",
+        "generic": "An error occurred. Please try again later.",
         "no_token": "No token",
         "invalid_token": "Invalid token",
         "not_authenticated": "User authentication required",

@@ -28,6 +28,7 @@ i18n.configure({
 const paths = require('./db/routes/paths.js');
 
 const auth = require("./db/middleware/auth");
+const authEnforce = require("./db/middleware/authenforce.js");
 const debugTest = require("./db/middleware/test");
 const locales = require("./db/middleware/locales.js");
 
@@ -46,6 +47,7 @@ const materialsRoutes = require('./db/routes/classes/materials');
 const subjectsRoutes = require('./db/routes/classes/subjects');
 const invitationRoutes = require('./db/routes/invitation');
 const uploadRoutes = require('./db/routes/db/upload');
+const passkeyRoutes = require('./db/routes/passkeys');
 
 async function connectDB() {
     let mongoDBuri = process.env.MONGODB_URI
@@ -89,6 +91,8 @@ async function startServer() {
     app.use('/api/auth', authRoutes);
 
     app.use(auth);
+    app.use('/api/passkeys', passkeyRoutes);
+    app.use(authEnforce);
 
     app.use('/api/account', accountRoutes);  // todo: Delete account
     app.use('/api/users', userRoutes);  // Mount routes
