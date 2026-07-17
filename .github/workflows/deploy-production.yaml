@@ -17,11 +17,16 @@ jobs:
     permissions:
       contents: read
 
-    defaults:
-      run:
-        working-directory: ./app   # ✅ set once globally
+    #defaults:
+    #  run:
+    #    working-directory: app
 
     steps:
+      - name: Show repository tree
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 2 -type f | sort
 
       - name: Debug package files
         run: |
