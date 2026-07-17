@@ -22,6 +22,19 @@ jobs:
         working-directory: ./app   # ✅ set once globally
 
     steps:
+
+      - name: Debug package files
+        run: |
+          pwd
+          node -v
+          npm -v
+
+          echo "=== package.json ==="
+          cat package.json | grep typescript || true
+
+          echo "=== package-lock.json ==="
+          cat package-lock.json | grep typescript || true
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
