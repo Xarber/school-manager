@@ -43,6 +43,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Inspect checkout
+        run: |
+          pwd
+          ls -la
+          git status
+          git rev-parse HEAD
+          git branch -a
+          git ls-tree --name-only HEAD
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
