@@ -17,12 +17,7 @@ jobs:
     permissions:
       contents: read
 
-    defaults:
-      run:
-        working-directory: ./app
-
     steps:
-
       - name: Inspect app package files
         working-directory: ./app
         run: |
