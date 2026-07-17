@@ -8,17 +8,6 @@ on:
       - alpha
       - beta
   workflow_dispatch:
-    inputs:
-      branch:
-        description: Branch to deploy
-        required: true
-        default: development
-        type: choice
-        options:
-          - development
-          - alpha
-          - beta
-          - master
 
 concurrency:
   group: deploy-${{ github.ref_name }}
