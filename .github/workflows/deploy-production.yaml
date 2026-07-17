@@ -19,9 +19,25 @@ jobs:
 
     defaults:
       run:
-        working-directory: app
+        working-directory: ./app
 
     steps:
+
+      - name: Inspect app package files
+        working-directory: ./app
+        run: |
+          pwd
+          echo "=== package.json ==="
+          grep '"typescript"' package.json || true
+
+          echo
+          echo "=== package-lock.json ==="
+          grep '"typescript"' package-lock.json | head -20 || true
+
+          echo
+          echo "=== npm ==="
+          npm --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
