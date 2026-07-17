@@ -1,6 +1,7 @@
 {
     "errors": {
         "invalid_endpoint": "Endpoint API non valido",
+        "generic": "Si è verificato un errore. Riprova più tardi.",
         "no_token": "Nessun token",
         "invalid_token": "Token non valido",
         "not_authenticated": "Autenticazione richiesta",

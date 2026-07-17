@@ -47,6 +47,13 @@ self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 
 // Fetch handler
 self.addEventListener("fetch", (e) => {
+  const url = new URL(e.request.url);
+  const isLocalServer =
+    url.hostname.startsWith("192.168.") ||
+    url.hostname === "localhost" ||
+    url.hostname === "127.0.0.1";
+    if (isLocalServer) {return;}
+  
   e.respondWith(
     caches.match(e.request).then((res) => res || fetch(e.request).then((networkRes) => {
       if (e.request.method === "GET") {
