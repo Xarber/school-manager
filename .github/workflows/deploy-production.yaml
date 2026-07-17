@@ -1,70 +1,92 @@
-name: Deploy production
+run-name: "Deploy ${{ github.ref_name }} • ${{ github.sha }}"
 
 on:
   push:
     branches:
       - master
+      - development
+      - alpha
+      - beta
 
 concurrency:
-  group: production-deployment
+  group: deploy-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   deploy:
-    name: Deploy web and publish development update
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 26
           cache: npm
           cache-dependency-path: app/package-lock.json
 
-      - name: Check TypeScript entries
-        working-directory: ./app
-        run: |
-          echo "Top-level:"
-          grep -n '"typescript": "~6.0.3"' package-lock.json
-
-          echo
-          echo "Nested TS 5.9.3:"
-          grep -n 'typescript-5.9.3.tgz' package-lock.json || true
-
-          echo
-          echo "expo-module-scripts:"
-          grep -n 'expo-module-scripts' package-lock.json | head -20
-
       - name: Install dependencies
-        working-directory: ./app
+        working-directory: app
         run: npm ci
 
-      - name: Set up EAS CLI
-        uses: expo/expo-github-action@v8
+      - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Export Expo App
-        working-directory: ./app
+      - name: Configure deployment
+        id: config
+        shell: bash
+        run: |
+          case "$GITHUB_REF_NAME" in
+            master)
+              echo "channel=release" >> "$GITHUB_OUTPUT"
+              echo "environment=production" >> "$GITHUB_OUTPUT"
+              echo "prod=true" >> "$GITHUB_OUTPUT"
+              ;;
+            beta)
+              echo "channel=beta" >> "$GITHUB_OUTPUT"
+              echo "environment=preview" >> "$GITHUB_OUTPUT"
+              echo "prod=false" >> "$GITHUB_OUTPUT"
+              ;;
+            alpha)
+              echo "channel=alpha" >> "$GITHUB_OUTPUT"
+              echo "environment=preview" >> "$GITHUB_OUTPUT"
+              echo "prod=false" >> "$GITHUB_OUTPUT"
+              ;;
+            development)
+              echo "channel=development" >> "$GITHUB_OUTPUT"
+              echo "environment=development" >> "$GITHUB_OUTPUT"
+              echo "prod=false" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported branch: $GITHUB_REF_NAME"
+              exit 0
+              ;;
+          esac
+
+      - name: Export app
+        working-directory: app
         run: npx expo export
 
-      - name: Deploy web to production
-        working-directory: ./app
-        run: eas deploy --prod --non-interactive
+      - name: Deploy web
+        working-directory: app
+        shell: bash
+        run: |
+          if [ "${{ steps.config.outputs.prod }}" = "true" ]; then
+            eas deploy --prod --non-interactive
+          else
+            eas deploy --non-interactive
+          fi
 
-      - name: Publish development update
-        working-directory: ./app
+      - name: Publish update
+        working-directory: app
         run: |
           eas update \
-            --channel development \
-            --environment development \
-            --message "GitHub commit ${{ github.sha }}" \
+            --channel "${{ steps.config.outputs.channel }}" \
+            --environment "${{ steps.config.outputs.environment }}" \
+            --message "${{ github.ref_name }} • ${{ github.sha }}" \
             --non-interactive

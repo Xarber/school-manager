@@ -15,19 +15,8 @@
         "buildType": "apk"
       }
     },
-    "simulator": {
-      "distribution": "internal",
-      "channel": "alpha",
-      "ios": {
-        "simulator": true
-      },
-      "android": {
-        "buildType": "apk"
-      }
-    },
     "preview": {
       "distribution": "internal",
-      "channel": "beta",
       "android": {
         "buildType": "apk"
       }
