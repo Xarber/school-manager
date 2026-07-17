@@ -28,9 +28,23 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
 
+      - name: Check TypeScript entries
+        working-directory: ./app
+        run: |
+          echo "Top-level:"
+          grep -n '"typescript": "~6.0.3"' package-lock.json
+
+          echo
+          echo "Nested TS 5.9.3:"
+          grep -n 'typescript-5.9.3.tgz' package-lock.json || true
+
+          echo
+          echo "expo-module-scripts:"
+          grep -n 'expo-module-scripts' package-lock.json | head -20
+
       - name: Install dependencies
         working-directory: ./app
-        run: npm ci
+        run: npm ci --loglevel silly
 
       - name: Set up EAS CLI
         uses: expo/expo-github-action@v8
