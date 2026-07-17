@@ -21,21 +21,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Inspect app package files
-        working-directory: ./app
-        run: |
-          pwd
-          echo "=== package.json ==="
-          grep '"typescript"' package.json || true
-
-          echo
-          echo "=== package-lock.json ==="
-          grep '"typescript"' package-lock.json | head -20 || true
-
-          echo
-          echo "=== npm ==="
-          npm --version
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -44,6 +29,7 @@ jobs:
           cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies
+        working-directory: ./app
         run: npm ci
 
       - name: Set up EAS CLI
@@ -53,9 +39,11 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Deploy web to production
+        working-directory: ./app
         run: eas deploy --prod --non-interactive
 
       - name: Publish development update
+        working-directory: ./app
         run: |
           eas update \
             --channel development \
