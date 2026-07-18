@@ -16,7 +16,8 @@
     "desktop": "cargo-tauri build",
     "lint": "expo lint",
     "syncMetadata": "node ./scripts/sync-metadata.js",
-    "syncLocales": "node ./scripts/sync-locales.js"
+    "syncLocales": "node ./scripts/sync-locales.js",
+    "build-context": "node ./scripts/ci/build-context.js"
   },
   "web": {
     "bundler": "metro"

@@ -1,0 +1,15 @@
+{
+  "changed": false,
+  "previousVersion": "1.0.3",
+  "currentVersion": "1.0.3",
+  "branch": "testing",
+  "commit": "fb266fb6c36e4be9e7ae6cabe8e45587ebd5953b",
+  "shortCommit": "fb266fb",
+  "commitMessage": "Remove branch selection for redundancy",
+  "timestamp": "2026-07-17T12:48:58.703Z",
+  "isDevelopment": false,
+  "isAlpha": false,
+  "isBeta": false,
+  "isMaster": false,
+  "isTesting": true
+}

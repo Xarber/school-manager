@@ -1,12 +1,11 @@
 {
   "cli": {
     "version": ">= 16.26.0",
-    "appVersionSource": "remote"
+    "appVersionSource": "local"
   },
   "build": {
-    "development": {
+    "development-client": {
       "developmentClient": true,
-      "channel": "development",
       "distribution": "internal",
       "ios": {
         "simulator": true
@@ -15,17 +14,25 @@
         "buildType": "apk"
       }
     },
-    "preview": {
+
+    "release-apk": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       }
     },
-    "production": {
+
+    "release-aab": {
       "distribution": "store",
-      "channel": "release",
       "android": {
         "buildType": "app-bundle"
+      }
+    },
+
+    "release-ios-simulator": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
       }
     }
   },
