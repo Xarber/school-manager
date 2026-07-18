@@ -5,6 +5,7 @@
   },
   "build": {
     "development-client": {
+      "node": "26.0.0",
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
@@ -16,6 +17,7 @@
     },
 
     "release-apk": {
+      "node": "26.0.0",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
@@ -23,6 +25,7 @@
     },
 
     "release-aab": {
+      "node": "26.0.0",
       "distribution": "store",
       "android": {
         "buildType": "app-bundle"
@@ -30,6 +33,7 @@
     },
 
     "release-ios-simulator": {
+      "node": "26.0.0",
       "distribution": "internal",
       "ios": {
         "simulator": true

@@ -18,7 +18,8 @@
 
 const fs = require("fs");
 const path = require("path");
-const { spawn } = require("child_process");
+const { Readable } = require("stream");
+const { pipeline } = require("stream/promises");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
@@ -48,7 +49,6 @@ async function main() {
     }
 
     for (const build of manifest.builds) {
-        await waitForBuild(build);
         await downloadBuild(build);
     }
 
@@ -95,26 +95,67 @@ async function waitForBuild(build) {
 }
 
 async function downloadBuild(build) {
-    console.log(`Downloading ${build.profile}...`);
+    const eas = Array.isArray(build.eas)
+        ? build.eas[0]
+        : build.eas;
 
-    const extension = getExtension(build.platform);
+    if (!eas) {
+        throw new Error(
+            `Missing EAS metadata for ${build.profile}.`
+        );
+    }
+
+    if (eas.status !== "FINISHED") {
+        throw new Error(
+            `Build ${build.profile} finished with status ${eas.status}.`
+        );
+    }
+
+    const artifactUrl =
+        eas.artifacts?.applicationArchiveUrl;
+
+    if (!artifactUrl) {
+        throw new Error(
+            `No artifact URL found for ${build.profile}.`
+        );
+    }
+
+    const pathname = new URL(artifactUrl).pathname;
+
+    let extension;
+
+    if (pathname.endsWith(".tar.gz")) {
+        extension = ".tar.gz";
+    } else {
+        extension = path.extname(pathname);
+    }
 
     const outputFile = path.join(
         ARTIFACT_DIR,
-        `${build.id}.${extension}`
+        `${eas.id}${extension}`
     );
 
-    await runCommand("eas", [
-        "build:download",
-        "--id",
-        build.id,
-        "--path",
-        outputFile,
-        "--non-interactive",
-    ]);
+    console.log(
+        `Downloading ${path.basename(outputFile)}...`
+    );
+
+    const response = await fetch(artifactUrl);
+
+    if (!response.ok) {
+        throw new Error(
+            `Failed to download artifact (${response.status}).`
+        );
+    }
+
+    await pipeline(
+        Readable.fromWeb(response.body),
+        fs.createWriteStream(outputFile)
+    );
 
     build.localFile = outputFile;
-    build.extension = extension;
+    build.extension = extension.startsWith(".")
+        ? extension.slice(1)
+        : extension;
 
     console.log(`Saved -> ${outputFile}`);
 }

@@ -20,7 +20,7 @@ const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
 
-const PROJECT_ROOT = path.resolve(__dirname);
+const PROJECT_ROOT = path.resolve(__dirname, "../../");
 const BUILD_INFO_PATH = path.join(
     PROJECT_ROOT,
     "constants",
@@ -37,11 +37,33 @@ async function main() {
         fs.readFileSync(BUILD_INFO_PATH, "utf8")
     );
 
-    const profiles = Object.values(
-        buildInfo.outputs || {}
-    ).filter(Boolean);
+    const queue = [];
 
-    if (profiles.length === 0) {
+    if (buildInfo.outputs.androidApkProfile) {
+        queue.push({
+            profile: buildInfo.outputs.androidApkProfile,
+            platform: "android",
+            output: "apk"
+        });
+    }
+
+    if (buildInfo.outputs.androidAabProfile) {
+        queue.push({
+            profile: buildInfo.outputs.androidAabProfile,
+            platform: "android",
+            output: "aab"
+        });
+    }
+
+    if (buildInfo.outputs.iosProfile) {
+        queue.push({
+            profile: buildInfo.outputs.iosProfile,
+            platform: "ios",
+            output: "ios"
+        });
+    }
+
+    if (queue.length === 0) {
         console.log("No build profiles requested.");
         process.exit(0);
     }
@@ -54,11 +76,9 @@ async function main() {
     console.log("Starting EAS builds...");
     console.log("");
 
-    const uniqueProfiles = [...new Set(profiles)];
-
-    const results = await Promise.all(
-        uniqueProfiles.map(startBuild)
-    );
+    const results = (
+        await Promise.all(queue.map(startBuild))
+    ).flat();
 
     const manifest = {
         appName: buildInfo.appName,
@@ -85,12 +105,21 @@ function ensureExists(file) {
     }
 }
 
-function startBuild(profile) {
+function startBuild(build) {
     return new Promise((resolve, reject) => {
-        console.log(`→ ${profile}`);
+        const {
+            profile,
+            platform,
+            output
+        } = build;
+        console.log(
+            `→ ${platform} (${profile})`
+        );
 
         const args = [
             "build",
+            "--platform",
+            platform,
             "--profile",
             profile,
             "--non-interactive",
@@ -142,14 +171,15 @@ function startBuild(profile) {
                 return;
             }
 
-            resolve({
-                profile,
-                id: parsed.id,
-                platform: parsed.platform,
-                status: parsed.status,
-                projectId: parsed.projectId,
-                channel: parsed.channel ?? null,
-            });
+            resolve(
+                parsed.map((eas) => ({
+                    profile,
+                    platform,
+                    output,
+                    channel: eas.channel ?? null,
+                    eas,
+                }))
+            );
         });
     });
 }

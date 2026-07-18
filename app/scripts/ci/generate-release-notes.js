@@ -43,18 +43,15 @@ function main() {
     ensureExists(BUILD_INFO_PATH);
     ensureExists(MANIFEST_PATH);
 
-    const buildInfo = JSON.parse(
-        fs.readFileSync(BUILD_INFO_PATH, "utf8")
-    );
+    const buildInfo = readJson(BUILD_INFO_PATH);
+    const manifest = readJson(MANIFEST_PATH);
 
-    const manifest = JSON.parse(
-        fs.readFileSync(MANIFEST_PATH, "utf8")
-    );
+    if (!Array.isArray(manifest.builds)) {
+        throw new Error("Invalid build manifest: builds must be an array.");
+    }
 
     const previousTag = findPreviousTag(buildInfo);
-
     const commits = getCommits(previousTag);
-
     const grouped = groupCommits(commits);
 
     const markdown = generateMarkdown(
@@ -63,6 +60,10 @@ function main() {
         previousTag,
         grouped
     );
+
+    fs.mkdirSync(path.dirname(OUTPUT_PATH), {
+        recursive: true,
+    });
 
     fs.writeFileSync(
         OUTPUT_PATH,
@@ -76,13 +77,19 @@ function main() {
 }
 
 function findPreviousTag(buildInfo) {
+    if (buildInfo.previousTag) {
+        return buildInfo.previousTag;
+    }
+
     const version = buildInfo.previousVersion;
 
     if (!version) {
         return null;
     }
 
-    const branch = (buildInfo.branch || "").toLowerCase();
+    const branch = String(
+        buildInfo.branch || ""
+    ).toLowerCase();
 
     switch (branch) {
         case "development":
@@ -94,100 +101,199 @@ function findPreviousTag(buildInfo) {
         case "beta":
             return `v${version}-beta`;
 
-        default:
+        case "master":
             return `v${version}`;
+
+        default:
+            return null;
     }
 }
 
 function getCommits(previousTag) {
-    let range;
+    const range =
+        previousTag && tagExists(previousTag)
+            ? `${previousTag}..HEAD`
+            : "HEAD";
 
-    if (previousTag) {
-        range = `${previousTag}..HEAD`;
-    } else {
-        range = "HEAD";
-    }
+    const output = execFileSync(
+        "git",
+        [
+            "log",
+            range,
+            "--pretty=format:%H%x09%s",
+        ],
+        {
+            cwd: PROJECT_ROOT,
+            encoding: "utf8",
+        }
+    ).trim();
 
-    let output = "";
-
-    try {
-        output = execFileSync(
-            "git",
-            [
-                "log",
-                range,
-                "--pretty=format:%H%x09%s"
-            ],
-            {
-                cwd: PROJECT_ROOT,
-                encoding: "utf8"
-            }
-        );
-    } catch {
-        output = execFileSync(
-            "git",
-            [
-                "log",
-                "--pretty=format:%H%x09%s"
-            ],
-            {
-                cwd: PROJECT_ROOT,
-                encoding: "utf8"
-            }
-        );
+    if (!output) {
+        return [];
     }
 
     return output
         .split("\n")
         .filter(Boolean)
         .map((line) => {
-            const [hash, ...rest] = line.split("\t");
+            const separator = line.indexOf("\t");
+
+            if (separator === -1) {
+                return {
+                    hash: "",
+                    message: line.trim(),
+                };
+            }
 
             return {
-                hash,
-                message: rest.join("\t").trim()
+                hash: line.slice(0, separator),
+                message: line
+                    .slice(separator + 1)
+                    .trim(),
             };
         });
 }
 
+function tagExists(tag) {
+    try {
+        execFileSync(
+            "git",
+            [
+                "rev-parse",
+                "--verify",
+                "--quiet",
+                `refs/tags/${tag}`,
+            ],
+            {
+                cwd: PROJECT_ROOT,
+                stdio: "ignore",
+            }
+        );
+
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 function groupCommits(commits) {
     const groups = {
+        breaking: [],
         features: [],
         fixes: [],
         performance: [],
-        breaking: [],
-        other: []
+        refactor: [],
+        docs: [],
+        tests: [],
+        build: [],
+        ci: [],
+        chores: [],
+        style: [],
+        revert: [],
+        other: [],
     };
 
     for (const commit of commits) {
-        const msg = commit.message;
+        const parsed = parseCommit(commit.message);
 
-        if (msg.includes("!")) {
-            groups.breaking.push(msg);
+        const entry = formatCommitEntry(
+            parsed.description,
+            commit.hash
+        );
+
+        if (parsed.breaking) {
+            groups.breaking.push(entry);
             continue;
         }
 
-        if (/^feat($begin:math:text$\.\+$end:math:text$)?:/i.test(msg)) {
-            groups.features.push(msg);
-            continue;
-        }
+        switch (parsed.type) {
+            case "feat":
+                groups.features.push(entry);
+                break;
 
-        if (/^fix($begin:math:text$\.\+$end:math:text$)?:/i.test(msg)) {
-            groups.fixes.push(msg);
-            continue;
-        }
+            case "fix":
+                groups.fixes.push(entry);
+                break;
 
-        if (
-            /^perf($begin:math:text$\.\+$end:math:text$)?:/i.test(msg)
-        ) {
-            groups.performance.push(msg);
-            continue;
-        }
+            case "perf":
+                groups.performance.push(entry);
+                break;
 
-        groups.other.push(msg);
+            case "refactor":
+                groups.refactor.push(entry);
+                break;
+
+            case "docs":
+                groups.docs.push(entry);
+                break;
+
+            case "test":
+                groups.tests.push(entry);
+                break;
+
+            case "build":
+                groups.build.push(entry);
+                break;
+
+            case "ci":
+                groups.ci.push(entry);
+                break;
+
+            case "chore":
+                groups.chores.push(entry);
+                break;
+
+            case "style":
+                groups.style.push(entry);
+                break;
+
+            case "revert":
+                groups.revert.push(entry);
+                break;
+
+            default:
+                groups.other.push(entry);
+        }
     }
 
     return groups;
+}
+
+function parseCommit(message) {
+    const match = message.match(
+        /^([a-z]+)(?:\(([^)]+)\))?(!)?:\s*(.+)$/i
+    );
+
+    if (!match) {
+        return {
+            type: null,
+            scope: null,
+            breaking: false,
+            description: message,
+        };
+    }
+
+    const [, type, scope, breakingMarker, description] =
+        match;
+
+    return {
+        type: type.toLowerCase(),
+        scope: scope || null,
+        breaking: Boolean(breakingMarker),
+        description: scope
+            ? `**${scope}:** ${description}`
+            : description,
+    };
+}
+
+function formatCommitEntry(description, hash) {
+    const shortHash = hash
+        ? hash.slice(0, 7)
+        : null;
+
+    return shortHash
+        ? `${description} (\`${shortHash}\`)`
+        : description;
 }
 
 function generateMarkdown(
@@ -198,36 +304,92 @@ function generateMarkdown(
 ) {
     const out = [];
 
-    out.push(`# ${buildInfo.appName} ${buildInfo.version}`);
-    out.push("");
+    const suffix = branchSuffix(buildInfo.branch);
 
-    section(out, "Features", grouped.features);
-    section(out, "Fixes", grouped.fixes);
-    section(out, "Performance", grouped.performance);
-    section(out, "Breaking Changes", grouped.breaking);
-    section(out, "Other Changes", grouped.other);
+    const displayVersion = suffix
+        ? `${buildInfo.version}-${suffix}`
+        : buildInfo.version;
 
-    out.push("## Build Information");
-    out.push("");
-
-    out.push(`| Property | Value |`);
-    out.push(`|----------|-------|`);
-    out.push(`| Version | ${buildInfo.version} |`);
-    out.push(`| Previous Version | ${buildInfo.previousVersion || "-"} |`);
-    out.push(`| Previous Tag | ${previousTag || "-"} |`);
-    out.push(`| Runtime Version | ${buildInfo.runtimeVersion} |`);
-    out.push(`| Branch | ${buildInfo.branch} |`);
-    out.push(`| Commit | ${buildInfo.shortCommit} |`);
-    out.push(`| Build Date | ${buildInfo.buildDate} |`);
+    out.push(
+        `# 🔨 ${buildInfo.appName} v${displayVersion}`
+    );
 
     out.push("");
-    out.push("### Artifacts");
+
+    out.push(
+        "> Automated release generated by GitHub Actions."
+    );
+
     out.push("");
 
-    for (const build of manifest.builds) {
-        out.push(
-            `- ${build.filename || path.basename(build.localFile)}`
-        );
+    section(out, "💥 Breaking Changes", grouped.breaking);
+    section(out, "🚀 Features", grouped.features);
+    section(out, "🐛 Bug Fixes", grouped.fixes);
+    section(out, "⚡️ Performance", grouped.performance);
+    section(out, "♻️ Refactoring", grouped.refactor);
+    section(out, "📝 Documentation", grouped.docs);
+    section(out, "🧪 Tests", grouped.tests);
+    section(out, "📦 Build System", grouped.build);
+    section(out, "🤖 CI / Workflows", grouped.ci);
+    section(out, "🧹 Maintenance", grouped.chores);
+    section(out, "🎨 Code Style", grouped.style);
+    section(out, "⏪ Reverts", grouped.revert);
+    section(out, "📌 Other Changes", grouped.other);
+
+    out.push("## 📋 Build Information");
+    out.push("");
+    out.push("| Property | Value |");
+    out.push("| --- | --- |");
+    out.push(
+        `| Version | ${escapeTable(buildInfo.version)} |`
+    );
+    out.push(
+        `| Previous Version | ${escapeTable(buildInfo.previousVersion || "-")} |`
+    );
+    out.push(
+        `| Previous Tag | ${escapeTable(previousTag || "-")} |`
+    );
+    out.push(
+        `| Runtime Version | ${escapeTable(buildInfo.runtimeVersion || "-")} |`
+    );
+    out.push(
+        `| Branch | ${escapeTable(buildInfo.branch || "-")} |`
+    );
+    out.push(
+        `| Commit | \`${buildInfo.shortCommit || String(buildInfo.commit || "").slice(0, 7)}\` |`
+    );
+    out.push(
+        `| Build Date | ${escapeTable(buildInfo.buildDate || "-")} |`
+    );
+
+    out.push("");
+    out.push("## 📦 Artifacts");
+    out.push("");
+
+    if (manifest.builds.length === 0) {
+        out.push("- None");
+    } else {
+        for (const build of manifest.builds) {
+            const filename =
+                build.filename ??
+                path.basename(build.localFile);
+
+            out.push(
+                `- **${String(build.platform).toUpperCase()}**`
+            );
+
+            out.push(
+                `  - \`${filename}\``
+            );
+
+            if (build.profile) {
+                out.push(
+                    `  - Profile: \`${build.profile}\``
+                );
+            }
+
+            out.push("");
+        }
     }
 
     out.push("");
@@ -236,20 +398,64 @@ function generateMarkdown(
 }
 
 function section(out, title, entries) {
-    out.push(`## ${title}`);
-    out.push("");
-
     if (entries.length === 0) {
-        out.push("- None");
-        out.push("");
         return;
     }
+
+    out.push(`## ${title} (${entries.length})`);
+    out.push("");
 
     for (const entry of entries) {
         out.push(`- ${entry}`);
     }
 
     out.push("");
+}
+
+function branchSuffix(branch) {
+    switch (String(branch || "").toLowerCase()) {
+        case "development":
+            return "dev";
+
+        case "alpha":
+            return "alpha";
+
+        case "beta":
+            return "beta";
+
+        case "master":
+            return "";
+
+        default:
+            return slug(branch);
+    }
+}
+
+function escapeTable(value) {
+    return String(value)
+        .replace(/\|/g, "\\|")
+        .replace(/\r?\n/g, " ");
+}
+
+function slug(value) {
+    return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+/, "")
+        .replace(/-+$/, "");
+}
+
+function readJson(file) {
+    try {
+        return JSON.parse(
+            fs.readFileSync(file, "utf8")
+        );
+    } catch (error) {
+        throw new Error(
+            `Unable to read JSON file:\n${file}\n\n${error.message}`
+        );
+    }
 }
 
 function ensureExists(file) {
@@ -260,4 +466,11 @@ function ensureExists(file) {
     }
 }
 
-main();
+try {
+    main();
+} catch (error) {
+    console.error("");
+    console.error(error);
+    console.error("");
+    process.exit(1);
+}

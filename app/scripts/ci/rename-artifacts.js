@@ -67,7 +67,13 @@ function renameArtifact(buildInfo, build) {
 
     ensureExists(build.localFile);
 
-    const extension = detectExtension(build);
+    const extension = build.extension;
+
+    if (!extension) {
+        throw new Error(
+            `Missing extension for build "${build.profile}".`
+        );
+    }
 
     const finalName = buildFilename(
         buildInfo,
@@ -91,46 +97,8 @@ function renameArtifact(buildInfo, build) {
     build.extension = extension;
 
     console.log(
-        `${path.basename(build.localFile)}`
+        `✓ ${finalName}`
     );
-}
-
-function detectExtension(build) {
-    const current = path.extname(build.localFile).toLowerCase();
-
-    if (current === ".apk") {
-        if (
-            build.profile.toLowerCase().includes("aab")
-        ) {
-            return "aab";
-        }
-
-        return "apk";
-    }
-
-    if (current === ".aab") {
-        return "aab";
-    }
-
-    if (current === ".ipa") {
-        return "ipa";
-    }
-
-    if (
-        build.localFile.toLowerCase().endsWith(".tar.gz")
-    ) {
-        return "tar.gz";
-    }
-
-    if (
-        build.profile
-            .toLowerCase()
-            .includes("simulator")
-    ) {
-        return "tar.gz";
-    }
-
-    return build.extension || "bin";
 }
 
 function buildFilename(
@@ -148,6 +116,10 @@ function buildFilename(
 
     if (suffix) {
         name += `-${suffix}`;
+    }
+
+    if (build.output) {
+        name += `-${slug(build.output)}`;
     }
 
     return `${name}.${extension}`;
