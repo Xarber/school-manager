@@ -1,6 +1,6 @@
 [package]
 name = "school-manager"
-version = "1.0.3"
+version = "1.0.4"
 description = "Manage your school activities easily, sync with your classmates & teachers."
 authors = ["Xarber <xarber@xcenter.it>"]
 license = ""

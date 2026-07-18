@@ -133,7 +133,7 @@ jobs:
           tag_name: ${{ steps.release.outputs.tag }}
           name: ${{ steps.release.outputs.title }}
           body_path: app/.ci/release-notes.md
-          draft: false
+          draft: true
           prerelease: ${{ github.ref_name != 'master' }}
           files: |
             app/.ci/artifacts/**
