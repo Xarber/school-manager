@@ -1,3 +1,4 @@
+name: Build & Release
 run-name: "Build & Release ${{ github.ref_name }} • ${{ github.sha }}"
 
 on:
@@ -8,16 +9,27 @@ on:
       - alpha
       - beta
   workflow_dispatch:
+    inputs:
+      unsigned_ios_only:
+        description: Build only the unsigned iPhone IPA (skip the EAS release job)
+        type: boolean
+        required: false
+        default: false
+      release_tag:
+        description: Existing draft release tag for an unsigned-iOS-only run (for example v1.2.3-dev)
+        type: string
+        required: false
 
 concurrency:
   group: releases-${{ github.ref }}
   cancel-in-progress: false
-  
+
 permissions:
   contents: write
 
 jobs:
   release:
+    if: github.event_name != 'workflow_dispatch' || inputs.unsigned_ios_only != true
     runs-on: ubuntu-latest
 
     steps:
@@ -43,8 +55,7 @@ jobs:
 
       - name: Generate BuildInfo
         working-directory: app
-        run: |
-          node ./scripts/ci/build-context.js
+        run: node ./scripts/ci/build-context.js
 
       - name: Check for version change
         id: buildinfo
@@ -63,26 +74,22 @@ jobs:
       - name: Start EAS builds
         if: steps.buildinfo.outputs.versionChanged == 'true'
         working-directory: app
-        run: |
-          node ./scripts/ci/start-builds.js
+        run: node ./scripts/ci/start-builds.js
 
       - name: Wait & download builds
         if: steps.buildinfo.outputs.versionChanged == 'true'
         working-directory: app
-        run: |
-          node ./scripts/ci/download-builds.js
+        run: node ./scripts/ci/download-builds.js
 
       - name: Rename artifacts
         if: steps.buildinfo.outputs.versionChanged == 'true'
         working-directory: app
-        run: |
-          node ./scripts/ci/rename-artifacts.js
+        run: node ./scripts/ci/rename-artifacts.js
 
       - name: Generate release notes
         if: steps.buildinfo.outputs.versionChanged == 'true'
         working-directory: app
-        run: |
-          node ./scripts/ci/generate-release-notes.js
+        run: node ./scripts/ci/generate-release-notes.js
 
       - name: Read release metadata
         if: steps.buildinfo.outputs.versionChanged == 'true'
@@ -139,5 +146,113 @@ jobs:
           files: |
             app/.ci/artifacts/**
             app/constants/BuildInfo.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  unsigned_ios:
+    name: Build unsigned iOS IPA
+    needs: release
+    if: >-
+      ${{ always() && (
+        needs.release.result == 'success' ||
+        (github.event_name == 'workflow_dispatch' && inputs.unsigned_ios_only == true)
+      ) }}
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Generate BuildInfo
+        working-directory: app
+        run: node ./scripts/ci/build-context.js
+
+      - name: Read unsigned iOS metadata
+        id: unsigned
+        shell: bash
+        working-directory: app
+        env:
+          UNSIGNED_IOS_ONLY: ${{ inputs.unsigned_ios_only }}
+          RELEASE_TAG_OVERRIDE: ${{ inputs.release_tag }}
+        run: |
+          node - <<'EOF' >> "$GITHUB_OUTPUT"
+          const info = require('./constants/BuildInfo.json');
+
+          const suffixes = {
+            development: 'dev',
+            alpha: 'alpha',
+            beta: 'beta'
+          };
+
+          const suffix = suffixes[String(info.branch).toLowerCase()] || '';
+          const versionName = `v${info.version}${suffix ? `-${suffix}` : ''}`;
+          const manualOnly = process.env.UNSIGNED_IOS_ONLY === 'true';
+
+          console.log(`build=${manualOnly || info.versionChanged}`);
+          console.log(`filename=school-manager-${versionName}-ios.ipa`);
+          console.log(`tag=${process.env.RELEASE_TAG_OVERRIDE || versionName}`);
+          EOF
+
+      - name: Generate the iOS project
+        if: steps.unsigned.outputs.build == 'true'
+        working-directory: app
+        run: npx expo prebuild --clean --platform ios
+
+      - name: Build an unsigned iPhone archive
+        if: steps.unsigned.outputs.build == 'true'
+        working-directory: app
+        run: |
+          xcodebuild archive \
+            -project ios/SchoolManager.xcodeproj \
+            -scheme SchoolManager \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/SchoolManager.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=''
+
+      - name: Package the unsigned IPA
+        if: steps.unsigned.outputs.build == 'true'
+        shell: bash
+        env:
+          IPA_FILENAME: ${{ steps.unsigned.outputs.filename }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$RUNNER_TEMP/SchoolManager.xcarchive/Products/Applications/SchoolManager.app" \
+            "$RUNNER_TEMP/Payload/"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/Payload" \
+            "$RUNNER_TEMP/$IPA_FILENAME"
+
+      - name: Upload workflow artifact
+        if: steps.unsigned.outputs.build == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.unsigned.outputs.filename }}
+          path: ${{ runner.temp }}/${{ steps.unsigned.outputs.filename }}
+          if-no-files-found: error
+
+      - name: Add IPA to draft GitHub release
+        if: steps.unsigned.outputs.build == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.unsigned.outputs.tag }}
+          draft: true
+          overwrite_files: true
+          files: ${{ runner.temp }}/${{ steps.unsigned.outputs.filename }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
