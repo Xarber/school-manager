@@ -20,7 +20,7 @@ const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname);
 const BUILD_INFO_PATH = path.join(
     PROJECT_ROOT,
     "constants",

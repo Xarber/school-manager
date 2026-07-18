@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const APP_CONFIG_PATH = "app/app.json";
-const OUTPUT_PATH = "app/constants/BuildInfo.json";
+const OUTPUT_PATH = "constants/BuildInfo.json";
 
 function run(command) {
     return execSync(command, {
