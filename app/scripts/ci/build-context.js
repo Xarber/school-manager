@@ -18,12 +18,25 @@ function getVersion(revision) {
     return JSON.parse(output).expo.version;
 }
 
-function hasPreviousCommit() {
+function getLatestTag() {
     try {
-        run("git rev-parse HEAD^");
-        return true;
+        return run("git describe --tags --abbrev=0");
     } catch {
-        return false;
+        return null;
+    }
+}
+
+function getVersionFromLatestTag() {
+    const tag = getLatestTag();
+
+    if (!tag) {
+        return null;
+    }
+
+    try {
+        return getVersion(tag);
+    } catch {
+        return null;
     }
 }
 
@@ -52,13 +65,11 @@ try {
 
     const currentVersion = getVersion("HEAD");
 
-    let previousVersion = null;
-    let versionChanged = true;
+    const previousVersion = getVersionFromLatestTag();
 
-    if (hasPreviousCommit()) {
-        previousVersion = getVersion("HEAD^");
-        versionChanged = previousVersion !== currentVersion;
-    }
+    const versionChanged =
+        previousVersion === null ||
+        previousVersion !== currentVersion;
 
     const buildProfiles = {
         androidApk: null,
