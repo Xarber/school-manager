@@ -217,6 +217,7 @@ jobs:
         run: |
           xcodebuild archive \
             -project ios/SchoolManager.xcodeproj \
+            -workspace ios/SchoolManager.xcworkspace \
             -scheme SchoolManager \
             -configuration Release \
             -sdk iphoneos \
