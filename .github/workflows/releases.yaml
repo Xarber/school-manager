@@ -200,7 +200,8 @@ jobs:
           const versionName = `v${info.version}${suffix ? `-${suffix}` : ''}`;
           const manualOnly = process.env.UNSIGNED_IOS_ONLY === 'true';
 
-          console.log(`build=${manualOnly || info.versionChanged}`);
+          // Temporary bootstrap run: always build the unsigned iOS IPA.
+          console.log('build=true');
           console.log(`filename=school-manager-${versionName}-ios.ipa`);
           console.log(`tag=${process.env.RELEASE_TAG_OVERRIDE || versionName}`);
           EOF
