@@ -135,6 +135,7 @@ jobs:
           body_path: app/.ci/release-notes.md
           draft: true
           prerelease: ${{ github.ref_name != 'master' }}
+          overwrite_files: true
           files: |
             app/.ci/artifacts/**
             app/constants/BuildInfo.json
