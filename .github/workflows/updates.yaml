@@ -1,4 +1,4 @@
-name: EAS Update & Web Deploy
+name: EAS Update and Web Deploy
 run-name: "Deploy ${{ github.ref_name }} • ${{ github.sha }}"
 
 on:
