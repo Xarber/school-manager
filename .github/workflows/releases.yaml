@@ -9,16 +9,6 @@ on:
       - alpha
       - beta
   workflow_dispatch:
-    inputs:
-      unsigned_ios_only:
-        description: Build only the unsigned iPhone IPA (skip the EAS release job)
-        type: boolean
-        required: false
-        default: false
-      release_tag:
-        description: Existing draft release tag for an unsigned-iOS-only run (for example v1.2.3-dev)
-        type: string
-        required: false
 
 concurrency:
   group: releases-${{ github.ref }}
@@ -29,7 +19,8 @@ permissions:
 
 jobs:
   release:
-    if: github.event_name != 'workflow_dispatch' || inputs.unsigned_ios_only != true
+    # TEMPORARY: skip the standard release job for the unsigned-iOS bootstrap run.
+    if: ${{ false }}
     runs-on: ubuntu-latest
 
     steps:
@@ -152,11 +143,8 @@ jobs:
   unsigned_ios:
     name: Build unsigned iOS IPA
     needs: release
-    if: >-
-      ${{ always() && (
-        needs.release.result == 'success' ||
-        (github.event_name == 'workflow_dispatch' && inputs.unsigned_ios_only == true)
-      ) }}
+    # Run even though the temporary release job above is skipped.
+    if: ${{ always() }}
     runs-on: macos-latest
 
     steps:
@@ -183,9 +171,6 @@ jobs:
         id: unsigned
         shell: bash
         working-directory: app
-        env:
-          UNSIGNED_IOS_ONLY: ${{ inputs.unsigned_ios_only }}
-          RELEASE_TAG_OVERRIDE: ${{ inputs.release_tag }}
         run: |
           node - <<'EOF' >> "$GITHUB_OUTPUT"
           const info = require('./constants/BuildInfo.json');
@@ -198,12 +183,10 @@ jobs:
 
           const suffix = suffixes[String(info.branch).toLowerCase()] || '';
           const versionName = `v${info.version}${suffix ? `-${suffix}` : ''}`;
-          const manualOnly = process.env.UNSIGNED_IOS_ONLY === 'true';
-
           // Temporary bootstrap run: always build the unsigned iOS IPA.
           console.log('build=true');
           console.log(`filename=school-manager-${versionName}-ios.ipa`);
-          console.log(`tag=${process.env.RELEASE_TAG_OVERRIDE || versionName}`);
+          console.log(`tag=${versionName}`);
           EOF
 
       - name: Generate the iOS project
@@ -216,7 +199,6 @@ jobs:
         working-directory: app
         run: |
           xcodebuild archive \
-            -project ios/SchoolManager.xcodeproj \
             -workspace ios/SchoolManager.xcworkspace \
             -scheme SchoolManager \
             -configuration Release \
