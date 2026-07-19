@@ -185,6 +185,7 @@ jobs:
           const versionName = `v${info.version}${suffix ? `-${suffix}` : ''}`;
           // Temporary bootstrap run: always build the unsigned iOS IPA.
           console.log('build=true');
+          console.log(`configuration=${info.outputs.iosProfile === 'development-client' ? 'Debug' : 'Release'}`);
           console.log(`filename=school-manager-${versionName}-ios.ipa`);
           console.log(`tag=${versionName}`);
           EOF
@@ -194,14 +195,14 @@ jobs:
         working-directory: app
         run: npx expo prebuild --clean --platform ios
 
-      - name: Build an unsigned iPhone archive
+      - name: Build an unsigned iOS archive
         if: steps.unsigned.outputs.build == 'true'
         working-directory: app
         run: |
           xcodebuild archive \
             -workspace ios/SchoolManager.xcworkspace \
             -scheme SchoolManager \
-            -configuration Release \
+            -configuration "${{ steps.unsigned.outputs.configuration }}" \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/SchoolManager.xcarchive" \
