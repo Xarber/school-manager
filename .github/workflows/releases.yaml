@@ -19,9 +19,7 @@ permissions:
 
 jobs:
   release:
-    # TEMPORARY: skip the standard release job for the unsigned-iOS bootstrap run.
-    if: ${{ false }}
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -76,6 +74,62 @@ jobs:
         if: steps.buildinfo.outputs.versionChanged == 'true'
         working-directory: app
         run: node ./scripts/ci/rename-artifacts.js
+
+      - name: Read unsigned iOS metadata
+        if: steps.buildinfo.outputs.versionChanged == 'true'
+        id: unsigned
+        shell: bash
+        working-directory: app
+        run: |
+          node - <<'EOF' >> "$GITHUB_OUTPUT"
+          const info = require('./constants/BuildInfo.json');
+
+          const suffixes = {
+            development: 'dev',
+            alpha: 'alpha',
+            beta: 'beta'
+          };
+
+          const suffix = suffixes[String(info.branch).toLowerCase()] || '';
+          const versionName = `v${info.version}${suffix ? `-${suffix}` : ''}`;
+
+          console.log(`configuration=${info.outputs.iosProfile === 'development-client' ? 'Debug' : 'Release'}`);
+          console.log(`filename=school-manager-${versionName}-ios.ipa`);
+          EOF
+
+      - name: Generate the iOS project
+        if: steps.buildinfo.outputs.versionChanged == 'true'
+        working-directory: app
+        run: npx expo prebuild --clean --platform ios
+
+      - name: Build an unsigned iOS archive
+        if: steps.buildinfo.outputs.versionChanged == 'true'
+        working-directory: app
+        run: |
+          xcodebuild archive \
+            -workspace ios/SchoolManager.xcworkspace \
+            -scheme SchoolManager \
+            -configuration "${{ steps.unsigned.outputs.configuration }}" \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/SchoolManager.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=''
+
+      - name: Package the unsigned IPA
+        if: steps.buildinfo.outputs.versionChanged == 'true'
+        shell: bash
+        working-directory: app
+        env:
+          IPA_FILENAME: ${{ steps.unsigned.outputs.filename }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/Payload" .ci/artifacts
+          cp -R "$RUNNER_TEMP/SchoolManager.xcarchive/Products/Applications/SchoolManager.app" \
+            "$RUNNER_TEMP/Payload/"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/Payload" \
+            ".ci/artifacts/$IPA_FILENAME"
 
       - name: Generate release notes
         if: steps.buildinfo.outputs.versionChanged == 'true'
@@ -137,107 +191,5 @@ jobs:
           files: |
             app/.ci/artifacts/**
             app/constants/BuildInfo.json
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  unsigned_ios:
-    name: Build unsigned iOS IPA
-    needs: release
-    # Run even though the temporary release job above is skipped.
-    if: ${{ always() }}
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 26
-          cache: npm
-          cache-dependency-path: app/package-lock.json
-
-      - name: Install dependencies
-        working-directory: app
-        run: npm ci
-
-      - name: Generate BuildInfo
-        working-directory: app
-        run: node ./scripts/ci/build-context.js
-
-      - name: Read unsigned iOS metadata
-        id: unsigned
-        shell: bash
-        working-directory: app
-        run: |
-          node - <<'EOF' >> "$GITHUB_OUTPUT"
-          const info = require('./constants/BuildInfo.json');
-
-          const suffixes = {
-            development: 'dev',
-            alpha: 'alpha',
-            beta: 'beta'
-          };
-
-          const suffix = suffixes[String(info.branch).toLowerCase()] || '';
-          const versionName = `v${info.version}${suffix ? `-${suffix}` : ''}`;
-          // Temporary bootstrap run: always build the unsigned iOS IPA.
-          console.log('build=true');
-          console.log(`configuration=${info.outputs.iosProfile === 'development-client' ? 'Debug' : 'Release'}`);
-          console.log(`filename=school-manager-${versionName}-ios.ipa`);
-          console.log(`tag=${versionName}`);
-          EOF
-
-      - name: Generate the iOS project
-        if: steps.unsigned.outputs.build == 'true'
-        working-directory: app
-        run: npx expo prebuild --clean --platform ios
-
-      - name: Build an unsigned iOS archive
-        if: steps.unsigned.outputs.build == 'true'
-        working-directory: app
-        run: |
-          xcodebuild archive \
-            -workspace ios/SchoolManager.xcworkspace \
-            -scheme SchoolManager \
-            -configuration "${{ steps.unsigned.outputs.configuration }}" \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            -archivePath "$RUNNER_TEMP/SchoolManager.xcarchive" \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=''
-
-      - name: Package the unsigned IPA
-        if: steps.unsigned.outputs.build == 'true'
-        shell: bash
-        env:
-          IPA_FILENAME: ${{ steps.unsigned.outputs.filename }}
-        run: |
-          mkdir -p "$RUNNER_TEMP/Payload"
-          cp -R "$RUNNER_TEMP/SchoolManager.xcarchive/Products/Applications/SchoolManager.app" \
-            "$RUNNER_TEMP/Payload/"
-          ditto -c -k --sequesterRsrc --keepParent \
-            "$RUNNER_TEMP/Payload" \
-            "$RUNNER_TEMP/$IPA_FILENAME"
-
-      - name: Upload workflow artifact
-        if: steps.unsigned.outputs.build == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.unsigned.outputs.filename }}
-          path: ${{ runner.temp }}/${{ steps.unsigned.outputs.filename }}
-          if-no-files-found: error
-
-      - name: Add IPA to draft GitHub release
-        if: steps.unsigned.outputs.build == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.unsigned.outputs.tag }}
-          draft: true
-          overwrite_files: true
-          files: ${{ runner.temp }}/${{ steps.unsigned.outputs.filename }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
