@@ -48,25 +48,29 @@ jobs:
               echo "channel=release" >> "$GITHUB_OUTPUT"
               echo "environment=production" >> "$GITHUB_OUTPUT"
               echo "prod=true" >> "$GITHUB_OUTPUT"
+              echo "web_alias=" >> "$GITHUB_OUTPUT"
               ;;
             beta)
               echo "channel=beta" >> "$GITHUB_OUTPUT"
               echo "environment=preview" >> "$GITHUB_OUTPUT"
               echo "prod=false" >> "$GITHUB_OUTPUT"
+              echo "web_alias=beta" >> "$GITHUB_OUTPUT"
               ;;
             alpha)
               echo "channel=alpha" >> "$GITHUB_OUTPUT"
               echo "environment=preview" >> "$GITHUB_OUTPUT"
               echo "prod=false" >> "$GITHUB_OUTPUT"
+              echo "web_alias=alpha" >> "$GITHUB_OUTPUT"
               ;;
             development)
               echo "channel=development" >> "$GITHUB_OUTPUT"
               echo "environment=development" >> "$GITHUB_OUTPUT"
               echo "prod=false" >> "$GITHUB_OUTPUT"
+              echo "web_alias=development" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "Unsupported branch: $GITHUB_REF_NAME"
-              exit 0
+              exit 1
               ;;
           esac
 
@@ -79,9 +83,15 @@ jobs:
         shell: bash
         run: |
           if [ "${{ steps.config.outputs.prod }}" = "true" ]; then
-            eas deploy --prod --non-interactive
+            eas deploy \
+              --prod \
+              --environment "${{ steps.config.outputs.environment }}" \
+              --non-interactive
           else
-            eas deploy --non-interactive
+            eas deploy \
+              --alias "${{ steps.config.outputs.web_alias }}" \
+              --environment "${{ steps.config.outputs.environment }}" \
+              --non-interactive
           fi
 
       - name: Publish update
