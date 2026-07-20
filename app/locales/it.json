@@ -282,6 +282,43 @@
             "finish": "Completa"
         }
     },
+    "passkeys": {
+        "page": {
+            "divider": "--------------------PASSKEYS PAGE --------------------"
+        },
+        "add": {
+            "title": "Aggiungi una Passkey",
+            "description": "Le Passkey sono un modo più sicuro di proteggere il tuo account.\nNon possono essere clonate o rubate.\nPuoi anche usare una chiave di sicurezza.",
+            "continue": "Continua",
+            "success": {
+                "title": "Passkey aggiunta!",
+                "description": "Hai aggiunto una passkey al tuo account!\nPuoi ora chiudere la finestra.",
+                "continue": "Chiudi"
+            }
+        },
+        "login": {
+            "title": "Accedi con una Passkey",
+            "description": "Puoi usare la tua passkey o chiave di sicurezza per accedere a School Manager.",
+            "continue": "Continua",
+            "success": {
+                "title": "Hai effettuato l'accesso!",
+                "description": "Sei entrato in School Manager tramite la tua passkey!\nPuoi ora chiudere la finestra.",
+                "continue": "Chiudi"
+            }
+        },
+        "invalidaction": {
+            "title": "Percorso non valido",
+            "description": "Hai provato ad eseguire un azione non supportata.\nAggiorna la tua app, o riprova più tardi."
+        },
+        "unavailable": {
+            "warning": "Le passkey non sono attualmente disponibili.\nAggiorna il tuo browser o provane un altro.",
+            "button": "Non disponibile"
+        },
+        "notloggedin": {
+            "warning": "Non hai effettuato l'accesso.\nEntra in un account prima di creare una passkey.",
+            "button": "Non disponibile"
+        }
+    },
     "modal": {
         "page": {
             "divider": "--------------------MODAL PAGE --------------------"

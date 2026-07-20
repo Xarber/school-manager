@@ -282,6 +282,43 @@
             "finish": "Complete"
         }
     },
+    "passkeys": {
+        "page": {
+            "divider": "--------------------PASSKEYS PAGE --------------------"
+        },
+        "add": {
+            "title": "Add a Passkey",
+            "description": "Passkeys are a safer way to secure your account.\nThey can't be leaked or stolen.\nYou can also use a physical security key.",
+            "continue": "Continue",
+            "success": {
+                "title": "Passkey added!",
+                "description": "You successfully added a new passkey to your account!\nYou can now close the window.",
+                "continue": "Close"
+            }
+        },
+        "login": {
+            "title": "Login with a Passkey",
+            "description": "You can use your previously saved passkey or security key to log into School Manager.",
+            "continue": "Continue",
+            "success": {
+                "title": "Welcome back!",
+                "description": "You successfully logged into your account with a passkey!\nYou can now close the window.",
+                "continue": "Close"
+            }
+        },
+        "invalidaction": {
+            "title": "Invalid route",
+            "description": "You tried performing an unsupported action.\nTry updating your app, or retry later."
+        },
+        "unavailable": {
+            "warning": "Passkeys are unavailable from your client.\nTry updating your browser or switching to another one.",
+            "button": "Unavailable"
+        },
+        "notloggedin": {
+            "warning": "You aren't logged in.\nSign into an account before creating a passkey.",
+            "button": "Unavailable"
+        }
+    },
     "modal": {
         "page": {
             "divider": "--------------------MODAL PAGE --------------------"

@@ -356,10 +356,13 @@ router.post(paths.dbUpdate, async (req, res) => {
                 passkey.parent,
             );
             if (!login) return res.status(404).json({ error: "Account not found" });
+
+            console.log(login.email);
                 
             return res.json({
                 success: true,
                 token: login.token,
+                email: login.userInfo.email,
                 isNewUser: false
             });
         }

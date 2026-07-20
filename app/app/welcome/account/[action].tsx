@@ -300,7 +300,7 @@ function SignupPage({alert}: AccountProps) {
     );
 }
 
-function LoggedInPage({alert}: AccountProps) {
+export function LoggedInPage({alert}: AccountProps) {
     const router = useRouter();
 
     const theme = useTheme();

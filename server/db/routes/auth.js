@@ -289,6 +289,7 @@ router.post(paths.authenticateOtp, async (req, res) => {
     res.json({
       success: true,
       token,
+      email,
       isNewUser
     });
   } catch (error) {
