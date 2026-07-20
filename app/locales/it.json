@@ -314,9 +314,9 @@
             "warning": "Le passkey non sono attualmente disponibili.\nAggiorna il tuo browser o provane un altro.",
             "button": "Non disponibile"
         },
-        "notloggedin": {
-            "warning": "Non hai effettuato l'accesso.\nEntra in un account prima di creare una passkey.",
-            "button": "Non disponibile"
+        "alreadyloggedin": {
+            "warning": "Hai già effettuato l'accesso.\nEsci da questo account prima di entrare in un altro.",
+            "button": "Unavailable"
         }
     },
     "modal": {

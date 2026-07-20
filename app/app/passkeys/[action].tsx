@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNetworkContext } from '@/constants/NetworkContext';
 import { Platform, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import {
@@ -56,7 +56,27 @@ export default function PasskeysPage() {
       return false; // Errored (request failed)
     }
   }
-  if (network.ready && network.isOnline && network.serverReachable) healthCheck().then((r)=>setHealthCheck(r));
+  useEffect(() => {
+    if (!network.ready || !network.isOnline || !network.serverReachable) {
+      setHealthCheck(false);
+      return;
+    }
+
+    let active = true;
+
+    healthCheck().then(result => {
+      if (active) setHealthCheck(result);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [
+    network.ready,
+    network.isOnline,
+    network.serverReachable,
+    network.serverPath,
+  ]);
 
   async function registerPasskey(name: string = "Passkey") {
     if (!network.serverPath) return false; // Server not ready
@@ -191,16 +211,21 @@ export default function PasskeysPage() {
               <Text style={commonStyle.text}>{i18n.t(`passkeys.unavailable.warning`)}</Text>
             </View>
 
-            <View style={[commonStyle.dashboardSectionContainer, { backgroundColor: "rgba(255, 0, 0, 0.3)", borderWidth: 1, borderColor: "rgba(255, 0, 0, 1)", borderRadius: 10, flexDirection: "row", alignItems: "center" }, ((action === "add" && !accountData.data.active) ? {  } : { display: "none" })]}>
+            <View style={[commonStyle.dashboardSectionContainer, { backgroundColor: "rgba(255, 0, 0, 0.3)", borderWidth: 1, borderColor: "rgba(255, 0, 0, 1)", borderRadius: 10, flexDirection: "row", alignItems: "center" }, (!accountData.loading && (action === "add" && !accountData.data.active) ? {  } : { display: "none" })]}>
               <Ionicons name="warning-outline" size={30} color="rgba(255, 0, 0, 1)" />
               <Text style={commonStyle.text}>{i18n.t(`passkeys.notloggedin.warning`)}</Text>
+            </View>
+
+            <View style={[commonStyle.dashboardSectionContainer, { backgroundColor: "rgba(255, 0, 0, 0.3)", borderWidth: 1, borderColor: "rgba(255, 0, 0, 1)", borderRadius: 10, flexDirection: "row", alignItems: "center" }, (!accountData.loading && (action === "login" && !!accountData.data.active) ? {  } : { display: "none" })]}>
+              <Ionicons name="warning-outline" size={30} color="rgba(255, 0, 0, 1)" />
+              <Text style={commonStyle.text}>{i18n.t(`passkeys.alreadyloggedin.warning`)}</Text>
             </View>
           </View>
 
           <View style={welcomeStyles.actions}>
-              <TouchableOpacity disabled={!network.ready || !network.isOnline || !network.serverReachable || !healthCheckPassed || (action === "add" && !accountData.data.active)} style={[welcomeStyles.actionsButton, (!network.ready || !network.isOnline || !network.serverReachable || !healthCheckPassed || (action === "add" && !accountData.data.active)) ? { backgroundColor: theme.disabled } : null]} onPress={() => runStep()}>
+              <TouchableOpacity disabled={!network.ready || !network.isOnline || !network.serverReachable || !healthCheckPassed || (action === "add" && !accountData.data.active) || (action === "login" && !!accountData.data.active)} style={[welcomeStyles.actionsButton, (!network.ready || !network.isOnline || !network.serverReachable || !healthCheckPassed || (action === "add" && !accountData.data.active) || (action === "login" && !!accountData.data.active)) ? { backgroundColor: theme.disabled } : null]} onPress={() => runStep()}>
                   {(network.ready && healthCheckPassed != undefined && !loading) ? 
-                      <Text style={welcomeStyles.actionsButtonText}>{healthCheckPassed === true && (action === "login" || accountData.data.active) ? i18n.t(`passkeys.${action}.continue`) : i18n.t(`passkeys.unavailable.button`)}</Text>
+                      <Text style={welcomeStyles.actionsButtonText}>{healthCheckPassed === true && ((action === "login" && !accountData.data.active) || (action === "add" && !!accountData.data.active)) ? i18n.t(`passkeys.${action}.continue`) : i18n.t(`passkeys.unavailable.button`)}</Text>
                       : <ActivityIndicator size="small" color={theme.text} />
                   }
               </TouchableOpacity>

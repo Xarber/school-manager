@@ -317,6 +317,10 @@
         "notloggedin": {
             "warning": "You aren't logged in.\nSign into an account before creating a passkey.",
             "button": "Unavailable"
+        },
+        "alreadyloggedin": {
+            "warning": "You are already logged in.\nSign out of this account to sign into a new one.",
+            "button": "Unavailable"
         }
     },
     "modal": {
