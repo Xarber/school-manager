@@ -7,7 +7,9 @@ const passkeyChallengeSchema = new Schema(
     type: { type: String, required: true, enum: ['registration', 'authentication'] },
 
     account_id: { type: Schema.Types.ObjectId, default: null, index: true },
+    parent: { type: Boolean, default: false },
     webauthnUserId: { type: String, default: null },
+    exchange_id: { type: Schema.Types.ObjectId, default: null, index: true },
 
     expiresAt: { type: Date, required: true, index: { expires: 0 } },
   },

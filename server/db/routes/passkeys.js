@@ -11,6 +11,7 @@ const {
 
 const { Passkey } = require("../models/Passkey");
 const { PasskeyChallenge } = require("../models/PasskeyChallenge");
+const { PasskeyExchange } = require("../models/PasskeyExchange");
 
 const { Account } = require("../models/Account");
 const { UserInfo, UserData } = require("../models/User");
@@ -29,12 +30,71 @@ const RP_ORIGINS = process.env.RP_ORIGINS
     .filter(Boolean);
 
 const CHALLENGE_TIMEOUT = 1000 * 60 * 5;
+const EXCHANGE_TIMEOUT = 1000 * 60 * 30;
+const APP_SCHEME = process.env.APP_SCHEME || "schoolmanager";
+const PASSKEY_WEB_ORIGIN = (process.env.PASSKEY_WEB_ORIGIN || RP_ORIGINS[0]).replace(/\/$/, "");
+
+function hashExchangeCode(code) {
+    return crypto.createHash("sha256").update(code).digest("hex");
+}
+
+function createExchangeCode() {
+    return crypto.randomBytes(32).toString("base64url");
+}
+
+function validateCallbackUrl(callbackUrl, action) {
+    try {
+        const parsed = new URL(callbackUrl);
+        return parsed.protocol === `${APP_SCHEME}:`
+            && parsed.hostname === "passkeys"
+            && parsed.pathname === `/${action}`;
+    } catch {
+        return false;
+    }
+}
+
+async function createExchange({ action, purpose, account_id = null, parent = false, callbackUrl = null, codeChallenge }) {
+    const code = createExchangeCode();
+    const exchange = await PasskeyExchange.create({
+        codeHash: hashExchangeCode(code),
+        action,
+        purpose,
+        account_id,
+        parent,
+        callbackUrl,
+        codeChallenge,
+        expiresAt: new Date(Date.now() + EXCHANGE_TIMEOUT),
+    });
+
+    return { code, exchange };
+}
+
+async function consumeExchangeCode(code, purpose, action = null, codeChallenge = null) {
+    if (typeof code !== "string" || !code) return null;
+
+    const query = {
+        codeHash: hashExchangeCode(code),
+        purpose,
+        consumedAt: null,
+        expiresAt: { $gt: new Date() },
+    };
+    if (action) query.action = action;
+    if (codeChallenge) query.codeChallenge = codeChallenge;
+
+    return PasskeyExchange.findOneAndUpdate(
+        query,
+        { $set: { consumedAt: new Date() } },
+        { new: true },
+    );
+}
 
 async function saveChallenge({
     challenge,
     type,
     account_id = null,
+    parent = false,
     webauthnUserId = null,
+    exchange_id = null,
 }) {
     const challengeId = crypto.randomUUID();
 
@@ -43,11 +103,24 @@ async function saveChallenge({
         challenge,
         type,
         account_id,
+        parent,
         webauthnUserId,
+        exchange_id,
         expiresAt: new Date(Date.now() + CHALLENGE_TIMEOUT),
     });
 
     return challengeId;
+}
+
+async function createAppResultExchange(browserExchange, account_id, parent = false) {
+    return createExchange({
+        action: browserExchange.action,
+        purpose: "app",
+        account_id,
+        parent,
+        callbackUrl: browserExchange.callbackUrl,
+        codeChallenge: browserExchange.codeChallenge,
+    });
 }
 
 async function consumeChallenge(challengeId, type) {
@@ -98,6 +171,19 @@ async function createLoginToken(account_id, parent = false) {
     };
 }
 
+async function getRegistrationUser(user) {
+    if (!user?.account_id) return null;
+    if (user.userid) return user;
+
+    const account = await Account.findById(user.account_id);
+    if (!account) return null;
+
+    return {
+        ...user,
+        userid: account.userid,
+    };
+}
+
 function normalizeName(name) {
     if (typeof name !== "string")
         return "Passkey";
@@ -117,6 +203,92 @@ function getPublicKey(buffer) {
         buffer.length,
     );
 }
+
+// App -> browser exchange. For registration, the authenticated account is
+// captured here so the browser never needs a second account login.
+router.post("/exchange/start", async (req, res) => {
+    try {
+        const { action, callbackUrl, codeChallenge } = req.body;
+        if (action !== "add" && action !== "login") {
+            return res.status(400).json({ error: "Invalid passkey action" });
+        }
+        if (!validateCallbackUrl(callbackUrl, action)) {
+            return res.status(400).json({ error: "Invalid callback URL" });
+        }
+        if (typeof codeChallenge !== "string" || !/^[a-f0-9]{64}$/.test(codeChallenge)) {
+            return res.status(400).json({ error: "Invalid code challenge" });
+        }
+        if (action === "add" && !req.user) {
+            return res.status(401).json({ error: req.t("errors.not_authenticated") });
+        }
+
+        const { code } = await createExchange({
+            action,
+            purpose: "browser",
+            account_id: action === "add" ? req.user.account_id : null,
+            parent: action === "add" ? req.user.parent : false,
+            callbackUrl,
+            codeChallenge,
+        });
+
+        const browserUrl = new URL(`/passkeys/${action}`, PASSKEY_WEB_ORIGIN);
+        browserUrl.searchParams.set("exchangeCode", code);
+
+        return res.json({
+            success: true,
+            browserUrl: browserUrl.toString(),
+            expiresIn: EXCHANGE_TIMEOUT / 1000,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: req.t("errors.generic") });
+    }
+});
+
+// Browser -> app exchange. The browser result code is atomically consumed.
+router.post("/exchange/complete", async (req, res) => {
+    try {
+        const { action, exchangeCode, codeVerifier } = req.body;
+        if (action !== "add" && action !== "login") {
+            return res.status(400).json({ error: "Invalid passkey action" });
+        }
+        if (action === "add" && !req.user) {
+            return res.status(401).json({ error: req.t("errors.not_authenticated") });
+        }
+
+        if (typeof codeVerifier !== "string" || codeVerifier.length < 43) {
+            return res.status(400).json({ error: "Invalid code verifier" });
+        }
+        const codeChallenge = hashExchangeCode(codeVerifier);
+
+        const exchange = await consumeExchangeCode(exchangeCode, "app", action, codeChallenge);
+        if (!exchange) {
+            return res.status(400).json({ error: "Exchange code is invalid, expired, or already used" });
+        }
+
+        if (exchange.action === "add") {
+            if (String(req.user.account_id) !== String(exchange.account_id)
+                || Boolean(req.user.parent) !== Boolean(exchange.parent)) {
+                return res.status(403).json({ error: "Exchange code belongs to another account" });
+            }
+            return res.json({ success: true, action: "add" });
+        }
+
+        const login = await createLoginToken(exchange.account_id, exchange.parent);
+        if (!login) return res.status(404).json({ error: "Account not found" });
+
+        return res.json({
+            success: true,
+            action: "login",
+            token: login.token,
+            email: login.userInfo.email,
+            isNewUser: false,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: req.t("errors.generic") });
+    }
+});
 
 // /api/passkeys/get -> List user passkeys or health check passkey availability
 router.post(paths.dbGet, async (req, res) => {
@@ -161,14 +333,12 @@ router.post(paths.dbGet, async (req, res) => {
 // /api/passkeys/add -> Get options for passkey creation -> Actually save and create the passkey
 router.post(paths.dbCreate, async (req, res) => {
     try {
-        const user = req.user;
-        if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
-
         const {
             mode,
             challengeId,
             credential,
             name,
+            exchangeCode,
         } = req.body;
 
         /*
@@ -178,6 +348,18 @@ router.post(paths.dbCreate, async (req, res) => {
         */
 
         if (mode === "options") {
+            const browserExchange = exchangeCode
+                ? await consumeExchangeCode(exchangeCode, "browser", "add")
+                : null;
+            if (exchangeCode && !browserExchange) {
+                return res.status(400).json({ error: "Exchange code is invalid, expired, or already used" });
+            }
+
+            const user = await getRegistrationUser(browserExchange
+                ? { account_id: browserExchange.account_id, parent: browserExchange.parent }
+                : req.user);
+            if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+
             const existingPasskeys = await Passkey.find({
                 account_id: user.account_id,
                 parent: user.parent,
@@ -207,7 +389,9 @@ router.post(paths.dbCreate, async (req, res) => {
                 challenge: options.challenge,
                 type: "registration",
                 account_id: user.account_id,
+                parent: user.parent,
                 webauthnUserId: String(user.account_id),
+                exchange_id: browserExchange?._id ?? null,
             });
 
             return res.json({
@@ -229,6 +413,27 @@ router.post(paths.dbCreate, async (req, res) => {
 
             const challenge = await consumeChallenge(challengeId, "registration");
             if (!challenge) return res.status(400).json({ error: "Challenge expired" });
+
+            const browserExchange = challenge.exchange_id
+                ? await PasskeyExchange.findOne({
+                    _id: challenge.exchange_id,
+                    action: "add",
+                    purpose: "browser",
+                    consumedAt: { $ne: null },
+                    expiresAt: { $gt: new Date() },
+                })
+                : null;
+            if (challenge.exchange_id && !browserExchange) {
+                return res.status(400).json({ error: "Exchange expired" });
+            }
+            const user = await getRegistrationUser(browserExchange
+                ? { account_id: challenge.account_id, parent: challenge.parent }
+                : req.user);
+            if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+            if (!browserExchange && (String(user.account_id) !== String(challenge.account_id)
+                || Boolean(user.parent) !== Boolean(challenge.parent))) {
+                return res.status(403).json({ error: "Challenge belongs to another account" });
+            }
 
             const verification = await verifyRegistrationResponse({
                 response: credential,
@@ -264,6 +469,19 @@ router.post(paths.dbCreate, async (req, res) => {
             });
             await passkey.save();
 
+            if (browserExchange) {
+                const result = await createAppResultExchange(
+                    browserExchange,
+                    user.account_id,
+                    user.parent,
+                );
+                return res.json({
+                    success: true,
+                    exchangeCode: result.code,
+                    callbackUrl: browserExchange.callbackUrl,
+                });
+            }
+
             return res.json({
                 success: true,
                 data: {
@@ -290,6 +508,7 @@ router.post(paths.dbUpdate, async (req, res) => {
             mode,
             challengeId,
             credential,
+            exchangeCode,
         } = req.body;
 
         /*
@@ -299,6 +518,13 @@ router.post(paths.dbUpdate, async (req, res) => {
         */
 
         if (mode === "options") {
+            const browserExchange = exchangeCode
+                ? await consumeExchangeCode(exchangeCode, "browser", "login")
+                : null;
+            if (exchangeCode && !browserExchange) {
+                return res.status(400).json({ error: "Exchange code is invalid, expired, or already used" });
+            }
+
             const options = await generateAuthenticationOptions({
                 rpID: RP_ID,
                 userVerification: "required"
@@ -307,6 +533,7 @@ router.post(paths.dbUpdate, async (req, res) => {
             const savedChallenge = await saveChallenge({ 
                 challenge: options.challenge,
                 type: "authentication",
+                exchange_id: browserExchange?._id ?? null,
             });
 
             return res.json({
@@ -351,13 +578,33 @@ router.post(paths.dbUpdate, async (req, res) => {
             passkey.lastUsedAt = new Date();
             await passkey.save();
 
+            if (challenge.exchange_id) {
+                const browserExchange = await PasskeyExchange.findOne({
+                    _id: challenge.exchange_id,
+                    action: "login",
+                    purpose: "browser",
+                    consumedAt: { $ne: null },
+                    expiresAt: { $gt: new Date() },
+                });
+                if (!browserExchange) return res.status(400).json({ error: "Exchange expired" });
+
+                const result = await createAppResultExchange(
+                    browserExchange,
+                    passkey.account_id,
+                    passkey.parent,
+                );
+                return res.json({
+                    success: true,
+                    exchangeCode: result.code,
+                    callbackUrl: browserExchange.callbackUrl,
+                });
+            }
+
             const login = await createLoginToken(
                 passkey.account_id,
                 passkey.parent,
             );
             if (!login) return res.status(404).json({ error: "Account not found" });
-
-            console.log(login.email);
                 
             return res.json({
                 success: true,

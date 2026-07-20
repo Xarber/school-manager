@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNetworkContext } from '@/constants/NetworkContext';
 import { Platform, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import * as AuthSession from 'expo-auth-session';
+import * as Crypto from 'expo-crypto';
+import * as WebBrowser from 'expo-web-browser';
 import {
     startRegistration,
     startAuthentication
@@ -10,7 +13,6 @@ import { useTheme } from '@/constants/useThemes';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import i18n from '@/constants/i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAccountData } from '@/data/AccountDataContext';
 import { LoggedInPage } from '../welcome/account/[action]';
 import { AlertProps } from '@/components/alert/AlertContext';
@@ -22,49 +24,44 @@ export default function PasskeysPage() {
   const theme = useTheme();
   const [healthCheckPassed, setHealthCheck] = useState<undefined | boolean>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean | undefined>(undefined);
   const commonStyle = createStyling.createCommonStyles(theme);
   const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
   const params = useLocalSearchParams();
   const action = params.action as string;
+  const exchangeCode = typeof params.exchangeCode === "string" ? params.exchangeCode : undefined;
   const [step, setStep] = useState<"start" | "run" | "complete">("start");
   const accountData = useAccountData();
+  const canAdd = action !== "add" || accountData.data.active || (Platform.OS === "web" && !!exchangeCode);
+  const canLogin = action !== "login" || !accountData.data.active || (Platform.OS === "web" && !!exchangeCode);
   const router = useRouter();
   const alertRef = useRef<{ show: (props: AlertProps) => void; hide: () => void} | null>(null);
   const show = (props: AlertProps) => alertRef.current?.show(props);
   const hide = () => alertRef.current?.hide();
 
-  async function healthCheck() {
-    if (Platform.OS !== 'web') return false; // Isn't running in browser
-    if (typeof window === 'undefined' || typeof window.PublicKeyCredential === 'undefined') return false; // Passkeys unsupported
-    if (!network.serverPath) return false; // Server not found
-
-    try {
-        const response = await fetch( `${network.serverPath}/api/passkeys/get`, {method: "POST"});
-        if (!response.ok) return false; // Request failed
-
-        const data: {
-          data?: {
-            available?: boolean;
-            service?: string;
-          }
-        } = await response.json();
-
-        if (!data.data?.available) return false; // Unavailable
-        return true;
-    } catch (error) {
-      return false; // Errored (request failed)
-    }
-  }
   useEffect(() => {
-    if (!network.ready || !network.isOnline || !network.serverReachable) {
-      setHealthCheck(false);
-      return;
-    }
-
     let active = true;
 
-    healthCheck().then(result => {
+    async function checkAvailability() {
+      if (!network.ready || !network.isOnline || !network.serverReachable || !network.serverPath) {
+        return false;
+      }
+      if (Platform.OS === "web"
+          && (typeof window === "undefined" || typeof window.PublicKeyCredential === "undefined")) {
+        return false;
+      }
+
+      try {
+        const response = await fetch(`${network.serverPath}/api/passkeys/get`, { method: "POST" });
+        if (!response.ok) return false;
+
+        const data: { data?: { available?: boolean } } = await response.json();
+        return data.data?.available === true;
+      } catch {
+        return false;
+      }
+    }
+
+    checkAvailability().then(result => {
       if (active) setHealthCheck(result);
     });
 
@@ -78,21 +75,34 @@ export default function PasskeysPage() {
     network.serverPath,
   ]);
 
+  function redirectToNative(result: { exchangeCode?: string; callbackUrl?: string }) {
+    if (!exchangeCode) return false;
+    if (!result.exchangeCode || !result.callbackUrl) {
+      throw new Error("The server did not return a native exchange result");
+    }
+
+    const callback = new URL(result.callbackUrl);
+    callback.searchParams.set("exchangeCode", result.exchangeCode);
+    window.location.replace(callback.toString());
+    return true;
+  }
+
   async function registerPasskey(name: string = "Passkey") {
     if (!network.serverPath) return false; // Server not ready
 
     const token = accountData.data.token;
-    if (!token) return false; // User not authenticated;
+    if (!exchangeCode && !token) return false; // User not authenticated
 
     // Get passkey options
     const optionsResponse = await fetch(`${network.serverPath}/api/passkeys/add`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         mode: "options",
+        exchangeCode,
       }),
     });
     const optionsJson = await optionsResponse.json();
@@ -104,7 +114,7 @@ export default function PasskeysPage() {
     const verifyResponse = await fetch(`${network.serverPath}/api/passkeys/add`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -116,6 +126,10 @@ export default function PasskeysPage() {
     });
     const verifyJson = await verifyResponse.json();
     if (!verifyResponse.ok || !verifyJson.success) return false; // Verification failed
+
+    if (Platform.OS === "web" && redirectToNative(verifyJson)) {
+      return true;
+    }
 
     return true; // Passkey registered
   }
@@ -131,6 +145,7 @@ export default function PasskeysPage() {
       },
       body: JSON.stringify({
         mode: "options",
+        exchangeCode,
       }),
     });
     const optionsJson = await optionsResponse.json();
@@ -153,46 +168,96 @@ export default function PasskeysPage() {
     const verifyJson = await verifyResponse.json();
     if (!verifyResponse.ok || !verifyJson.success) return false; // Verification failed
 
+    if (Platform.OS === "web" && redirectToNative(verifyJson)) {
+      return true;
+    }
+
     return verifyJson; // Authenticated
   }
 
-  function runStep() {
-    if (action === "add") {
-      setLoading(true);
+  async function runNativeExchange() {
+    if (!network.serverPath || (action !== "add" && action !== "login")) return false;
 
-      registerPasskey().then((r)=>{
-        setLoading(false);
-        if (!r) return;
-        setSuccess(true);
-        setStep("complete");
-      }).catch(e=>{
-        setSuccess(false);
-        setLoading(false);
-      });
-    } else if (action === "login") {
-      setLoading(true);
+    const callbackUrl = AuthSession.makeRedirectUri({
+      scheme: "schoolmanager",
+      path: `passkeys/${action}`,
+    });
+    const token = accountData.data.token;
+    const verifierBytes = await Crypto.getRandomBytesAsync(32);
+    const codeVerifier = Array.from(verifierBytes)
+      .map(byte => byte.toString(16).padStart(2, "0"))
+      .join("");
+    const codeChallenge = await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.SHA256,
+      codeVerifier,
+    );
 
-      authenticatePasskey().then((r)=>{
-        setLoading(false);
-        if (!r || !r.success) return;
-        console.log(r);
-        accountData.save({
+    const startResponse = await fetch(`${network.serverPath}/api/passkeys/exchange/start`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(action === "add" && token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ action, callbackUrl, codeChallenge }),
+    });
+    const startJson = await startResponse.json();
+    if (!startResponse.ok || !startJson.success || !startJson.browserUrl) {
+      throw new Error(startJson.error ?? "Could not start passkey exchange");
+    }
+
+    const browserResult = await WebBrowser.openAuthSessionAsync(
+      startJson.browserUrl,
+      callbackUrl,
+    );
+    if (browserResult.type !== "success") return false;
+
+    const resultCode = new URL(browserResult.url).searchParams.get("exchangeCode");
+    if (!resultCode) throw new Error("Missing passkey result code");
+
+    const completeResponse = await fetch(`${network.serverPath}/api/passkeys/exchange/complete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(action === "add" && token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ action, exchangeCode: resultCode, codeVerifier }),
+    });
+    const completeJson = await completeResponse.json();
+    if (!completeResponse.ok || !completeJson.success) {
+      throw new Error(completeJson.error ?? "Could not complete passkey exchange");
+    }
+
+    return completeJson;
+  }
+
+  async function runStep() {
+    setLoading(true);
+
+    try {
+      const result = Platform.OS === "web"
+        ? (action === "add" ? await registerPasskey() : await authenticatePasskey())
+        : await runNativeExchange();
+
+      if (!result) return;
+
+      if (action === "login" && typeof result !== "boolean") {
+        await accountData.save({
           ...accountData.data,
           active: true,
-          username: r.email,
-          token: r.token
-        }).then(() => {
-          setSuccess(true);
-          setStep("complete");
+          username: result.email,
+          token: result.token,
         });
-      }).catch(e=>{
-        setSuccess(false);
-        setLoading(false);
-      })
+      }
+
+      setStep("complete");
+    } catch (error) {
+      console.error("Passkey action failed", error);
+    } finally {
+      setLoading(false);
     }
   }
 
-  if (action != "add" && action != "login") return <InvalidAction/>;
+  if (action !== "add" && action !== "login") return <InvalidAction/>;
 
   switch (step) {
     case "start": 
@@ -211,21 +276,21 @@ export default function PasskeysPage() {
               <Text style={commonStyle.text}>{i18n.t(`passkeys.unavailable.warning`)}</Text>
             </View>
 
-            <View style={[commonStyle.dashboardSectionContainer, { backgroundColor: "rgba(255, 0, 0, 0.3)", borderWidth: 1, borderColor: "rgba(255, 0, 0, 1)", borderRadius: 10, flexDirection: "row", alignItems: "center" }, (!accountData.loading && (action === "add" && !accountData.data.active) ? {  } : { display: "none" })]}>
+            <View style={[commonStyle.dashboardSectionContainer, { backgroundColor: "rgba(255, 0, 0, 0.3)", borderWidth: 1, borderColor: "rgba(255, 0, 0, 1)", borderRadius: 10, flexDirection: "row", alignItems: "center" }, (!accountData.loading && !canAdd ? {  } : { display: "none" })]}>
               <Ionicons name="warning-outline" size={30} color="rgba(255, 0, 0, 1)" />
               <Text style={commonStyle.text}>{i18n.t(`passkeys.notloggedin.warning`)}</Text>
             </View>
 
-            <View style={[commonStyle.dashboardSectionContainer, { backgroundColor: "rgba(255, 0, 0, 0.3)", borderWidth: 1, borderColor: "rgba(255, 0, 0, 1)", borderRadius: 10, flexDirection: "row", alignItems: "center" }, (!accountData.loading && (action === "login" && !!accountData.data.active) ? {  } : { display: "none" })]}>
+            <View style={[commonStyle.dashboardSectionContainer, { backgroundColor: "rgba(255, 0, 0, 0.3)", borderWidth: 1, borderColor: "rgba(255, 0, 0, 1)", borderRadius: 10, flexDirection: "row", alignItems: "center" }, (!accountData.loading && !canLogin ? {  } : { display: "none" })]}>
               <Ionicons name="warning-outline" size={30} color="rgba(255, 0, 0, 1)" />
               <Text style={commonStyle.text}>{i18n.t(`passkeys.alreadyloggedin.warning`)}</Text>
             </View>
           </View>
 
           <View style={welcomeStyles.actions}>
-              <TouchableOpacity disabled={!network.ready || !network.isOnline || !network.serverReachable || !healthCheckPassed || (action === "add" && !accountData.data.active) || (action === "login" && !!accountData.data.active)} style={[welcomeStyles.actionsButton, (!network.ready || !network.isOnline || !network.serverReachable || !healthCheckPassed || (action === "add" && !accountData.data.active) || (action === "login" && !!accountData.data.active)) ? { backgroundColor: theme.disabled } : null]} onPress={() => runStep()}>
-                  {(network.ready && healthCheckPassed != undefined && !loading) ? 
-                      <Text style={welcomeStyles.actionsButtonText}>{healthCheckPassed === true && ((action === "login" && !accountData.data.active) || (action === "add" && !!accountData.data.active)) ? i18n.t(`passkeys.${action}.continue`) : i18n.t(`passkeys.unavailable.button`)}</Text>
+              <TouchableOpacity disabled={!network.ready || !network.isOnline || !network.serverReachable || !healthCheckPassed || !canAdd || !canLogin} style={[welcomeStyles.actionsButton, (!network.ready || !network.isOnline || !network.serverReachable || !healthCheckPassed || !canAdd || !canLogin) ? { backgroundColor: theme.disabled } : null]} onPress={() => runStep()}>
+                  {(network.ready && healthCheckPassed !== undefined && !loading) ?
+                      <Text style={welcomeStyles.actionsButtonText}>{healthCheckPassed === true && canAdd && canLogin ? i18n.t(`passkeys.${action}.continue`) : i18n.t(`passkeys.unavailable.button`)}</Text>
                       : <ActivityIndicator size="small" color={theme.text} />
                   }
               </TouchableOpacity>
