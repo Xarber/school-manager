@@ -27,8 +27,25 @@ export default function PasskeysPage() {
   const commonStyle = createStyling.createCommonStyles(theme);
   const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
   const params = useLocalSearchParams();
+  const autoStart = params.autoStart === "true";
+  const autoStartedRef = useRef(false);
   const action = params.action as string;
-  const exchangeCode = typeof params.exchangeCode === "string" ? params.exchangeCode : undefined;
+
+  const exchangeCode =
+    typeof params.exchangeCode === "string"
+      ? params.exchangeCode
+      : undefined;
+
+  const exchangeApi =
+    typeof params.exchangeApi === "string"
+      ? params.exchangeApi
+      : undefined;
+
+  const passkeyServerPath =
+    exchangeCode && exchangeApi
+      ? exchangeApi
+      : network.serverPath;
+
   const [step, setStep] = useState<"start" | "run" | "complete">("start");
   const accountData = useAccountData();
   const canAdd = action !== "add" || accountData.data.active || (Platform.OS === "web" && !!exchangeCode);
@@ -88,13 +105,13 @@ export default function PasskeysPage() {
   }
 
   async function registerPasskey(name: string = "Passkey") {
-    if (!network.serverPath) return false; // Server not ready
+    if (!passkeyServerPath) return false; // Server not ready
 
     const token = accountData.data.token;
     if (!exchangeCode && !token) return false; // User not authenticated
 
     // Get passkey options
-    const optionsResponse = await fetch(`${network.serverPath}/api/passkeys/add`, {
+    const optionsResponse = await fetch(`${passkeyServerPath}/api/passkeys/add`, {
       method: "POST",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -106,12 +123,16 @@ export default function PasskeysPage() {
       }),
     });
     const optionsJson = await optionsResponse.json();
-    if (!optionsResponse.ok || !optionsJson.success) return false; // Request failed
+    if (!optionsResponse.ok || !optionsJson.success) {
+      throw new Error(
+        optionsJson.error ?? "Could not get passkey options",
+      );
+    }
     const { challengeId, data: options } = optionsJson;
 
     // Create the passkey
     const credential = await startRegistration({ optionsJSON: options });
-    const verifyResponse = await fetch(`${network.serverPath}/api/passkeys/add`, {
+    const verifyResponse = await fetch(`${passkeyServerPath}/api/passkeys/add`, {
       method: "POST",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -125,7 +146,11 @@ export default function PasskeysPage() {
       })
     });
     const verifyJson = await verifyResponse.json();
-    if (!verifyResponse.ok || !verifyJson.success) return false; // Verification failed
+    if (!verifyResponse.ok || !verifyJson.success) {
+      throw new Error(
+        verifyJson.error ?? "Passkey verification failed",
+      );
+    }
 
     if (Platform.OS === "web" && redirectToNative(verifyJson)) {
       return true;
@@ -135,10 +160,10 @@ export default function PasskeysPage() {
   }
 
   async function authenticatePasskey() {
-    if (!network.serverPath) return false; // Server not ready
+    if (!passkeyServerPath) return false; // Server not ready
     
     // Get passkey options
-    const optionsResponse = await fetch(`${network.serverPath}/api/passkeys/update`, {
+    const optionsResponse = await fetch(`${passkeyServerPath}/api/passkeys/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -149,12 +174,16 @@ export default function PasskeysPage() {
       }),
     });
     const optionsJson = await optionsResponse.json();
-    if (!optionsResponse.ok || !optionsJson.success) return false; // Request failed
+    if (!optionsResponse.ok || !optionsJson.success) {
+      throw new Error(
+        optionsJson.error ?? "Could not get passkey options",
+      );
+    }
     const { challengeId, data: options } = optionsJson;
 
     // Authenticate with the passkey
     const credential = await startAuthentication({ optionsJSON: options });
-    const verifyResponse = await fetch(`${network.serverPath}/api/passkeys/update`, {
+    const verifyResponse = await fetch(`${passkeyServerPath}/api/passkeys/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -166,7 +195,11 @@ export default function PasskeysPage() {
       }),
     });
     const verifyJson = await verifyResponse.json();
-    if (!verifyResponse.ok || !verifyJson.success) return false; // Verification failed
+    if (!verifyResponse.ok || !verifyJson.success) {
+      throw new Error(
+        verifyJson.error ?? "Passkey verification failed",
+      );
+    }
 
     if (Platform.OS === "web" && redirectToNative(verifyJson)) {
       return true;
@@ -256,6 +289,31 @@ export default function PasskeysPage() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (!autoStart || Platform.OS === "web") return;
+    if (autoStartedRef.current) return;
+
+    if (
+      action !== "login" ||
+      !network.ready ||
+      !network.isOnline ||
+      !network.serverReachable ||
+      healthCheckPassed !== true
+    ) {
+      return;
+    }
+
+    autoStartedRef.current = true;
+    void runStep();
+  }, [
+    autoStart,
+    action,
+    network.ready,
+    network.isOnline,
+    network.serverReachable,
+    healthCheckPassed,
+  ]);
 
   if (action !== "add" && action !== "login") return <InvalidAction/>;
 

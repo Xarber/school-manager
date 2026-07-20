@@ -199,7 +199,8 @@
                 "success": {
                     "title": "Hai effettuato l'accesso!",
                     "continue": "Continua"
-                }
+                },
+                "passkey": "Usa una Passkey"
             },
             "signup": {
                 "title": "Benvenuto/a!",

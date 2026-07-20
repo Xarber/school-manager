@@ -199,7 +199,8 @@
                 "success": {
                     "title": "You've successfully signed in!",
                     "continue": "Continue"
-                }
+                },
+                "passkey": "Use a Passkey"
             },
             "signup": {
                 "title": "Welcome!",

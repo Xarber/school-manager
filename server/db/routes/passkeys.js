@@ -234,6 +234,12 @@ router.post("/exchange/start", async (req, res) => {
         const browserUrl = new URL(`/passkeys/${action}`, PASSKEY_WEB_ORIGIN);
         browserUrl.searchParams.set("exchangeCode", code);
 
+        browserUrl.searchParams.set(
+            "exchangeApi",
+            process.env.PASSKEY_API_ORIGIN ||
+                `${req.protocol}://${req.get("host")}`,
+        );
+
         return res.json({
             success: true,
             browserUrl: browserUrl.toString(),

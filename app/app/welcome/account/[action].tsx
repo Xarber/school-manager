@@ -12,6 +12,7 @@ import {
     View
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { loginWithPasskey } from "@/utils/passkeyLogin";
 
 import welcomeImage from "@/assets/images/welcome.png";
 import { KeyboardShift } from "@/components/keyboardShift";
@@ -192,6 +193,53 @@ function LoginPage({alert}: AccountProps) {
                 </View>
             </ScrollView>
             <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+                <TouchableOpacity
+                    disabled={
+                        loading ||
+                        !network.ready ||
+                        !network.isOnline ||
+                        !network.serverReachable ||
+                        !network.serverPath
+                    }
+                    onPress={async () => {
+                        if (!network.serverPath) return;
+
+                        setLoading(true);
+
+                        try {
+                            const result = await loginWithPasskey(network.serverPath);
+
+                            if (!result) return;
+
+                            await accountData.save({
+                                ...accountData.data,
+                                active: true,
+                                username: result.email,
+                                token: result.token,
+                            });
+
+                            router.replace("/welcome/account/loggedin");
+                        } catch (error) {
+                            console.error("Passkey login failed:", error);
+
+                            // Use your existing alert API here if desired.
+                        } finally {
+                            setLoading(false);
+                        }
+                    }}
+                    activeOpacity={0.7}
+                >
+                    <Text
+                        style={{
+                        textAlign: "center",
+                        fontWeight: "bold",
+                        color: theme.primary,
+                        opacity: loading ? 0.5 : 1,
+                        }}
+                    >
+                        {i18n.t("welcome.account.auth.passkey")}
+                    </Text>
+                </TouchableOpacity>
                 <TouchableOpacity disabled={!validateEmail(email) || loading || !network.ready || !network.serverReachable} style={(!validateEmail(email) || !network.serverReachable) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                     if (!otpsent) {
                         sendOtp(email, setOtpsent, setLoading, setEmailcode, alert as any, (network.serverPath as string));

@@ -3,11 +3,14 @@ import { useTheme } from "@/constants/useThemes";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Button, Platform, Text, TouchableOpacity, View } from "react-native";
+import { usePathname } from "expo-router";
 
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showBanner, setShowBanner] = useState(false);
   const theme = useTheme();
+  const pathname = usePathname();
+  const isPasskeyRoute = pathname.startsWith("/passkeys");
 
   useEffect(() => {
     if (Platform.OS !== "web") return;
@@ -43,7 +46,7 @@ export default function PWAInstallPrompt() {
 
   const handleDismiss = () => setShowBanner(false);
 
-  if (!showBanner) return null;
+  if (!showBanner || isPasskeyRoute) return null;
 
   return (
     <View style={{ position: "fixed", bottom: 20, left: 20, right: 20, paddingVertical: 12, paddingHorizontal: 20, backgroundColor: theme.primary, borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.2)", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", zIndex: 9999 }}>
