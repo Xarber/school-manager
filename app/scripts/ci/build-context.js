@@ -18,17 +18,43 @@ function getVersion(revision) {
     return JSON.parse(output).expo.version;
 }
 
-function getLatestTag() {
+function getLatestTag(branch) {
     try {
-        return run("git describe --tags --abbrev=0");
+        const tags = run(
+            "git tag --merged HEAD --sort=-version:refname"
+        ).split("\n").filter(Boolean);
+
+        const suffixes = {
+            development: "-dev",
+            alpha: "-alpha",
+            beta: "-beta"
+        };
+
+        const suffix = suffixes[branch];
+
+        if (suffix) {
+            return tags.find(
+                (tag) =>
+                    tag.startsWith("v") &&
+                    tag.endsWith(suffix)
+            ) || null;
+        }
+
+        if (branch === "master") {
+            return tags.find(
+                (tag) =>
+                    tag.startsWith("v") &&
+                    !tag.includes("-")
+            ) || null;
+        }
+
+        return null;
     } catch {
         return null;
     }
 }
 
-function getVersionFromLatestTag() {
-    const tag = getLatestTag();
-
+function getVersionFromTag(tag) {
     if (!tag) {
         return null;
     }
@@ -65,7 +91,9 @@ try {
 
     const currentVersion = getVersion("HEAD");
 
-    const previousVersion = getVersionFromLatestTag();
+    const previousTag = getLatestTag(branch);
+
+    const previousVersion = getVersionFromTag(previousTag);
 
     const versionChanged =
         previousVersion === null ||
@@ -97,6 +125,7 @@ try {
         appName: "School Manager",
 
         version: currentVersion,
+        previousTag,
         previousVersion,
 
         runtimeVersion: currentVersion,
