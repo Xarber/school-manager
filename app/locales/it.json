@@ -1099,6 +1099,10 @@
                     "title": "Lingua",
                     "description": "Cambia la lingua"
                 },
+                "security": {
+                    "title": "Accesso & Sicurezza",
+                    "description": "Sicurezza dell'account"
+                },
                 "notifications": {
                     "title": "Notifiche",
                     "description": "Gestisci le notifiche"
@@ -1136,6 +1140,45 @@
                 },
                 "system": {
                     "text": "Sistema"
+                }
+            },
+            "security": {
+                "stack": {
+                    "title": "Accesso & Sicurezza"
+                },
+                "header": {
+                    "title": "Sicurezza dell'account",
+                    "description": "Cambia le tue impostazioni di sicurezza",
+                    "text": "Sicurezza dell'account"
+                },
+                "passkeys": {
+                    "title": "Passkey",
+                    "description": "Le passkey ti permettono di accedere in modo sicuro usando Face ID, Touch ID, il codice del dispositivo o una chiave di sicurezza.",
+                    "empty": "Non hai ancora aggiunto nessuna passkey.",
+                    "add": {
+                        "button": "Aggiungi una passkey",
+                        "success": {
+                            "title": "Passkey aggiunta",
+                            "description": "La nuova passkey è pronta per essere utilizzata."
+                        }
+                    },
+                    "delete": {
+                        "title": "Rimuovere la passkey?",
+                        "description": "Vuoi rimuovere “{{name}}” dal tuo account?"
+                    },
+                    "item": {
+                        "created": "Aggiunta il {{date}}",
+                        "lastUsed": "Ultimo utilizzo: {{date}}"
+                    },
+                    "actions": {
+                        "ok": "OK",
+                        "cancel": "Annulla",
+                        "delete": "Rimuovi"
+                    },
+                    "error": {
+                        "title": "Errore passkey",
+                        "description": "Si è verificato un errore durante l'aggiornamento delle passkey."
+                    }
                 }
             },
             "notifications": {

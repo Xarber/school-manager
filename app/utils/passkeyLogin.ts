@@ -10,12 +10,20 @@ export type PasskeyLoginResult = {
   isNewUser: boolean;
 };
 
-export async function loginWithPasskey(
+type PasskeyAction = "add" | "login";
+
+async function runPasskeyExchange(
   serverPath: string,
-): Promise<PasskeyLoginResult | null> {
+  action: PasskeyAction,
+  token?: string,
+) {
+  if (action === "add" && !token) {
+    throw new Error("You must be logged in to add a passkey");
+  }
+
   const callbackUrl = AuthSession.makeRedirectUri({
     scheme: "schoolmanager",
-    path: "passkeys/login",
+    path: `passkeys/${action}`,
   });
 
   const verifierBytes = await Crypto.getRandomBytesAsync(32);
@@ -34,9 +42,12 @@ export async function loginWithPasskey(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(action === "add" && token
+          ? { Authorization: `Bearer ${token}` }
+          : {}),
       },
       body: JSON.stringify({
-        action: "login",
+        action,
         callbackUrl,
         codeChallenge,
       }),
@@ -74,9 +85,12 @@ export async function loginWithPasskey(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(action === "add" && token
+          ? { Authorization: `Bearer ${token}` }
+          : {}),
       },
       body: JSON.stringify({
-        action: "login",
+        action,
         exchangeCode,
         codeVerifier,
       }),
@@ -91,5 +105,22 @@ export async function loginWithPasskey(
     );
   }
 
-  return completeJson as PasskeyLoginResult;
+  return completeJson;
+}
+
+export async function loginWithPasskey(
+  serverPath: string,
+): Promise<PasskeyLoginResult | null> {
+  return runPasskeyExchange(
+    serverPath,
+    "login",
+  ) as Promise<PasskeyLoginResult | null>;
+}
+
+export async function addPasskey(
+  serverPath: string,
+  token: string,
+): Promise<boolean> {
+  const result = await runPasskeyExchange(serverPath, "add", token);
+  return result?.success === true;
 }

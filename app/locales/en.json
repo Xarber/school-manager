@@ -1103,6 +1103,10 @@
                     "title": "Language",
                     "description": "Change the language"
                 },
+                "security": {
+                    "title": "Sign In & Security",
+                    "description": "Account sign in settings"
+                },
                 "notifications": {
                     "title": "Notifications",
                     "description": "Manage your notifications"
@@ -1140,6 +1144,45 @@
                 },
                 "system": {
                     "text": "System"
+                }
+            },
+            "security": {
+                "stack": {
+                    "title": "Sign In & Security"
+                },
+                "header": {
+                    "title": "Account Security",
+                    "description": "Change your security settings",
+                    "text": "Account Security"
+                },
+                "passkeys": {
+                    "title": "Passkeys",
+                    "description": "Passkeys let you sign in securely using Face ID, Touch ID, your device passcode, or a security key.",
+                    "empty": "You haven't added any passkeys yet.",
+                    "add": {
+                        "button": "Add a passkey",
+                        "success": {
+                            "title": "Passkey added",
+                            "description": "Your new passkey is ready to use."
+                        }
+                    },
+                    "delete": {
+                        "title": "Remove passkey?",
+                        "description": "Remove “{{name}}” from your account?"
+                    },
+                    "item": {
+                        "created": "Added {{date}}",
+                        "lastUsed": "Last used {{date}}"
+                    },
+                    "actions": {
+                        "ok": "OK",
+                        "cancel": "Cancel",
+                        "delete": "Remove"
+                    },
+                    "error": {
+                        "title": "Passkey error",
+                        "description": "Something went wrong while updating your passkeys."
+                    }
                 }
             },
             "notifications": {
