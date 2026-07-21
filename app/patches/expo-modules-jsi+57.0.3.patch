@@ -39,7 +39,7 @@ index f0f3b88..7b5657a 100644
  
      return JavaScriptObject(self, hostObject)
 diff --git a/node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh b/node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh
-index 28d3249..462825a 100755
+index 28d3249..4e59261 100755
 --- a/node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh
 +++ b/node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh
 @@ -179,7 +179,7 @@ build_slice() {
@@ -51,7 +51,27 @@ index 28d3249..462825a 100755
  
    # Use env -i to clear inherited Xcode environment variables from the parent build.
    # Without this, the nested xcodebuild inherits SDKROOT, PLATFORM_NAME, etc.
-@@ -401,7 +401,7 @@ GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
+@@ -194,6 +194,11 @@ build_slice() {
+   # default, which breaks callers that pin a toolchain via DEVELOPER_DIR (e.g. the
+   # publish pipeline targeting a specific Xcode) and the in-Xcode build phase when
+   # the running Xcode differs from the global one.
++  # Xcode 27 can emit the diagnostic below even though the nested build exits 0
++  # and produces a valid framework. When this runs as an outer Xcode script
++  # phase, merely printing a line prefixed with `error:` fails the parent archive.
++  # Filter only that exact false diagnostic. `set -o pipefail` still propagates
++  # every real nonzero xcodebuild exit through the pipeline.
+   local env_args=(PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT")
+   if [[ -n "${DEVELOPER_DIR:-}" ]]; then
+     env_args+=(DEVELOPER_DIR="$DEVELOPER_DIR")
+@@ -217,6 +222,7 @@ build_slice() {
+     DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
+     COMPILER_INDEX_STORE_ENABLE=NO \
+     SWIFT_COMPILATION_MODE=wholemodule \
++    2>&1 | sed '/^error: the following command failed with exit code 0 but produced no further output$/d'
+   )
+ 
+   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
+@@ -401,7 +407,7 @@ GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
  SOURCE_FILES+=("$GENERATED_MODULE_MAP")
  
  if [[ "$CLEAN" == true ]]; then
