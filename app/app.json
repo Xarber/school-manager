@@ -13,7 +13,7 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "default",
     "icon": "./assets/icons/icon-monochrome.png",
     "scheme": "schoolmanager",

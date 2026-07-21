@@ -10,7 +10,7 @@ import { useAccountData } from "@/data/AccountDataContext";
 import { turnOffNotifications, turnOnNotifications } from "@/data/notifications";
 import { useUserData } from "@/data/UserDataContext";
 import { addPasskey } from "@/utils/passkeyLogin";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Octicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -259,13 +259,14 @@ function SecurityTab() {
                                     flexDirection: "row",
                                     alignItems: "center",
                                     justifyContent: "center",
+                                    height: 40,
                                     gap: 8,
                                     opacity: adding ? 0.6 : 1,
                                 }]}
                             >
                                 {adding
                                     ? <ActivityIndicator size="small" color={theme.primary} />
-                                    : <Ionicons name="add-circle-outline" size={22} color={theme.primary} />}
+                                    : <Ionicons name="add" size={22} color={theme.primary} />}
                                 <Text style={[modalStyle.cardEditFieldText, { color: theme.primary }]}>
                                     {i18n.t("profile.settings.security.passkeys.add.button")}
                                 </Text>
@@ -281,7 +282,7 @@ function SecurityTab() {
                                 <View style={commonStyle.dashboardSectionContainer}>
                                     {passkeys.map(passkey => (
                                         <View key={passkey._id} style={[commonStyle.dashboardSectionItem, { flexDirection: "row", alignItems: "center" }]}>
-                                            <Ionicons name="key-outline" size={24} color={theme.primary} />
+                                            <Octicons name="key" size={24} color={theme.primary} />
                                             <View style={{ flex: 1, marginHorizontal: 12, gap: 3 }}>
                                                 <Text style={commonStyle.text}>{passkey.name}</Text>
                                                 <Text style={[commonStyle.text, { fontSize: 12, opacity: 0.7 }]}>
