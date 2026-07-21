@@ -1,0 +1,51 @@
+diff --git a/node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh b/node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh
+index 28d3249..462825a 100755
+--- a/node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh
++++ b/node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh
+@@ -179,7 +179,7 @@ build_slice() {
+ 
+   log "Building framework slice for ${platform}..."
+ 
+-  rm -rf "$BUILD_PRODUCTS_PATH"
++  safe_remove_dirs "$BUILD_PRODUCTS_PATH"
+ 
+   # Use env -i to clear inherited Xcode environment variables from the parent build.
+   # Without this, the nested xcodebuild inherits SDKROOT, PLATFORM_NAME, etc.
+@@ -401,7 +401,7 @@ GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
+ SOURCE_FILES+=("$GENERATED_MODULE_MAP")
+ 
+ if [[ "$CLEAN" == true ]]; then
+-  rm -rf "$XCFRAMEWORK_PATH" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
++  safe_remove_dirs "$XCFRAMEWORK_PATH" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+   log "Cleaned existing xcframework, DerivedData, and SwiftPM state"
+   # Re-stamp stub slices so the post-clean state matches a fresh `pod install`:
+   # CocoaPods reads Info.plist before this script runs, and would fail to
+diff --git a/node_modules/expo-modules-jsi/apple/scripts/xcframework-helpers.sh b/node_modules/expo-modules-jsi/apple/scripts/xcframework-helpers.sh
+index aaaf10c..d756527 100644
+--- a/node_modules/expo-modules-jsi/apple/scripts/xcframework-helpers.sh
++++ b/node_modules/expo-modules-jsi/apple/scripts/xcframework-helpers.sh
+@@ -4,6 +4,24 @@
+ # canonical slice metadata and the Info.plist writer used by both scripts so
+ # the manifest is produced from a single place.
+ 
++# Deletes build directories tolerantly. Xcode 27's background indexer can keep
++# writing into these paths while the build phase cleans them, causing a plain
++# `rm -rf` to fail with ENOTEMPTY under `set -e`. Renaming first atomically
++# detaches the live path; deletion of the detached directory may then race
++# harmlessly with the indexer.
++safe_remove_dirs() {
++  local dir
++  for dir in "$@"; do
++    [[ -e "$dir" ]] || continue
++    local trash="${dir}.trash.$$"
++    if mv "$dir" "$trash" 2>/dev/null; then
++      rm -rf "$trash" 2>/dev/null || true
++    else
++      rm -rf "$dir" 2>/dev/null || true
++    fi
++  done
++}
++
+ # resolve_pods_root PACKAGE_DIR
+ # Sets PODS_ROOT, preferring an explicit value (e.g. from CocoaPods build phase)
+ # over a fallback to bare-expo under EXPO_ROOT_DIR. Exits if PODS_ROOT doesn't exist.

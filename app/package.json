@@ -8,6 +8,7 @@
   "author": "Xarber <xarber@xcenter.it>",
   "scheme": "school-manager",
   "scripts": {
+    "postinstall": "patch-package",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
@@ -103,6 +104,7 @@
     "@types/react": "~19.2.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~57.0.0",
+    "patch-package": "^8.0.1",
     "typescript": "~6.0.3"
   },
   "private": true
