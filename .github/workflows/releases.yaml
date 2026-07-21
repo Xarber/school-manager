@@ -9,6 +9,14 @@ on:
       - alpha
       - beta
   workflow_dispatch:
+    inputs:
+      build_mode:
+        description: Native build infrastructure
+        type: choice
+        options:
+          - local
+          - cloud
+        default: local
 
 concurrency:
   group: releases-${{ github.ref }}
@@ -17,15 +25,263 @@ concurrency:
 permissions:
   contents: write
 
+env:
+  NATIVE_BUILD_MODE: ${{ inputs.build_mode || vars.NATIVE_BUILD_MODE || 'local' }}
+
 jobs:
-  release:
-    runs-on: xcode-27
+  prepare:
+    runs-on: ubuntu-latest
+
+    outputs:
+      versionChanged: ${{ steps.buildinfo.outputs.versionChanged }}
+      buildMode: ${{ steps.buildinfo.outputs.buildMode }}
+      androidApkProfile: ${{ steps.buildinfo.outputs.androidApkProfile }}
+      androidAabProfile: ${{ steps.buildinfo.outputs.androidAabProfile }}
+      iosProfile: ${{ steps.buildinfo.outputs.iosProfile }}
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
+
+      - name: Generate BuildInfo
+        working-directory: app
+        run: node ./scripts/ci/build-context.js
+
+      - name: Read build metadata
+        id: buildinfo
+        working-directory: app
+        run: |
+          if [ "$NATIVE_BUILD_MODE" != "local" ] && [ "$NATIVE_BUILD_MODE" != "cloud" ]; then
+            echo "NATIVE_BUILD_MODE must be either local or cloud."
+            exit 1
+          fi
+
+          echo "buildMode=$NATIVE_BUILD_MODE" >> "$GITHUB_OUTPUT"
+
+          node - <<'EOF' >> "$GITHUB_OUTPUT"
+          const info = require('./constants/BuildInfo.json');
+
+          console.log(`versionChanged=${info.versionChanged}`);
+          console.log(`androidApkProfile=${info.outputs.androidApkProfile || ''}`);
+          console.log(`androidAabProfile=${info.outputs.androidAabProfile || ''}`);
+          console.log(`iosProfile=${info.outputs.iosProfile || ''}`);
+          EOF
+
+      - name: Skip native release
+        if: steps.buildinfo.outputs.versionChanged != 'true'
+        run: |
+          echo "Version unchanged."
+          echo "Skipping native release."
+
+      - name: Upload BuildInfo
+        if: steps.buildinfo.outputs.versionChanged == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-build-info
+          path: app/constants/BuildInfo.json
+          if-no-files-found: error
+
+  android_local:
+    needs: prepare
+    if: >-
+      needs.prepare.outputs.versionChanged == 'true' &&
+      needs.prepare.outputs.buildMode == 'local'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Download BuildInfo
+        uses: actions/download-artifact@v4
+        with:
+          name: native-build-info
+          path: app/constants
+
+      - name: Generate the Android project
+        working-directory: app
+        env:
+          CI: 1
+        run: npx expo prebuild --clean --platform android
+
+      - name: Build Android artifacts
+        shell: bash
+        working-directory: app
+        env:
+          APK_PROFILE: ${{ needs.prepare.outputs.androidApkProfile }}
+          AAB_PROFILE: ${{ needs.prepare.outputs.androidAabProfile }}
+        run: |
+          tasks=()
+
+          if [ "$APK_PROFILE" = "development-client" ]; then
+            tasks+=(assembleDebug)
+          elif [ -n "$APK_PROFILE" ]; then
+            tasks+=(assembleRelease)
+          fi
+
+          if [ -n "$AAB_PROFILE" ]; then
+            tasks+=(bundleRelease)
+          fi
+
+          if [ "${#tasks[@]}" -eq 0 ]; then
+            echo "No Android artifacts requested."
+            exit 0
+          fi
+
+          ./android/gradlew \
+            --no-daemon \
+            --stacktrace \
+            -p android \
+            "${tasks[@]}"
+
+      - name: Package Android artifacts
+        shell: bash
+        working-directory: app
+        env:
+          APK_PROFILE: ${{ needs.prepare.outputs.androidApkProfile }}
+          AAB_PROFILE: ${{ needs.prepare.outputs.androidAabProfile }}
+        run: |
+          mkdir -p .ci/artifacts
+
+          SUFFIX=$(node - <<'EOF'
+          const info = require('./constants/BuildInfo.json');
+          const suffixes = { development: 'dev', alpha: 'alpha', beta: 'beta' };
+          const suffix = suffixes[String(info.branch).toLowerCase()] || '';
+          process.stdout.write(`v${info.version}${suffix ? `-${suffix}` : ''}`);
+          EOF
+          )
+
+          if [ "$APK_PROFILE" = "development-client" ]; then
+            cp android/app/build/outputs/apk/debug/app-debug.apk \
+              ".ci/artifacts/school-manager-$SUFFIX-apk.apk"
+          elif [ -n "$APK_PROFILE" ]; then
+            cp android/app/build/outputs/apk/release/app-release.apk \
+              ".ci/artifacts/school-manager-$SUFFIX-apk.apk"
+          fi
+
+          if [ -n "$AAB_PROFILE" ]; then
+            cp android/app/build/outputs/bundle/release/app-release.aab \
+              ".ci/artifacts/school-manager-$SUFFIX-aab.aab"
+          fi
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-local-android
+          path: app/.ci/artifacts/*
+          if-no-files-found: error
+
+  unsigned_ios:
+    needs: prepare
+    if: needs.prepare.outputs.versionChanged == 'true'
+    runs-on: xcode-27
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Download BuildInfo
+        uses: actions/download-artifact@v4
+        with:
+          name: native-build-info
+          path: app/constants
+
+      - name: Read unsigned iOS metadata
+        id: unsigned
+        shell: bash
+        working-directory: app
+        run: |
+          node - <<'EOF' >> "$GITHUB_OUTPUT"
+          const info = require('./constants/BuildInfo.json');
+          const suffixes = { development: 'dev', alpha: 'alpha', beta: 'beta' };
+          const suffix = suffixes[String(info.branch).toLowerCase()] || '';
+          const versionName = `v${info.version}${suffix ? `-${suffix}` : ''}`;
+
+          console.log(`configuration=${info.outputs.iosProfile === 'development-client' ? 'Debug' : 'Release'}`);
+          console.log(`filename=school-manager-${versionName}-ios.ipa`);
+          EOF
+
+      - name: Verify Xcode environment
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
+      - name: Generate the iOS project
+        working-directory: app
+        env:
+          CI: 1
+        run: npx expo prebuild --clean --platform ios
+
+      - name: Build an unsigned iOS archive
+        working-directory: app
+        run: |
+          xcodebuild archive \
+            -workspace ios/SchoolManager.xcworkspace \
+            -scheme SchoolManager \
+            -configuration "${{ steps.unsigned.outputs.configuration }}" \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/SchoolManager.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=''
+
+      - name: Package the unsigned IPA
+        shell: bash
+        working-directory: app
+        env:
+          IPA_FILENAME: ${{ steps.unsigned.outputs.filename }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/Payload" .ci/artifacts
+          cp -R "$RUNNER_TEMP/SchoolManager.xcarchive/Products/Applications/SchoolManager.app" \
+            "$RUNNER_TEMP/Payload/"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/Payload" \
+            ".ci/artifacts/$IPA_FILENAME"
+
+      - name: Upload unsigned iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-ios-unsigned
+          path: app/.ci/artifacts/*.ipa
+          if-no-files-found: error
+
+  ios_simulator_local:
+    needs:
+      - prepare
+      - unsigned_ios
+    if: >-
+      needs.prepare.outputs.versionChanged == 'true' &&
+      needs.prepare.outputs.buildMode == 'local'
+    runs-on: xcode-27
+
+    steps:
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
@@ -42,107 +298,231 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Generate BuildInfo
-        working-directory: app
-        run: node ./scripts/ci/build-context.js
+      - name: Download BuildInfo
+        uses: actions/download-artifact@v4
+        with:
+          name: native-build-info
+          path: app/constants
 
-      - name: Check for version change
-        id: buildinfo
-        shell: bash
-        working-directory: app
-        run: |
-          VERSION_CHANGED=$(node -e "console.log(require('./constants/BuildInfo.json').versionChanged)")
-          echo "versionChanged=$VERSION_CHANGED" >> "$GITHUB_OUTPUT"
-
-      - name: Skip native release
-        if: steps.buildinfo.outputs.versionChanged != 'true'
-        run: |
-          echo "Version unchanged."
-          echo "Skipping native release."
-
-      - name: Start EAS builds
-        if: steps.buildinfo.outputs.versionChanged == 'true'
-        working-directory: app
-        run: node ./scripts/ci/start-builds.js
-
-      - name: Wait & download builds
-        if: steps.buildinfo.outputs.versionChanged == 'true'
-        working-directory: app
-        run: node ./scripts/ci/download-builds.js
-
-      - name: Rename artifacts
-        if: steps.buildinfo.outputs.versionChanged == 'true'
-        working-directory: app
-        run: node ./scripts/ci/rename-artifacts.js
-
-      - name: Read unsigned iOS metadata
-        if: steps.buildinfo.outputs.versionChanged == 'true'
-        id: unsigned
+      - name: Read Simulator artifact metadata
+        id: simulator
         shell: bash
         working-directory: app
         run: |
           node - <<'EOF' >> "$GITHUB_OUTPUT"
           const info = require('./constants/BuildInfo.json');
-
-          const suffixes = {
-            development: 'dev',
-            alpha: 'alpha',
-            beta: 'beta'
-          };
-
+          const suffixes = { development: 'dev', alpha: 'alpha', beta: 'beta' };
           const suffix = suffixes[String(info.branch).toLowerCase()] || '';
           const versionName = `v${info.version}${suffix ? `-${suffix}` : ''}`;
 
-          console.log(`configuration=${info.outputs.iosProfile === 'development-client' ? 'Debug' : 'Release'}`);
-          console.log(`filename=school-manager-${versionName}-ios.ipa`);
+          console.log(`filename=school-manager-${versionName}-ios.tar.gz`);
           EOF
 
-      - name: Generate the iOS project
-        if: steps.buildinfo.outputs.versionChanged == 'true'
-        working-directory: app
-        run: npx expo prebuild --clean --platform ios
-
-      - name: Build an unsigned iOS archive
-        if: steps.buildinfo.outputs.versionChanged == 'true'
+      - name: Build the iOS Simulator app locally
         working-directory: app
         run: |
-          xcodebuild archive \
-            -workspace ios/SchoolManager.xcworkspace \
-            -scheme SchoolManager \
-            -configuration "${{ steps.unsigned.outputs.configuration }}" \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            -archivePath "$RUNNER_TEMP/SchoolManager.xcarchive" \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=''
+          mkdir -p .ci/artifacts
+          eas build \
+            --local \
+            --platform ios \
+            --profile "${{ needs.prepare.outputs.iosProfile }}" \
+            --output ".ci/artifacts/${{ steps.simulator.outputs.filename }}" \
+            --non-interactive
 
-      - name: Package the unsigned IPA
-        if: steps.buildinfo.outputs.versionChanged == 'true'
+      - name: Upload iOS Simulator artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-local-ios-simulator
+          path: app/.ci/artifacts/*.tar.gz
+          if-no-files-found: error
+
+  cloud_native:
+    needs: prepare
+    if: >-
+      needs.prepare.outputs.versionChanged == 'true' &&
+      needs.prepare.outputs.buildMode == 'cloud'
+    runs-on: xcode-27
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Download BuildInfo
+        uses: actions/download-artifact@v4
+        with:
+          name: native-build-info
+          path: app/constants
+
+      - name: Start EAS Cloud builds
+        working-directory: app
+        run: node ./scripts/ci/start-builds.js
+
+      - name: Wait and download EAS Cloud builds
+        working-directory: app
+        run: node ./scripts/ci/download-builds.js
+
+      - name: Rename EAS Cloud artifacts
+        working-directory: app
+        run: node ./scripts/ci/rename-artifacts.js
+
+      - name: Upload EAS Cloud artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-cloud-artifacts
+          path: app/.ci/artifacts/*
+          if-no-files-found: error
+
+      - name: Upload EAS Cloud manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-cloud-manifest
+          path: app/.ci/build-manifest.json
+          if-no-files-found: error
+
+  release:
+    needs:
+      - prepare
+      - android_local
+      - unsigned_ios
+      - ios_simulator_local
+      - cloud_native
+    if: >-
+      ${{
+        always() &&
+        needs.prepare.outputs.versionChanged == 'true' &&
+        needs.unsigned_ios.result == 'success' &&
+        (
+          (
+            needs.prepare.outputs.buildMode == 'local' &&
+            needs.android_local.result == 'success' &&
+            needs.ios_simulator_local.result == 'success'
+          ) ||
+          (
+            needs.prepare.outputs.buildMode == 'cloud' &&
+            needs.cloud_native.result == 'success'
+          )
+        )
+      }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Download BuildInfo
+        uses: actions/download-artifact@v4
+        with:
+          name: native-build-info
+          path: app/constants
+
+      - name: Download unsigned iOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: native-ios-unsigned
+          path: app/.ci/artifacts
+
+      - name: Download local native artifacts
+        if: needs.prepare.outputs.buildMode == 'local'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: native-local-*
+          path: app/.ci/artifacts
+          merge-multiple: true
+
+      - name: Download EAS Cloud artifacts
+        if: needs.prepare.outputs.buildMode == 'cloud'
+        uses: actions/download-artifact@v4
+        with:
+          name: native-cloud-artifacts
+          path: app/.ci/artifacts
+
+      - name: Download EAS Cloud manifest
+        if: needs.prepare.outputs.buildMode == 'cloud'
+        uses: actions/download-artifact@v4
+        with:
+          name: native-cloud-manifest
+          path: app/.ci
+
+      - name: Create local build manifest
+        if: needs.prepare.outputs.buildMode == 'local'
         shell: bash
         working-directory: app
         env:
-          IPA_FILENAME: ${{ steps.unsigned.outputs.filename }}
+          APK_PROFILE: ${{ needs.prepare.outputs.androidApkProfile }}
+          AAB_PROFILE: ${{ needs.prepare.outputs.androidAabProfile }}
+          IOS_PROFILE: ${{ needs.prepare.outputs.iosProfile }}
         run: |
-          mkdir -p "$RUNNER_TEMP/Payload" .ci/artifacts
-          cp -R "$RUNNER_TEMP/SchoolManager.xcarchive/Products/Applications/SchoolManager.app" \
-            "$RUNNER_TEMP/Payload/"
-          ditto -c -k --sequesterRsrc --keepParent \
-            "$RUNNER_TEMP/Payload" \
-            ".ci/artifacts/$IPA_FILENAME"
+          node - <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+
+          const artifactDirectory = path.resolve('.ci/artifacts');
+          const files = fs.readdirSync(artifactDirectory);
+          const builds = [];
+
+          function addBuild(extension, platform, output, profile) {
+            const filename = files.find((file) => file.endsWith(extension));
+
+            if (!filename || !profile) {
+              return;
+            }
+
+            builds.push({
+              platform,
+              output,
+              profile,
+              filename,
+              extension: extension.replace(/^\./, ''),
+              localFile: path.join(artifactDirectory, filename)
+            });
+          }
+
+          addBuild('.apk', 'android', 'apk', process.env.APK_PROFILE);
+          addBuild('.aab', 'android', 'aab', process.env.AAB_PROFILE);
+          addBuild('.tar.gz', 'ios', 'ios', process.env.IOS_PROFILE);
+
+          const info = require('./constants/BuildInfo.json');
+          const manifest = {
+            appName: info.appName,
+            version: info.version,
+            runtimeVersion: info.runtimeVersion,
+            branch: info.branch,
+            commit: info.commit,
+            buildDate: info.buildDate,
+            builds
+          };
+
+          fs.writeFileSync(
+            '.ci/build-manifest.json',
+            `${JSON.stringify(manifest, null, 4)}\n`
+          );
+          EOF
 
       - name: Generate release notes
-        if: steps.buildinfo.outputs.versionChanged == 'true'
         working-directory: app
         run: node ./scripts/ci/generate-release-notes.js
 
       - name: Read release metadata
-        if: steps.buildinfo.outputs.versionChanged == 'true'
         id: release
         shell: bash
         working-directory: app
         run: |
-
           TAG=$(node - <<'EOF'
           const info=require('./constants/BuildInfo.json');
 
@@ -179,7 +559,6 @@ jobs:
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
 
       - name: Create / Update GitHub Release
-        if: steps.buildinfo.outputs.versionChanged == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release.outputs.tag }}
