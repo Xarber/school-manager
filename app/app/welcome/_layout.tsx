@@ -1,4 +1,5 @@
 import i18n from "@/constants/i18n";
+import { getContentBackgroundColor } from "@/constants/colors";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,7 +17,7 @@ export default function AccountLayout() {
         >
             <BlurView style={{ flex: 1 }} intensity={60} tint={theme.type}>
                 <SafeAreaView
-                    style={{ flex: 1, backgroundColor: theme.background }}
+                    style={{ flex: 1, backgroundColor: getContentBackgroundColor(theme) }}
                     edges={["top"]}
                 >
                     <Stack screenOptions={{ headerStyle: { backgroundColor: theme.surface.toString() }, contentStyle: { backgroundColor: "transparent" } }}>

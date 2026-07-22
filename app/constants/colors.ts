@@ -12,7 +12,7 @@ export function createNavigationTheme(theme: Theme): NavTheme {
     ...base,
     colors: {
       ...base.colors,
-      background: theme.background,
+      background: getContentBackgroundColor(theme),
       card: theme.opaqueCard,
       text: theme.text,
       primary: theme.primary,
@@ -20,6 +20,15 @@ export function createNavigationTheme(theme: Theme): NavTheme {
       notification: theme.secondary,
     },
   };
+}
+
+export function hasGradientBackground(theme: Theme): boolean {
+  const gradientColors = theme.appThemeGradient.colors;
+  return gradientColors.length > 2 || new Set(gradientColors).size > 1;
+}
+
+export function getContentBackgroundColor(theme: Theme): string {
+  return hasGradientBackground(theme) ? "transparent" : theme.background;
 }
 
 export const themeList = {

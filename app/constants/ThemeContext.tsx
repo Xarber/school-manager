@@ -1,6 +1,6 @@
 import { useUserData } from "@/data/UserDataContext";
-import { createContext, useContext, useEffect, useState } from "react";
-import { Platform, useColorScheme } from "react-native";
+import { createContext, useContext, useEffect } from "react";
+import { Appearance, Platform, useColorScheme } from "react-native";
 import { colors, Scheme, themeList } from "./colors";
 import { isExpoGo } from "@/data/datamanager";
 
@@ -46,7 +46,9 @@ export function rgbStringToHex(input: string): string | null {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const systemScheme = useColorScheme() ?? "light";
-    const [scheme, setScheme] = useState<Scheme>(systemScheme as Scheme);
+    const userData = useUserData();
+    const userTheme = userData.data.settings?.theme;
+    const scheme = (userTheme === "system" ? systemScheme : userTheme ?? systemScheme) as Scheme;
 
     useEffect(() => {
         if (isExpoGo) return;
@@ -65,16 +67,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         })();
     }, []);
 
-    const userData = useUserData();
-
     useEffect(() => {
-        const userTheme = userData.data.settings?.theme;
-        const lightOrDark = colors[(userTheme === "system" ? (systemScheme as Scheme) : (userTheme as Scheme))].type;
+        if (!userTheme) return;
+        const lightOrDark = colors[scheme].type;
 
-        if (userTheme === "system") {
-            setScheme(systemScheme as Scheme);
-        } else if (userTheme) {
-            setScheme(userTheme);
+        if (Platform.OS !== "web") {
+            Appearance.setColorScheme(userTheme === "system" ? "unspecified" : lightOrDark);
         }
 
         if (Platform.OS === "web") {
@@ -92,10 +90,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
             const metaTheme = document.createElement("meta");
             metaTheme.name = "theme-color";
-            metaTheme.content = rgbStringToHex(colors[(userTheme === "system" ? (systemScheme as Scheme) : (userTheme as Scheme))].background) as string;
+            metaTheme.content = rgbStringToHex(colors[scheme].background) as string;
             document.head.appendChild(metaTheme);
         }
-    }, [userData.data.settings?.theme, systemScheme]);
+    }, [scheme, userTheme]);
 
     useEffect(() => {
         if (!supportsAlternateIcons) return;

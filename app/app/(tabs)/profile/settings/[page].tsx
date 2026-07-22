@@ -10,7 +10,7 @@ import { useAccountData } from "@/data/AccountDataContext";
 import { turnOffNotifications, turnOnNotifications } from "@/data/notifications";
 import { useUserData } from "@/data/UserDataContext";
 import { addPasskey } from "@/utils/passkeyLogin";
-import { Ionicons, Octicons } from "@expo/vector-icons";
+import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ export default function settingsPage() {
     const action = params.page as string;
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);
+    const accountData = useAccountData();
 
     switch (action) {
         case "appearance": 
@@ -30,7 +31,7 @@ export default function settingsPage() {
         case "language":
             return <View style={[commonStyle.dashboardSection, {flex: 1}]}><LanguageTab /></View>;
         case "security":
-            return <View style={[commonStyle.dashboardSection, {flex: 1}]}><SecurityTab /></View>;
+            return accountData.data.active ? <View style={[commonStyle.dashboardSection, {flex: 1}]}><SecurityTab /></View> : <AllSettingsTab />;
         case "notifications":
             return <View style={[commonStyle.dashboardSection, {flex: 1}]}><NotificationsTab /></View>;
         case "applock":
@@ -112,7 +113,7 @@ function SecurityTab() {
     const bottomInset = safeAreaInsets.bottom === 0 ? 20 : safeAreaInsets.bottom;
 
     async function loadPasskeys() {
-        if (!network.serverPath || !accountData.data.token) {
+        if (!network.serverPath || !accountData.data.active) {
             setLoading(false);
             return;
         }
@@ -152,10 +153,10 @@ function SecurityTab() {
         return () => clearTimeout(timeout);
         // loadPasskeys intentionally reloads only when the active API or account changes.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [network.serverPath, accountData.data.token]);
+    }, [network.serverPath, accountData.data.active]);
 
     async function handleAddPasskey() {
-        if (!network.serverPath || !accountData.data.token || adding) return;
+        if (!network.serverPath || !accountData.data.active || adding) return;
 
         setAdding(true);
         try {
@@ -185,7 +186,7 @@ function SecurityTab() {
     }
 
     async function deletePasskey(passkeyId: string) {
-        if (!network.serverPath || !accountData.data.token) return;
+        if (!network.serverPath || !accountData.data.active) return;
 
         setDeletingId(passkeyId);
         try {
@@ -242,7 +243,7 @@ function SecurityTab() {
             <Stack.Screen options={{headerTitle: i18n.t("profile.settings.security.stack.title")}} />
             <View style={[commonStyle.dashboardSection, optimizationStyle.container, { flex: 1 }]}>
                 {(width > wrapperScreenSize) && <View style={[optimizationStyle.item, {justifyContent: "center", gap: 5, alignItems: "center", height: "100%"}]}>
-                    <Ionicons name="shield-checkmark-outline" size={50} color={theme.text} />
+                    <Feather name="shield" size={50} color={theme.text} />
                     <Text style={commonStyle.headerText}>{i18n.t("profile.settings.security.header.title")}</Text>
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.security.header.description")}</Text>
                 </View>}
@@ -253,7 +254,7 @@ function SecurityTab() {
                             <Text style={commonStyle.text}>{i18n.t("profile.settings.security.passkeys.description")}</Text>
 
                             <TouchableOpacity
-                                disabled={adding || !network.serverPath || !accountData.data.token}
+                                disabled={adding || !network.serverPath || !accountData.data.active}
                                 onPress={handleAddPasskey}
                                 style={[modalStyle.cardEditField, {
                                     flexDirection: "row",
@@ -535,6 +536,7 @@ function AllSettingsTab() {
     const optimizationStyle = createStyling.createOptimizationStyles(theme);
     const { width, height } = useWindowDimensions();
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
+    const accountData = useAccountData();
 
     const safeAreaInsets = useSafeAreaInsets();
     if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
@@ -554,9 +556,9 @@ function AllSettingsTab() {
                             { title: i18n.t("profile.settings.general.profile.title"), description: i18n.t("profile.settings.general.profile.description"), onPress: () => {
                                 router.push("/profile/profiledata");
                             } },
-                            { title: i18n.t("profile.settings.general.security.title"), description: i18n.t("profile.settings.general.security.description"), onPress: () => {
+                            (accountData.data.active && { title: i18n.t("profile.settings.general.security.title"), description: i18n.t("profile.settings.general.security.description"), onPress: () => {
                                 router.push("/profile/settings/security");
-                            } },
+                            } }),
                             { title: i18n.t("profile.settings.general.applock.title"), description: i18n.t("profile.settings.general.applock.description"), onPress: () => {
                                 router.push("/profile/settings/applock");
                             } },

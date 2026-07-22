@@ -1,4 +1,5 @@
 import i18n from '@/constants/i18n';
+import { getContentBackgroundColor } from '@/constants/colors';
 import { useTheme } from "@/constants/useThemes";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { Tabs } from 'expo-router';
@@ -7,14 +8,19 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 
-function renderNativeTabs() {
+function NativeTabsLayout() {
   const theme = useTheme();
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: theme.background }}
+      style={{ flex: 1, backgroundColor: getContentBackgroundColor(theme) }}
       edges={["top"]}
     >
-      <NativeTabs>
+      <NativeTabs
+        backgroundColor={theme.opaqueCard}
+        blurEffect={theme.type === "dark" ? "systemMaterialDark" : "systemMaterialLight"}
+        iconColor={{ default: theme.text, selected: theme.primary }}
+        labelStyle={{ default: { color: theme.text }, selected: { color: theme.primary } }}
+      >
         <NativeTabs.Trigger name="home">
           <NativeTabs.Trigger.Label>{i18n.t("root.tabs.home.label")}</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon sf="house.fill" md="home"/>
@@ -42,13 +48,13 @@ function renderNativeTabs() {
   );
 }
 
-function renderTabs() {
+function StandardTabsLayout() {
   const theme = useTheme();
   return (
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarStyle: { backgroundColor: theme.background },
+          tabBarStyle: { backgroundColor: theme.opaqueCard },
           tabBarHideOnKeyboard: true
         }}
       >
@@ -80,7 +86,7 @@ export default function TabLayout() {
   const renderMode = !isWeb ? "native" : "standard";
 
   if ((renderMode as any) === "native") {
-    return renderNativeTabs();
+    return <NativeTabsLayout />;
   }
-  return renderTabs();
+  return <StandardTabsLayout />;
 }

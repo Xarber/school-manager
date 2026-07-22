@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Theme } from './colors';
+import { getContentBackgroundColor, Theme } from './colors';
 
 export const defaultScreenSizes = {
     phone: {
@@ -235,7 +235,7 @@ const createUserLoginStyles = (theme: Theme) => StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.background,
+        backgroundColor: getContentBackgroundColor(theme),
         padding: 20,
     },
     input: {
@@ -262,7 +262,7 @@ const createUserLoginStyles = (theme: Theme) => StyleSheet.create({
 const createUserProfileStyles = (theme: Theme) => StyleSheet.create({
     container: {
         padding: 20,
-        backgroundColor: theme.background,
+        backgroundColor: getContentBackgroundColor(theme),
     },
     text: {
         color: theme.text,
@@ -272,13 +272,13 @@ const createUserProfileStyles = (theme: Theme) => StyleSheet.create({
 
 const createCalendarStyles = (theme: Theme) => StyleSheet.create({
     container: {
-        backgroundColor: theme.background,
+        backgroundColor: getContentBackgroundColor(theme),
     },
 });
 
 const createRegistryStyles = (theme: Theme) => StyleSheet.create({
     container: {
-        backgroundColor: theme.background,
+        backgroundColor: getContentBackgroundColor(theme),
         padding: 20,
     },
 });
@@ -286,7 +286,7 @@ const createRegistryStyles = (theme: Theme) => StyleSheet.create({
 const createWelcomescreenStyles = (theme: Theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.background,
+        backgroundColor: getContentBackgroundColor(theme),
         padding: 20,
         display: "flex",
         gap: 10
