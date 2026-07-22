@@ -291,6 +291,13 @@
             "title": "Aggiungi una Passkey",
             "description": "Le Passkey sono un modo più sicuro di proteggere il tuo account.\nNon possono essere clonate o rubate.\nPuoi anche usare una chiave di sicurezza.",
             "continue": "Continua",
+            "name": {
+                "label": "Rinomina la Passkey"
+            },
+            "alreadyRegistered": {
+                "title": "Passkey già registrata",
+                "description": "Questa passkey è già registrata. Usala per accedere oppure scegli un altro dispositivo o una chiave di sicurezza."
+            },
             "success": {
                 "title": "Passkey aggiunta!",
                 "description": "Hai aggiunto una passkey al tuo account!\nPuoi ora chiudere la finestra.",
@@ -318,6 +325,10 @@
         "alreadyloggedin": {
             "warning": "Hai già effettuato l'accesso.\nEsci da questo account prima di entrare in un altro.",
             "button": "Unavailable"
+        },
+        "error": {
+            "title": "Errore passkey",
+            "description": "Non è stato possibile completare l'operazione con la passkey. Riprova."
         }
     },
     "modal": {
@@ -1166,6 +1177,9 @@
                         "title": "Rimuovere la passkey?",
                         "description": "Vuoi rimuovere “{{name}}” dal tuo account?"
                     },
+                    "rename": {
+                        "placeholder": "Nome della passkey"
+                    },
                     "item": {
                         "created": "Aggiunta il {{date}}",
                         "lastUsed": "Ultimo utilizzo: {{date}}"
@@ -1173,6 +1187,8 @@
                     "actions": {
                         "ok": "OK",
                         "cancel": "Annulla",
+                        "rename": "Rinomina",
+                        "save": "Salva",
                         "delete": "Rimuovi"
                     },
                     "error": {

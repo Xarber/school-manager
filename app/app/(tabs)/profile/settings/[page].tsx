@@ -14,7 +14,7 @@ import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Switch, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, Platform, ScrollView, Switch, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -104,10 +104,14 @@ function SecurityTab() {
     const network = useNetworkContext();
     const accountData = useAccountData();
     const alert = useAlert();
+    const router = useRouter();
     const [passkeys, setPasskeys] = useState<PasskeyData[]>([]);
     const [loading, setLoading] = useState(true);
     const [adding, setAdding] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingName, setEditingName] = useState("");
+    const [renamingId, setRenamingId] = useState<string | null>(null);
 
     const safeAreaInsets = useSafeAreaInsets();
     const bottomInset = safeAreaInsets.bottom === 0 ? 20 : safeAreaInsets.bottom;
@@ -157,6 +161,11 @@ function SecurityTab() {
 
     async function handleAddPasskey() {
         if (!network.serverPath || !accountData.data.active || adding) return;
+
+        if (Platform.OS === "web") {
+            router.push("/passkeys/add");
+            return;
+        }
 
         setAdding(true);
         try {
@@ -215,6 +224,43 @@ function SecurityTab() {
             });
         } finally {
             setDeletingId(null);
+        }
+    }
+
+    async function renamePasskey(passkeyId: string) {
+        if (!network.serverPath || !accountData.data.active || renamingId) return;
+
+        setRenamingId(passkeyId);
+        try {
+            const response = await fetch(`${network.serverPath}/api/passkeys/rename`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${accountData.data.token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ passkeyId, name: editingName }),
+            });
+            const body = await response.json();
+
+            if (!response.ok || !body.success || typeof body.name !== "string") {
+                throw new Error(body.error ?? "Could not rename passkey");
+            }
+
+            setPasskeys(current => current.map(passkey =>
+                passkey._id === passkeyId ? { ...passkey, name: body.name } : passkey
+            ));
+            setEditingId(null);
+            setEditingName("");
+        } catch (error) {
+            console.error("Could not rename passkey", error);
+            alert.show({
+                title: i18n.t("profile.settings.security.passkeys.error.title"),
+                message: error instanceof Error
+                    ? error.message
+                    : i18n.t("profile.settings.security.passkeys.error.description"),
+            });
+        } finally {
+            setRenamingId(null);
         }
     }
 
@@ -285,7 +331,20 @@ function SecurityTab() {
                                         <View key={passkey._id} style={[commonStyle.dashboardSectionItem, { flexDirection: "row", alignItems: "center" }]}>
                                             <Octicons name="key" size={24} color={theme.primary} />
                                             <View style={{ flex: 1, marginHorizontal: 12, gap: 3 }}>
-                                                <Text style={commonStyle.text}>{passkey.name}</Text>
+                                                {editingId === passkey._id ? (
+                                                    <TextInput
+                                                        autoFocus
+                                                        value={editingName}
+                                                        onChangeText={setEditingName}
+                                                        maxLength={100}
+                                                        selectTextOnFocus
+                                                        style={[modalStyle.cardEditFieldInput, { color: theme.text }]}
+                                                        placeholder={i18n.t("profile.settings.security.passkeys.rename.placeholder")}
+                                                        placeholderTextColor={theme.disabled}
+                                                    />
+                                                ) : (
+                                                    <Text style={commonStyle.text}>{passkey.name}</Text>
+                                                )}
                                                 <Text style={[commonStyle.text, { fontSize: 12, opacity: 0.7 }]}>
                                                     {i18n.t("profile.settings.security.passkeys.item.created", {
                                                         date: new Date(passkey.createdAt).toLocaleDateString(),
@@ -299,6 +358,36 @@ function SecurityTab() {
                                                     </Text>
                                                 )}
                                             </View>
+                                            {editingId === passkey._id ? (
+                                                <>
+                                                    <TouchableOpacity
+                                                        disabled={renamingId === passkey._id}
+                                                        onPress={() => void renamePasskey(passkey._id)}
+                                                        accessibilityLabel={i18n.t("profile.settings.security.passkeys.actions.save")}
+                                                        style={{ padding: 8 }}
+                                                    >
+                                                        {renamingId === passkey._id
+                                                            ? <ActivityIndicator size="small" color={theme.primary} />
+                                                            : <Ionicons name="checkmark" size={22} color={theme.primary} />}
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        disabled={renamingId === passkey._id}
+                                                        onPress={() => { setEditingId(null); setEditingName(""); }}
+                                                        accessibilityLabel={i18n.t("profile.settings.security.passkeys.actions.cancel")}
+                                                        style={{ padding: 8 }}
+                                                    >
+                                                        <Ionicons name="close" size={22} color={theme.text} />
+                                                    </TouchableOpacity>
+                                                </>
+                                            ) : (
+                                                <TouchableOpacity
+                                                    onPress={() => { setEditingId(passkey._id); setEditingName(passkey.name); }}
+                                                    accessibilityLabel={i18n.t("profile.settings.security.passkeys.actions.rename")}
+                                                    style={{ padding: 8 }}
+                                                >
+                                                    <Ionicons name="pencil-outline" size={21} color={theme.primary} />
+                                                </TouchableOpacity>
+                                            )}
                                             <TouchableOpacity
                                                 disabled={deletingId === passkey._id}
                                                 onPress={() => confirmDelete(passkey)}

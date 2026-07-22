@@ -291,6 +291,13 @@
             "title": "Add a Passkey",
             "description": "Passkeys are a safer way to secure your account.\nThey can't be leaked or stolen.\nYou can also use a physical security key.",
             "continue": "Continue",
+            "name": {
+                "label": "Rename this passkey"
+            },
+            "alreadyRegistered": {
+                "title": "Passkey already registered",
+                "description": "This passkey is already registered. Use it to log in, or choose a different device or security key."
+            },
             "success": {
                 "title": "Passkey added!",
                 "description": "You successfully added a new passkey to your account!\nYou can now close the window.",
@@ -322,6 +329,10 @@
         "alreadyloggedin": {
             "warning": "You are already logged in.\nSign out of this account to sign into a new one.",
             "button": "Unavailable"
+        },
+        "error": {
+            "title": "Passkey error",
+            "description": "The passkey action couldn't be completed. Please try again."
         }
     },
     "modal": {
@@ -1170,6 +1181,9 @@
                         "title": "Remove passkey?",
                         "description": "Remove “{{name}}” from your account?"
                     },
+                    "rename": {
+                        "placeholder": "Passkey name"
+                    },
                     "item": {
                         "created": "Added {{date}}",
                         "lastUsed": "Last used {{date}}"
@@ -1177,6 +1191,8 @@
                     "actions": {
                         "ok": "OK",
                         "cancel": "Cancel",
+                        "rename": "Rename",
+                        "save": "Save",
                         "delete": "Remove"
                     },
                     "error": {

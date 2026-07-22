@@ -21,7 +21,7 @@ const paths = require("./paths");
 
 const router = express.Router();
 
-const RP_NAME = process.env.APP_NAME;
+const RP_NAME = process.env.RP_NAME || "School Manager";
 const RP_ID = process.env.RP_ID;
 
 const RP_ORIGINS = process.env.RP_ORIGINS
@@ -33,6 +33,44 @@ const CHALLENGE_TIMEOUT = 1000 * 60 * 5;
 const EXCHANGE_TIMEOUT = 1000 * 60 * 30;
 const APP_SCHEME = process.env.APP_SCHEME || "schoolmanager";
 const PASSKEY_WEB_ORIGIN = (process.env.PASSKEY_WEB_ORIGIN || RP_ORIGINS[0]).replace(/\/$/, "");
+const AAGUID_CATALOG_URL = "https://raw.githubusercontent.com/passkeydeveloper/passkey-authenticator-aaguids/refs/heads/main/aaguid.json";
+const AAGUID_CATALOG_TTL = 1000 * 60 * 60 * 24;
+
+let aaguidCatalog = null;
+let aaguidCatalogExpiresAt = 0;
+
+async function getAuthenticatorName(aaguid) {
+    if (typeof aaguid !== "string" || !aaguid) return null;
+
+    if (!aaguidCatalog || Date.now() >= aaguidCatalogExpiresAt) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+
+        try {
+            const response = await fetch(AAGUID_CATALOG_URL, { signal: controller.signal });
+            if (!response.ok) throw new Error(`AAGUID catalog returned ${response.status}`);
+
+            const catalog = await response.json();
+            if (!catalog || typeof catalog !== "object" || Array.isArray(catalog)) {
+                throw new Error("AAGUID catalog has an invalid format");
+            }
+
+            if (Object.keys(catalog).length === 0) {
+                console.warn("[PASSKEYS] AAGUID catalog is empty");
+            }
+
+            aaguidCatalog = catalog;
+            aaguidCatalogExpiresAt = Date.now() + AAGUID_CATALOG_TTL;
+        } catch (error) {
+            console.warn("[PASSKEYS] Could not refresh AAGUID catalog", error.message);
+        } finally {
+            clearTimeout(timeout);
+        }
+    }
+
+    const entry = aaguidCatalog?.[aaguid.toLowerCase()];
+    return typeof entry?.name === "string" ? entry.name : null;
+}
 
 function hashExchangeCode(code) {
     return crypto.createHash("sha256").update(code).digest("hex");
@@ -343,7 +381,6 @@ router.post(paths.dbCreate, async (req, res) => {
             mode,
             challengeId,
             credential,
-            name,
             exchangeCode,
         } = req.body;
 
@@ -455,6 +492,8 @@ router.post(paths.dbCreate, async (req, res) => {
             const existing = await Passkey.findOne({ credentialId: registration.credential.id });
             if (existing) return res.status(409).json({ error: "Passkey already exists" });
 
+            const suggestedName = await getAuthenticatorName(registration.aaguid);
+
             const passkey = new Passkey({
                 account_id: user.account_id,
                 parent: user.parent,
@@ -470,7 +509,7 @@ router.post(paths.dbCreate, async (req, res) => {
 
                 webauthnUserId: String(user.account_id),
 
-                name: normalizeName(name),
+                name: normalizeName(suggestedName || "Passkey"),
                 lastUsedAt: null,
             });
             await passkey.save();
@@ -624,6 +663,34 @@ router.post(paths.dbUpdate, async (req, res) => {
     } catch(error) {
         console.error(error);
         return res.status(500).json({ error: req.t("errors.generic"), dbError: error });
+    }
+});
+
+// /api/passkeys/rename -> Rename a passkey owned by the current account
+router.post("/rename", async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user) return res.status(401).json({ error: req.t("errors.not_authenticated") });
+
+        const { passkeyId, name } = req.body;
+        if (!passkeyId) return res.status(400).json({ error: "passkeyId required" });
+        if (typeof name !== "string") return res.status(400).json({ error: "name required" });
+
+        const passkey = await Passkey.findOne({
+            _id: passkeyId,
+            account_id: user.account_id,
+            parent: user.parent,
+        });
+
+        if (!passkey) return res.status(404).json({ error: "Passkey not found" });
+
+        passkey.name = normalizeName(name);
+        await passkey.save();
+
+        return res.json({ success: true, name: passkey.name });
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json({ error: req.t("errors.generic"), dbError: error.message });
     }
 });
 

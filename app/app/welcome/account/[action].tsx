@@ -5,6 +5,7 @@ import {
     Image,
     Keyboard,
     Pressable,
+    Platform,
     ScrollView,
     Text,
     TextInput,
@@ -203,6 +204,11 @@ function LoginPage({alert}: AccountProps) {
                     }
                     onPress={async () => {
                         if (!network.serverPath) return;
+
+                        if (Platform.OS === "web") {
+                            router.push("/passkeys/login");
+                            return;
+                        }
 
                         setLoading(true);
 

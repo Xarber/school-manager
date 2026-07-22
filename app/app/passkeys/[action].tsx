@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNetworkContext } from '@/constants/NetworkContext';
-import { Platform, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Platform, View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
 import * as Crypto from 'expo-crypto';
 import * as WebBrowser from 'expo-web-browser';
@@ -24,6 +24,8 @@ export default function PasskeysPage() {
   const theme = useTheme();
   const [healthCheckPassed, setHealthCheck] = useState<undefined | boolean>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
+  const [registeredPasskey, setRegisteredPasskey] = useState<{ id: string; name: string } | null>(null);
+  const [renameName, setRenameName] = useState("");
   const commonStyle = createStyling.createCommonStyles(theme);
   const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
   const params = useLocalSearchParams();
@@ -104,7 +106,7 @@ export default function PasskeysPage() {
     return true;
   }
 
-  async function registerPasskey(name: string = "Passkey") {
+  async function registerPasskey() {
     if (!passkeyServerPath) return false; // Server not ready
 
     const token = accountData.data.token;
@@ -142,7 +144,6 @@ export default function PasskeysPage() {
         mode: "verify",
         challengeId,
         credential,
-        name,
       })
     });
     const verifyJson = await verifyResponse.json();
@@ -156,7 +157,7 @@ export default function PasskeysPage() {
       return true;
     }
 
-    return true; // Passkey registered
+    return verifyJson; // Passkey registered
   }
 
   async function authenticatePasskey() {
@@ -282,9 +283,28 @@ export default function PasskeysPage() {
         });
       }
 
+      if (action === "add" && typeof result !== "boolean") {
+        if (!result.data?.id || !result.data?.name) {
+          throw new Error("The server did not return the registered passkey");
+        }
+        setRegisteredPasskey(result.data);
+      }
+
       setStep("complete");
     } catch (error) {
       console.error("Passkey action failed", error);
+      const alreadyRegistered = action === "add"
+        && error instanceof Error
+        && error.name === "InvalidStateError";
+
+      show({
+        title: i18n.t(alreadyRegistered
+          ? "passkeys.add.alreadyRegistered.title"
+          : "passkeys.error.title"),
+        message: i18n.t(alreadyRegistered
+          ? "passkeys.add.alreadyRegistered.description"
+          : "passkeys.error.description"),
+      });
     } finally {
       setLoading(false);
     }
@@ -353,6 +373,7 @@ export default function PasskeysPage() {
                   }
               </TouchableOpacity>
           </View>
+          <AlertElement ref={alertRef} />
         </View>
       );
     case "complete":
@@ -374,13 +395,63 @@ export default function PasskeysPage() {
               <Text style={[commonStyle.headerText, {textAlign: "center"}]}>{i18n.t(`passkeys.${action}.success.title`)}</Text>
               <Text style={[commonStyle.text, {textAlign: "center"}]}>{i18n.t(`passkeys.${action}.success.description`)}</Text>
             </View>
+
+            <View style={{ gap: 8 }}>
+              <Text style={commonStyle.text}>{i18n.t("passkeys.add.name.label")}</Text>
+              <TextInput
+                value={renameName}
+                onChangeText={setRenameName}
+                maxLength={100}
+                autoCapitalize="sentences"
+                placeholder={registeredPasskey?.name ?? "Passkey"}
+                placeholderTextColor={theme.disabled}
+                style={welcomeStyles.bottomViewBodyInput}
+              />
+            </View>
           </View>
 
           <View style={welcomeStyles.actions}>
-              <TouchableOpacity style={[welcomeStyles.actionsButton]} onPress={() => router.dismiss()}>
-                <Text style={welcomeStyles.actionsButtonText}>{i18n.t(`passkeys.${action}.success.continue`)}</Text>
+              <TouchableOpacity disabled={loading} style={[welcomeStyles.actionsButton, loading && { opacity: 0.6 }]} onPress={async () => {
+                if (!registeredPasskey || !passkeyServerPath) return;
+                const requestedName = renameName.trim();
+
+                setLoading(true);
+                try {
+                  if (requestedName && requestedName !== registeredPasskey.name) {
+                    const renameResponse = await fetch(`${passkeyServerPath}/api/passkeys/rename`, {
+                      method: "POST",
+                      headers: {
+                        Authorization: `Bearer ${accountData.data.token}`,
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        passkeyId: registeredPasskey.id,
+                        name: requestedName,
+                      }),
+                    });
+                    const renameJson = await renameResponse.json();
+                    if (!renameResponse.ok || !renameJson.success) {
+                      throw new Error(renameJson.error ?? "Could not rename passkey");
+                    }
+                  }
+
+                  router.dismiss();
+                } catch (error) {
+                  console.error("Could not rename passkey", error);
+                  show({
+                    title: i18n.t("passkeys.error.title"),
+                    message: i18n.t("passkeys.error.description"),
+                  });
+                } finally {
+                  setLoading(false);
+                }
+              }}>
+                {loading
+                  ? <ActivityIndicator size="small" color={theme.text} />
+                  : <Text style={welcomeStyles.actionsButtonText}>{i18n.t(`passkeys.${action}.success.continue`)}</Text>}
               </TouchableOpacity>
           </View>
+          <AlertElement ref={alertRef} />
         </View>
       );
       break;

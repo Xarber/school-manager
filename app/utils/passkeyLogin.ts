@@ -1,6 +1,7 @@
 import * as AuthSession from "expo-auth-session";
 import * as Crypto from "expo-crypto";
 import * as WebBrowser from "expo-web-browser";
+import { Platform } from "react-native";
 
 export type PasskeyLoginResult = {
   success: true;
@@ -17,6 +18,10 @@ async function runPasskeyExchange(
   action: PasskeyAction,
   token?: string,
 ) {
+  if (Platform.OS === "web") {
+    throw new Error("The native passkey exchange cannot be started from the web app");
+  }
+
   if (action === "add" && !token) {
     throw new Error("You must be logged in to add a passkey");
   }
