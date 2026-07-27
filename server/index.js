@@ -52,9 +52,12 @@ const passkeyRoutes = require('./db/routes/passkeys');
 async function connectDB() {
     let mongoDBuri = process.env.MONGODB_URI
     if (useLocalDB) {
+        let port = Number(paths.dbPort) + 1;
+        port = (port > 65535) ? 65534 : port;
         mongod = await MongoMemoryServer.create({
             instance: {
-                dbPath: "./db/files/mongo"
+                dbPath: "./db/files/mongo",
+                port
             }
         });
         mongoDBuri = mongod.getUri();
