@@ -96,6 +96,9 @@ router.post(paths.dbCreate, async (req, res) => {
 
     const subjectInfo = await Subject.findOne({ _id: subjectid });
     if (!subjectInfo) return res.status(404).json({ error: req.t("errors.subject_not_found") });
+    if (!classInfo.subjects.some(subject => subject.equals(subjectInfo._id))) {
+      return res.status(403).json({ error: req.t("errors.class_access_denied") });
+    }
 
     const { title, description, date, time, room, isExam, isScheduled } = req.body;
     if (!title) return res.status(400).json({ error: req.t("errors.lesson_title_required") });

@@ -23,7 +23,9 @@ import createStyling from "@/constants/styling";
 import { useTheme } from "@/constants/useThemes";
 import { useAccountData } from "@/data/AccountDataContext";
 import { DataManager } from "@/data/datamanager";
+import { useDebugData } from "@/data/DebugDataContext";
 import { useUserData } from "@/data/UserDataContext";
+import { getSessionMetadataHeaders } from "@/utils/deviceInfo";
 import { Ionicons } from "@expo/vector-icons";
 import AlertElement from "@/components/alert/alertElement";
 
@@ -72,7 +74,8 @@ async function sendOtp(email: string, setotpsent: Function, setloading: Function
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Accept-Language': i18n.locale
+            'Accept-Language': i18n.locale,
+            ...getSessionMetadataHeaders(),
         },
         body: JSON.stringify({ email })
     })
@@ -96,7 +99,8 @@ async function verifyOtp(email: string, otpcode: string, reset: Function, alert:
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Accept-Language': i18n.locale
+            'Accept-Language': i18n.locale,
+            ...getSessionMetadataHeaders(),
         },
         body: JSON.stringify({ email, code: otpcode })
     })
@@ -362,6 +366,7 @@ export function LoggedInPage({alert}: AccountProps) {
     const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
 
     const accountData = useAccountData();
+    const debugData = useDebugData();
     const userData = useUserData();
 
     useEffect(() => {
@@ -396,8 +401,16 @@ export function LoggedInPage({alert}: AccountProps) {
                         </View>
                     </View>
                     <View style={welcomeStyles.actions}>
-                        <TouchableOpacity style={welcomeStyles.actionsButton} onPress={() => {
-                            accountData.save({...accountData.data, active: true}).then(()=>router.dismiss());
+                        <TouchableOpacity style={welcomeStyles.actionsButton} onPress={async () => {
+                            await accountData.save({...accountData.data, active: true});
+
+                            if (router.canGoBack()) {
+                                router.back();
+                                return;
+                            }
+
+                            const debug = await debugData.load();
+                            router.replace(debug.firstLaunch ? "/(tabs)/profile" : "/welcome/notifications");
                         }}>
                             <Text style={welcomeStyles.actionsButtonText}>{i18n.t("welcome.account.auth.success.continue")}</Text>
                         </TouchableOpacity>

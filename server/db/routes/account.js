@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require("mongoose");
 const { UserInfo, UserData } = require('../models/User');
 const { Account } = require('../models/Account');
+const { Session } = require('../models/Session');
+const { getAppVersion, getDeviceName } = require('../session');
 const paths = require('./paths.js');
 
 const router = express.Router();
@@ -59,7 +61,9 @@ router.post(paths.dbUpdate, async (req, res) => {
     // Update user info
     if (name) userInfo.name = name;
     if (surname) userInfo.surname = surname;
-    if (email) userInfo.email = email;
+    if (email !== undefined && (typeof email !== 'string' || email.trim().toLowerCase() !== userInfo.email)) {
+      return res.status(400).json({ error: 'Email changes require verification.' });
+    }
     userInfo.editedAt = Date.now();
 
     await userInfo.save();
@@ -72,6 +76,94 @@ router.post(paths.dbUpdate, async (req, res) => {
 });
 
 // Account specific routes
+
+router.post('/sessions/current/metadata', async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: req.t('errors.not_authenticated') });
+
+    const session = await Session.findOneAndUpdate(
+      {
+        account_id: req.user.account_id,
+        tokenId: req.user.session_id,
+        revokedAt: null,
+        expiresAt: { $gt: new Date() },
+      },
+      {
+        $set: {
+          deviceName: getDeviceName(req),
+          appVersion: getAppVersion(req),
+          lastUsedAt: new Date(),
+        },
+      },
+      { new: true },
+    );
+
+    if (!session) return res.status(404).json({ error: 'Session not found' });
+    return res.json({ success: true, appVersion: session.appVersion });
+  } catch (error) {
+    console.error('Update session metadata error:', error);
+    return res.status(500).json({ error: req.t('errors.generic'), dbError: error });
+  }
+});
+
+router.post('/sessions', async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: req.t('errors.not_authenticated') });
+
+    const sessions = await Session.find({
+      account_id: req.user.account_id,
+      revokedAt: null,
+      expiresAt: { $gt: new Date() },
+    }).sort({ lastUsedAt: -1 }).lean();
+
+    return res.json({
+      success: true,
+      data: sessions.map(session => ({
+        _id: String(session._id),
+        account_id: String(session.account_id),
+        tokenId: session.tokenId,
+        deviceName: session.deviceName,
+        userAgent: session.userAgent,
+        appVersion: session.appVersion,
+        createdAt: session.createdAt,
+        lastUsedAt: session.lastUsedAt,
+        expiresAt: session.expiresAt,
+        revokedAt: session.revokedAt,
+        revokedReason: session.revokedReason,
+        current: session.tokenId === req.user.session_id,
+      })),
+    });
+  } catch (error) {
+    console.error('List sessions error:', error);
+    return res.status(500).json({ error: req.t('errors.generic'), dbError: error });
+  }
+});
+
+router.post('/sessions/revoke', async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: req.t('errors.not_authenticated') });
+    const sessionId = req.body?.sessionId;
+    if (typeof sessionId !== 'string' || !sessionId) {
+      return res.status(400).json({ error: req.t('errors.bad_request') });
+    }
+
+    const session = await Session.findOneAndUpdate(
+      {
+        account_id: req.user.account_id,
+        tokenId: sessionId,
+        revokedAt: null,
+      },
+      { $set: { revokedAt: new Date(), revokedReason: 'user' } },
+      { new: true },
+    );
+    if (!session) return res.status(404).json({ error: 'Session not found' });
+
+    return res.json({ success: true, current: session.tokenId === req.user.session_id });
+  } catch (error) {
+    console.error('Revoke session error:', error);
+    return res.status(500).json({ error: req.t('errors.generic'), dbError: error });
+  }
+});
 
 router.post(paths.accountRegisterForPushNotifications, async (req, res) => {
     try {

@@ -97,6 +97,9 @@ router.post(paths.dbCreate, async (req, res) => {
 
     const subjectInfo = await Subject.findOne({ _id: subjectid });
     if (!subjectInfo) return res.status(404).json({ error: req.t("errors.subject_not_found") });
+    if (!classInfo.subjects.some(subject => subject.equals(subjectInfo._id))) {
+      return res.status(403).json({ error: req.t("errors.class_access_denied") });
+    }
 
     // teachers always pass
     const isUserTeacher = classInfo.teachers.some(t => t.equals(user.userinfo_id));
@@ -107,6 +110,15 @@ router.post(paths.dbCreate, async (req, res) => {
 
     let targetUserInfo = (targetuserid === user.userid) ? userInfo : await UserInfo.findOne({ _id: targetuserid });
     if (!targetUserInfo) return res.status(404).json({ error: req.t("errors.target_user_not_found") });
+    if (!classInfo.students.some(student => student.equals(targetUserInfo._id))) {
+      return res.status(403).json({ error: req.t("errors.target_user_not_found") });
+    }
+    if (homeworkid && !subjectInfo.homework.some(homework => homework.equals(homeworkid))) {
+      return res.status(400).json({ error: req.t("errors.homework_not_found") });
+    }
+    if (examid && !subjectInfo.lessons.some(lesson => lesson.equals(examid))) {
+      return res.status(400).json({ error: req.t("errors.exam_not_found") });
+    }
 
     const { title, description, type, grade, gradeTitle } = req.body;
     if (!title) return res.status(400).json({ error: req.t("errors.grade_title_required") });

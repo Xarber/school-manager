@@ -7,6 +7,7 @@ import { useNetworkContext } from "@/constants/NetworkContext";
 import createStyling, { defaultScreenSizes } from "@/constants/styling";
 import { useTheme } from "@/constants/useThemes";
 import { useAccountData } from "@/data/AccountDataContext";
+import type { PasskeyData, SessionData } from "@/data/datamanager";
 import { turnOffNotifications, turnOnNotifications } from "@/data/notifications";
 import { useUserData } from "@/data/UserDataContext";
 import { addPasskey } from "@/utils/passkeyLogin";
@@ -83,15 +84,7 @@ function LanguageTab() {
     )
 }
 
-type PasskeyData = {
-    _id: string;
-    name: string;
-    deviceType: string;
-    backedUp: boolean;
-    transports: string[];
-    createdAt: string;
-    lastUsedAt: string | null;
-};
+type DeviceSession = SessionData & { current: boolean };
 
 function SecurityTab() {
     const theme = useTheme();
@@ -112,6 +105,9 @@ function SecurityTab() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState("");
     const [renamingId, setRenamingId] = useState<string | null>(null);
+    const [sessions, setSessions] = useState<DeviceSession[]>([]);
+    const [sessionsLoading, setSessionsLoading] = useState(true);
+    const [revokingSessionId, setRevokingSessionId] = useState<string | null>(null);
 
     const safeAreaInsets = useSafeAreaInsets();
     const bottomInset = safeAreaInsets.bottom === 0 ? 20 : safeAreaInsets.bottom;
@@ -149,15 +145,86 @@ function SecurityTab() {
         }
     }
 
+    async function loadSessions() {
+        if (!network.serverPath || !accountData.data.active) {
+            setSessionsLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${network.serverPath}/api/account/sessions`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${accountData.data.token}` },
+            });
+            const body = await response.json();
+            if (!response.ok || !body.success || !Array.isArray(body.data)) {
+                throw new Error(body.error ?? "Could not load signed-in devices");
+            }
+            setSessions(body.data);
+        } catch (error) {
+            console.error("Could not load signed-in devices", error);
+        } finally {
+            setSessionsLoading(false);
+        }
+    }
+
     useEffect(() => {
         const timeout = setTimeout(() => {
             void loadPasskeys();
+            void loadSessions();
         }, 0);
 
         return () => clearTimeout(timeout);
         // loadPasskeys intentionally reloads only when the active API or account changes.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [network.serverPath, accountData.data.active]);
+
+    async function revokeSession(session: DeviceSession) {
+        if (!network.serverPath || revokingSessionId) return;
+
+        setRevokingSessionId(session.tokenId);
+        try {
+            const response = await fetch(`${network.serverPath}/api/account/sessions/revoke`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${accountData.data.token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ sessionId: session.tokenId }),
+            });
+            const body = await response.json();
+            if (!response.ok || !body.success) throw new Error(body.error ?? "Could not revoke this device");
+
+            if (body.current) {
+                await accountData.save({ ...accountData.data, active: false, token: "" });
+                router.replace("/welcome/account/login");
+                return;
+            }
+            setSessions(current => current.filter(item => item.tokenId !== session.tokenId));
+        } catch (error) {
+            console.error("Could not revoke signed-in device", error);
+            alert.show({
+                title: i18n.t("profile.settings.security.sessions.error.title"),
+                message: error instanceof Error ? error.message : i18n.t("profile.settings.security.sessions.error.description"),
+            });
+        } finally {
+            setRevokingSessionId(null);
+        }
+    }
+
+    function confirmRevokeSession(session: DeviceSession) {
+        alert.show({
+            title: i18n.t("profile.settings.security.sessions.revoke.title"),
+            message: i18n.t("profile.settings.security.sessions.revoke.description", { name: session.deviceName }),
+            actions: [
+                { title: i18n.t("profile.settings.security.passkeys.actions.cancel"), onPress: alert.hide },
+                {
+                    title: i18n.t("profile.settings.security.sessions.revoke.confirm"),
+                    onPress: () => { alert.hide(); void revokeSession(session); },
+                },
+            ],
+        });
+    }
 
     async function handleAddPasskey() {
         if (!network.serverPath || !accountData.data.active || adding) return;
@@ -397,6 +464,43 @@ function SecurityTab() {
                                                 {deletingId === passkey._id
                                                     ? <ActivityIndicator size="small" color={theme.caution} />
                                                     : <Ionicons name="trash-outline" size={21} color={theme.caution} />}
+                                            </TouchableOpacity>
+                                        </View>
+                                    ))}
+                                </View>
+                            )}
+
+                            <Text style={[commonStyle.headerText, { marginTop: 12 }]}>{i18n.t("profile.settings.security.sessions.title")}</Text>
+                            <Text style={commonStyle.text}>{i18n.t("profile.settings.security.sessions.description")}</Text>
+                            {sessionsLoading ? (
+                                <ActivityIndicator size="small" color={theme.primary} />
+                            ) : sessions.length === 0 ? (
+                                <View style={commonStyle.dashboardSectionContainer}>
+                                    <Text style={commonStyle.text}>{i18n.t("profile.settings.security.sessions.empty")}</Text>
+                                </View>
+                            ) : (
+                                <View style={commonStyle.dashboardSectionContainer}>
+                                    {sessions.map(session => (
+                                        <View key={session.tokenId} style={[commonStyle.dashboardSectionItem, { flexDirection: "row", alignItems: "center" }]}>
+                                            <Ionicons name={session.current ? "phone-portrait-outline" : "desktop-outline"} size={24} color={theme.primary} />
+                                            <View style={{ flex: 1, marginHorizontal: 12, gap: 3 }}>
+                                                <Text style={commonStyle.text}>{session.current ? i18n.t("profile.settings.security.sessions.current", { name: session.deviceName }) : session.deviceName}</Text>
+                                                <Text style={[commonStyle.text, { fontSize: 12, opacity: 0.7 }]}>
+                                                    {i18n.t("profile.settings.security.sessions.item.lastUsed", {
+                                                        date: new Date(session.lastUsedAt).toLocaleString(),
+                                                        version: session.appVersion ? ` · v${session.appVersion}` : "",
+                                                    })}
+                                                </Text>
+                                            </View>
+                                            <TouchableOpacity
+                                                disabled={revokingSessionId === session.tokenId}
+                                                onPress={() => confirmRevokeSession(session)}
+                                                accessibilityLabel={i18n.t("profile.settings.security.sessions.revoke.confirm")}
+                                                style={{ padding: 8 }}
+                                            >
+                                                {revokingSessionId === session.tokenId
+                                                    ? <ActivityIndicator size="small" color={theme.caution} />
+                                                    : <Ionicons name="log-out-outline" size={21} color={theme.caution} />}
                                             </TouchableOpacity>
                                         </View>
                                     ))}

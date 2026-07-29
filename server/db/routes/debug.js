@@ -69,14 +69,21 @@ router.post(paths.dbUpdate, async (req, res) => {
       performanceMetrics
     };
     if (!data) return res.status(400).json({ error: req.t("errors.data_required") });
+    if (errorLogs !== undefined && !Array.isArray(errorLogs)) return res.status(400).json({ error: req.t("errors.bad_request") });
+    if (performanceMetrics !== undefined && !Array.isArray(performanceMetrics)) return res.status(400).json({ error: req.t("errors.bad_request") });
 
     debugData.firstLaunch = data.firstLaunch || debugData.firstLaunch;
     debugData.firstLaunchDate = data.firstLaunchDate || debugData.firstLaunchDate;
     debugData.lastLaunchDate = data.lastLaunchDate || debugData.lastLaunchDate;
     debugData.launchCount = data.launchCount || debugData.launchCount;
     debugData.appVersion = data.appVersion || debugData.appVersion;
-    debugData.errorLogs = (data.errorLogs && data.errorLogs.length > 0) ? debugData.errorLogs.concat(data.errorLogs) : debugData.errorLogs;
-    debugData.performanceMetrics = (data.performanceMetrics && data.performanceMetrics.length > 0) ? debugData.performanceMetrics.concat(data.performanceMetrics) : debugData.performanceMetrics;
+    const newErrorLogs = (data.errorLogs || [])
+      .filter(value => typeof value === 'string')
+      .map(value => value.slice(0, 10_000))
+      .slice(-25);
+    const newPerformanceMetrics = (data.performanceMetrics || []).slice(-25);
+    debugData.errorLogs = debugData.errorLogs.concat(newErrorLogs).slice(-100);
+    debugData.performanceMetrics = debugData.performanceMetrics.concat(newPerformanceMetrics).slice(-100);
     debugData.editedAt = Date.now();
 
     await debugData.save();

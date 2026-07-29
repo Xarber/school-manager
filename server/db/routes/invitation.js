@@ -53,6 +53,8 @@ router.post(paths.dbCreate, async (req, res) => {
         if (!joinAs) return res.status(400).json({ error: req.t("errors.invitation_join_as_required") });
         if (!req.body.for) return res.status(400).json({ error: req.t("errors.invitation_type_required") });
         if (!targetid) return res.status(400).json({ error: req.t("errors.invitation_target_required") });
+        if (!['teacher', 'student'].includes(joinAs)) return res.status(400).json({ error: req.t("errors.bad_request") });
+        if (!Number.isInteger(maxUsage) || (maxUsage < 1 && maxUsage !== -1)) return res.status(400).json({ error: req.t("errors.bad_request") });
 
         switch (req.body.for) {
             case "class": 
@@ -121,7 +123,6 @@ router.post(paths.dbUpdate, async (req, res) => {
 
         const invitation = await Invitation.findOne({ code: code.toUpperCase() });
         if (!invitation) return res.status(404).json({ error: req.t("errors.invitation_not_found") });
-        if (invitation.maxUsage != -1 && invitation.used >= invitation.maxUsage) return res.status(400).json({ error: req.t("errors.invitation_expired") });
         if (invitation.joinAs == 'teacher' && userData.userInfo.role == 'student') return res.status(403).json({ error: req.t("errors.invitation_teacher_student") });
 
         switch (invitation.for) {
@@ -130,23 +131,30 @@ router.post(paths.dbUpdate, async (req, res) => {
                 if (!classInfo) return res.status(404).json({ error: req.t("errors.invitation_invalid") });
                 if (userData.classes.some(c => c.equals(classInfo._id))) return res.status(400).json({ error: req.t("errors.invitation_already_joined") });
 
-                if (invitation.joinAs === 'teacher') {
-                    classInfo.teachers.push(user.userinfo_id);
-                } else {
-                    classInfo.students.push(user.userinfo_id);
-                }
-                await classInfo.save();
+                const usageQuery = invitation.maxUsage === -1
+                    ? { _id: invitation._id }
+                    : { _id: invitation._id, used: { $lt: invitation.maxUsage } };
+                const reservedInvitation = await Invitation.findOneAndUpdate(
+                    usageQuery,
+                    { $inc: { used: 1 } },
+                    { new: true },
+                );
+                if (!reservedInvitation) return res.status(400).json({ error: req.t("errors.invitation_expired") });
 
-                userData.classes.push(classInfo._id);
-                await userData.save();
+                const membershipField = invitation.joinAs === 'teacher' ? 'teachers' : 'students';
+                await Class.updateOne(
+                    { _id: classInfo._id },
+                    { $addToSet: { [membershipField]: user.userinfo_id } },
+                );
+                await UserData.updateOne(
+                    { _id: userData._id },
+                    { $addToSet: { classes: classInfo._id } },
+                );
 
                 break;
             default: 
                 return res.status(500).json({ error: req.t("errors.invitation_not_supported") });
         }
-
-        invitation.used += 1;
-        await invitation.save();
 
         res.json({ success: true });
     } catch (error) {

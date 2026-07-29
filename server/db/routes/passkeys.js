@@ -1,6 +1,5 @@
 const express = require("express");
 const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
 
 const {
     generateRegistrationOptions,
@@ -16,6 +15,7 @@ const { PasskeyExchange } = require("../models/PasskeyExchange");
 const { Account } = require("../models/Account");
 const { UserInfo, UserData } = require("../models/User");
 const { Debug } = require("../models/Debug");
+const { createSessionToken } = require("../session");
 
 const paths = require("./paths");
 
@@ -91,7 +91,7 @@ function validateCallbackUrl(callbackUrl, action) {
     }
 }
 
-async function createExchange({ action, purpose, account_id = null, parent = false, callbackUrl = null, codeChallenge }) {
+async function createExchange({ action, purpose, account_id = null, parent = false, callbackUrl = null, codeChallenge, pendingPasskey = null }) {
     const code = createExchangeCode();
     const exchange = await PasskeyExchange.create({
         codeHash: hashExchangeCode(code),
@@ -101,6 +101,7 @@ async function createExchange({ action, purpose, account_id = null, parent = fal
         parent,
         callbackUrl,
         codeChallenge,
+        pendingPasskey,
         expiresAt: new Date(Date.now() + EXCHANGE_TIMEOUT),
     });
 
@@ -150,7 +151,7 @@ async function saveChallenge({
     return challengeId;
 }
 
-async function createAppResultExchange(browserExchange, account_id, parent = false) {
+async function createAppResultExchange(browserExchange, account_id, parent = false, pendingPasskey = null) {
     return createExchange({
         action: browserExchange.action,
         purpose: "app",
@@ -158,6 +159,7 @@ async function createAppResultExchange(browserExchange, account_id, parent = fal
         parent,
         callbackUrl: browserExchange.callbackUrl,
         codeChallenge: browserExchange.codeChallenge,
+        pendingPasskey,
     });
 }
 
@@ -174,7 +176,7 @@ async function consumeChallenge(challengeId, type) {
     });
 }
 
-async function createLoginToken(account_id, parent = false) {
+async function createLoginToken(account_id, parent = false, req) {
     const account = await Account.findById(account_id);
     if (!account) return null;
 
@@ -184,21 +186,8 @@ async function createLoginToken(account_id, parent = false) {
 
     if (!userData || !userInfo || !debugData) return null;
 
-    const token = jwt.sign(
-        {
-            userdata_id: userData._id,
-            userinfo_id: userInfo._id,
-            account_id: account._id,
-            userid: userData.userid,
-            debug_id: debugData._id,
-            parent,
-            issued: Date.now(),
-        },
-        process.env.JWT_SECRET,
-        {
-            expiresIn: "365d",
-        }
-    );
+    if (account.locked || !account.active) return null;
+    const { token } = await createSessionToken({ account, userData, userInfo, debugData, parent, req });
 
     return {
         token,
@@ -270,13 +259,10 @@ router.post("/exchange/start", async (req, res) => {
         });
 
         const browserUrl = new URL(`/passkeys/${action}`, PASSKEY_WEB_ORIGIN);
-        browserUrl.searchParams.set("exchangeCode", code);
-
-        browserUrl.searchParams.set(
-            "exchangeApi",
-            process.env.PASSKEY_API_ORIGIN ||
-                `${req.protocol}://${req.get("host")}`,
-        );
+        browserUrl.hash = new URLSearchParams({
+            exchangeCode: code,
+            exchangeApi: process.env.PASSKEY_API_ORIGIN || `${req.protocol}://${req.get("host")}`,
+        }).toString();
 
         return res.json({
             success: true,
@@ -315,10 +301,21 @@ router.post("/exchange/complete", async (req, res) => {
                 || Boolean(req.user.parent) !== Boolean(exchange.parent)) {
                 return res.status(403).json({ error: "Exchange code belongs to another account" });
             }
-            return res.json({ success: true, action: "add" });
+            if (!exchange.pendingPasskey) {
+                return res.status(400).json({ error: "Registration is missing or expired" });
+            }
+            const existing = await Passkey.findOne({ credentialId: exchange.pendingPasskey.credentialId });
+            if (existing) return res.status(409).json({ error: "Passkey already exists" });
+
+            const passkey = await Passkey.create({
+                ...exchange.pendingPasskey,
+                account_id: exchange.account_id,
+                parent: exchange.parent,
+            });
+            return res.json({ success: true, action: "add", data: { id: passkey._id, name: passkey.name } });
         }
 
-        const login = await createLoginToken(exchange.account_id, exchange.parent);
+        const login = await createLoginToken(exchange.account_id, exchange.parent, req);
         if (!login) return res.status(404).json({ error: "Account not found" });
 
         return res.json({
@@ -494,7 +491,7 @@ router.post(paths.dbCreate, async (req, res) => {
 
             const suggestedName = await getAuthenticatorName(registration.aaguid);
 
-            const passkey = new Passkey({
+            const passkeyData = {
                 account_id: user.account_id,
                 parent: user.parent,
 
@@ -511,14 +508,14 @@ router.post(paths.dbCreate, async (req, res) => {
 
                 name: normalizeName(suggestedName || "Passkey"),
                 lastUsedAt: null,
-            });
-            await passkey.save();
+            };
 
             if (browserExchange) {
                 const result = await createAppResultExchange(
                     browserExchange,
                     user.account_id,
                     user.parent,
+                    passkeyData,
                 );
                 return res.json({
                     success: true,
@@ -526,6 +523,8 @@ router.post(paths.dbCreate, async (req, res) => {
                     callbackUrl: browserExchange.callbackUrl,
                 });
             }
+
+            const passkey = await Passkey.create(passkeyData);
 
             return res.json({
                 success: true,
@@ -648,6 +647,7 @@ router.post(paths.dbUpdate, async (req, res) => {
             const login = await createLoginToken(
                 passkey.account_id,
                 passkey.parent,
+                req,
             );
             if (!login) return res.status(404).json({ error: "Account not found" });
                 

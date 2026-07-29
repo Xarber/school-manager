@@ -121,6 +121,7 @@ const defaultClassData = {
     schedule: [] as WeekSchedule[],
     comunications: [] as string[] | ComunicationData[], // _id rel
     material: [] as string[] | MaterialData[], // _id rel
+    files: [] as string[] | FileData[], // _id rel
     homework: [] as string[] | HomeworkData[], // _id rel
     lessons: [] as string[] | LessonData[], // _id rel
     subjects: [] as string[] | SubjectData[], // _id rel
@@ -284,6 +285,7 @@ const defaultSchoolData = {
 
     comunications: [] as string[] | ComunicationData[], // _id rel
     material: [] as string[] | MaterialData[], // _id rel
+    files: [] as string[] | FileData[], // _id rel
     classes: [] as string[] | ClassData[], // _id rel
     students: [] as string[] | UserInfo[], // _id rel
     teachers: [] as string[] | UserInfo[], // _id rel
@@ -330,6 +332,80 @@ const defaultFileData = {
     editedAt: 0 as number
 }
 export type FileData = typeof defaultFileData;
+
+const defaultPasskeyData = {
+    _id: "" as string,
+    account_id: "" as string | AccountData, // _id rel
+    parent: false as boolean,
+    credentialId: "" as string,
+    publicKey: "" as string,
+    counter: 0 as number,
+    transports: [] as string[],
+    deviceType: "" as string,
+    backedUp: false as boolean,
+    aaguid: "" as string,
+    webauthnUserId: "" as string,
+    name: "Passkey" as string,
+    lastUsedAt: null as string | null,
+    createdAt: "" as string,
+    updatedAt: "" as string,
+};
+export type PasskeyData = typeof defaultPasskeyData;
+
+const defaultPasskeyChallengeData = {
+    _id: "" as string,
+    challengeId: "" as string,
+    challenge: "" as string,
+    type: "registration" as "registration" | "authentication",
+    account_id: null as string | AccountData | null, // _id rel
+    parent: false as boolean,
+    webauthnUserId: null as string | null,
+    exchange_id: null as string | PasskeyExchangeData | null, // _id rel
+    expiresAt: "" as string,
+    createdAt: "" as string,
+    updatedAt: "" as string,
+};
+export type PasskeyChallengeData = typeof defaultPasskeyChallengeData;
+
+const defaultPasskeyExchangeData = {
+    _id: "" as string,
+    codeHash: "" as string,
+    action: "login" as "add" | "login",
+    purpose: "browser" as "browser" | "app",
+    account_id: null as string | AccountData | null, // _id rel
+    parent: false as boolean,
+    callbackUrl: null as string | null,
+    codeChallenge: "" as string,
+    pendingPasskey: null as PasskeyData | null,
+    consumedAt: null as string | null,
+    expiresAt: "" as string,
+    createdAt: "" as string,
+    updatedAt: "" as string,
+};
+export type PasskeyExchangeData = typeof defaultPasskeyExchangeData;
+
+const defaultVerificationData = {
+    _id: "" as string,
+    email: "" as string,
+    code: "" as string,
+    createdAt: "" as string,
+};
+export type VerificationData = typeof defaultVerificationData;
+
+const defaultSessionData = {
+    _id: "" as string,
+    account_id: "" as string | AccountData, // _id rel
+    tokenId: "" as string,
+    deviceName: "" as string,
+    userAgent: "" as string | undefined,
+    appVersion: "" as string | undefined,
+    createdAt: "" as string,
+    lastUsedAt: "" as string,
+    expiresAt: "" as string,
+    revokedAt: null as string | null,
+    revokedReason: "" as string | undefined,
+};
+export type SessionData = typeof defaultSessionData;
 
 export function useAppDataSync(dbkey: string | null, appkey: string | null, defaultValue: any, body: Object = {}) {
     const [data, setData]: any = useState(defaultValue);

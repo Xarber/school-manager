@@ -10,6 +10,7 @@ const passkeyExchangeSchema = new Schema(
     parent: { type: Boolean, default: false },
     callbackUrl: { type: String, default: null },
     codeChallenge: { type: String, required: true },
+    pendingPasskey: { type: Schema.Types.Mixed, default: null },
 
     consumedAt: { type: Date, default: null, index: true },
     expiresAt: { type: Date, required: true, index: { expires: 0 } },

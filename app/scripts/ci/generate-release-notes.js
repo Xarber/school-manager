@@ -194,69 +194,80 @@ function groupCommits(commits) {
     };
 
     for (const commit of commits) {
-        const parsed = parseCommit(commit.message);
+        for (const parsed of parseCommitEntries(commit.message)) {
+            const entry = formatCommitEntry(
+                parsed.description,
+                commit.hash
+            );
 
-        const entry = formatCommitEntry(
-            parsed.description,
-            commit.hash
-        );
+            if (parsed.breaking) {
+                groups.breaking.push(entry);
+                continue;
+            }
 
-        if (parsed.breaking) {
-            groups.breaking.push(entry);
-            continue;
-        }
+            switch (parsed.type) {
+                case "feat":
+                    groups.features.push(entry);
+                    break;
 
-        switch (parsed.type) {
-            case "feat":
-                groups.features.push(entry);
-                break;
+                case "fix":
+                    groups.fixes.push(entry);
+                    break;
 
-            case "fix":
-                groups.fixes.push(entry);
-                break;
+                case "perf":
+                    groups.performance.push(entry);
+                    break;
 
-            case "perf":
-                groups.performance.push(entry);
-                break;
+                case "refactor":
+                    groups.refactor.push(entry);
+                    break;
 
-            case "refactor":
-                groups.refactor.push(entry);
-                break;
+                case "docs":
+                    groups.docs.push(entry);
+                    break;
 
-            case "docs":
-                groups.docs.push(entry);
-                break;
+                case "test":
+                    groups.tests.push(entry);
+                    break;
 
-            case "test":
-                groups.tests.push(entry);
-                break;
+                case "build":
+                    groups.build.push(entry);
+                    break;
 
-            case "build":
-                groups.build.push(entry);
-                break;
+                case "ci":
+                    groups.ci.push(entry);
+                    break;
 
-            case "ci":
-                groups.ci.push(entry);
-                break;
+                case "chore":
+                    groups.chores.push(entry);
+                    break;
 
-            case "chore":
-                groups.chores.push(entry);
-                break;
+                case "style":
+                    groups.style.push(entry);
+                    break;
 
-            case "style":
-                groups.style.push(entry);
-                break;
+                case "revert":
+                    groups.revert.push(entry);
+                    break;
 
-            case "revert":
-                groups.revert.push(entry);
-                break;
-
-            default:
-                groups.other.push(entry);
+                default:
+                    groups.other.push(entry);
+            }
         }
     }
 
     return groups;
+}
+
+function parseCommitEntries(message) {
+    const entries = String(message)
+        .split(/;\s*(?=[a-z]+(?:\([^)]+\))?!?:\s*)/i)
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+
+    return entries.length > 0
+        ? entries.map(parseCommit)
+        : [parseCommit(message)];
 }
 
 function parseCommit(message) {

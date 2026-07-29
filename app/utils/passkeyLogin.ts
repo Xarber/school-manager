@@ -2,6 +2,7 @@ import * as AuthSession from "expo-auth-session";
 import * as Crypto from "expo-crypto";
 import * as WebBrowser from "expo-web-browser";
 import { Platform } from "react-native";
+import { getSessionMetadataHeaders } from "@/utils/deviceInfo";
 
 export type PasskeyLoginResult = {
   success: true;
@@ -47,6 +48,7 @@ async function runPasskeyExchange(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getSessionMetadataHeaders(),
         ...(action === "add" && token
           ? { Authorization: `Bearer ${token}` }
           : {}),
@@ -90,6 +92,7 @@ async function runPasskeyExchange(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getSessionMetadataHeaders(),
         ...(action === "add" && token
           ? { Authorization: `Bearer ${token}` }
           : {}),

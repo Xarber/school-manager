@@ -3,12 +3,12 @@ const nodemailer = require('nodemailer');
 const resend = require("resend");
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken'); // npm i jsonwebtoken
 const { UserInfo, UserData } = require('../models/User'); // Adjust path
 const { Account } = require('../models/Account');
 const { uuidGenerate, idGenerate } = require('../idgenerator');
 const { Verification } = require('../models/Verification');
 const { Debug } = require('../models/Debug');
+const { createSessionToken } = require('../session');
 const paths = require('./paths.js');
 const speakeasy = require('speakeasy');
 const handlebars = require('handlebars');
@@ -67,11 +67,47 @@ const path = require('path');
 
 const router = express.Router();
 
+const attempts = new Map();
+
+function limitAttempts(scope, key, maxAttempts, windowMs) {
+  const now = Date.now();
+  if (attempts.size > 10_000) {
+    for (const [storedKey, value] of attempts) {
+      if (value.resetAt <= now) attempts.delete(storedKey);
+    }
+  }
+  const bucketKey = `${scope}:${key}`;
+  const existing = attempts.get(bucketKey);
+  const bucket = existing && existing.resetAt > now
+    ? existing
+    : { count: 0, resetAt: now + windowMs };
+
+  bucket.count += 1;
+  attempts.set(bucketKey, bucket);
+  return bucket.count <= maxAttempts;
+}
+
+function normaliseEmail(value) {
+  if (typeof value !== 'string') return null;
+  const email = value.trim().toLowerCase();
+  return email.length > 3 && email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ? email
+    : null;
+}
+
+function emailQuery(email) {
+  return new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+}
+
 // POST /api/auth/send - Send verification code
 router.post(paths.authenticate, async (req, res) => {
   try {
-    const { email } = req.body;
+    const email = normaliseEmail(req.body.email);
     if (!email) return res.status(400).json({ error: req.t("errors.email_required") });
+    if (!limitAttempts('send-ip', req.ip, 10, 15 * 60 * 1000)
+      || !limitAttempts('send-email', email, 3, 60 * 60 * 1000)) {
+      return res.status(429).json({ error: 'Too many verification requests. Try again later.' });
+    }
 
     const code = crypto.randomInt(100000, 999999).toString(); // 6-digit code
 
@@ -128,15 +164,19 @@ router.post(paths.authenticate, async (req, res) => {
 // POST /api/auth/verify - Check/verify code
 router.post(paths.authenticateOtp, async (req, res) => {
   try {
-    const { code, email } = req.body;
-    if (!code || !email) return res.status(400).json({ error: req.t("errors.code_email_required") });
+    const email = normaliseEmail(req.body.email);
+    const code = typeof req.body.code === 'string' ? req.body.code.trim() : null;
+    if (!code || !email || !/^\d{6}$/.test(code)) return res.status(400).json({ error: req.t("errors.code_email_required") });
+    if (!limitAttempts('verify', `${req.ip}:${email}`, 10, 15 * 60 * 1000)) {
+      return res.status(429).json({ error: 'Too many verification attempts. Try again later.' });
+    }
 
     // Check if user exists
     let isNewUser = false;
     let isParent = false;
-    let userInfo = await UserInfo.findOne({ email });
+    let userInfo = await UserInfo.findOne({ email: emailQuery(email) });
     if (!userInfo) {
-      userInfo = await UserInfo.findOne({ parentemail: email });
+      userInfo = await UserInfo.findOne({ parentemail: emailQuery(email) });
       if (userInfo) isParent = true;
     }
     let userData = (userInfo && await UserData.findOne({ userid: userInfo.userid })) || null;
@@ -271,20 +311,14 @@ router.post(paths.authenticateOtp, async (req, res) => {
     // Delete used verification
     if (verification) await Verification.deleteOne({ _id: verification._id });
 
-    // Generate JWT (expires in 7 days; adjust)
-    const token = jwt.sign(
-      {
-        userdata_id: userData._id,
-        userinfo_id: userInfo._id,
-        account_id: account._id,
-        userid: userData.userid,
-        debug_id: debugData._id,
-        parent: isParent,
-        issued: Date.now()
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '365d' }
-    );
+    const { token } = await createSessionToken({
+      account,
+      userData,
+      userInfo,
+      debugData,
+      parent: isParent,
+      req,
+    });
 
     res.json({
       success: true,
@@ -315,12 +349,18 @@ router.post(paths.dbMe + paths.dbUpdate, authenticateToken, async (req, res) => 
     const user = await UserInfo.findOne({ _id: req.user.userinfo_id }).lean();
     if (!user) return res.status(404).json({ error: req.t("errors.user_not_found") });
 
-    const { name, surname, email } = req.body;
+    const { name, surname } = req.body;
+    if (req.body.email !== undefined) {
+      const requestedEmail = normaliseEmail(req.body.email);
+      if (!requestedEmail || requestedEmail !== user.email) {
+        return res.status(400).json({ error: 'Email changes require verification.' });
+      }
+    }
     
 
     await UserInfo.updateOne(
       { userid: req.user.userid },
-      { $set: {name, surname, email, editedAt: Date.now()} },
+      { $set: {name, surname, editedAt: Date.now()} },
     ).lean();
     
     res.json({ success: true });

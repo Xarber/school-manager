@@ -31,6 +31,14 @@
             "default": "Install the app for a better experience",
             "install": "Install"
         },
+        "session": {
+            "invalidToken": {
+                "title": "Session expired",
+                "description": "Your sign-in session is no longer valid. Log in again to continue.",
+                "login": "Log in",
+                "dismiss": "Not now"
+            }
+        },
         "timeline": {
             "add": {
                 "text": "Edit"
@@ -1198,6 +1206,24 @@
                     "error": {
                         "title": "Passkey error",
                         "description": "Something went wrong while updating your passkeys."
+                    }
+                },
+                "sessions": {
+                    "title": "Signed-in devices",
+                    "description": "Review each device with access to your account and sign out any you do not recognize.",
+                    "empty": "No active devices were found.",
+                    "current": "{{name}} (this device)",
+                    "item": {
+                        "lastUsed": "Last active {{date}}{{version}}"
+                    },
+                    "revoke": {
+                        "title": "Sign out device?",
+                        "description": "Sign out {{name}}? It will need to sign in again.",
+                        "confirm": "Sign out"
+                    },
+                    "error": {
+                        "title": "Device session error",
+                        "description": "Something went wrong while updating your signed-in devices."
                     }
                 }
             },

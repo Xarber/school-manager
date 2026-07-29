@@ -1,17 +1,13 @@
+const crypto = require('crypto');
+
 module.exports = {
     uuidGenerate: () => {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        })
+        return crypto.randomUUID()
     },
     idGenerate: () => {
-        return `${Date.now().toString(36)}${Math.random().toString(36).substring(2)}`
+        return crypto.randomBytes(16).toString('base64url')
     },
     invitationGenerate: () => {
-        return ('xxxx-xxxx-yxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        })).toUpperCase()
+        return crypto.randomBytes(8).toString('hex').toUpperCase().match(/.{1,4}/g).join('-')
     }
 }

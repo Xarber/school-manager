@@ -15,6 +15,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import i18n from '@/constants/i18n';
 import { useAccountData } from '@/data/AccountDataContext';
 import { LoggedInPage } from '../welcome/account/[action]';
+import { getSessionMetadataHeaders } from '@/utils/deviceInfo';
 import { AlertProps } from '@/components/alert/AlertContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AlertElement from '@/components/alert/alertElement';
@@ -29,6 +30,9 @@ export default function PasskeysPage() {
   const commonStyle = createStyling.createCommonStyles(theme);
   const welcomeStyles = createStyling.createWelcomescreenStyles(theme);
   const params = useLocalSearchParams();
+  const fragmentParams = Platform.OS === "web" && typeof window !== "undefined"
+    ? new URLSearchParams(window.location.hash.slice(1))
+    : null;
   const autoStart = params.autoStart === "true";
   const autoStartedRef = useRef(false);
   const action = params.action as string;
@@ -36,12 +40,12 @@ export default function PasskeysPage() {
   const exchangeCode =
     typeof params.exchangeCode === "string"
       ? params.exchangeCode
-      : undefined;
+      : fragmentParams?.get("exchangeCode") ?? undefined;
 
   const exchangeApi =
     typeof params.exchangeApi === "string"
       ? params.exchangeApi
-      : undefined;
+      : fragmentParams?.get("exchangeApi") ?? undefined;
 
   const passkeyServerPath =
     exchangeCode && exchangeApi
@@ -118,6 +122,7 @@ export default function PasskeysPage() {
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         "Content-Type": "application/json",
+        ...getSessionMetadataHeaders(),
       },
       body: JSON.stringify({
         mode: "options",
@@ -139,6 +144,7 @@ export default function PasskeysPage() {
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         "Content-Type": "application/json",
+        ...getSessionMetadataHeaders(),
       },
       body: JSON.stringify({
         mode: "verify",
@@ -168,6 +174,7 @@ export default function PasskeysPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getSessionMetadataHeaders(),
       },
       body: JSON.stringify({
         mode: "options",
@@ -188,6 +195,7 @@ export default function PasskeysPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getSessionMetadataHeaders(),
       },
       body: JSON.stringify({
         mode: "verify",
@@ -230,6 +238,7 @@ export default function PasskeysPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getSessionMetadataHeaders(),
         ...(action === "add" && token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ action, callbackUrl, codeChallenge }),
@@ -252,6 +261,7 @@ export default function PasskeysPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getSessionMetadataHeaders(),
         ...(action === "add" && token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({ action, exchangeCode: resultCode, codeVerifier }),

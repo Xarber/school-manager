@@ -31,6 +31,14 @@
             "default": "Installa l'app per un'esperienza migliore",
             "install": "Installa"
         },
+        "session": {
+            "invalidToken": {
+                "title": "Sessione scaduta",
+                "description": "La sessione di accesso non e più valida. Accedi di nuovo per continuare.",
+                "login": "Accedi",
+                "dismiss": "Non ora"
+            }
+        },
         "timeline": {
             "add": {
                 "text": "Modifica"
@@ -1194,6 +1202,24 @@
                     "error": {
                         "title": "Errore passkey",
                         "description": "Si è verificato un errore durante l'aggiornamento delle passkey."
+                    }
+                },
+                "sessions": {
+                    "title": "Dispositivi con accesso",
+                    "description": "Controlla ogni dispositivo con accesso al tuo account e disconnetti quelli che non riconosci.",
+                    "empty": "Non sono stati trovati dispositivi attivi.",
+                    "current": "{{name}} (questo dispositivo)",
+                    "item": {
+                        "lastUsed": "Ultima attività {{date}}{{version}}"
+                    },
+                    "revoke": {
+                        "title": "Disconnettere il dispositivo?",
+                        "description": "Vuoi disconnettere {{name}}? Dovrà accedere di nuovo.",
+                        "confirm": "Disconnetti"
+                    },
+                    "error": {
+                        "title": "Errore sessione dispositivo",
+                        "description": "Si è verificato un errore durante l'aggiornamento dei dispositivi con accesso."
                     }
                 }
             },
