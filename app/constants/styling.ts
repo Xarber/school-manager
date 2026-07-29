@@ -607,12 +607,15 @@ const createOptimizationStyles = (theme: Theme) => StyleSheet.create({
         gap: 10,
         flexWrap: "wrap",
         alignItems: "stretch",
+        minHeight: 0,
         // backgroundColor: "blue",
     },
     item: {
         width: defaultScreenSizes.phone.width,
         flexShrink: 1,
         flexGrow: 1,
+        height: "100%",
+        minHeight: 0,
         // backgroundColor: "red",
     }
 });
