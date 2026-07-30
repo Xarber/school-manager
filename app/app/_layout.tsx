@@ -20,7 +20,7 @@ import { SubjectDataProvider } from "@/data/SubjectMapContext";
 import { UserDataProvider } from "@/data/UserDataContext";
 import { DataManager } from "@/data/datamanager";
 import { ensureBackgroundSyncRegistered, startForegroundSync } from "@/data/sync";
-import { getAppVersion, getSessionMetadataHeaders } from "@/utils/deviceInfo";
+import { getSessionMetadataHeaders } from "@/utils/deviceInfo";
 import { ThemeProvider } from "expo-router/react-navigation";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
@@ -28,6 +28,7 @@ import { Stack, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef } from "react";
+import { AppState } from "react-native";
 
 function InvalidTokenHandler() {
   const accountData = useAccountData();
@@ -94,36 +95,61 @@ function InvalidTokenHandler() {
   return null;
 }
 
-function SessionMetadataUpdater() {
+const SESSION_RENEWAL_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const SESSION_RENEWAL_COOLDOWN_MS = 60 * 1000;
+
+function SessionRenewal() {
   const accountData = useAccountData();
   const network = useNetworkContext();
-  const inFlightRef = useRef<string | null>(null);
-  const updatedRef = useRef<string | null>(null);
+  const accountRef = useRef(accountData.data);
+  const inFlightRef = useRef(false);
+  const lastRenewalRef = useRef(0);
 
   useEffect(() => {
-    const { active, token } = accountData.data;
-    const version = getAppVersion();
-    const sessionKey = `${token}:${version}`;
+    accountRef.current = accountData.data;
+  }, [accountData.data]);
 
-    if (!active || !token || !network.serverPath || network.serverReachable !== true) return;
-    if (updatedRef.current === sessionKey || inFlightRef.current === sessionKey) return;
+  useEffect(() => {
+    const renewSession = async () => {
+      const account = accountRef.current;
+      if (!account.active || !account.token || !network.serverPath || network.serverReachable !== true) return;
+      if (inFlightRef.current || Date.now() - lastRenewalRef.current < SESSION_RENEWAL_COOLDOWN_MS) return;
 
-    inFlightRef.current = sessionKey;
-    void fetch(`${network.serverPath}/api/account/sessions/current/metadata`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        ...getSessionMetadataHeaders(),
-      },
-    })
-      .then(response => {
-        if (response.ok) updatedRef.current = sessionKey;
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        inFlightRef.current = null;
-      });
-  }, [accountData.data.active, accountData.data.token, network.serverPath, network.serverReachable]);
+      inFlightRef.current = true;
+      try {
+        const response = await fetch(`${network.serverPath}/api/account/sessions/current/renew`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${account.token}`,
+            ...getSessionMetadataHeaders(),
+          },
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.success || typeof result.token !== "string") return;
+
+        const renewedAccount = { ...accountRef.current, token: result.token };
+        accountRef.current = renewedAccount;
+        await AsyncStorage.setItem(DataManager.accountData.app, JSON.stringify(renewedAccount));
+        await accountData.load();
+        lastRenewalRef.current = Date.now();
+      } catch {
+        // Offline starts are retried after the network or app state changes.
+      } finally {
+        inFlightRef.current = false;
+      }
+    };
+
+    void renewSession();
+    const interval = setInterval(() => void renewSession(), SESSION_RENEWAL_INTERVAL_MS);
+    const appStateSubscription = AppState.addEventListener("change", state => {
+      if (state === "active") void renewSession();
+    });
+
+    return () => {
+      clearInterval(interval);
+      appStateSubscription.remove();
+    };
+  }, [accountData, network.serverPath, network.serverReachable]);
 
   return null;
 }
@@ -188,7 +214,7 @@ export default function RootLayout() {
                             <LanguageProvider>
                               <AlertProvider>
                                 <InvalidTokenHandler />
-                                <SessionMetadataUpdater />
+                                <SessionRenewal />
                                 <AppLayout />
                               </AlertProvider>
                             </LanguageProvider>

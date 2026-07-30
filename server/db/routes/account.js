@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const { UserInfo, UserData } = require('../models/User');
 const { Account } = require('../models/Account');
 const { Session } = require('../models/Session');
-const { getAppVersion, getDeviceName } = require('../session');
+const { getAppVersion, getDeviceName, renewSessionToken } = require('../session');
 const paths = require('./paths.js');
 
 const router = express.Router();
@@ -102,6 +102,24 @@ router.post('/sessions/current/metadata', async (req, res) => {
     return res.json({ success: true, appVersion: session.appVersion });
   } catch (error) {
     console.error('Update session metadata error:', error);
+    return res.status(500).json({ error: req.t('errors.generic'), dbError: error });
+  }
+});
+
+router.post('/sessions/current/renew', async (req, res) => {
+  try {
+    if (!req.user || !req.session) return res.status(401).json({ error: req.t('errors.not_authenticated') });
+
+    const { token, expiresAt } = renewSessionToken({ session: req.session, user: req.user });
+    req.session.deviceName = getDeviceName(req);
+    req.session.appVersion = getAppVersion(req);
+    req.session.lastUsedAt = new Date();
+    req.session.expiresAt = expiresAt;
+    await req.session.save();
+
+    return res.json({ success: true, token, expiresAt, appVersion: req.session.appVersion });
+  } catch (error) {
+    console.error('Renew session error:', error);
     return res.status(500).json({ error: req.t('errors.generic'), dbError: error });
   }
 });

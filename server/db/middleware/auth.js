@@ -26,6 +26,7 @@ module.exports = async (req, res, next) => {
       await session.save();
     }
     req.user = decoded;
+    req.session = session;
     return next();  // Pass to next (load data)
   } catch (err) {
     return next();
