@@ -1,0 +1,14 @@
+{
+  "name": "School Manager",
+  "identifier": "com.xarber.schoolmanager",
+  "apps": [
+    {
+      "name": "School Manager",
+      "bundleIdentifier": "com.xarber.schoolmanager",
+      "developerName": "Xarber",
+      "version": "0.0.0",
+      "localizedDescription": "School Manager for iOS.",
+      "tintColor": "#5d36c9"
+    }
+  ]
+}

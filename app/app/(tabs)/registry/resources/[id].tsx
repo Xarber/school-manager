@@ -22,7 +22,7 @@ function ResourceTab({classid, resourceid}: {classid: string, resourceid: string
 
     return (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
-            
+
         </View>
     )
 }
@@ -41,6 +41,8 @@ export function AllResources({classid}: {classid: string}) {
     safeAreaInsets.bottom = safeAreaInsets.bottom ?? 20;
 
     const classData = useClassData();
+
+    console.log(classData.data.material);
 
     const reload = async () => {
         setRefreshing(true);
@@ -81,7 +83,7 @@ export function AllResources({classid}: {classid: string}) {
                     <RefreshControl refreshing={refreshing} onRefresh={reload} />
                 }>
                     <View>
-                        
+                        { /* CODE HERE */ }
                     </View>
                 </ScrollView>
             </View>
