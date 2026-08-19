@@ -1,5 +1,10 @@
 {
   "name": "School Manager",
+  "subtitle": "School management app for students and teachers.",
+  "description": "School Manager is a cross-platform app designed to help students and teachers manage classes, lessons, homework, communications, schedules, and more.",
+  "iconURL": "https://raw.githubusercontent.com/Xarber/school-manager/master/app/assets/icons/icon-default/icon-default-light.png",
+  "website": "https://schoolmanager.expo.app/",
+  "tintColor": "#5d36c9",
   "identifier": "com.xarber.schoolmanager",
   "apps": [
     {
