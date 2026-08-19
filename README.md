@@ -9,6 +9,14 @@ School Manager is a cross-platform app designed by a student to help you manage 
 
 Its goal is to facilitate finding homework, lessons, and planning your study sessions, for both students and teachers.
 
+<a href="https://altdirect.app/?url=https://github.com/Xarber/school-manager/releases/download/0.0/apps.json">
+  <img
+    src="https://raw.githubusercontent.com/StikStore/altdirect/refs/heads/main/assets/png/AltSource_Blue.png"
+    alt="Add AltSource"
+    width="200"
+  />
+</a>
+
 # 📷 Screenshots
 ![Preview](docs/screenshots/ip16p_preview.png)
 
