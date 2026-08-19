@@ -3,6 +3,7 @@ name: Update AltSource
 on:
   release:
     types: [published]
+
   workflow_dispatch:
 
 jobs:
@@ -28,31 +29,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Determine release
-        id: release
-        env:
-          EVENT_RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: |
-          if [ -n "$EVENT_RELEASE_TAG" ]; then
-            echo "tag=$EVENT_RELEASE_TAG" >> "$GITHUB_OUTPUT"
-          else
-            TAG=$(git describe --tags --abbrev=0)
-            echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Determine IPA filename
-        id: ipa
-        env:
-          TAG: ${{ steps.release.outputs.tag }}
-        run: |
-          echo "filename=school-manager-${TAG}-ios.ipa" >> "$GITHUB_OUTPUT"
-
       - name: Update AltSource
         id: update_source
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TAG: ${{ steps.release.outputs.tag }}
-          IPA_FILENAME: ${{ steps.ipa.outputs.filename }}
+
+          # Empty for manual dispatch.
+          # update_json.py will then find the latest
+          # published non-prerelease release.
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+
         run: |
           python .github/update_json.py
 
@@ -64,7 +50,7 @@ jobs:
           body: |
             This release contains the current School Manager AltSource.
 
-            The source is automatically updated whenever a new School Manager release is published.
+            It is automatically updated whenever a new School Manager release is published.
           files: |
             .github/apps.json
           overwrite_files: true
@@ -78,7 +64,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add .github/apps.json
-          git commit -m "chore: update AltSource"
+
+          git commit \
+            -m "chore: update AltSource"
+
           git push
 
       - name: Summary
@@ -86,7 +75,7 @@ jobs:
           if [ "${{ steps.update_source.outputs.changes }}" = "true" ]; then
             echo "## AltSource Updated" >> "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "Updated School Manager AltSource for \`${{ steps.release.outputs.tag }}\`." >> "$GITHUB_STEP_SUMMARY"
+            echo "The School Manager AltSource was updated." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "## AltSource Already Up To Date" >> "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
