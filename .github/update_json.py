@@ -89,6 +89,11 @@ if app is None:
 # Update release information
 app["version"] = version
 app["downloadURL"] = ipa_asset["browser_download_url"]
+app["iconURL"] = (
+    "https://raw.githubusercontent.com/"
+    f"{REPO}/master/"
+    "app/assets/icons/icon-default/icon-default-light.png"
+)
 
 
 # Write only if something actually changed
