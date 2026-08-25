@@ -137,6 +137,26 @@ icon_url = (
     f"{REPO}/master/"
     "app/assets/icons/icon-default/icon-default-light.png"
 )
+screenshots_directory = Path("docs/screenshots/single")
+screenshots_url_prefix = (
+    "https://raw.githubusercontent.com/"
+    f"{REPO}/master/docs/screenshots/single"
+)
+
+
+def screenshot_urls():
+    image_extensions = {".png", ".jpg", ".jpeg", ".webp"}
+
+    return [
+        f"{screenshots_url_prefix}/{screenshot.name}"
+        for screenshot in sorted(
+            screenshots_directory.iterdir(),
+            key=lambda path: path.name.lower(),
+        )
+        if screenshot.is_file()
+        and screenshot.suffix.lower() in image_extensions
+        and not screenshot.name.lower().startswith("ip16p_")
+    ]
 
 
 # ------------------------------------------------------------
@@ -176,6 +196,7 @@ app["subtitle"] = "Manage your school life."
 app["localizedDescription"] = "School Manager for iOS."
 app["iconURL"] = icon_url
 app["tintColor"] = "#5d36c9"
+app["screenshots"] = screenshot_urls()
 
 
 # ------------------------------------------------------------

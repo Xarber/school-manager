@@ -13,7 +13,13 @@
       "developerName": "Xarber",
       "version": "0.0.0",
       "localizedDescription": "School Manager for iOS.",
-      "tintColor": "#5d36c9"
+      "tintColor": "#5d36c9",
+      "screenshots": [
+        "https://raw.githubusercontent.com/Xarber/school-manager/master/docs/screenshots/single/class.PNG",
+        "https://raw.githubusercontent.com/Xarber/school-manager/master/docs/screenshots/single/communications.PNG",
+        "https://raw.githubusercontent.com/Xarber/school-manager/master/docs/screenshots/single/homework.PNG",
+        "https://raw.githubusercontent.com/Xarber/school-manager/master/docs/screenshots/single/profile.PNG"
+      ]
     }
   ]
 }
