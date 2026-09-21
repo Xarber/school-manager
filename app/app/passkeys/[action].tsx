@@ -291,6 +291,11 @@ export default function PasskeysPage() {
           username: result.email,
           token: result.token,
         });
+
+        if (Platform.OS === "web") {
+          router.replace("/");
+          return;
+        }
       }
 
       if (action === "add" && typeof result !== "boolean") {
