@@ -274,7 +274,6 @@ jobs:
   ios_simulator_local:
     needs:
       - prepare
-      - unsigned_ios
     if: >-
       needs.prepare.outputs.versionChanged == 'true' &&
       needs.prepare.outputs.buildMode == 'local'
