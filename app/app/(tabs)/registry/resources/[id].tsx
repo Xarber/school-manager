@@ -18,7 +18,7 @@ function ResourceTab({classid, resourceid}: {classid: string, resourceid: string
     const userData = useUserData();
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     return (
         <View style={[commonStyle.dashboardSection, { flex: 1 }]}>
@@ -38,7 +38,7 @@ export function AllResources({classid}: {classid: string}) {
     const activeClassId = userData.data.settings.activeClassId;
 
     const safeAreaInsets = useSafeAreaInsets();
-    safeAreaInsets.bottom = safeAreaInsets.bottom ?? 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const classData = useClassData();
 
@@ -79,7 +79,7 @@ export function AllResources({classid}: {classid: string}) {
                 <Text style={commonStyle.text}>{i18n.t("registry.resources.header.description")}</Text>
             </View>}
             <View style={[commonStyle.dashboardSection, optimizationStyle.item]}>
-                <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
+                <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }} refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={reload} />
                 }>
                     <View>

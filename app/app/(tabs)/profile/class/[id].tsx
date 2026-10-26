@@ -187,7 +187,7 @@ function Class(props: { classId: string }) {
     const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const userData = useUserData();
     const accountData = useAccountData();
@@ -225,7 +225,7 @@ function Class(props: { classId: string }) {
                 <Text style={commonStyle.text}>{i18n.t("profile.class.header.classdescription")}</Text>
             </View>}
             <View style={optimizationStyle.item}>
-                <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
+                <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }} refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                 }>
                     <View style={commonStyle.dashboardSection}>
@@ -309,7 +309,7 @@ function AllClassSubjects() {
     const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const userData = useUserData();
     const classData = useAppDataSync(DataManager.classData.db, `${DataManager.classData.app}:${classId}`, DataManager.classData.default, {
@@ -410,7 +410,7 @@ function AllClassSubjects() {
                             <Text style={commonStyle.text}>{i18n.t("profile.class.subjects.all.header.description")}</Text>
                         </View>}
                         <View style={optimizationStyle.item}>
-                            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
+                            <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomInset + 70}} refreshControl={
                                 <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                             }>
                                 <DashboardItem title={i18n.t("profile.class.subjects.all.header.title", {class: classData.data.name})} items={subjectItems} />

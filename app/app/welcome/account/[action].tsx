@@ -143,7 +143,7 @@ function LoginPage({alert}: AccountProps) {
     const accountData = useAccountData();
     const [loading, setLoading] = useState(false);
     let safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const reset = (full: boolean = true) => {
         if (full) setOtpsent(false);
@@ -197,7 +197,7 @@ function LoginPage({alert}: AccountProps) {
                     </View>
                 </View>
             </ScrollView>
-            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: bottomInset, paddingTop: 10}]}>
                 <TouchableOpacity
                     disabled={
                         loading ||
@@ -294,7 +294,7 @@ function SignupPage({alert}: AccountProps) {
     const userData = useUserData();
 
     let safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     return (
         <KeyboardShift extraPadding={-safeAreaInsets.bottom + 20}>
@@ -320,7 +320,7 @@ function SignupPage({alert}: AccountProps) {
                     </View>
                 </View>
             </ScrollView>
-            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: bottomInset, paddingTop: 10}]}>
                 <TouchableOpacity disabled={!name || !surname || loading} style={(!name || !surname) ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} onPress={() => {
                     alert.show({
                         title: i18n.t("welcome.account.signup.confirm.title"),

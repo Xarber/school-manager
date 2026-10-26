@@ -23,7 +23,7 @@ export default function ProfileTab() {
     const [classMap, setClassMap] = useState(({} as {[key: string]: ClassData}));
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     if (userData.data.classes.length === 1 && userData.data.settings.activeClassId != (userData.data.classes[0]._id ?? userData.data.classes[0])) {
         userData.save({...userData.data, settings: {...userData.data.settings,
@@ -139,7 +139,7 @@ export default function ProfileTab() {
                         <ActivityIndicator size="small" color={theme.text} />
                     </View>
                 ) : (
-                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
+                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} contentContainerStyle={{ paddingBottom: bottomInset }} refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                     }>
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>

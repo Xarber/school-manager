@@ -53,7 +53,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData, refreshi
     const homeworkLoading = useHomeworkData().loading;
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     let subjects = useSubjectData().subjects;
 
@@ -78,7 +78,7 @@ function renderHomework(homework: HomeworkData[], classData: ClassData, refreshi
     })) : null;
 
     return allDates.length > 0 ? (
-        <ScrollView ref={scrollRef} style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom + 70}} refreshControl={
+        <ScrollView ref={scrollRef} style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomInset + 70}} refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
         }>
             <View>
@@ -142,7 +142,7 @@ function HomeworkComponent({mode, userData, classid, classData, reload, refreshi
     }
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
     
     const allClassHomework = regroupHomework(homeworkData || []);
     

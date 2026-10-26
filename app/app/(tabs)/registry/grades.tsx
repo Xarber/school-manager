@@ -22,7 +22,7 @@ export default function GradesTab() {
     const activeClassId = userData.data.settings.activeClassId;
 
     const safeAreaInsets = useSafeAreaInsets();
-    safeAreaInsets.bottom = safeAreaInsets.bottom ?? 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const classData = useClassData();
 
@@ -57,7 +57,7 @@ export default function GradesTab() {
                 <Text style={commonStyle.text}>{i18n.t("registry.grades.header.description")}</Text>
             </View>}
             <View style={[commonStyle.dashboardSection, optimizationStyle.item]}>
-                <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }} refreshControl={
+                <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }} refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={reload} />
                 }>
                     <Text style={commonStyle.headerText}>{i18n.t("registry.grades.title")}</Text>

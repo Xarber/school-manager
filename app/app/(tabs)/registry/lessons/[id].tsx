@@ -59,7 +59,7 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
     const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const classData = useClassData();
 
@@ -123,7 +123,7 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
                                 <Text style={commonStyle.text}>{i18n.t("registry.lessons.header.description")}</Text>
                             </View>}
                             <View style={optimizationStyle.item}>
-                                <ScrollView ref={scrollRef} style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{paddingBottom: safeAreaInsets.bottom + 70}, (lessons.length === 0 ? { flex: 1} : null)]} refreshControl={
+                                <ScrollView ref={scrollRef} style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{paddingBottom: bottomInset + 70}, (lessons.length === 0 ? { flex: 1} : null)]} refreshControl={
                                     <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                                 }>
                                     {/* <Text style={commonStyle.headerText}>{i18n.t("registry.lessons.header.text", {class: classData.data.name})}</Text> */}
@@ -494,7 +494,7 @@ function LessonScheduleDaysTab() {
     const language = useLanguage();
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const lessonScheduleData = {
         _id: "",
@@ -552,7 +552,7 @@ function LessonScheduleDaysTab() {
 
     return (
         <>
-            <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+            <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }}>
                 <View style={commonStyle.dashboardSection}>
                     {lessonScheduleData.dates.map((date, index) => {
                         let students = date.students.length;

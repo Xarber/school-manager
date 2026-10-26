@@ -28,7 +28,7 @@ export default function ScheduleTab() {
     const activeClassId = userData.data.settings.activeClassId;
 
     const safeAreaInsets = useSafeAreaInsets();
-    safeAreaInsets.bottom = safeAreaInsets.bottom ?? 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const classData = useClassData();
     let subjectIds = classData.data.subjects;
@@ -116,7 +116,7 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
     if (network.serverReachable === false && mode == "write") setMode("read");
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const addPeriod = () => {
         router.push({pathname: `/modal/schedule/create` as any, params: {day}});
@@ -145,7 +145,7 @@ function ScheduleDay({day, refreshing, reload}: {day: number, refreshing: boolea
 
     return (
         <>
-            <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={[{ paddingBottom: safeAreaInsets.bottom + 70 }, (periods.length == 0 && { flex: 1 })]} refreshControl={
+            <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={[{ paddingBottom: bottomInset + 70 }, (periods.length == 0 && { flex: 1 })]} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={reload} />
             }>
                 <View style={{ padding: 20, paddingBottom: 0 }}>

@@ -19,7 +19,7 @@ export default function RegistryTab() {
     const commonStyle = createStyling.createCommonStyles(theme);
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const userData = useUserData();
     const activeClassId = userData.data.settings?.activeClassId;
@@ -42,7 +42,7 @@ export default function RegistryTab() {
     return (
         <>
             <Stack.Screen options={{ headerTitle: i18n.t("registry.stack.title") }} />
-            <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: safeAreaInsets.bottom}} stickyHeaderIndices={[0]}>
+            <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: bottomInset}} stickyHeaderIndices={[0]}>
                 <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
                     <Text style={HomeScreenStyle.welcomeText}>{i18n.t("registry.customheader.title")}</Text>
                 </BlurView>

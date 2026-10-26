@@ -27,7 +27,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
     const comunicationResponse = useDBitem(DataManager.comunicationResponseData.db, DataManager.comunicationResponseData.default);
 
     const comunicationReload = useComunicationData().reload;
@@ -65,7 +65,7 @@ function ComunicationTab({classid, comunicationid}: {classid: string, comunicati
     };
 
     return !!comunication ? (
-        <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+        <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }}>
             <Stack.Screen options={{ headerTitle: comunication.title }} />
             <View style={[commonStyle.dashboardSection, { flex: 1, gap: 20 }]}>
                 <View>
@@ -195,7 +195,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
     const comunicationsReload = useComunicationData().reload;
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const reload = async () => {
         setRefreshing(true);
@@ -232,7 +232,7 @@ function AllComunications({classid, userData}: {classid: string, userData: UserD
                     <Text style={commonStyle.text}>{i18n.t("registry.comunications.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <ScrollView style={[]} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{ paddingBottom: safeAreaInsets.bottom + 70 }, (comunications.length == 0 ? { flex: 1 } : {})]} refreshControl={
+                    <ScrollView style={[]} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={[{ paddingBottom: bottomInset + 70 }, (comunications.length == 0 ? { flex: 1 } : {})]} refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                     }>
                         {/* <Text style={commonStyle.headerText}>{i18n.t("registry.comunications.header.text", {class: classData.data.name})}</Text> */}

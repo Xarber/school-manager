@@ -55,7 +55,7 @@ function LanguageTab() {
     const languages = Object.keys(translations).map(locale=>({locale, name: i18n.t(`languages.${locale}`)}));
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     return (
         <>
@@ -67,7 +67,7 @@ function LanguageTab() {
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.language.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }}>
                         <View style={commonStyle.dashboardSection}>
                             <Text style={commonStyle.headerText}>{i18n.t("profile.settings.language.header.text")}</Text>
                             <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, language: v}})}} value={userData.data.settings?.language ?? "system"}>
@@ -530,7 +530,7 @@ function NotificationsTab() {
     const notificationsEnabled = (userData.data.pushtokens ?? []).find((token: string) => token === accountData.data.pushToken) !== undefined;
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     return (
         <>
@@ -542,7 +542,7 @@ function NotificationsTab() {
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.notifications.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }}>
                         <View style={commonStyle.dashboardSection}>
                             <Text style={commonStyle.headerText}>{i18n.t("profile.settings.notifications.header.text")}</Text>
                             <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
@@ -596,7 +596,7 @@ function AppLockTab() {
     const appLockPersist = userData.data.settings?.appLockPersist ?? false;
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     return (
         <>
@@ -608,7 +608,7 @@ function AppLockTab() {
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.applock.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }}>
                         <View style={commonStyle.dashboardSection}>
                             <Text style={commonStyle.headerText}>{i18n.t("profile.settings.applock.header.text")}</Text>
                             <View style={[modalStyle.cardEditField, {flexDirection: "row", justifyContent: "space-between"}]}>
@@ -660,7 +660,7 @@ function AppearanceTab() {
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     let themes = themeList.all;
     const alert = useAlert();
@@ -702,7 +702,7 @@ function AppearanceTab() {
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.appearance.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }}>
                         <View style={commonStyle.dashboardSection}>
                             <Text style={commonStyle.headerText}>{i18n.t("profile.settings.appearance.header.text")}</Text>
                             <RadioButton.Group onValueChange={(v)=>{userData.save({...userData.data, settings: {...userData.data.settings, theme: v}})}} value={userData.data.settings.theme}>
@@ -732,7 +732,7 @@ function AllSettingsTab() {
     const accountData = useAccountData();
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     return (
         <>
@@ -744,7 +744,7 @@ function AllSettingsTab() {
                     <Text style={commonStyle.text}>{i18n.t("profile.settings.general.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom }}>
+                    <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }}>
                         <DashboardItem title={i18n.t("profile.settings.general.title")} items={[
                             { title: i18n.t("profile.settings.general.profile.title"), description: i18n.t("profile.settings.general.profile.description"), onPress: () => {
                                 router.push("/profile/profiledata");

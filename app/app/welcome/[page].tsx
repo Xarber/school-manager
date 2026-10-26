@@ -131,7 +131,7 @@ function SetNamePage() {
 
     const userData = useUserData();
     let safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const [name, setName] = useState("");
     if (!userData.loading && name === "" && userData.data.userInfo.name != "") setName(userData.data.userInfo.name);
@@ -156,7 +156,7 @@ function SetNamePage() {
                     </View>
                 </View>
             </ScrollView>
-            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: bottomInset, paddingTop: 10}]}>
                 <TouchableOpacity disabled={!name} style={!name ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
                 onPress={() => {
                     alert.show({
@@ -195,7 +195,7 @@ function SetSurnamePage() {
 
     const userData = useUserData();
     let safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const [surname, setSurname] = useState("");
     if (!userData.loading && surname === "" && userData.data.userInfo.surname != "") setSurname(userData.data.userInfo.surname);
@@ -220,7 +220,7 @@ function SetSurnamePage() {
                     </View>
                 </View>
             </ScrollView>
-            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: safeAreaInsets.bottom, paddingTop: 10}]}>
+            <View style={[welcomeStyles.actions, {padding: 20, paddingBottom: bottomInset, paddingTop: 10}]}>
                 <TouchableOpacity disabled={!surname} style={!surname ? {...welcomeStyles.actionsButton, backgroundColor: theme.disabled} : welcomeStyles.actionsButton} 
                 onPress={() => {
                     alert.show({

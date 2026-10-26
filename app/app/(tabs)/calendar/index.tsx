@@ -90,7 +90,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
     const language = useLanguage();
 
     const safeAreaInsets = useSafeAreaInsets();
-    if (safeAreaInsets.bottom == 0) safeAreaInsets.bottom = 20;
+    const bottomInset = safeAreaInsets.bottom || 20;
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -240,7 +240,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
                         <ActivityIndicator size="small" color={theme.text} />
                     </View>
                 ) : (
-                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} contentContainerStyle={{ paddingBottom: safeAreaInsets.bottom}} refreshControl={
+                    <ScrollView style={commonStyle.mainView} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} stickyHeaderIndices={[0]} contentContainerStyle={{ paddingBottom: bottomInset}} refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                     }>
                         <BlurView style={[HomeScreenStyle.dashboardSectionHeader, {display: "none"}]}>
