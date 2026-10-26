@@ -10,10 +10,10 @@ import { useHomeworkData } from '@/data/HomeworkMapContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
-import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View, type ScrollViewInstance, type ViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function regroupHomework(homeworkArray: {subjectid: string, data: HomeworkData[]}[]) {
@@ -45,8 +45,8 @@ export function stringToColor(str: string) {
 function renderHomework(homework: HomeworkData[], classData: ClassData, refreshing: boolean, reload: () => void) {
     const dateIndex: { [date: string]: HomeworkData[] } = {};
     const allDates: {date: string, timestamp: number}[] = [];
-    const scrollRef = useRef<ScrollView>(null);
-    const sectionRefs = useRef<{ [key: number]: View | null}>({});
+    const scrollRef = useRef<ScrollViewInstance>(null);
+    const sectionRefs = useRef<{ [key: number]: ViewInstance | null}>({});
     const now = Date.now();
     const theme = useTheme();
     const commonStyle = createStyling.createCommonStyles(theme);

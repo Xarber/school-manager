@@ -14,7 +14,7 @@ import { DataManager, useDBitem } from '@/data/datamanager';
 import { useUserData } from '@/data/UserDataContext';
 import { BlurView } from 'expo-blur';
 import { Switch } from 'react-native-paper';
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import SegmentedControl from "@expo/ui/community/segmented-control";
 
 interface updateComunicationProps {
     action: string;

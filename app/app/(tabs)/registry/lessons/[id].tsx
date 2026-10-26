@@ -14,10 +14,10 @@ import { useLessonData } from '@/data/LessonMapContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
-import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View, type ScrollViewInstance, type ViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
@@ -54,8 +54,8 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
     const wrapperScreenSize = (defaultScreenSizes.phone.width * 2 + 40);
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
-    const scrollRef = useRef<ScrollView>(null);
-    const sectionRefs = useRef<{ [key: number]: View | null}>({});
+    const scrollRef = useRef<ScrollViewInstance>(null);
+    const sectionRefs = useRef<{ [key: number]: ViewInstance | null}>({});
     const network = useNetworkContext();
 
     const safeAreaInsets = useSafeAreaInsets();

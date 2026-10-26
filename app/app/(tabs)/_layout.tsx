@@ -59,16 +59,16 @@ function StandardTabsLayout() {
         }}
       >
         <Tabs.Screen name="home" options={{ title: i18n.t("root.tabs.home.label"), tabBarIcon: ({ color, size }) => (
-          <FontAwesome name="home" size={size} color={color} />
+          <FontAwesome name="home" size={size} color={typeof color === "string" ? color : theme.text} />
         ), }} />
         <Tabs.Screen name="calendar" options={{ title: i18n.t("root.tabs.calendar.label"), tabBarIcon: ({ color, size }) => (
-          <Feather name="calendar" size={size} color={color} />
+          <Feather name="calendar" size={size} color={typeof color === "string" ? color : theme.text} />
         ), }} />
         <Tabs.Screen name="registry" options={{ title: i18n.t("root.tabs.registry.label"), tabBarIcon: ({ color, size }) => (
-          <Feather name="book" size={size} color={color} />
+          <Feather name="book" size={size} color={typeof color === "string" ? color : theme.text} />
         ), }} />
         <Tabs.Screen name="profile" options={{ title: i18n.t("root.tabs.profile.label"), tabBarIcon: ({ color, size }) => (
-          <Feather name="user" size={size} color={color} />
+          <Feather name="user" size={size} color={typeof color === "string" ? color : theme.text} />
         ), }} />
         <Tabs.Screen name="ai" options={{ href: null }} />
         {/*
