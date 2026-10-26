@@ -43,7 +43,6 @@
     "plugins": [
       "./plugins/withIosDeploymentTarget",
       "expo-router",
-      "expo-ios-scene-lifecycle-plugin",
       "expo-llm-mediapipe",
       [
         "expo-splash-screen",
