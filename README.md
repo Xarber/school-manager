@@ -242,5 +242,5 @@ You can contact me at this email address, for questions, feedback, or any other 
 **xarber@xcenter.it**
 
 # 📄 License
-This project is licensed under the MIT License.
+This project is licensed under the AGPL-3.0 License.
 See the LICENSE file for details.
