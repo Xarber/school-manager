@@ -3,7 +3,7 @@ import { getContentBackgroundColor } from '@/constants/colors';
 import { useTheme } from "@/constants/useThemes";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { Tabs } from 'expo-router';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import React from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";

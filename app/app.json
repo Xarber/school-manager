@@ -37,8 +37,9 @@
       "package": "com.xarber.schoolmanager"
     },
     "web": {
-      "output": "static",
-      "favicon": "./assets/icons/icon-splash.png"
+      "output": "single",
+      "favicon": "./assets/icons/icon-splash.png",
+      "bundler": "metro"
     },
     "plugins": [
       "./plugins/withIosDeploymentTarget",
