@@ -2,9 +2,9 @@ import DashboardItem from '@/components/dashboardItem';
 import createStyling from '@/constants/styling';
 import { useTheme } from '@/constants/useThemes';
 import { BlurView } from 'expo-blur';
-import { Stack, useFocusEffect } from 'expo-router';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 
 import findToday from '@/components/findToday';
@@ -83,6 +83,7 @@ function CalendarComponent({userData}: {userData: UserData}) {
     LocaleConfig.locales['lang'] = i18n.t("components.calendar.localeconfig");
     LocaleConfig.defaultLocale = 'lang';
     const theme = useTheme();
+    const router = useRouter();
     const HomeScreenStyle = createStyling.createHomeScreenStyles(theme);
     const commonStyle = createStyling.createCommonStyles(theme);
     const optimizationStyle = createStyling.createOptimizationStyles(theme);
@@ -228,6 +229,9 @@ function CalendarComponent({userData}: {userData: UserData}) {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
             <Ionicons name="alert-circle" size={40} color={theme.text} />
             <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
+            <Pressable style={commonStyle.button} onPress={()=>router.replace("/profile/class/all", {withAnchor: true})}>
+                <Text style={commonStyle.buttonText}>{i18n.t("registry.lessons.warn.noclass.button")}</Text>
+            </Pressable>
         </View>
     );;
 

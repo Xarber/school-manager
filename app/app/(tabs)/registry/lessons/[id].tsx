@@ -17,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View, type ScrollViewInstance, type ViewInstance } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View, type ScrollViewInstance, type ViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function regroupLessonsByDate(lessonArray: {subjectid: string, data: LessonData[]}[]) {
@@ -98,6 +98,9 @@ function AllLessonsTab({classid, userData}: {classid: string, userData: UserData
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
             <Ionicons name="alert-circle" size={40} color={theme.text} />
             <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
+            <Pressable style={commonStyle.button} onPress={()=>router.replace("/profile/class/all", {withAnchor: true})}>
+                <Text style={commonStyle.buttonText}>{i18n.t("registry.lessons.warn.noclass.button")}</Text>
+            </Pressable>
         </View>
     );
 

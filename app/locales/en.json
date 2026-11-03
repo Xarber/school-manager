@@ -875,7 +875,8 @@
             },
             "warn": {
                 "noclass": {
-                    "text": "No active class."
+                    "text": "No active class.",
+                    "button": "Go to your classes"
                 },
                 "nohomework": {
                     "text": "There's no homework for this class."
@@ -902,7 +903,8 @@
             },
             "warn": {
                 "noclass": {
-                    "text": "No active class."
+                    "text": "No active class.",
+                    "button": "Go to your classes"
                 },
                 "nocomunications": {
                     "text": "There are no notices for this class."
@@ -939,7 +941,8 @@
             },
             "warn": {
                 "noclass": {
-                    "text": "No active class."
+                    "text": "No active class.",
+                    "button": "Go to your classes"
                 },
                 "nolessons": {
                     "text": "There are no lessons for this class."

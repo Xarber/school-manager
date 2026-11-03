@@ -11,7 +11,7 @@ import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ComunicationTab({classid, comunicationid}: {classid: string, comunicationid: string}) {
@@ -277,6 +277,7 @@ export default function ComunicationsTab() {
     const params = useLocalSearchParams();
     const id = params.id;
     const theme = useTheme();
+    const router = useRouter();
     const commonStyle = createStyling.createCommonStyles(theme);
 
     const userData = useUserData();
@@ -292,6 +293,9 @@ export default function ComunicationsTab() {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
             <Ionicons name="alert-circle" size={40} color={theme.text} />
             <Text style={commonStyle.text}>{i18n.t("registry.comunications.warn.noclass.text")}</Text>
+            <Pressable style={commonStyle.button} onPress={()=>router.replace("/profile/class/all", {withAnchor: true})}>
+                <Text style={commonStyle.buttonText}>{i18n.t("registry.lessons.warn.noclass.button")}</Text>
+            </Pressable>
         </View>
     );
 

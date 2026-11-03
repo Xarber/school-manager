@@ -5,6 +5,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+export const unstable_settings = {
+  anchor: "index",
+};
+
 export default function HomeLayout() {
     const theme = useTheme();
     const safeAreaInsets = useSafeAreaInsets();

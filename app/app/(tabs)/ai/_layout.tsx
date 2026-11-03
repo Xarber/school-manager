@@ -3,6 +3,10 @@ import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
+export const unstable_settings = {
+  anchor: "index",
+};
+
 export default function AiLayout() {
     const theme = useTheme();
     return (

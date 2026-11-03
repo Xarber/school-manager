@@ -882,7 +882,8 @@
             },
             "warn": {
                 "noclass": {
-                    "text": "Nessuna classe attiva."
+                    "text": "Nessuna classe attiva.",
+                    "button": "Vai alle tue classi"
                 },
                 "nohomework": {
                     "text": "Non ci sono compiti per questa classe."
@@ -898,7 +899,8 @@
             },
             "warn": {
                 "noclass": {
-                    "text": "Nessuna classe attiva."
+                    "text": "Nessuna classe attiva.",
+                    "button": "Vai alle tue classi"
                 },
                 "nocomunications": {
                     "text": "Non ci sono comunicazioni per questa classe."
@@ -935,7 +937,8 @@
             },
             "warn": {
                 "noclass": {
-                    "text": "Nessuna classe attiva."
+                    "text": "Nessuna classe attiva.",
+                    "button": "Vai alle tue classi"
                 },
                 "nolessons": {
                     "text": "Non ci sono lezioni per questa classe."

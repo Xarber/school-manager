@@ -45,7 +45,7 @@ export default function ProfileTab() {
                 color: "#0A84FF"
             } : null),
             onPress: () => {
-                router.push(`/profile/class/${cls._id}`);
+                router.push(`/profile/class/${cls._id}`, {withAnchor: true});
             }
         })
     });
@@ -71,7 +71,7 @@ export default function ProfileTab() {
             color: "#0A84FF"
         } : null),
         onPress: () => {
-            router.push(`/profile/class/${DataManager.classData.offline}`);
+            router.push(`/profile/class/${DataManager.classData.offline}`, {withAnchor: true});
         }
     });
 
@@ -150,10 +150,10 @@ export default function ProfileTab() {
                                 <DashboardItem title={isUserLoggedIn ? i18n.t("profile.panel.loggedin.title", {user: profilePageData.userdata.userInfo.name}) : i18n.t("profile.panel.loggedout.title")} items={(()=>{
                                     let items = [
                                         { title: i18n.t("profile.panel.name.title"), description: profilePageData.userdata.name, onPress: () => {
-                                            router.push("/profile/profiledata");
+                                            router.push("/profile/profiledata", {withAnchor: true});
                                         }},
                                         { title: i18n.t("profile.panel.settings.title"), description: i18n.t("profile.panel.settings.description"), onPress: () => {
-                                            router.push("/profile/settings/all");
+                                            router.push("/profile/settings/all", {withAnchor: true});
                                         }}
                                     ];
                                     if (!isUserLoggedIn) {
@@ -170,7 +170,7 @@ export default function ProfileTab() {
                             </View>
                             <View style={optimizationStyle.item}>
                                 <DashboardItem title={i18n.t("profile.class.header.title")} items={(profilePageData.classes.slice(0, 5)) as any} expand={()=>{
-                                    router.push("/profile/class/all");
+                                    router.push("/profile/class/all", {withAnchor: true});
                                 }}/>
                             </View>
                         </View>

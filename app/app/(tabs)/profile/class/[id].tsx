@@ -27,7 +27,7 @@ function AllClassList() {
     const network = useNetworkContext();
 
     const insets = useSafeAreaInsets();
-    if (insets.bottom == 0) insets.bottom = 20;
+    const bottomInset = insets.bottom || 20;
 
     const userData = useUserData();
     const accountData = useAccountData();
@@ -64,7 +64,7 @@ function AllClassList() {
                 color: "#0A84FF"
             } : null),
             onPress: () => {
-                router.push(`/profile/class/${cls._id}`);
+                router.push(`/profile/class/${cls._id}`, {withAnchor: true});
             }
         })
     });
@@ -90,7 +90,7 @@ function AllClassList() {
             color: "#0A84FF"
         } : null),
         onPress: () => {
-            router.push(`/profile/class/${DataManager.classData.offline}`);
+            router.push(`/profile/class/${DataManager.classData.offline}`, {withAnchor: true});
         }
     });
 
@@ -139,7 +139,7 @@ function AllClassList() {
                         <Text style={commonStyle.text}>{i18n.t("profile.class.header.description")}</Text>
                     </View>}
                     <View style={optimizationStyle.item}>
-                        <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom }} refreshControl={
+                        <ScrollView style={commonStyle.dashboardSection} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomInset }} refreshControl={
                             <RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={theme.text} />
                         }>
                             <DashboardItem title={i18n.t("profile.class.header.title")} items={classes as any} />
@@ -256,7 +256,7 @@ function Class(props: { classId: string }) {
                         {/* CLASS SUBJECTS */}
                         <View style={{...commonStyle.card, gap: 10}}>
                             <DashboardItem title={i18n.t("profile.class.subjects.header.title")} items={[]} collapsed={true} expand={()=>{
-                                router.push({ pathname: `/profile/class/${classId}` as any, params: { page: "subjects" } });
+                                router.push({ pathname: `/profile/class/${classId}` as any, params: { page: "subjects" }}, {withAnchor: true});
                             }} />
                         </View>
                         {/* CLASS USERS */}
@@ -425,7 +425,7 @@ function AllClassSubjects() {
                             enabled: (network.serverReachable === true || classId === DataManager.classData.offline),
                             buffering: !network.ready,
                             onPress: () => {
-                                router.push({pathname: `/modal/subject/create` as any, params: { classid: classId }});
+                                router.push({pathname: `/modal/subject/create` as any, params: { classid: classId }}, {withAnchor: true});
                             },
                             display: classData.data.teachers.some((teacher: UserInfo) => teacher._id === userData.data.userInfo._id),
                         }

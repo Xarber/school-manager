@@ -4,6 +4,10 @@ import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 
+export const unstable_settings = {
+  anchor: "index",
+};
+
 export default function CalendarLayout() {
     const theme = useTheme();
     return (

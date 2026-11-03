@@ -7,7 +7,7 @@ import { useUserData } from "@/data/UserDataContext";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { Stack, useRouter } from "expo-router";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function RegistryTab() {
@@ -34,6 +34,9 @@ export default function RegistryTab() {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
             <Ionicons name="alert-circle" size={40} color={theme.text} />
             <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
+            <Pressable style={commonStyle.button} onPress={()=>router.replace("/profile/class/all", {withAnchor: true})}>
+                <Text style={commonStyle.buttonText}>{i18n.t("registry.lessons.warn.noclass.button")}</Text>
+            </Pressable>
         </View>
     );
 

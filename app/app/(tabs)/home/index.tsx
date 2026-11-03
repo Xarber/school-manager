@@ -3,7 +3,7 @@ import UserGrades from "@/components/gradesComponent";
 import createStyling from "@/constants/styling";
 import { useTheme } from "@/constants/useThemes";
 import { BlurView } from "expo-blur";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 
 import findToday from "@/components/findToday";
 import i18n from "@/constants/i18n";
@@ -85,6 +85,9 @@ function HomeScreen({userData}: {userData: UserData}) {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
             <Ionicons name="alert-circle" size={40} color={theme.text} />
             <Text style={commonStyle.text}>{i18n.t("registry.lessons.warn.noclass.text")}</Text>
+            <Pressable style={commonStyle.button} onPress={()=>router.replace("/profile/class/all", {withAnchor: true})}>
+                <Text style={commonStyle.buttonText}>{i18n.t("registry.lessons.warn.noclass.button")}</Text>
+            </Pressable>
         </View>
     );
     
@@ -182,8 +185,7 @@ function HomeScreen({userData}: {userData: UserData}) {
                             </View>
                             <View style={optimizationStyle.item}>
                                 <UserGrades items={[]} maxItems={3} expand={() => {
-                                    router.push("/registry");
-                                    setTimeout(()=>router.push("/registry/grades"), 36);
+                                    router.push("/registry/grades", {withAnchor: true});
                                 }}/>
                                 <DashboardItem title={i18n.t("home.upcoming.title")} items={upcomingExams.map((e: any, i: number)=>{
                                     let subject = subjects.find((s: any)=>s._id === e.subjectid)?.name;
@@ -201,8 +203,7 @@ function HomeScreen({userData}: {userData: UserData}) {
                                     }
                                     return data;
                                 })} maxItems={3} expand={() => {
-                                    router.push("/registry");
-                                    setTimeout(()=>router.push("/registry/lessons/all"), 36);
+                                    router.push("/registry/lessons/all", {withAnchor: true});
                                 }}/>
                             </View>
                         </View>
