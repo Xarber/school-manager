@@ -15,6 +15,7 @@ type NetworkContextType = {
 
 const NetworkContext = createContext<NetworkContextType | null>(null);
 
+
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
     const [ready, setReady] = useState(false);
     const [isOnline, setIsOnline] = useState<boolean | null>(null);

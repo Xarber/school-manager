@@ -9,13 +9,11 @@ import { ScheduleHour, SubjectData, UserInfo, WeekSchedule } from '@/data/datama
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { TabView, TabBar } from 'react-native-tab-view';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const Tab = createMaterialTopTabNavigator();
 
 export default function ScheduleTab() {
     const theme = useTheme();
@@ -45,6 +43,17 @@ export default function ScheduleTab() {
             //reload();
         }, [])
     )
+
+    const [tabIndex, setTabIndex] = useState(0);
+
+    const dayNames = i18n.t('components.calendar.localeconfig.dayNames') as string[];
+    const dayNamesShort = i18n.t('components.calendar.localeconfig.dayNamesShort') as string[];
+
+    const tabRoutes = [1, 2, 3, 4, 5, 6, 0].map((day) => ({
+        key: String(day),
+        title: dayNamesShort[day].slice(0, 1),
+        accessibilityLabel: dayNames[day],
+    }));
 
     if ((classData.loading || userData.loading) && !refreshing) return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -83,19 +92,34 @@ export default function ScheduleTab() {
                     <Text style={commonStyle.text}>{i18n.t("registry.schedule.header.description")}</Text>
                 </View>}
                 <View style={[optimizationStyle.item]}>
-                    <Tab.Navigator screenOptions={()=>({
-                        tabBarActiveTintColor: theme.text,
-                        tabBarIndicatorStyle: { backgroundColor: theme.primary },
-                        // tabBarContentContainerStyle: { backgroundColor: theme.background },
-                    })}>
-                        <Tab.Screen options={{ title: i18n.t("components.calendar.localeconfig.dayNamesShort")[1].slice(0, 1)}} name={i18n.t("components.calendar.localeconfig.dayNames")[1]} component={ScheduleMonday} />
-                        <Tab.Screen options={{ title: i18n.t("components.calendar.localeconfig.dayNamesShort")[2].slice(0, 1)}} name={i18n.t("components.calendar.localeconfig.dayNames")[2]} component={ScheduleTuesday} />
-                        <Tab.Screen options={{ title: i18n.t("components.calendar.localeconfig.dayNamesShort")[3].slice(0, 1)}} name={i18n.t("components.calendar.localeconfig.dayNames")[3]} component={ScheduleWednesday} />
-                        <Tab.Screen options={{ title: i18n.t("components.calendar.localeconfig.dayNamesShort")[4].slice(0, 1)}} name={i18n.t("components.calendar.localeconfig.dayNames")[4]} component={ScheduleThursday} />
-                        <Tab.Screen options={{ title: i18n.t("components.calendar.localeconfig.dayNamesShort")[5].slice(0, 1)}} name={i18n.t("components.calendar.localeconfig.dayNames")[5]} component={ScheduleFriday} />
-                        <Tab.Screen options={{ title: i18n.t("components.calendar.localeconfig.dayNamesShort")[6].slice(0, 1)}} name={i18n.t("components.calendar.localeconfig.dayNames")[6]} component={ScheduleSaturday} />
-                        <Tab.Screen options={{ title: i18n.t("components.calendar.localeconfig.dayNamesShort")[0].slice(0, 1)}} name={i18n.t("components.calendar.localeconfig.dayNames")[0]} component={ScheduleSunday} />
-                    </Tab.Navigator>
+                    <TabView
+                        navigationState={{ index: tabIndex, routes: tabRoutes }}
+                        onIndexChange={setTabIndex}
+                        initialLayout={{ width }}
+                        renderScene={({ route }) => {
+                            switch (route.key) {
+                                case '1': return <ScheduleMonday />;
+                                case '2': return <ScheduleTuesday />;
+                                case '3': return <ScheduleWednesday />;
+                                case '4': return <ScheduleThursday />;
+                                case '5': return <ScheduleFriday />;
+                                case '6': return <ScheduleSaturday />;
+                                case '0': return <ScheduleSunday />;
+                                default: return null;
+                            }
+                        }}
+                        renderTabBar={(props) => (
+                            <TabBar
+                                {...props}
+                                scrollEnabled={false}
+                                activeColor={theme.text}
+                                inactiveColor={theme.text}
+                                indicatorStyle={{ backgroundColor: theme.primary }}
+                                style={{ backgroundColor: theme.background }}
+                                tabStyle={{ paddingHorizontal: 0 }}
+                            />
+                        )}
+                    />
                 </View>
             </View>
         </>

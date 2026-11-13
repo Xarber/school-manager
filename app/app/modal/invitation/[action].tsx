@@ -39,7 +39,8 @@ function updateInvite({action, invitefor, targetid, joinAs, setLoading, create, 
             create({
                 for: invitefor,
                 joinAs: joinAs,
-                targetid: targetid
+                targetid: targetid,
+                maxUsage: 1
             }).then(data => {
                 alert.show({
                     title: i18n.t("modal.invitation.create.alert.title"),

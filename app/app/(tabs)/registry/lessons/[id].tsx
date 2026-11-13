@@ -14,7 +14,7 @@ import { useLessonData } from '@/data/LessonMapContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { TabView, TabBar } from "react-native-tab-view";
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View, type ScrollViewInstance, type ViewInstance } from 'react-native';
@@ -43,8 +43,6 @@ export function regroupLessonsByDate(lessonArray: {subjectid: string, data: Less
 
     return dateIndex;
 }
-
-const Tab = createMaterialTopTabNavigator();
 
 function AllLessonsTab({classid, userData}: {classid: string, userData: UserData}) {
     const theme = useTheme();
@@ -283,6 +281,19 @@ function LessonTab() {
         editedAt: 0
     };
 
+    const [tabIndex, setTabIndex] = useState(0);
+
+    const tabRoutes = [
+    {
+        key: 'days',
+        title: i18n.t('registry.lessons.schedule.tab.days.title'),
+    },
+    {
+        key: 'students',
+        title: i18n.t('registry.lessons.schedule.tab.students.title'),
+    },
+    ];
+
     if (page === "schedule") {
         if (!devMode) return <LabsScreen />;
 
@@ -303,14 +314,30 @@ function LessonTab() {
                         <Text style={commonStyle.text}>{i18n.t("registry.lessons.schedule.header.description")}</Text>
                     </View>}
                     <View style={optimizationStyle.item}>
-                        <Tab.Navigator screenOptions={()=>({
-                            tabBarActiveTintColor: theme.text,
-                            tabBarIndicatorStyle: { backgroundColor: theme.primary },
-                            // tabBarContentContainerStyle: { backgroundColor: theme.background },
-                        })}>
-                            <Tab.Screen name={i18n.t("registry.lessons.schedule.tab.days.title")} component={ScheduleDays} />
-                            <Tab.Screen name={i18n.t("registry.lessons.schedule.tab.students.title")} component={ScheduleStudents} />
-                        </Tab.Navigator>
+                        <TabView
+                            navigationState={{ index: tabIndex, routes: tabRoutes }}
+                            onIndexChange={setTabIndex}
+                            initialLayout={{ width }}
+                            renderScene={({ route }) => {
+                                switch (route.key) {
+                                    case 'days':
+                                        return <ScheduleDays />;
+                                    case 'students':
+                                        return <ScheduleStudents />;
+                                    default:
+                                        return null;
+                                }
+                            }}
+                            renderTabBar={(props) => (
+                                <TabBar
+                                    {...props}
+                                    activeColor={theme.text}
+                                    inactiveColor={theme.text}
+                                    indicatorStyle={{ backgroundColor: theme.primary }}
+                                    style={{ backgroundColor: theme.background }}
+                                />
+                            )}
+                        />
                     </View>
                 </View>
             </>

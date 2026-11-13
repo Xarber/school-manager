@@ -10,7 +10,7 @@ import { useHomeworkData } from '@/data/HomeworkMapContext';
 import { useSubjectData } from '@/data/SubjectMapContext';
 import { useUserData } from '@/data/UserDataContext';
 import { Ionicons } from '@expo/vector-icons';
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { TabView, TabBar } from "react-native-tab-view";
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View, type ScrollViewInstance, type ViewInstance } from 'react-native';
@@ -180,8 +180,6 @@ function HomeworkComponent({mode, userData, classid, classData, reload, refreshi
     );
 }
 
-const Tab = createMaterialTopTabNavigator();
-
 function HomeworkTab({userData}: {userData: UserData}) {
     const router = useRouter();
     const theme = useTheme();
@@ -234,6 +232,14 @@ function HomeworkTab({userData}: {userData: UserData}) {
         }, [])
     )
 
+    const [tabIndex, setTabIndex] = useState(0);
+
+    const tabRoutes = [
+        { key: 'all', title: i18n.t('registry.homework.tab.all.title') },
+        { key: 'completed', title: i18n.t('registry.homework.tab.completed.title') },
+        { key: 'missed', title: i18n.t('registry.homework.tab.missed.title') },
+    ];
+
     function AllHomework() {
         return <HomeworkComponent mode="all" userData={userData} classData={classData.data} refreshing={refreshing} reload={reload} homeworkData={homeworkData} classid={classid} />
     }
@@ -271,15 +277,38 @@ function HomeworkTab({userData}: {userData: UserData}) {
                     <Text style={commonStyle.text}>{i18n.t("registry.homework.header.description")}</Text>
                 </View>}
                 <View style={optimizationStyle.item}>
-                    <Tab.Navigator screenOptions={()=>({
-                        tabBarActiveTintColor: theme.text,
-                        tabBarIndicatorStyle: { backgroundColor: theme.primary },
-                        // tabBarContentContainerStyle: { backgroundColor: theme.background },
-                    })}>
-                        <Tab.Screen name={i18n.t("registry.homework.tab.all.title")} component={AllHomework} />
-                        <Tab.Screen name={i18n.t("registry.homework.tab.completed.title")} component={CompletedHomework} />
-                        <Tab.Screen name={i18n.t("registry.homework.tab.missed.title")} component={MissedHomework} />
-                    </Tab.Navigator>
+                    <TabView
+                        navigationState={{
+                            index: tabIndex,
+                            routes: tabRoutes,
+                        }}
+                        onIndexChange={setTabIndex}
+                        initialLayout={{ width }}
+                        renderScene={({ route }) => {
+                            const mode = route.key as 'all' | 'completed' | 'missed';
+
+                            return (
+                                <HomeworkComponent
+                                    mode={mode}
+                                    userData={userData}
+                                    classData={classData.data}
+                                    refreshing={refreshing}
+                                    reload={reload}
+                                    homeworkData={homeworkData}
+                                    classid={classid}
+                                />
+                            );
+                        }}
+                        renderTabBar={(props) => (
+                            <TabBar
+                                {...props}
+                                activeColor={theme.text}
+                                inactiveColor={theme.text}
+                                indicatorStyle={{ backgroundColor: theme.primary }}
+                                style={{ backgroundColor: theme.background }}
+                            />
+                        )}
+                    />
                 </View>
             </View>
             <ActionButtons items={[
